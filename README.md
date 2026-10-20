@@ -12,13 +12,13 @@ Página única que converte os arquivos Markdown de um curso em:
 
 | Recurso | Como funciona | Onde o conteúdo fica |
 |---|---|---|
-| Editor Markdown | Barra de ferramentas (títulos, negrito, listas, checklists, links, imagens, tabelas, caixas, Mermaid, slides, notas), atalhos (Ctrl+B/I/K, Tab, Enter continua listas), modos Editar/Dividido/Prévia, tela cheia, prévia fiel ao gerador (inclusive slides) | Só na memória do navegador |
+| Editor Markdown | Barra de ferramentas, atalhos (Ctrl+B/I/K, Tab, Enter continua listas), modos Editar/Dividido/Prévia, tela cheia, prévia fiel ao gerador (inclusive slides) | Só na memória do navegador |
 | Gerar curso | `guia.md` + `apresentacao.md` → 6 arquivos + ZIP | Só na memória do navegador |
-| Imagens em base64 | Arraste, cole (Ctrl+V) ou insira pelo botão de imagem; no editor aparecem como `(img:N)` e o texto real guarda `data:image/...;base64,...` | No próprio texto `.md` |
+| Imagens em base64 | Arraste, cole (Ctrl+V) ou insira pelo botão de imagem; no editor aparecem como `(img:N)` | No próprio texto `.md` |
 | Rascunhos locais | "Salvar rascunho" ou salvamento automático (opcional) | IndexedDB do navegador, só nesta máquina |
 | Salvar em pasta | Grava os `.md` e os arquivos gerados numa pasta escolhida (Edge/Chrome) | Disco do usuário |
-| Link autocontido | Conteúdo comprimido e cifrado (AES-256-GCM) no próprio link; chave no `#` (ou senha, PBKDF2 310.000 iterações) | Somente no link |
-| PrivateBin | Cifrado no navegador (formato PrivateBin v2) e enviado à instância escolhida; expiração e leitura única opcionais | Servidor PrivateBin (apenas texto cifrado) |
+| Link autocontido | Conteúdo comprimido e cifrado (AES-256-GCM) no próprio link; chave no `#` ou senha (PBKDF2 310.000 iterações) | Somente no link |
+| PrivateBin | Formato PrivateBin v2 (AES-256-GCM, PBKDF2-SHA256 100.000, chave base58 no `#`); **senha opcional** (chave ‖ senha, compatível com o site do PrivateBin); **imagens como anexo ZIP** (`.md` + `imagens/`), restauradas para base64 ao abrir aqui; expiração e leitura única | Servidor PrivateBin (somente conteúdo cifrado) |
 
 ## Estrutura
 
@@ -35,7 +35,7 @@ tools/requirements.txt
 
 - Alterou o visual dos arquivos gerados? Edite `tools/gerador.py`; o workflow testa e republica.
 - Mantenha a mesma versão do `gerador.py` na PARTE 6 do `Pacote_Gerador_Cursos.txt` do agente.
-- A página precisa de acesso a `cdn.jsdelivr.net` (motor Python e desenho dos fluxos Mermaid na prévia).
+- A página precisa de acesso a `cdn.jsdelivr.net` (motor Python e desenho dos fluxos Mermaid). O PrivateBin exige que a instância aceite chamadas de outros sites (CORS); se não aceitar, use o link autocontido.
 
 ## Execução local (opcional, com Python 3)
 

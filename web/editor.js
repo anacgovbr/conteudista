@@ -155,7 +155,6 @@
 .mde-pv .sl .sn{position:absolute;right:8px;bottom:4px;font-size:11px;color:#8a96a6}.mde-pv .sl.title .sn{color:#cfe3f5}.mde-pv .sl.title .nt{color:#ffe08a}
 .mde-pv .sl .nt{position:absolute;left:22px;right:40px;bottom:4px;font-size:11px;color:#7a6400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mde-pv .sl figure img{max-height:180px}
-.mde-tip{font-size:12px;color:#5a6676;padding:2px 10px 6px}
 @media(max-width:900px){.mde-body{flex-direction:column;height:auto;resize:none}.mde-ta{min-height:300px}.mde-pv{border-left:0;border-top:1px solid #dfe5ee;min-height:300px}}`;
   function injectCSS() { if (document.getElementById('mde-css')) return; const s = document.createElement('style'); s.id = 'mde-css'; s.textContent = CSS; document.head.appendChild(s); }
 
@@ -177,28 +176,22 @@
     real.hidden = true; real.after(box);
     const fileIn = document.createElement('input'); fileIn.type = 'file'; fileIn.accept = 'image/*'; fileIn.multiple = true; fileIn.hidden = true; box.append(fileIn);
 
-    /* ---- sincronização com o textarea real ---- */
     let lastReal = null, tPv = null;
     function pushReal() { const v = expand(ta.value); if (v !== real.value) { real.value = v; lastReal = v; real.dispatchEvent(new Event('input', { bubbles: true })); } schedulePv(); status(); }
     function pull() { if (real.value === lastReal) return; lastReal = real.value; const c = collapse(real.value); if (c !== ta.value) ta.value = c; schedulePv(); status(); }
     function schedulePv() { clearTimeout(tPv); tPv = setTimeout(preview, 250); }
-    function preview() {
-      if (box.dataset.m === 'e') return;
-      const md = real.value; pv.innerHTML = tipo === 'slides' ? renderSlides(md) : render(md); drawMermaid(pv);
-    }
+    function preview() { if (box.dataset.m === 'e') return; const md = real.value; pv.innerHTML = tipo === 'slides' ? renderSlides(md) : render(md); drawMermaid(pv); }
     function status() {
       const v = ta.value, words = (v.replace(/\(img:\d+\)/g, '').match(/[\wÀ-ÿ]+/g) || []).length;
       const ni = (real.value.match(/!\[[^\]]*\]\(/g) || []).length;
-      const extra = tipo === 'slides' ? ' · Slides: ' + (real.value.replace(/^---\n[\s\S]*?\n---\n/, '').split(/\n---\s*\n/).filter(p => p.trim()).length)
-        : ' · Seções: ' + (v.match(/^## /gm) || []).length;
-      st.innerHTML = '<span>Palavras: ' + words.toLocaleString('pt-BR') + '</span><span>Linhas: ' + v.split('\n').length + '</span><span>Imagens: ' + ni + '</span><span>' + extra.slice(3) + '</span><span style="flex:1"></span><span>' + (real.value.length / 1024).toFixed(1) + ' KB</span>';
+      const extra = tipo === 'slides' ? 'Slides: ' + (real.value.replace(/^---\n[\s\S]*?\n---\n/, '').split(/\n---\s*\n/).filter(p => p.trim()).length) : 'Seções: ' + (v.match(/^## /gm) || []).length;
+      st.innerHTML = '<span>Palavras: ' + words.toLocaleString('pt-BR') + '</span><span>Linhas: ' + v.split('\n').length + '</span><span>Imagens: ' + ni + '</span><span>' + extra + '</span><span style="flex:1"></span><span>' + (real.value.length / 1024).toFixed(1) + ' KB</span>';
     }
 
-    /* ---- edição preservando o desfazer (Ctrl+Z) ---- */
     function ins(text, selFrom, selTo) {
       ta.focus();
       const s = ta.selectionStart;
-      if (!document.execCommand('insertText', false, text)) { ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, 'end'); }
+      if (!document.execCommand('insertText', false, text)) ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, 'end');
       if (selFrom !== undefined) ta.setSelectionRange(s + selFrom, s + (selTo !== undefined ? selTo : selFrom));
       pushReal();
     }
@@ -208,10 +201,7 @@
       const t = sel || ph; ins(a + t + b, a.length, a.length + t.length);
     }
     function lineRange() { const v = ta.value; let s = v.lastIndexOf('\n', ta.selectionStart - 1) + 1, e = v.indexOf('\n', ta.selectionEnd); if (e < 0) e = v.length; if (ta.selectionEnd > ta.selectionStart && v[ta.selectionEnd - 1] === '\n') e = ta.selectionEnd - 1; return [s, e]; }
-    function prefix(fn) {
-      const [s, e] = lineRange(), lines = ta.value.slice(s, e).split('\n');
-      ta.setSelectionRange(s, e); const out = lines.map(fn).join('\n'); ins(out, 0, out.length);
-    }
+    function prefix(fn) { const [s, e] = lineRange(), lines = ta.value.slice(s, e).split('\n'); ta.setSelectionRange(s, e); const out = lines.map(fn).join('\n'); ins(out, 0, out.length); }
     function togglePrefix(p, re) { const all = ta.value.slice(...lineRange()).split('\n').every(l => re.test(l)); prefix((l, i) => all ? l.replace(re, '') : (typeof p === 'function' ? p(i) : p) + l.replace(/^(#{1,6} |[-*] \[[ x]\] |[-*] |\d+\. |> )/, '')); }
     function heading(n) { togglePrefix('#'.repeat(n) + ' ', new RegExp('^#{' + n + '} ')); }
     function block(text) {
@@ -220,7 +210,7 @@
       const post = v.slice(ta.selectionEnd).startsWith('\n') ? '\n' : '\n\n';
       ins(pre + text + post, pre.length, pre.length + text.length);
     }
-    async function link() {
+    function link() {
       const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.slice(s, e) || 'texto do link';
       const url = prompt('Endereço (URL) do link:', 'https://'); if (!url) return;
       ins('[' + sel + '](' + url.trim().replace(/ /g, '%20').replace(/\(/g, '%28').replace(/\)/g, '%29') + ')', 1, 1 + sel.length);
@@ -240,13 +230,12 @@
     }
     const MERMAID = 'flowchart LR\n    T00((Início)) --> T01[01. Fazer tarefa<br/>Unidade]\n    T01 --> D01{Pergunta?}\n    D01 -->|Sim| T02[02. Próxima tarefa]\n    D01 -->|Não| T99(((Fim)))\n    T02 --> T99';
 
-    /* ---- barra de ferramentas ---- */
     const B = [
       ['H1', 'Título 1', () => heading(1)], ['H2', 'Título 2 (seção)', () => heading(2)], ['H3', 'Título 3', () => heading(3)], '|',
       ['<b>B</b>', 'Negrito (Ctrl+B)', () => wrap('**', '**', 'texto')], ['<i>I</i>', 'Itálico (Ctrl+I)', () => wrap('*', '*', 'texto')], [IC.code, 'Código', () => wrap('`', '`', 'código')], '|',
       [IC.list, 'Lista', () => togglePrefix('- ', /^[-*] (?!\[)/)], [IC.olist, 'Lista numerada', () => togglePrefix(i => (i + 1) + '. ', /^\d+\. /)], [IC.check, 'Checklist', () => togglePrefix('- [ ] ', /^[-*] \[[ x]\] /)], '|',
       [IC.link, 'Link (Ctrl+K)', link], [IC.img, 'Imagem (convertida para base64)', () => fileIn.click()], [IC.table, 'Tabela', tabela], '|',
-      ['❝', 'Citação / caixa', null, 'callout'],
+      ['', 'Caixa / citação', null, 'callout'],
       [IC.flow, 'Fluxo Mermaid', () => block('```mermaid\n' + MERMAID + '\n```')],
     ];
     if (tipo === 'slides') B.push('|', [IC.plus + ' Slide', 'Novo slide', () => block('---\n\n# Título do slide\n\n- Tópico')], ['Capa', 'Marcar slide como capa/encerramento', () => ins('<!-- class: title -->\n')], ['Destaque', 'Marcar slide como destaque', () => ins('<!-- class: highlight -->\n')], [IC.note + ' Notas', 'Notas do apresentador', () => block('<!-- notas: texto para o apresentador -->')]);
@@ -270,7 +259,6 @@
     function marcar() { tb.querySelectorAll('[data-m]').forEach(b => b.classList.toggle('on', b.dataset.m === box.dataset.m)); }
     marcar();
 
-    /* ---- eventos ---- */
     ta.addEventListener('input', pushReal);
     ta.addEventListener('keydown', e => {
       const k = e.key.toLowerCase();
@@ -301,8 +289,7 @@
     ta.addEventListener('drop', async e => {
       const files = [...e.dataTransfer.files]; if (!files.length) return;
       e.preventDefault();
-      const md = files.filter(f => !f.type.startsWith('image/'));
-      if (md.length && opt.onFiles) { opt.onFiles(files); return; }
+      if (files.some(f => !f.type.startsWith('image/')) && opt.onFiles) { opt.onFiles(files); return; }
       const t = await imagensDeArquivos(files); if (t.length) ins(t.join('\n'));
     });
     fileIn.onchange = async () => { const t = await imagensDeArquivos([...fileIn.files]); if (t.length) block(t.join('\n\n')); fileIn.value = ''; };
@@ -311,7 +298,7 @@
     pv.addEventListener('scroll', () => { if (box.dataset.m !== 's' || sync) return; sync = true; ta.scrollTop = (pv.scrollTop / Math.max(1, pv.scrollHeight - pv.clientHeight)) * (ta.scrollHeight - ta.clientHeight); requestAnimationFrame(() => sync = false); });
 
     pull(); preview(); status();
-    setInterval(pull, 600);  // capta alterações feitas por código no textarea real
+    setInterval(pull, 600);
     return { refresh: pull, textarea: ta, element: box, render: () => preview() };
   }
 

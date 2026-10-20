@@ -37,6 +37,7 @@ iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:8px;ma
 table{border-collapse:collapse;width:100%;font-size:13.5px;margin-top:6px}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:middle}th{background:var(--th);color:var(--pri)}
 td.url{word-break:break-all;font:12px Consolas,monospace}
 .panel{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fbfcfe}
+.sub{border-top:1px dashed var(--line);margin-top:10px;padding-top:8px}
 code{background:var(--th);padding:1px 5px;border-radius:4px}
 @media(max-width:900px){.grid,.grid3,.row{grid-template-columns:1fr}}
 </style>
@@ -51,7 +52,7 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
 
 <section class="card">
   <h2>Como funciona</h2>
-  <p class="box priv"><b>Privacidade:</b> a conversão roda inteiramente no seu navegador. Por padrão, <b>nada é enviado nem salvo</b>. Você decide se quer guardar o conteúdo <b>na sua máquina</b> (rascunhos no navegador ou em uma pasta) ou <b>compartilhar por link criptografado</b> — a chave fica só no link, nunca no servidor.</p>
+  <p class="box priv"><b>Privacidade:</b> a conversão roda inteiramente no seu navegador. Por padrão, <b>nada é enviado nem salvo</b>. Você decide se quer guardar o conteúdo <b>na sua máquina</b> (rascunhos no navegador ou em uma pasta) ou <b>compartilhar por link criptografado</b> — a chave fica só no link (e, se quiser, numa senha), nunca no servidor.</p>
   <ol>
     <li>Cole, arraste ou escreva o <b>guia</b> e a <b>apresentação</b> no editor (barra de ferramentas, atalhos e prévia ao lado). Imagens arrastadas, coladas (Ctrl+V) ou inseridas pelo botão de imagem são convertidas para <b>base64</b>.</li>
     <li>Clique em <b>Gerar arquivos</b> e baixe os 6 arquivos (ou o ZIP).</li>
@@ -112,7 +113,7 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
     </div>
     <div class="panel">
       <h3 style="margin-top:0">2. Link criptografado</h3>
-      <p class="note">O conteúdo é cifrado no navegador (<b>AES-256-GCM</b>) antes de sair do computador. Quem tiver o link completo consegue abrir.</p>
+      <p class="note">O conteúdo é cifrado no navegador (<b>AES-256-GCM</b>) antes de sair do computador. Quem tiver o link completo (e a senha, se houver) consegue abrir.</p>
       <label for="mode">Onde guardar</label>
       <select id="mode">
         <option value="self">Link autocontido (sem servidor — conteúdo vai no próprio link)</option>
@@ -126,17 +127,20 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
             <select id="exp"><option value="1hour">1 hora</option><option value="1day">1 dia</option><option value="1week" selected>1 semana</option><option value="1month">1 mês</option><option value="1year">1 ano</option><option value="never">Nunca</option></select></div>
           <div><label class="inl" style="margin-top:22px"><input type="checkbox" id="burn"> Apagar após 1ª leitura</label></div>
         </div>
+        <div class="sub">
+          <label class="inl"><input type="checkbox" id="anexo" checked> Enviar as imagens como anexo (ZIP)</label>
+          <p class="note" style="margin:2px 0 0">O texto vai com referências <code>imagens/img-N.ext</code> e o anexo cifrado leva os dois <code>.md</code> + a pasta <code>imagens/</code>. Ao abrir aqui, as imagens voltam para base64. Desmarcado: as imagens seguem embutidas no texto.</p>
+        </div>
       </div>
-      <div id="pwopts">
-        <label for="pw" style="margin-top:8px">Senha (opcional)</label>
-        <input id="pw" type="password" placeholder="Se usar, envie a senha por outro canal" autocomplete="new-password">
-      </div>
+      <label for="pw" style="margin-top:8px">Senha (opcional)</label>
+      <input id="pw" type="password" placeholder="Se usar, envie a senha por outro canal" autocomplete="new-password">
+      <p class="note" id="pwnote" style="margin:4px 0 0">No PrivateBin, a senha é compatível com o próprio site (ele pedirá a senha ao abrir). Prefira senhas sem acentos.</p>
       <label class="inl"><input type="checkbox" id="keep"> Lembrar os links neste navegador</label>
       <p><button id="share">Criar link</button></p>
     </div>
     <div class="panel">
       <h3 style="margin-top:0">3. Abrir um link</h3>
-      <p class="note">Cole um link criado aqui (autocontido ou PrivateBin) para carregar o conteúdo nos editores.</p>
+      <p class="note">Cole um link criado aqui (autocontido ou PrivateBin) para carregar o conteúdo e as imagens nos editores.</p>
       <label for="olink">Link</label>
       <input id="olink" type="url" placeholder="https://…">
       <label for="opw" style="margin-top:8px">Senha (se houver)</label>
@@ -146,13 +150,14 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
   </div>
   <h3>Links criados</h3>
   <div id="links" class="note">Nenhum link nesta sessão.</div>
-  <p class="box warn" style="margin-top:12px"><b>Atenção:</b> não compartilhe dados pessoais ou informações restritas por link, mesmo criptografado, sem autorização da sua chefia. Links longos (autocontidos) podem ser cortados por e-mail ou Teams — prefira o PrivateBin para conteúdos grandes.</p>
+  <p class="box warn" style="margin-top:12px"><b>Atenção:</b> não compartilhe dados pessoais ou informações restritas por link, mesmo criptografado, sem autorização da sua chefia. Links longos (autocontidos) podem ser cortados por e-mail ou Teams — prefira o PrivateBin para conteúdos grandes. A instância pública privatebin.net aceita até cerca de 10 MB por envio.</p>
 </section>
 </main>
 
 <script>
 'use strict';
 const PYODIDE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
+const PB_LIMITE = 10 * 1024 * 1024;
 const $ = id => document.getElementById(id);
 const enc = new TextEncoder(), dec = new TextDecoder();
 const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -170,12 +175,13 @@ $('tg').onclick = () => aba('g'); $('ts').onclick = () => aba('s');
 
 /* =========================== Utilitários de bytes =========================== */
 const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
-const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const unb64 = s => Uint8Array.from(atob(s.replace(/\s+/g, '')), c => c.charCodeAt(0));
 const b64u = u8 => b64(u8).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const unb64u = s => unb64(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4));
 async function streamBytes(u8, ts) { return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(ts)).arrayBuffer()); }
 const deflate = u8 => streamBytes(u8, new CompressionStream('deflate-raw'));
 const inflate = u8 => streamBytes(u8, new DecompressionStream('deflate-raw'));
+const concat = (a, b) => { const r = new Uint8Array(a.length + b.length); r.set(a, 0); r.set(b, a.length); return r; };
 const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 function b58enc(u8) { let n = 0n; for (const b of u8) n = n * 256n + BigInt(b); let s = ''; while (n > 0n) { s = B58[Number(n % 58n)] + s; n /= 58n; } for (const b of u8) { if (b === 0) s = '1' + s; else break; } return s; }
 function b58dec(s, len) {
@@ -186,6 +192,44 @@ function b58dec(s, len) {
   return new Uint8Array(out);
 }
 const blobToDataURL = b => new Promise((ok, err) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = err; r.readAsDataURL(b); });
+const tamanho = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round(n / 1024) + ' KB';
+
+/* =========================== ZIP mínimo (sem bibliotecas) =========================== */
+const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = u8 => { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) c = CRC[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+async function zipCriar(arqs) {  // arqs: [{nome, dados: Uint8Array}] → Uint8Array (deflate quando compensa)
+  const partes = [], central = []; let off = 0;
+  const d = new Date(), tm = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1), dt = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+  for (const a of arqs) {
+    const nome = enc.encode(a.nome), crc = crc32(a.dados), cmp = await deflate(a.dados), usa = cmp.length < a.dados.length, corpo = usa ? cmp : a.dados, met = usa ? 8 : 0;
+    const h = new DataView(new ArrayBuffer(30));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, met, true); h.setUint16(10, tm, true); h.setUint16(12, dt, true);
+    h.setUint32(14, crc, true); h.setUint32(18, corpo.length, true); h.setUint32(22, a.dados.length, true); h.setUint16(26, nome.length, true); h.setUint16(28, 0, true);
+    partes.push(new Uint8Array(h.buffer), nome, corpo);
+    const c = new DataView(new ArrayBuffer(46));
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(10, met, true); c.setUint16(12, tm, true); c.setUint16(14, dt, true);
+    c.setUint32(16, crc, true); c.setUint32(20, corpo.length, true); c.setUint32(24, a.dados.length, true); c.setUint16(28, nome.length, true); c.setUint32(42, off, true);
+    central.push(new Uint8Array(c.buffer), nome);
+    off += 30 + nome.length + corpo.length;
+  }
+  const tamC = central.reduce((s, x) => s + x.length, 0), fim = new DataView(new ArrayBuffer(22));
+  fim.setUint32(0, 0x06054b50, true); fim.setUint16(8, arqs.length, true); fim.setUint16(10, arqs.length, true); fim.setUint32(12, tamC, true); fim.setUint32(16, off, true);
+  return new Uint8Array(await new Blob([...partes, ...central, new Uint8Array(fim.buffer)]).arrayBuffer());
+}
+async function zipLer(u8) {  // → Map(nome → Uint8Array); suporta armazenado e deflate
+  const v = new DataView(u8.buffer, u8.byteOffset, u8.byteLength); let e = u8.length - 22;
+  while (e >= 0 && v.getUint32(e, true) !== 0x06054b50) e--;
+  if (e < 0) throw new Error('Anexo ZIP inválido.');
+  const n = v.getUint16(e + 10, true); let p = v.getUint32(e + 16, true); const out = new Map();
+  for (let i = 0; i < n; i++) {
+    const met = v.getUint16(p + 10, true), tc = v.getUint32(p + 20, true), ln = v.getUint16(p + 28, true), lx = v.getUint16(p + 30, true), lc = v.getUint16(p + 32, true), lo = v.getUint32(p + 42, true);
+    const nome = dec.decode(u8.subarray(p + 46, p + 46 + ln));
+    const ini = lo + 30 + v.getUint16(lo + 26, true) + v.getUint16(lo + 28, true), corpo = u8.subarray(ini, ini + tc);
+    out.set(nome, met === 8 ? await inflate(corpo) : met === 0 ? corpo.slice() : null);
+    p += 46 + ln + lx + lc;
+  }
+  return out;
+}
 
 /* =========================== Conteúdo (pacote) =========================== */
 const SEP = '<!-- conteudista:apresentacao -->';
@@ -233,6 +277,25 @@ async function embutirTudo(silencioso) {
   return f;
 }
 $('emb').onclick = () => embutirTudo(false);
+
+/* Separa as imagens base64 em arquivos (para anexo) e restaura depois */
+const EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/webp': 'webp', 'image/svg+xml': 'svg', 'image/bmp': 'bmp' };
+function extrairImagens(d) {
+  const mapa = new Map(), arqs = [];
+  const troca = t => t.replace(/!\[([^\]]*)\]\((data:(image\/[a-z0-9.+-]+);base64,([A-Za-z0-9+/=\s]+))\)/gi, (m, alt, uri, mime, dados) => {
+    const k = uri.replace(/\s+/g, '');
+    if (!mapa.has(k)) { const nome = 'imagens/img-' + (arqs.length + 1) + '.' + (EXT[mime.toLowerCase()] || 'bin'); mapa.set(k, nome); arqs.push({ nome, dados: unb64(dados) }); }
+    return '![' + alt + '](' + mapa.get(k) + ')';
+  });
+  return { d: Object.assign({}, d, { g: troca(d.g), s: troca(d.s) }), arqs };
+}
+function mimeDe(nome) { const e = nome.split('.').pop().toLowerCase(); return Object.keys(EXT).find(k => EXT[k] === e) || 'application/octet-stream'; }
+function restaurarImagens(d, mapa) {  // mapa: nome → Uint8Array
+  const troca = t => t.replace(/!\[([^\]]*)\]\(((?:\.\/)?imagens\/[^)\s]+)\)/g, (m, alt, ref) => {
+    const k = ref.replace(/^\.\//, ''), dados = mapa.get(k); return dados ? '![' + alt + '](data:' + mimeDe(k) + ';base64,' + b64(dados) + ')' : m;
+  });
+  return Object.assign({}, d, { g: troca(d.g), s: troca(d.s) });
+}
 
 /* =========================== Entrada de arquivos =========================== */
 let alvo = 'g';
@@ -335,7 +398,7 @@ $('fsave').onclick = async () => {
   } catch (e) { if (e.name !== 'AbortError') log('Não foi possível salvar na pasta: ' + e.message, 'err'); }
 };
 
-/* =========================== Criptografia =========================== */
+/* =========================== Criptografia: link autocontido =========================== */
 async function aesKeyFromPw(pw, salt, it) {
   const k = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: it, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
@@ -360,58 +423,94 @@ async function abrirAutocontido(frag, pw) {
   let pt; try { pt = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct)); } catch { throw new Error('Não foi possível decifrar (senha incorreta ou link incompleto).'); }
   return JSON.parse(dec.decode(await inflate(pt)));
 }
-async function pbKey(raw, salt) {
-  const k = await crypto.subtle.importKey('raw', raw, 'PBKDF2', false, ['deriveKey']);
+
+/* =========================== Criptografia: PrivateBin (formato v2) ===========================
+   Chave = 32 bytes aleatórios (base58 no fragmento #). Com senha: material = chave ‖ senha (UTF-8),
+   como no PrivateBin. PBKDF2-SHA256 100.000 iterações → AES-256-GCM, tag 128, compressão zlib (deflate-raw),
+   adata autenticado. Anexo: campo "attachment" (data URL) + "attachment_name", como o PrivateBin. */
+async function pbKey(raw, salt, pw) {
+  const material = pw ? concat(raw, enc.encode(pw)) : raw;
+  const k = await crypto.subtle.importKey('raw', material, 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
 }
 const pbBase = u => { const x = new URL(u); return x.origin + x.pathname; };
-async function criarPrivateBin(texto, inst, expire, burn) {
+async function criarPrivateBin(conteudo, op) {  // conteudo: {paste, attachment?, attachment_name?}
   const raw = crypto.getRandomValues(new Uint8Array(32)), iv = crypto.getRandomValues(new Uint8Array(16)), salt = crypto.getRandomValues(new Uint8Array(8));
-  const adata = [[b64(iv), b64(salt), 100000, 256, 128, 'aes', 'gcm', 'zlib'], 'markdown', 0, burn ? 1 : 0];
-  const key = await pbKey(raw, salt);
-  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: enc.encode(JSON.stringify(adata)), tagLength: 128 }, key, await deflate(enc.encode(JSON.stringify({ paste: texto })))));
-  const base = pbBase(inst); let r;
-  try { r = await fetch(base, { method: 'POST', headers: { 'X-Requested-With': 'JSONHttpRequest', 'Content-Type': 'application/json' }, body: JSON.stringify({ v: 2, adata, ct: b64(ct), meta: { expire } }) }); }
+  const adata = [[b64(iv), b64(salt), 100000, 256, 128, 'aes', 'gcm', 'zlib'], 'markdown', 0, op.burn ? 1 : 0];
+  const key = await pbKey(raw, salt, op.pw);
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: enc.encode(JSON.stringify(adata)), tagLength: 128 }, key, await deflate(enc.encode(JSON.stringify(conteudo)))));
+  const corpo = JSON.stringify({ v: 2, adata, ct: b64(ct), meta: { expire: op.expire } });
+  if (corpo.length > PB_LIMITE) throw new Error('Conteúdo cifrado com ' + tamanho(corpo.length) + ' (limite usual do PrivateBin: 10 MB). Reduza as imagens ou use o link autocontido.');
+  const base = pbBase(op.inst); let r;
+  try { r = await fetch(base, { method: 'POST', headers: { 'X-Requested-With': 'JSONHttpRequest', 'Content-Type': 'application/json' }, body: corpo }); }
   catch { throw new Error('A instância não aceitou a requisição a partir deste site (CORS ou rede bloqueada). Use o link autocontido ou outra instância.'); }
   const j = await r.json().catch(() => ({}));
   if (j.status !== 0) throw new Error('PrivateBin recusou: ' + (j.message || ('HTTP ' + r.status)));
-  return { url: base + '?' + j.id + '#' + b58enc(raw), del: base + '?pasteid=' + j.id + '&deletetoken=' + j.deletetoken };
+  return { url: base + '?' + j.id + '#' + b58enc(raw), del: base + '?pasteid=' + j.id + '&deletetoken=' + j.deletetoken, tam: corpo.length };
 }
-async function abrirPrivateBin(link) {
+async function abrirPrivateBin(link, pw) {
   const u = new URL(link), id = u.search.replace(/^\?(pasteid=)?/, '').split('&')[0], k = u.hash.replace(/^#-?/, '');
   if (!id || !k) throw new Error('Link PrivateBin incompleto (falta o identificador ou a chave após #).');
   let r;
   try { r = await fetch(u.origin + u.pathname + '?pasteid=' + encodeURIComponent(id), { headers: { 'X-Requested-With': 'JSONHttpRequest' } }); }
   catch { throw new Error('Não foi possível consultar a instância (CORS ou rede). Abra o link no navegador e copie o texto para os editores.'); }
   const j = await r.json(); if (j.status !== 0) throw new Error('PrivateBin: ' + (j.message || 'conteúdo indisponível (expirado ou apagado).'));
-  const sp = j.adata[0], key = await pbKey(b58dec(k, 32), unb64(sp[1]));
+  const sp = j.adata[0], key = await pbKey(b58dec(k, 32), unb64(sp[1]), pw);
   let pt;
   try { pt = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(sp[0]), additionalData: enc.encode(JSON.stringify(j.adata)), tagLength: sp[4] }, key, unb64(j.ct))); }
-  catch { throw new Error('Não foi possível decifrar (chave incorreta ou conteúdo protegido por senha no PrivateBin).'); }
+  catch { throw new Error(pw ? 'Não foi possível decifrar: senha incorreta ou link incompleto.' : 'Não foi possível decifrar: este conteúdo provavelmente está protegido por senha. Informe a senha e tente de novo.'); }
   if (sp[7] === 'zlib') pt = await inflate(pt);
-  return deTexto(JSON.parse(dec.decode(pt)).paste);
+  const obj = JSON.parse(dec.decode(pt));
+  let d = deTexto(obj.paste || ''), nImg = 0;
+  const anexos = [].concat(obj.attachment || []), nomes = [].concat(obj.attachment_name || []);
+  for (let i = 0; i < anexos.length; i++) {
+    const a = anexos[i]; if (typeof a !== 'string' || !a.startsWith('data:')) continue;
+    const dados = unb64(a.slice(a.indexOf(',') + 1)), nome = nomes[i] || '';
+    if (/zip/i.test(a.slice(0, a.indexOf(','))) || /\.zip$/i.test(nome)) {
+      const mapa = await zipLer(dados);
+      const antes = (d.g + d.s).match(/\]\((?:\.\/)?imagens\//g) || [];
+      d = restaurarImagens(d, mapa); nImg += antes.length - ((d.g + d.s).match(/\]\((?:\.\/)?imagens\//g) || []).length;
+    }
+  }
+  if (nImg) log('Imagens restauradas do anexo: ' + nImg + '.', 'ok');
+  return d;
 }
 
 /* =========================== Compartilhar / abrir =========================== */
 let sessaoLinks = [];
-$('mode').onchange = () => { const pb = $('mode').value === 'pb'; $('pbopts').hidden = !pb; $('pwopts').hidden = pb; };
+$('mode').onchange = () => { const pb = $('mode').value === 'pb'; $('pbopts').hidden = !pb; $('pwnote').hidden = !pb; };
+$('pwnote').hidden = true;
 $('share').onclick = async () => {
   const d = pacote(); if (!d.g.trim() && !d.s.trim()) { log('Nada para compartilhar.', 'wa'); return; }
   const fal = await embutirTudo(true); if (fal.length) log('Atenção: imagens não embutidas ficarão como referência externa: ' + fal.join(', '), 'wa');
-  const d2 = pacote(); $('share').disabled = true;
+  const d2 = pacote(), pw = $('pw').value; $('share').disabled = true;
   try {
     let item;
     if ($('mode').value === 'self') {
-      const url = await criarAutocontido(d2, $('pw').value);
-      item = { tipo: 'Autocontido' + ($('pw').value ? ' + senha' : ''), url, del: '', nome: d2.p, data: Date.now() };
+      const url = await criarAutocontido(d2, pw);
+      item = { tipo: 'Autocontido' + (pw ? ' + senha' : ''), url, del: '', nome: d2.p, data: Date.now() };
       if (url.length > 30000) log('Link com ' + url.length.toLocaleString('pt-BR') + ' caracteres: pode ser cortado por e-mail/Teams. Considere o PrivateBin.', 'wa');
     } else {
-      const r = await criarPrivateBin(paraTexto(d2), $('pbi').value, $('exp').value, $('burn').checked);
-      item = { tipo: 'PrivateBin (' + $('exp').selectedOptions[0].text + ($('burn').checked ? ', leitura única' : '') + ')', url: r.url, del: r.del, nome: d2.p, data: Date.now() };
+      let conteudo, info = '';
+      const ex = extrairImagens(d2);
+      if ($('anexo').checked && ex.arqs.length) {
+        const x = (d2.p || 'Curso').replace(/[^\w.-]+/g, '_');
+        const zip = await zipCriar([
+          { nome: 'Treinamento_' + x + '.md', dados: enc.encode(ex.d.g) },
+          { nome: 'Apresentacao_' + x + '.md', dados: enc.encode(ex.d.s) },
+          ...ex.arqs
+        ]);
+        conteudo = { paste: paraTexto(ex.d), attachment: 'data:application/zip;base64,' + b64(zip), attachment_name: 'Curso_' + x + '.zip' };
+        info = ', ' + ex.arqs.length + ' imagem(ns) em anexo';
+        log('Anexo ZIP montado: ' + ex.arqs.length + ' imagem(ns), ' + tamanho(zip.length) + '.', 'ok');
+      } else conteudo = { paste: paraTexto(d2) };
+      const r = await criarPrivateBin(conteudo, { inst: $('pbi').value, expire: $('exp').value, burn: $('burn').checked, pw });
+      item = { tipo: 'PrivateBin (' + $('exp').selectedOptions[0].text + ($('burn').checked ? ', leitura única' : '') + (pw ? ', senha' : '') + info + ')', url: r.url, del: r.del, nome: d2.p, data: Date.now() };
+      log('Enviado ao PrivateBin: ' + tamanho(r.tam) + ' cifrados.', 'ok');
     }
     sessaoLinks.unshift(item);
     if ($('keep').checked) await dbPut('links', item);
-    listarLinks(); log('Link criptografado criado.', 'ok');
+    listarLinks(); log('Link criptografado criado.' + (pw ? ' Envie a senha por outro canal.' : ''), 'ok');
     try { await navigator.clipboard.writeText(item.url); log('Link copiado para a área de transferência.', 'ok'); } catch {}
   } catch (e) { log('Erro: ' + e.message, 'err'); }
   finally { $('share').disabled = false; }
@@ -432,7 +531,7 @@ async function listarLinks() {
 async function abrirLink(link, pw) {
   const u = new URL(link.trim(), location.href), h = u.hash;
   if (h.startsWith('#cx=')) return abrirAutocontido(h.slice(4), pw);
-  if (u.search.length > 1 && h.length > 1) return abrirPrivateBin(u.href);
+  if (u.search.length > 1 && h.length > 1) return abrirPrivateBin(u.href, pw);
   throw new Error('Link não reconhecido.');
 }
 $('open').onclick = async () => {
