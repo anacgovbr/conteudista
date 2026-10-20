@@ -117,6 +117,8 @@
     split: sv('<rect x="3" y="4" width="18" height="16" rx="1"/><path d="M12 4v16"/>'),
     eye: sv('<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'),
     full: sv('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'),
+    undo: sv('<path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/>'),
+    redo: sv('<path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/>'),
     ex: sv('<path d="M9 11l2 2 4-4"/><rect x="3" y="3" width="18" height="18" rx="2"/>')
   };
 
@@ -128,6 +130,7 @@
 .mde-tb svg{width:16px;height:16px;vertical-align:-3px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .mde-tb button{background:transparent!important;color:#1b2430!important;border:1px solid transparent!important;border-radius:5px;margin:0;padding:4px 7px;min-width:28px;font:600 13px "Segoe UI",Arial,sans-serif;cursor:pointer;line-height:1.2}
 .mde-tb button:hover{background:#e3ebf5!important;border-color:#c9d6e6!important}
+.mde-tb button:disabled{opacity:.35;cursor:default}
 .mde-tb button.on{background:#0a7cc1!important;color:#fff!important}
 .mde-tb .sep{width:1px;height:20px;background:#d3dbe6;margin:0 4px}
 .mde-tb .sp{flex:1}
@@ -177,8 +180,25 @@
     const fileIn = document.createElement('input'); fileIn.type = 'file'; fileIn.accept = 'image/*'; fileIn.multiple = true; fileIn.hidden = true; box.append(fileIn);
 
     let lastReal = null, tPv = null;
-    function pushReal() { const v = expand(ta.value); if (v !== real.value) { real.value = v; lastReal = v; real.dispatchEvent(new Event('input', { bubbles: true })); } schedulePv(); status(); }
-    function pull() { if (real.value === lastReal) return; lastReal = real.value; const c = collapse(real.value); if (c !== ta.value) ta.value = c; schedulePv(); status(); }
+    /* ---- histórico próprio (Ctrl+Z / Ctrl+Y): cobre digitação, botões e alterações externas ---- */
+    const hist = [], HMAX = 300; let hpos = -1, hT = 0, hTipo = '';
+    function snap(tipo) {
+      const v = ta.value, cur = hist[hpos];
+      if (cur && cur.v === v) { cur.s = ta.selectionStart; cur.e = ta.selectionEnd; return; }
+      const agora = Date.now(), agrupa = tipo === 'dig' && hTipo === 'dig' && agora - hT < 900 && hpos === hist.length - 1 && hpos > 0;
+      if (agrupa) hist[hpos] = { v, s: ta.selectionStart, e: ta.selectionEnd };
+      else { hist.splice(hpos + 1); hist.push({ v, s: ta.selectionStart, e: ta.selectionEnd }); if (hist.length > HMAX) hist.shift(); hpos = hist.length - 1; }
+      hT = agora; hTipo = tipo; atualizaUR();
+    }
+    function restaura(d) {
+      const n = hpos + d; if (n < 0 || n >= hist.length) return false;
+      hpos = n; const h = hist[n]; ta.value = h.v; ta.focus(); ta.setSelectionRange(h.s, h.e); hTipo = '';
+      pushReal(true); atualizaUR(); return true;
+    }
+    const desfazer = () => restaura(-1), refazer = () => restaura(1);
+    function atualizaUR() { const u = tb.querySelector('[data-ur="u"]'), r = tb.querySelector('[data-ur="r"]'); if (u) u.disabled = hpos <= 0; if (r) r.disabled = hpos >= hist.length - 1; }
+    function pushReal(semHist, tipo) { if (!semHist) snap(tipo || 'cmd'); const v = expand(ta.value); if (v !== real.value) { real.value = v; lastReal = v; real.dispatchEvent(new Event('input', { bubbles: true })); } schedulePv(); status(); }
+    function pull() { if (real.value === lastReal) return; lastReal = real.value; const c = collapse(real.value); if (c !== ta.value) { ta.value = c; snap('ext'); } schedulePv(); status(); }
     function schedulePv() { clearTimeout(tPv); tPv = setTimeout(preview, 250); }
     function preview() { if (box.dataset.m === 'e') return; const md = real.value; pv.innerHTML = tipo === 'slides' ? renderSlides(md) : render(md); drawMermaid(pv); }
     function status() {
@@ -188,10 +208,12 @@
       st.innerHTML = '<span>Palavras: ' + words.toLocaleString('pt-BR') + '</span><span>Linhas: ' + v.split('\n').length + '</span><span>Imagens: ' + ni + '</span><span>' + extra + '</span><span style="flex:1"></span><span>' + (real.value.length / 1024).toFixed(1) + ' KB</span>';
     }
 
+    let emCmd = false;
     function ins(text, selFrom, selTo) {
       ta.focus();
       const s = ta.selectionStart;
-      if (!document.execCommand('insertText', false, text)) ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, 'end');
+      emCmd = true; hTipo = '';
+      try { if (!document.execCommand('insertText', false, text)) ta.setRangeText(text, ta.selectionStart, ta.selectionEnd, 'end'); } finally { emCmd = false; }
       if (selFrom !== undefined) ta.setSelectionRange(s + selFrom, s + (selTo !== undefined ? selTo : selFrom));
       pushReal();
     }
@@ -210,6 +232,12 @@
       const post = v.slice(ta.selectionEnd).startsWith('\n') ? '\n' : '\n\n';
       ins(pre + text + post, pre.length, pre.length + text.length);
     }
+    function moverLinha(d) {
+      const v = ta.value, [s, e] = lineRange(), bloco = v.slice(s, e), ss = ta.selectionStart - s, se = ta.selectionEnd - s;
+      if (d < 0) { if (s === 0) return; const ps = v.lastIndexOf('\n', s - 2) + 1, ant = v.slice(ps, s - 1); ta.setSelectionRange(ps, e); ins(bloco + '\n' + ant); ta.setSelectionRange(ps + ss, ps + se); }
+      else { if (e >= v.length) return; let ne = v.indexOf('\n', e + 1); if (ne < 0) ne = v.length; const prox = v.slice(e + 1, ne); ta.setSelectionRange(s, ne); ins(prox + '\n' + bloco); const o = s + prox.length + 1; ta.setSelectionRange(o + ss, o + se); }
+    }
+    function duplicarLinha() { const [s, e] = lineRange(), bloco = ta.value.slice(s, e); ta.setSelectionRange(e, e); ins('\n' + bloco); ta.setSelectionRange(e + 1, e + 1 + bloco.length); }
     function link() {
       const s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.slice(s, e) || 'texto do link';
       const url = prompt('Endereço (URL) do link:', 'https://'); if (!url) return;
@@ -231,11 +259,12 @@
     const MERMAID = 'flowchart LR\n    T00((Início)) --> T01[01. Fazer tarefa<br/>Unidade]\n    T01 --> D01{Pergunta?}\n    D01 -->|Sim| T02[02. Próxima tarefa]\n    D01 -->|Não| T99(((Fim)))\n    T02 --> T99';
 
     const B = [
-      ['H1', 'Título 1', () => heading(1)], ['H2', 'Título 2 (seção)', () => heading(2)], ['H3', 'Título 3', () => heading(3)], '|',
-      ['<b>B</b>', 'Negrito (Ctrl+B)', () => wrap('**', '**', 'texto')], ['<i>I</i>', 'Itálico (Ctrl+I)', () => wrap('*', '*', 'texto')], [IC.code, 'Código', () => wrap('`', '`', 'código')], '|',
-      [IC.list, 'Lista', () => togglePrefix('- ', /^[-*] (?!\[)/)], [IC.olist, 'Lista numerada', () => togglePrefix(i => (i + 1) + '. ', /^\d+\. /)], [IC.check, 'Checklist', () => togglePrefix('- [ ] ', /^[-*] \[[ x]\] /)], '|',
+      [IC.undo, 'Desfazer (Ctrl+Z)', () => desfazer(), 'u'], [IC.redo, 'Refazer (Ctrl+Y ou Ctrl+Shift+Z)', () => refazer(), 'r'], '|',
+      ['H1', 'Título 1 (Ctrl+Shift+1)', () => heading(1)], ['H2', 'Título 2 — seção (Ctrl+Shift+2)', () => heading(2)], ['H3', 'Título 3 (Ctrl+Shift+3)', () => heading(3)], '|',
+      ['<b>B</b>', 'Negrito (Ctrl+B)', () => wrap('**', '**', 'texto')], ['<i>I</i>', 'Itálico (Ctrl+I)', () => wrap('*', '*', 'texto')], [IC.code, 'Código (Ctrl+E)', () => wrap('`', '`', 'código')], '|',
+      [IC.list, 'Lista (Ctrl+Shift+8)', () => togglePrefix('- ', /^[-*] (?!\[)/)], [IC.olist, 'Lista numerada (Ctrl+Shift+7)', () => togglePrefix(i => (i + 1) + '. ', /^\d+\. /)], [IC.check, 'Checklist (Ctrl+Shift+9)', () => togglePrefix('- [ ] ', /^[-*] \[[ x]\] /)], '|',
       [IC.link, 'Link (Ctrl+K)', link], [IC.img, 'Imagem (convertida para base64)', () => fileIn.click()], [IC.table, 'Tabela', tabela], '|',
-      ['', 'Caixa / citação', null, 'callout'],
+      ['', 'Caixa / citação (Ctrl+Shift+. cita)', null, 'callout'],
       [IC.flow, 'Fluxo Mermaid', () => block('```mermaid\n' + MERMAID + '\n```')],
     ];
     if (tipo === 'slides') B.push('|', [IC.plus + ' Slide', 'Novo slide', () => block('---\n\n# Título do slide\n\n- Tópico')], ['Capa', 'Marcar slide como capa/encerramento', () => ins('<!-- class: title -->\n')], ['Destaque', 'Marcar slide como destaque', () => ins('<!-- class: highlight -->\n')], [IC.note + ' Notas', 'Notas do apresentador', () => block('<!-- notas: texto para o apresentador -->')]);
@@ -253,16 +282,28 @@
       const b = document.createElement('button'); b.type = 'button'; b.innerHTML = x[0]; b.title = x[1];
       if (x[3] && x[3].startsWith('m:')) { b.dataset.m = x[3].slice(2); b.onclick = () => { box.dataset.m = b.dataset.m; localStorage.setItem('mde.modo', b.dataset.m); marcar(); preview(); }; }
       else if (x[3] === 'fs') b.onclick = () => { box.classList.toggle('fs'); document.body.style.overflow = box.classList.contains('fs') ? 'hidden' : ''; ta.focus(); };
-      else b.onclick = x[2];
+      else { b.onclick = x[2]; if (x[3] === 'u' || x[3] === 'r') b.dataset.ur = x[3]; }
       tb.append(b);
     });
     function marcar() { tb.querySelectorAll('[data-m]').forEach(b => b.classList.toggle('on', b.dataset.m === box.dataset.m)); }
     marcar();
 
-    ta.addEventListener('input', pushReal);
+    ta.addEventListener('input', e => pushReal(false, !emCmd && e && e.inputType && /^insert(Text|CompositionText)$|^delete(Content|Word)/.test(e.inputType) ? 'dig' : 'cmd'));
+    ta.addEventListener('beforeinput', e => { if (e.inputType === 'historyUndo' || e.inputType === 'historyRedo') { e.preventDefault(); e.inputType === 'historyUndo' ? desfazer() : refazer(); } });
     ta.addEventListener('keydown', e => {
-      const k = e.key.toLowerCase();
-      if ((e.ctrlKey || e.metaKey) && k === 'b') { e.preventDefault(); wrap('**', '**', 'texto'); }
+      const k = e.key.toLowerCase(), mod = e.ctrlKey || e.metaKey, dg = e.code.startsWith('Digit') ? e.code.slice(5) : '';
+      if (mod && !e.altKey && k === 'z' && !e.shiftKey) { e.preventDefault(); desfazer(); }
+      else if (mod && !e.altKey && (k === 'y' || (k === 'z' && e.shiftKey))) { e.preventDefault(); refazer(); }
+      else if (mod && e.shiftKey && !e.altKey && ['1', '2', '3'].includes(dg)) { e.preventDefault(); heading(+dg); }
+      else if (mod && e.shiftKey && !e.altKey && dg === '7') { e.preventDefault(); togglePrefix(i => (i + 1) + '. ', /^\d+\. /); }
+      else if (mod && e.shiftKey && !e.altKey && dg === '8') { e.preventDefault(); togglePrefix('- ', /^[-*] (?!\[)/); }
+      else if (mod && e.shiftKey && !e.altKey && dg === '9') { e.preventDefault(); togglePrefix('- [ ] ', /^[-*] \[[ x]\] /); }
+      else if (mod && e.shiftKey && !e.altKey && e.code === 'Period') { e.preventDefault(); togglePrefix('> ', /^> (\[!\w+\] )?/); }
+      else if (mod && !e.shiftKey && !e.altKey && k === 'e') { e.preventDefault(); wrap('`', '`', 'código'); }
+      else if (mod && !e.shiftKey && !e.altKey && k === 'l') { e.preventDefault(); const [a, b] = lineRange(); ta.setSelectionRange(a, b); }
+      else if (e.altKey && !mod && !e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) { e.preventDefault(); moverLinha(e.key === 'ArrowUp' ? -1 : 1); }
+      else if (mod && e.shiftKey && !e.altKey && k === 'd') { e.preventDefault(); duplicarLinha(); }
+      else if ((e.ctrlKey || e.metaKey) && k === 'b') { e.preventDefault(); wrap('**', '**', 'texto'); }
       else if ((e.ctrlKey || e.metaKey) && k === 'i') { e.preventDefault(); wrap('*', '*', 'texto'); }
       else if ((e.ctrlKey || e.metaKey) && k === 'k') { e.preventDefault(); link(); }
       else if (e.key === 'Escape' && box.classList.contains('fs')) { box.classList.remove('fs'); document.body.style.overflow = ''; }
@@ -275,7 +316,7 @@
         const m = line.match(/^(\s*)([-*] \[[ x]\] |[-*] |(\d+)\. |> )(.*)$/);
         if (!m) return;
         e.preventDefault();
-        if (!m[4].trim()) { const cur = ta.selectionStart; ta.focus(); ta.setSelectionRange(s, cur); if (!document.execCommand('delete')) ta.setRangeText('', s, cur, 'end'); ta.setSelectionRange(s, s); pushReal(); return; }
+        if (!m[4].trim()) { const cur = ta.selectionStart; ta.focus(); ta.setSelectionRange(s, cur); emCmd = true; hTipo = ''; const okd = document.execCommand('delete'); emCmd = false; if (!okd) ta.setRangeText('', s, cur, 'end'); ta.setSelectionRange(s, s); pushReal(); return; }
         const nx = m[3] ? (parseInt(m[3]) + 1) + '. ' : m[2].replace('[x]', '[ ]');
         ins('\n' + m[1] + nx);
       }
@@ -297,10 +338,18 @@
     ta.addEventListener('scroll', () => { if (box.dataset.m !== 's' || sync) return; sync = true; pv.scrollTop = (ta.scrollTop / Math.max(1, ta.scrollHeight - ta.clientHeight)) * (pv.scrollHeight - pv.clientHeight); requestAnimationFrame(() => sync = false); });
     pv.addEventListener('scroll', () => { if (box.dataset.m !== 's' || sync) return; sync = true; ta.scrollTop = (pv.scrollTop / Math.max(1, pv.scrollHeight - pv.clientHeight)) * (ta.scrollHeight - ta.clientHeight); requestAnimationFrame(() => sync = false); });
 
-    pull(); preview(); status();
+    pull(); snap('ini'); preview(); status(); atualizaUR();
     setInterval(pull, 600);
-    return { refresh: pull, textarea: ta, element: box, render: () => preview() };
+    return { refresh: pull, textarea: ta, element: box, render: () => preview(), desfazer, refazer };
   }
 
-  global.MDEditor = { create, render, renderSlides };
+  const ATALHOS = [
+    ['Ctrl + Z', 'Desfazer'], ['Ctrl + Y  ou  Ctrl + Shift + Z', 'Refazer'],
+    ['Ctrl + B', 'Negrito'], ['Ctrl + I', 'Itálico'], ['Ctrl + E', 'Código em linha'], ['Ctrl + K', 'Inserir link'],
+    ['Ctrl + Shift + 1 / 2 / 3', 'Título 1 / 2 / 3'], ['Ctrl + Shift + 7', 'Lista numerada'], ['Ctrl + Shift + 8', 'Lista com marcadores'], ['Ctrl + Shift + 9', 'Checklist'],
+    ['Ctrl + Shift + .', 'Citação'], ['Ctrl + L', 'Selecionar a linha'], ['Ctrl + Shift + D', 'Duplicar linha'], ['Alt + ↑ / ↓', 'Mover linha para cima / baixo'],
+    ['Tab / Shift + Tab', 'Aumentar / diminuir recuo (listas)'], ['Enter', 'Continuar lista ou checklist (Enter em item vazio encerra)'],
+    ['Ctrl + V', 'Colar texto ou imagem (imagem vira base64)'], ['Esc', 'Sair da tela cheia']
+  ];
+  global.MDEditor = { create, render, renderSlides, ATALHOS };
 })(window);

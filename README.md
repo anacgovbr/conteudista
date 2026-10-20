@@ -12,8 +12,8 @@ Página única que converte os arquivos Markdown de um curso em:
 
 | Recurso | Como funciona | Onde o conteúdo fica |
 |---|---|---|
-| Editor Markdown | Barra de ferramentas, atalhos (Ctrl+B/I/K, Tab, Enter continua listas), modos Editar/Dividido/Prévia, tela cheia, prévia fiel ao gerador (inclusive slides) | Só na memória do navegador |
-| Tutorial, Ajuda e Atalhos | Tutorial guiado na primeira visita (ou botão ▶ Tutorial); Ajuda (botão ou F1); atalhos `Alt+Shift+tecla` com janela de consulta (botão ⌨ Atalhos ou `Alt+Shift+K`) | — |
+| Editor Markdown | Barra de ferramentas, **desfazer/refazer** próprio (Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z e botões; cobre botões, arquivos e rascunhos), atalhos (Ctrl+B/I/E/K, Ctrl+Shift+1/2/3 títulos, Ctrl+Shift+7/8/9 listas, Alt+↑/↓ mover linha, Ctrl+Shift+D duplicar), modos Editar/Dividido/Prévia, tela cheia, prévia fiel ao gerador (inclusive slides) | Só na memória do navegador |
+| Tutorial, Ajuda e Atalhos | Tutorial guiado na primeira visita (ou botão ▶ Tutorial), com **reinício** (↺ no tutorial, botão na Ajuda ou `Alt+Shift+R`); Ajuda **com busca** e destaque dos termos (botão ou F1); atalhos `Alt+Shift+tecla` com janela de consulta (botão ⌨ Atalhos ou `Alt+Shift+K`) | — |
 | Gerar curso | `guia.md` + `apresentacao.md` → 6 arquivos + ZIP | Só na memória do navegador |
 | Imagens em base64 | Arraste, cole (Ctrl+V) ou insira pelo botão de imagem; no editor aparecem como `(img:N)` | No próprio texto `.md` |
 | Rascunhos locais | Salvamento automático **ligado por padrão** (recupera o último trabalho ao reabrir) e rascunhos com nome | IndexedDB do navegador, só nesta máquina |
@@ -49,4 +49,8 @@ python tools/gerador.py guia.md apresentacao.md --prefixo Meu_Curso --rodape "SI
 
 ## Atalhos da aplicação
 
-`Alt+Shift` + tecla (no Mac, `Option+Shift`): **G** gerar · **E** exemplo · **D** baixar .md · **P** salvar em pasta · **S** salvar rascunho · **A** ligar/desligar autossalvamento · **L** criar link · **O** abrir link · **1/2** abas · **M** modo do editor · **F** tela cheia · **T** tutorial · **H** ajuda · **K** lista de atalhos · **F1** ajuda.
+`Alt+Shift` + tecla (no Mac, `Option+Shift`): **G** gerar · **E** exemplo · **D** baixar .md · **P** salvar em pasta · **S** salvar rascunho · **A** ligar/desligar autossalvamento · **L** criar link · **O** abrir link · **1/2** abas · **M** modo do editor · **F** tela cheia · **T** tutorial · **R** reiniciar tutorial · **H** ajuda · **K** lista de atalhos · **F1** ajuda.
+
+## Atalhos do editor (com o cursor no editor)
+
+`Ctrl+Z` desfazer · `Ctrl+Y` / `Ctrl+Shift+Z` refazer · `Ctrl+B` negrito · `Ctrl+I` itálico · `Ctrl+E` código · `Ctrl+K` link · `Ctrl+Shift+1/2/3` títulos · `Ctrl+Shift+7/8/9` lista numerada / marcadores / checklist · `Ctrl+Shift+.` citação · `Ctrl+L` selecionar linha · `Ctrl+Shift+D` duplicar linha · `Alt+↑/↓` mover linha · `Tab`/`Shift+Tab` recuo · `Enter` continua listas.

@@ -30,6 +30,9 @@
 .md-bd ol,.md-bd ul{padding-left:22px;margin:4px 0}.md-bd li{margin:3px 0}
 .md-bd .dica{background:#e9f6f0;border-left:4px solid #1e7b4f;padding:8px 12px;border-radius:0 6px 6px 0;margin:8px 0}
 .md-bd input[type=search]{width:100%;padding:8px;border:1px solid #dfe5ee;border-radius:6px;margin-bottom:10px;font:inherit}
+.md-bd mark{background:#ffe08a;color:inherit;padding:0 1px;border-radius:2px}
+.md-bd .hs[hidden]{display:none}.md-bd .hz{color:#5a6676;font-style:italic;margin:8px 0}
+.md-tools{display:flex;gap:8px;align-items:center;margin-bottom:10px}.md-tools input{flex:1;margin:0!important}.md-tools button{margin:0!important;padding:7px 12px!important;white-space:nowrap}
 .kb-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:2100;background:#0b3d6e;color:#fff;padding:8px 14px;border-radius:8px;font:13.5px "Segoe UI",Arial,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;transition:opacity .2s}
 .kb-toast.on{opacity:1}`;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
@@ -60,7 +63,7 @@
     { alvo: 'pLocal', t: '4. Seu trabalho é salvo sozinho', d: 'O <b>salvamento automático</b> já vem ligado: ao voltar à página, o último conteúdo é recuperado. Você também pode criar rascunhos com nome, salvar em uma pasta ou baixar os <code>.md</code>.' },
     { alvo: 'pLink', t: '5. Compartilhe com segurança (opcional)', d: 'Gere um <b>link criptografado</b> (autocontido ou PrivateBin), com senha se quiser. O tamanho aparece antes do envio.' },
     { alvo: 'pOpen', t: '6. Recupere de um link', d: 'Cole aqui um link recebido (e a senha, se houver) e clique em <b>Abrir link</b>: o conteúdo volta para os editores.' },
-    { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial, a <b>Ajuda</b> (<kbd>F1</kbd>) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento.' }
+    { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
   function alvoEl(p) { const a = typeof p.alvo === 'function' ? p.alvo() : p.alvo ? $(p.alvo) : null; return a && a.getClientRects().length ? a : null; }
@@ -81,15 +84,17 @@
   function mostrar(i) {
     passo = i; const p = PASSOS[i]; if (p.antes) p.antes();
     pop.innerHTML = '<h4>' + p.t + '</h4><p>' + p.d + '</p><div class="tr-ft"><span>' + (i + 1) + ' de ' + PASSOS.length + '</span>' +
-      (i > 0 ? '<button type="button" class="sec" data-a="v">Voltar</button>' : '<button type="button" class="sec" data-a="x">Pular</button>') +
+      (i > 0 ? '<button type="button" class="sec" data-a="r" title="Recomeçar do primeiro passo">↺</button><button type="button" class="sec" data-a="v">Voltar</button>' : '<button type="button" class="sec" data-a="x">Pular</button>') +
       '<button type="button" data-a="p">' + (i === PASSOS.length - 1 ? 'Concluir' : 'Próximo') + '</button></div>';
     pop.querySelector('[data-a="p"]').onclick = () => i === PASSOS.length - 1 ? fim() : mostrar(i + 1);
     const v = pop.querySelector('[data-a="v"]'); if (v) v.onclick = () => mostrar(i - 1);
     const x = pop.querySelector('[data-a="x"]'); if (x) x.onclick = fim;
+    const rr = pop.querySelector('[data-a="r"]'); if (rr) rr.onclick = () => mostrar(0);
     const el = alvoEl(p);
     if (el) { el.scrollIntoView({ block: 'center', behavior: 'instant' in document.documentElement.style ? 'instant' : 'auto' }); }
     setTimeout(posicionar, 80); pop.querySelector('[data-a="p"]').focus();
   }
+  function reiniciar() { localStorage.removeItem('conteudista.tour'); iniciar(); toast('Tutorial reiniciado'); }
   function iniciar() {
     fechar(); fim(true);
     hole = document.createElement('div'); hole.className = 'tr-hole';
@@ -119,6 +124,8 @@
 <h4>Editor</h4>
 <ul>
 <li>Modos <b>Editar</b>, <b>Dividido</b> (editor + prévia) e <b>Prévia</b>; tela cheia pelo último botão da barra.</li>
+<li><b>Desfazer/refazer</b>: <kbd>Ctrl+Z</kbd> e <kbd>Ctrl+Y</kbd> (ou <kbd>Ctrl+Shift+Z</kbd>), ou os dois primeiros botões da barra. Funciona também para ações dos botões, arquivos arrastados e rascunhos abertos (até 300 passos por editor).</li>
+<li>Outros atalhos do editor: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+I</kbd> itálico, <kbd>Ctrl+E</kbd> código, <kbd>Ctrl+K</kbd> link, <kbd>Ctrl+Shift+1/2/3</kbd> títulos, <kbd>Ctrl+Shift+7/8/9</kbd> listas, <kbd>Alt+↑/↓</kbd> mover linha. Lista completa no botão <b>Atalhos</b>.</li>
 <li><b>Imagens</b>: arraste, cole (<kbd>Ctrl+V</kbd>) ou use o botão de imagem. Ficam em base64 dentro do texto e aparecem no editor como <code>(img:N)</code>.</li>
 <li>Na apresentação, cada slide é separado por uma linha <code>---</code>. Use os botões <b>Slide</b>, <b>Capa</b>, <b>Destaque</b> e <b>Notas</b>.</li>
 </ul>
@@ -143,9 +150,47 @@
 <tr><td>Imagens “pendentes”</td><td>Arraste os arquivos de imagem citados no texto para a área da aba.</td></tr>
 <tr><td>Sumário vazio no DOCX</td><td>No Word, clique com o botão direito no sumário → <b>Atualizar campo</b>.</td></tr>
 <tr><td>Fluxos Mermaid no DOCX/PPTX</td><td>Aparecem como tabela “De | Condição | Para” (desenho só no HTML).</td></tr></table>
+<h4>Tutorial</h4>
+<p>O tutorial abre sozinho na primeira visita. Para vê-lo de novo, use o botão <b>▶ Tutorial</b>, o botão <b>↺ Reiniciar tutorial</b> desta janela ou <kbd>Alt+Shift+R</kbd>. Dentro do tutorial, <b>↺</b> volta ao primeiro passo.</p>
 <h4>Privacidade</h4>
 <p>Não inclua dados pessoais ou informações restritas em links compartilhados sem autorização. O conteúdo só sai do seu computador quando você cria um link.</p>`;
-  function ajuda() { janela('Ajuda do Conteudista', AJUDA); }
+  function secoes(html) {  // agrupa a ajuda em seções pesquisáveis
+    return html.split(/(?=<h4>)/).filter(x => x.trim()).map(x => '<div class="hs">' + x + '</div>').join('');
+  }
+  function marcar(el, q) {
+    el.querySelectorAll('mark').forEach(m => m.replaceWith(document.createTextNode(m.textContent)));
+    el.normalize(); if (!q) return 0;
+    const norm = t => t.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase(), nq = norm(q); let n = 0;
+    const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), nos = []; while (w.nextNode()) nos.push(w.currentNode);
+    nos.forEach(t => {
+      const tx = t.textContent, nt = norm(tx); let i = nt.indexOf(nq); if (i < 0) return;
+      const fr = document.createDocumentFragment(); let p = 0;
+      while (i >= 0) { fr.append(tx.slice(p, i)); const m = document.createElement('mark'); m.textContent = tx.slice(i, i + q.length); fr.append(m); n++; p = i + q.length; i = nt.indexOf(nq, p); }
+      fr.append(tx.slice(p)); t.replaceWith(fr);
+    });
+    return n;
+  }
+  function ajuda(termo) {
+    const ferr = '<div class="md-tools"><input type="search" id="hlpF" placeholder="Buscar na ajuda (ex.: imagem, senha, PrivateBin, DOCX)…" aria-label="Buscar na ajuda">' +
+      '<button type="button" class="sec" id="hlpTour" title="Recomeçar o tutorial do primeiro passo">↺ Reiniciar tutorial</button>' +
+      '<button type="button" class="sec" id="hlpKeys">⌨ Atalhos</button></div><p class="hz" id="hlpN" hidden></p>';
+    janela('Ajuda do Conteudista', ferr + '<div id="hlpC">' + secoes(AJUDA) + '</div>', back => {
+      const f = back.querySelector('#hlpF'), c = back.querySelector('#hlpC'), info = back.querySelector('#hlpN');
+      back.querySelector('#hlpTour').onclick = reiniciar; back.querySelector('#hlpKeys').onclick = () => atalhos();
+      let t;
+      const filtrar = () => {
+        const q = f.value.trim(); let tot = 0, vis = 0;
+        c.querySelectorAll('.hs').forEach(sec => { const n = marcar(sec, q.length > 1 ? q : ''); sec.hidden = q.length > 1 && !n; tot += n; vis += !sec.hidden; });
+        info.hidden = q.length < 2;
+        info.textContent = tot ? tot + ' ocorrência(s) em ' + vis + ' seção(ões).' : 'Nada encontrado para “' + q + '”. Tente outra palavra.';
+        const m = c.querySelector('mark'); if (m) m.scrollIntoView({ block: 'nearest' });
+      };
+      f.oninput = () => { clearTimeout(t); t = setTimeout(filtrar, 150); };
+      f.onkeydown = e => { if (e.key === 'Enter') { const ms = [...c.querySelectorAll('mark')]; if (!ms.length) return; ajuda.i = ((ajuda.i || 0) + 1) % ms.length; ms[ajuda.i].scrollIntoView({ block: 'center' }); } };
+      if (termo) { f.value = termo; filtrar(); }
+      f.focus();
+    });
+  }
 
   /* ---------------------------- Atalhos ---------------------------- */
   // Alt+Shift+<tecla>: não usado pelo editor (Ctrl+B/I/K, Tab, Enter) nem pelos navegadores comuns.
@@ -163,16 +208,17 @@
     { g: 'Navegação', k: 'M', d: 'Alternar modo do editor (Editar → Dividido → Prévia)', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); if (!vis) return; const ordem = ['e', 's', 'p'], i = (ordem.indexOf(vis.dataset.m) + 1) % 3; const b = vis.querySelector('.mde-tb [data-m="' + ordem[i] + '"]'); if (b) b.click(); toast(['Somente editor', 'Editor + prévia', 'Somente prévia'][i]); } },
     { g: 'Navegação', k: 'F', d: 'Tela cheia do editor', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); const b = vis && [...vis.querySelectorAll('.mde-tb button')].pop(); if (b) b.click(); } },
     { g: 'Ajuda', k: 'T', d: 'Tutorial', f: iniciar },
-    { g: 'Ajuda', k: 'H', d: 'Ajuda (também F1)', f: ajuda },
+    { g: 'Ajuda', k: 'R', d: 'Reiniciar o tutorial (do primeiro passo)', f: reiniciar },
+    { g: 'Ajuda', k: 'H', d: 'Ajuda (também F1)', f: () => ajuda() },
     { g: 'Ajuda', k: 'K', d: 'Esta lista de atalhos', f: () => atalhos() }
   ];
-  const EDITOR = [['Ctrl + B', 'Negrito'], ['Ctrl + I', 'Itálico'], ['Ctrl + K', 'Link'], ['Tab / Shift + Tab', 'Recuo de listas'], ['Enter', 'Continua listas e checklists'], ['Ctrl + Z / Ctrl + Y', 'Desfazer / refazer'], ['Ctrl + V', 'Colar texto ou imagem'], ['Esc', 'Fechar janela / sair da tela cheia / encerrar tutorial']];
+  const EDITOR = ((window.MDEditor && MDEditor.ATALHOS) || []).map(a => isMac ? [a[0].replace(/Ctrl/g, '⌘ Cmd').replace(/Alt/g, '⌥ Option'), a[1]] : a);
   function atalhos() {
     const grupos = [...new Set(ATALHOS.map(a => a.g))];
     let h = '<input type="search" id="kbF" placeholder="Filtrar atalhos…" aria-label="Filtrar atalhos">';
     h += '<p>Atalhos da aplicação usam <kbd>' + MOD + '</kbd> + tecla, para não interferir no editor nem no navegador.</p>';
     grupos.forEach(g => { h += '<div class="kbG"><h4>' + g + '</h4><table class="kbT">' + ATALHOS.filter(a => a.g === g).map(a => '<tr><td style="width:46%"><kbd>' + MOD + ' + ' + a.k + '</kbd></td><td>' + a.d + '</td></tr>').join('') + '</table></div>'; });
-    h += '<div class="kbG"><h4>Editor (não mudam)</h4><table class="kbT">' + EDITOR.map(a => '<tr><td style="width:46%"><kbd>' + a[0] + '</kbd></td><td>' + a[1] + '</td></tr>').join('') + '<tr><td><kbd>F1</kbd></td><td>Ajuda</td></tr></table></div>';
+    h += '<div class="kbG"><h4>Editor de Markdown (com o cursor no editor)</h4><table class="kbT">' + EDITOR.map(a => '<tr><td style="width:46%"><kbd>' + a[0] + '</kbd></td><td>' + a[1] + '</td></tr>').join('') + '</table></div><div class="kbG"><h4>Geral</h4><table class="kbT"><tr><td style="width:46%"><kbd>F1</kbd></td><td>Ajuda (com busca)</td></tr><tr><td><kbd>Esc</kbd></td><td>Fechar janela / encerrar tutorial</td></tr><tr><td><kbd>← / →</kbd></td><td>Navegar no tutorial</td></tr></table></div>';
     janela('Atalhos de teclado', h, back => {
       const f = back.querySelector('#kbF'); f.focus();
       f.oninput = () => { const q = f.value.toLowerCase().trim(); back.querySelectorAll('.kbG').forEach(gr => { let n = 0; gr.querySelectorAll('tr').forEach(tr => { const v = !q || tr.textContent.toLowerCase().includes(q); tr.hidden = !v; n += v; }); gr.hidden = !n; }); };
@@ -190,7 +236,7 @@
   }, true);
 
   /* ---------------------------- Botões e primeira visita ---------------------------- */
-  $('btnTour').onclick = iniciar; $('btnHelp').onclick = ajuda; $('btnKeys').onclick = atalhos;
+  $('btnTour').onclick = iniciar; $('btnHelp').onclick = () => ajuda(); $('btnKeys').onclick = atalhos;
   if (!localStorage.getItem('conteudista.tour') && !location.hash.startsWith('#cx=')) setTimeout(iniciar, 700);
-  window.Conteudista = Object.assign(window.Conteudista || {}, { tutorial: iniciar, ajuda, atalhos });
+  window.Conteudista = Object.assign(window.Conteudista || {}, { tutorial: iniciar, reiniciar, ajuda, atalhos });
 })();
