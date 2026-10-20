@@ -10,13 +10,15 @@
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
 header{background:var(--pri);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
 header h1{font-size:18px;margin:0;flex:1}header small{opacity:.85;font-weight:400}#ver{font-size:12px;opacity:.9}
-main{max-width:1200px;margin:auto;padding:20px}
+main{max-width:1500px;margin:auto;padding:20px}
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:20px}
 h2{color:var(--pri);font-size:18px;margin:0 0 10px}h3{color:var(--pri);font-size:15px;margin:18px 0 6px}
 .note{color:var(--mu);margin:4px 0 10px;font-size:14px}
 .box{padding:10px 14px;border-radius:0 8px 8px 0;margin:0 0 12px}.priv{background:#e9f6f0;border-left:5px solid var(--ok)}.warn{background:#fff4e0;border-left:5px solid var(--wa)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+.tabs{display:flex;gap:4px;margin:8px 0 0}.tabs button{border-radius:8px 8px 0 0!important;margin:0}
+.tabs button.off{background:#fff!important;color:var(--acc)!important;border:1px solid var(--line)!important;border-bottom:0!important}
 label{font-weight:600;font-size:13px;color:var(--pri);display:block;margin-bottom:4px}
 label.inl{display:inline-flex;align-items:center;gap:6px;font-weight:400;color:var(--ink);margin:4px 14px 4px 0}
 input[type=text],input[type=password],input[type=url],select{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;font:inherit;background:#fff}
@@ -38,6 +40,7 @@ td.url{word-break:break-all;font:12px Consolas,monospace}
 code{background:var(--th);padding:1px 5px;border-radius:4px}
 @media(max-width:900px){.grid,.grid3,.row{grid-template-columns:1fr}}
 </style>
+<script src="editor.js"></script>
 </head>
 <body>
 <header>
@@ -50,11 +53,11 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
   <h2>Como funciona</h2>
   <p class="box priv"><b>Privacidade:</b> a conversão roda inteiramente no seu navegador. Por padrão, <b>nada é enviado nem salvo</b>. Você decide se quer guardar o conteúdo <b>na sua máquina</b> (rascunhos no navegador ou em uma pasta) ou <b>compartilhar por link criptografado</b> — a chave fica só no link, nunca no servidor.</p>
   <ol>
-    <li>Cole ou arraste o <code>guia.md</code> e o <code>apresentacao.md</code>. Arraste também as <b>imagens</b> referenciadas (ou cole com <b>Ctrl+V</b>): elas são convertidas para <b>base64</b> e passam a fazer parte do texto.</li>
+    <li>Cole, arraste ou escreva o <b>guia</b> e a <b>apresentação</b> no editor (barra de ferramentas, atalhos e prévia ao lado). Imagens arrastadas, coladas (Ctrl+V) ou inseridas pelo botão de imagem são convertidas para <b>base64</b>.</li>
     <li>Clique em <b>Gerar arquivos</b> e baixe os 6 arquivos (ou o ZIP).</li>
     <li>Opcional: salve na sua máquina ou crie um link criptografado (seção <b>Guardar e compartilhar</b>).</li>
   </ol>
-  <p class="note">Na primeira geração, o navegador carrega o motor Python (20 a 60 segundos).</p>
+  <p class="note">Atalhos do editor: <b>Ctrl+B</b> negrito · <b>Ctrl+I</b> itálico · <b>Ctrl+K</b> link · <b>Tab/Shift+Tab</b> recuo de listas · <b>Enter</b> continua listas e checklists · <b>Esc</b> sai da tela cheia. No editor, imagens aparecem como <code>(img:N)</code>; o texto completo em base64 é mantido e usado na geração.</p>
 </section>
 
 <section class="card">
@@ -64,17 +67,17 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
     <div><label for="rod">Rodapé (slides e DOCX)</label><input id="rod" type="text" placeholder="Ex.: CDPP · GTPL · SAR/ANAC"></div>
     <div><label for="bar">Barra superior do guia (HTML)</label><input id="bar" type="text" placeholder="Opcional (padrão: título do guia)"></div>
   </div>
-  <div class="grid">
-    <div>
-      <label>Guia de treinamento (guia.md)</label>
-      <div class="drop" data-t="g">Arraste o <b>guia.md</b> e suas <b>imagens</b> aqui, ou clique para selecionar</div>
-      <textarea id="g" spellcheck="false" placeholder="# Título do curso — Guia Prático"></textarea>
-    </div>
-    <div>
-      <label>Apresentação (apresentacao.md)</label>
-      <div class="drop" data-t="s">Arraste o <b>apresentacao.md</b> e suas <b>imagens</b> aqui, ou clique para selecionar</div>
-      <textarea id="s" spellcheck="false" placeholder="---&#10;title: Título&#10;---&#10;&#10;# Slide 1"></textarea>
-    </div>
+  <div class="tabs">
+    <button id="tg" type="button">Guia de treinamento (guia.md)</button>
+    <button id="ts" type="button" class="off">Apresentação (apresentacao.md)</button>
+  </div>
+  <div id="pg">
+    <div class="drop" data-t="g">Arraste o <b>guia.md</b> e suas <b>imagens</b> aqui, ou clique para selecionar</div>
+    <textarea id="g" spellcheck="false" placeholder="# Título do curso — Guia Prático"></textarea>
+  </div>
+  <div id="ps" hidden>
+    <div class="drop" data-t="s">Arraste o <b>apresentacao.md</b> e suas <b>imagens</b> aqui, ou clique para selecionar</div>
+    <textarea id="s" spellcheck="false" placeholder="---&#10;title: Título&#10;---&#10;&#10;# Slide 1"></textarea>
   </div>
   <div id="imgst" class="note">Imagens: nenhuma referência encontrada.</div>
   <p>
@@ -152,9 +155,18 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
 const PYODIDE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
 const $ = id => document.getElementById(id);
 const enc = new TextEncoder(), dec = new TextDecoder();
-const log = (m, c) => { const L = $('log'); L.innerHTML += '\n' + (c ? '<span class="' + c + '">' + esc(m) + '</span>' : esc(m)); L.scrollTop = L.scrollHeight; };
 const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
-let py = null, urls = [], ultimos = [];  // ultimos: [{nome, blob}]
+const log = (m, c) => { const L = $('log'); L.innerHTML += '\n' + (c ? '<span class="' + c + '">' + esc(m) + '</span>' : esc(m)); L.scrollTop = L.scrollHeight; };
+let py = null, urls = [], ultimos = [];
+
+/* =========================== Editores =========================== */
+const ED = {
+  g: MDEditor.create($('g'), { tipo: 'guia', onFiles: f => receberArquivos(f, 'g') }),
+  s: MDEditor.create($('s'), { tipo: 'slides', onFiles: f => receberArquivos(f, 's') })
+};
+const refreshEditors = () => { ED.g.refresh(); ED.s.refresh(); };
+function aba(t) { $('pg').hidden = t !== 'g'; $('ps').hidden = t !== 's'; $('tg').classList.toggle('off', t !== 'g'); $('ts').classList.toggle('off', t !== 's'); ED[t].render(); }
+$('tg').onclick = () => aba('g'); $('ts').onclick = () => aba('s');
 
 /* =========================== Utilitários de bytes =========================== */
 const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
@@ -165,12 +177,7 @@ async function streamBytes(u8, ts) { return new Uint8Array(await new Response(ne
 const deflate = u8 => streamBytes(u8, new CompressionStream('deflate-raw'));
 const inflate = u8 => streamBytes(u8, new DecompressionStream('deflate-raw'));
 const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
-function b58enc(u8) {
-  let n = 0n; for (const b of u8) n = n * 256n + BigInt(b);
-  let s = ''; while (n > 0n) { s = B58[Number(n % 58n)] + s; n /= 58n; }
-  for (const b of u8) { if (b === 0) s = '1' + s; else break; }
-  return s;
-}
+function b58enc(u8) { let n = 0n; for (const b of u8) n = n * 256n + BigInt(b); let s = ''; while (n > 0n) { s = B58[Number(n % 58n)] + s; n /= 58n; } for (const b of u8) { if (b === 0) s = '1' + s; else break; } return s; }
 function b58dec(s, len) {
   let n = 0n; for (const ch of s) { const i = B58.indexOf(ch); if (i < 0) throw new Error('Chave inválida no link.'); n = n * 58n + BigInt(i); }
   const out = []; while (n > 0n) { out.unshift(Number(n % 256n)); n /= 256n; }
@@ -184,10 +191,7 @@ const blobToDataURL = b => new Promise((ok, err) => { const r = new FileReader()
 const SEP = '<!-- conteudista:apresentacao -->';
 const pacote = () => ({ v: 1, g: $('g').value, s: $('s').value, p: $('pref').value, r: $('rod').value, b: $('bar').value });
 function aplicar(d) { $('g').value = d.g || ''; $('s').value = d.s || ''; $('pref').value = d.p || 'Meu_Curso'; $('rod').value = d.r || ''; $('bar').value = d.b || ''; statusImagens(); }
-function paraTexto(d) {  // Markdown único (legível no PrivateBin)
-  const cfg = JSON.stringify({ p: d.p, r: d.r, b: d.b });
-  return '<!-- conteudista:config ' + cfg + ' -->\n' + d.g + '\n\n' + SEP + '\n\n' + d.s;
-}
+function paraTexto(d) { return '<!-- conteudista:config ' + JSON.stringify({ p: d.p, r: d.r, b: d.b }) + ' -->\n' + d.g + '\n\n' + SEP + '\n\n' + d.s; }
 function deTexto(t) {
   let cfg = {}; const m = t.match(/^<!-- conteudista:config (\{.*?\}) -->\n?/);
   if (m) { try { cfg = JSON.parse(m[1]); } catch {} t = t.slice(m[0].length); }
@@ -197,16 +201,17 @@ function deTexto(t) {
 
 /* =========================== Imagens → base64 =========================== */
 const IMG = /!\[([^\]]*)\]\(([^)\s]+)\)/g;
-const imgMap = new Map();   // nome do arquivo (minúsculo) → dataURL
+const imgMap = new Map();
 const nomeBase = src => { try { src = decodeURIComponent(src); } catch {} return src.split(/[\\/]/).pop().split(/[?#]/)[0].toLowerCase(); };
 function pendentes(txt) { return [...txt.matchAll(IMG)].map(m => m[2]).filter(s => !s.startsWith('data:')); }
 function statusImagens() {
+  refreshEditors();
   const t = $('g').value + '\n' + $('s').value, tot = [...t.matchAll(IMG)].length, pen = pendentes(t);
   $('imgst').innerHTML = !tot ? 'Imagens: nenhuma referência encontrada.' :
     'Imagens: <b>' + (tot - pen.length) + '</b> de ' + tot + ' em base64' +
     (pen.length ? ' · <span style="color:var(--wa)">pendentes: ' + esc([...new Set(pen.map(nomeBase))].join(', ')) + ' — arraste esses arquivos para embutir.</span>' : ' ✔');
 }
-async function embutir(txt, rel) {
+async function embutir(txt) {
   const falhas = []; let n = 0; const cache = new Map();
   for (const src of new Set(pendentes(txt))) {
     let data = imgMap.get(nomeBase(src));
@@ -216,8 +221,7 @@ async function embutir(txt, rel) {
     }
     if (data) { cache.set(src, data); n++; } else falhas.push(src);
   }
-  const out = txt.replace(IMG, (m, alt, src) => cache.has(src) ? '![' + alt + '](' + cache.get(src) + ')' : m);
-  return { out, n, falhas };
+  return { out: txt.replace(IMG, (m, alt, src) => cache.has(src) ? '![' + alt + '](' + cache.get(src) + ')' : m), n, falhas };
 }
 async function embutirTudo(silencioso) {
   const a = await embutir($('g').value), b = await embutir($('s').value);
@@ -235,7 +239,7 @@ let alvo = 'g';
 async function receberArquivos(files, t) {
   let md = null;
   for (const f of files) {
-    if (f.type.startsWith('image/')) { imgMap.set(f.name.toLowerCase(), await blobToDataURL(f)); }
+    if (f.type.startsWith('image/')) imgMap.set(f.name.toLowerCase(), await blobToDataURL(f));
     else if (/\.(md|markdown|txt)$/i.test(f.name) || f.type.startsWith('text/')) { if (!md) md = f; }
   }
   if (md) { $(t).value = await md.text(); sugerirPrefixo(); log('Arquivo carregado: ' + md.name, 'ok'); }
@@ -249,23 +253,9 @@ document.querySelectorAll('.drop').forEach(d => {
   d.ondragleave = () => d.classList.remove('over');
   d.ondrop = e => { e.preventDefault(); d.classList.remove('over'); receberArquivos(e.dataTransfer.files, d.dataset.t); };
 });
-['g', 's'].forEach(id => {
-  const ta = $(id);
-  ta.ondragover = e => e.preventDefault();
-  ta.ondrop = e => { if (e.dataTransfer.files.length) { e.preventDefault(); receberArquivos(e.dataTransfer.files, id); } };
-  ta.addEventListener('paste', async e => {
-    const it = [...(e.clipboardData || {}).items || []].find(i => i.type.startsWith('image/'));
-    if (!it) return;
-    e.preventDefault();
-    const data = await blobToDataURL(it.getAsFile()), ins = '![imagem colada](' + data + ')';
-    const a = ta.selectionStart, b = ta.selectionEnd; ta.value = ta.value.slice(0, a) + ins + ta.value.slice(b);
-    ta.selectionStart = ta.selectionEnd = a + ins.length; statusImagens(); agendarAuto(); log('Imagem colada e convertida para base64.', 'ok');
-  });
-  ta.addEventListener('input', () => { statusImagens(); agendarAuto(); });
-});
+['g', 's'].forEach(id => $(id).addEventListener('input', () => { statusImagens(); agendarAuto(); }));
 $('fmd').onchange = async e => { await receberArquivos(e.target.files, alvo); e.target.value = ''; };
 ['pref', 'rod', 'bar'].forEach(id => $(id).addEventListener('input', agendarAuto));
-
 function sugerirPrefixo() {
   if ($('pref').value !== 'Meu_Curso') return;
   const m = $('g').value.match(/^#\s+(.+)$/m); if (!m) return;
@@ -298,7 +288,6 @@ const dbPut = (st, v) => tx(st, 'readwrite', s => s.put(v));
 const dbDel = (st, k) => tx(st, 'readwrite', s => s.delete(k));
 const dbAll = st => tx(st, 'readonly', s => s.getAll());
 const dbClear = st => tx(st, 'readwrite', s => s.clear());
-
 async function listarRascunhos() {
   const l = (await dbAll('rascunhos')).sort((a, b) => b.data - a.data);
   if (!l.length) { $('drafts').innerHTML = 'Nenhum rascunho salvo.'; return; }
@@ -326,10 +315,9 @@ $('keep').checked = localStorage.getItem('conteudista.keep') === '1';
 $('keep').onchange = () => localStorage.setItem('conteudista.keep', $('keep').checked ? '1' : '0');
 $('dclear').onclick = async () => {
   if (!confirm('Apagar todos os rascunhos, links lembrados e preferências deste navegador?')) return;
-  await dbClear('rascunhos'); await dbClear('links'); localStorage.removeItem('conteudista.auto'); localStorage.removeItem('conteudista.keep');
+  await dbClear('rascunhos'); await dbClear('links'); ['conteudista.auto', 'conteudista.keep', 'mde.modo'].forEach(k => localStorage.removeItem(k));
   $('auto').checked = false; $('keep').checked = false; listarRascunhos(); listarLinks(); log('Dados locais apagados.', 'ok');
 };
-
 function baixar(nome, blob) { const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = nome; a.click(); setTimeout(() => URL.revokeObjectURL(u), 4000); }
 $('mdl').onclick = () => {
   const p = pacote(), x = (p.p || 'Curso').replace(/[^\w.-]+/g, '_');
@@ -341,8 +329,7 @@ $('fsave').onclick = async () => {
   try {
     const dir = await window.showDirectoryPicker({ mode: 'readwrite' });
     const p = pacote(), x = (p.p || 'Curso').replace(/[^\w.-]+/g, '_');
-    const arqs = [{ nome: 'Treinamento_' + x + '.md', blob: new Blob([p.g]) }, { nome: 'Apresentacao_' + x + '.md', blob: new Blob([p.s]) }]
-      .concat(ultimos.filter(f => !f.nome.endsWith('.md')));
+    const arqs = [{ nome: 'Treinamento_' + x + '.md', blob: new Blob([p.g]) }, { nome: 'Apresentacao_' + x + '.md', blob: new Blob([p.s]) }].concat(ultimos.filter(f => !f.nome.endsWith('.md')));
     for (const f of arqs) { const h = await dir.getFileHandle(f.nome, { create: true }); const w = await h.createWritable(); await w.write(f.blob); await w.close(); }
     log(arqs.length + ' arquivo(s) salvos na pasta "' + dir.name + '".', 'ok');
   } catch (e) { if (e.name !== 'AbortError') log('Não foi possível salvar na pasta: ' + e.message, 'err'); }
@@ -353,18 +340,15 @@ async function aesKeyFromPw(pw, salt, it) {
   const k = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: it, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
 }
-// --- Link autocontido: #cx=1.<iv>.<ct>.<chave>  |  #cx=2.<sal>.<iv>.<ct> (senha) ---
 async function criarAutocontido(d, pw) {
   const plain = await deflate(enc.encode(JSON.stringify(d))), iv = crypto.getRandomValues(new Uint8Array(12));
-  let key, frag;
+  let frag;
   if (pw) {
-    const salt = crypto.getRandomValues(new Uint8Array(16)); key = await aesKeyFromPw(pw, salt, 310000);
-    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plain));
-    frag = '2.' + b64u(salt) + '.' + b64u(iv) + '.' + b64u(ct);
+    const salt = crypto.getRandomValues(new Uint8Array(16)), key = await aesKeyFromPw(pw, salt, 310000);
+    frag = '2.' + b64u(salt) + '.' + b64u(iv) + '.' + b64u(new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plain)));
   } else {
-    const raw = crypto.getRandomValues(new Uint8Array(32)); key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt']);
-    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plain));
-    frag = '1.' + b64u(iv) + '.' + b64u(ct) + '.' + b64u(raw);
+    const raw = crypto.getRandomValues(new Uint8Array(32)), key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt']);
+    frag = '1.' + b64u(iv) + '.' + b64u(new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plain))) + '.' + b64u(raw);
   }
   return location.origin + location.pathname + '#cx=' + frag;
 }
@@ -376,7 +360,6 @@ async function abrirAutocontido(frag, pw) {
   let pt; try { pt = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct)); } catch { throw new Error('Não foi possível decifrar (senha incorreta ou link incompleto).'); }
   return JSON.parse(dec.decode(await inflate(pt)));
 }
-// --- PrivateBin (formato v2: PBKDF2-SHA256 100000, AES-256-GCM, compressão zlib/deflate-raw, chave base58 no fragmento) ---
 async function pbKey(raw, salt) {
   const k = await crypto.subtle.importKey('raw', raw, 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
@@ -386,10 +369,8 @@ async function criarPrivateBin(texto, inst, expire, burn) {
   const raw = crypto.getRandomValues(new Uint8Array(32)), iv = crypto.getRandomValues(new Uint8Array(16)), salt = crypto.getRandomValues(new Uint8Array(8));
   const adata = [[b64(iv), b64(salt), 100000, 256, 128, 'aes', 'gcm', 'zlib'], 'markdown', 0, burn ? 1 : 0];
   const key = await pbKey(raw, salt);
-  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: enc.encode(JSON.stringify(adata)), tagLength: 128 }, key,
-    await deflate(enc.encode(JSON.stringify({ paste: texto })))));
-  const base = pbBase(inst);
-  let r;
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: enc.encode(JSON.stringify(adata)), tagLength: 128 }, key, await deflate(enc.encode(JSON.stringify({ paste: texto })))));
+  const base = pbBase(inst); let r;
   try { r = await fetch(base, { method: 'POST', headers: { 'X-Requested-With': 'JSONHttpRequest', 'Content-Type': 'application/json' }, body: JSON.stringify({ v: 2, adata, ct: b64(ct), meta: { expire } }) }); }
   catch { throw new Error('A instância não aceitou a requisição a partir deste site (CORS ou rede bloqueada). Use o link autocontido ou outra instância.'); }
   const j = await r.json().catch(() => ({}));
@@ -455,14 +436,13 @@ async function abrirLink(link, pw) {
   throw new Error('Link não reconhecido.');
 }
 $('open').onclick = async () => {
-  try { const d = await abrirLink($('olink').value, $('opw').value); aplicar(d); log('Conteúdo carregado do link.', 'ok'); $('g').scrollIntoView({ behavior: 'smooth' }); }
+  try { const d = await abrirLink($('olink').value, $('opw').value); aplicar(d); log('Conteúdo carregado do link.', 'ok'); $('pg').scrollIntoView({ behavior: 'smooth' }); }
   catch (e) { log('Erro: ' + e.message, 'err'); }
 };
-// Abrir automaticamente link autocontido recebido na URL
 (async () => {
   if (!location.hash.startsWith('#cx=')) return;
   const frag = location.hash.slice(4);
-  history.replaceState(null, '', location.pathname);  // remove a chave da barra de endereço
+  history.replaceState(null, '', location.pathname);
   try {
     const pw = frag.startsWith('2.') ? prompt('Este conteúdo está protegido por senha. Digite a senha:') : '';
     aplicar(await abrirAutocontido(frag, pw)); log('Conteúdo recebido por link criptografado carregado nos editores.', 'ok');
@@ -493,7 +473,7 @@ async function prepararPython() {
 
 /* =========================== Geração =========================== */
 $('go').onclick = async () => {
-  if (!$('g').value.trim() || !$('s').value.trim()) { log('Preencha (ou arraste) o guia.md e o apresentacao.md.', 'err'); return; }
+  if (!$('g').value.trim() || !$('s').value.trim()) { log('Preencha (ou arraste) o guia e a apresentação.', 'err'); return; }
   $('go').disabled = true;
   try {
     const fal = await embutirTudo(true);
@@ -513,7 +493,7 @@ $('go').onclick = async () => {
       const nome = f.split('/').pop(), ext = nome.split('.').pop(), blob = new Blob([py.FS.readFile(f)], { type: tipos[ext] || 'application/octet-stream' });
       const u = URL.createObjectURL(blob); urls.push(u); ultimos.push({ nome, blob });
       h += '<a class="btn' + (ext === 'zip' ? '' : ' sec') + '" href="' + u + '" download="' + nome + '">⬇ ' + nome + '</a>';
-      if (ext === 'html') h += '<a class="btn sec" href="#" data-u="' + u + '">👁 ver</a>';
+      if (ext === 'html') h += '<a class="btn sec" href="#" data-u="' + u + '">Visualizar</a>';
     }
     py.runPython("import shutil; shutil.rmtree('/saida', ignore_errors=True)");
     $('res').innerHTML = h;

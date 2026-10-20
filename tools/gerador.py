@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 # GERADOR PADRÃO DE CURSO v3.3 (imagens em base64) — Guia (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
-# Requisitos: Python 3 + python-docx + python-pptx. HTML usa só biblioteca padrão.
+# Requisitos: Python 3 + python-docx + python-pptx (+ Pillow). HTML usa só biblioteca padrão.
 # Uso: python gerador.py guia.md apresentacao.md --prefixo NOME --rodape "TEXTO" [--barra "TEXTO"] [--saida pasta] [--sem-embutir]
 # Imagens ![alt](caminho|URL) sao convertidas para data:URI base64 (texto puro) nos .md de saida.
 # Saída: Treinamento_<prefixo>.md/.html/.docx  e  Apresentacao_<prefixo>.md/.html/.pptx
 import re,html,argparse,os,base64,io,mimetypes
+from urllib.parse import unquote,unquote_to_bytes
 E=html.escape
 # ============================== PARSER COMUM ==============================
 def slug(s):
@@ -54,6 +55,7 @@ def blocks(md):
         o.append(('p',' '.join(b)))
     return o
 def runs(t):
+    """Inline -> lista de (texto, negrito, itálico, tipo[0 texto|1 código|2 imagem], url)."""
     out=[];pat=re.compile(r'`([^`]+)`|!\[([^\]]*)\]\(([^)\s]+)\)|\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)|(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?![\w*])')
     p=0
     for m in pat.finditer(t):
@@ -67,14 +69,14 @@ def runs(t):
         p=m.end()
     if p<len(t):out.append((t[p:],0,0,0,None))
     return out
-def plain(t):return ''.join(r[0] for r in runs(t))
+def plain(t):return ''.join(r[0] for r in runs(t) if r[3]!=2)
 IMG=re.compile(r'!\[([^\]]*)\]\(([^)\s]+)\)')
 def img_bytes(src):
-    """Bytes e tipo MIME de uma imagem data:URI ou arquivo local; None se indisponivel ou SVG."""
+    """Bytes de uma imagem data:URI ou arquivo local; None se indisponível ou SVG."""
     try:
         if src.startswith('data:'):
             h,d=src.split(',',1);mime=h[5:].split(';')[0]
-            raw=base64.b64decode(d) if ';base64' in h else __import__('urllib.parse').parse.unquote_to_bytes(d)
+            raw=base64.b64decode(d) if ';base64' in h else unquote_to_bytes(d)
         elif os.path.isfile(src):
             raw=open(src,'rb').read();mime=mimetypes.guess_type(src)[0] or ''
         else:return None
@@ -84,7 +86,7 @@ def img_bytes(src):
 def img_size(raw):
     try:
         from PIL import Image
-        im=Image.open(io.BytesIO(raw));return im.size
+        return Image.open(io.BytesIO(raw)).size
     except Exception:return (800,450)
 def embed_images(md,base_dir='.'):
     """Substitui imagens locais/remotas por data:URI base64. Retorna (md, embutidas, falhas)."""
@@ -92,18 +94,16 @@ def embed_images(md,base_dir='.'):
     def rep(m):
         alt,src=m.group(1),m.group(2)
         if src.startswith('data:'):return m.group(0)
-        raw=None;mime=None
         try:
             if re.match(r'https?://',src):
                 import urllib.request
                 with urllib.request.urlopen(src,timeout=15) as r:raw=r.read();mime=r.headers.get_content_type()
             else:
-                p=src if os.path.isabs(src) else os.path.join(base_dir,src)
-                p=__import__('urllib.parse').parse.unquote(p)
+                p=unquote(src if os.path.isabs(src) else os.path.join(base_dir,src))
                 raw=open(p,'rb').read();mime=mimetypes.guess_type(p)[0]
         except Exception:fail.append(src);return m.group(0)
-        mime=mime or 'image/png';ok[0]+=1
-        return '![%s](data:%s;base64,%s)'%(alt,mime,base64.b64encode(raw).decode())
+        ok[0]+=1
+        return '![%s](data:%s;base64,%s)'%(alt,mime or 'image/png',base64.b64encode(raw).decode())
     return IMG.sub(rep,md),ok[0],fail
 def mermaid_edges(code):
     lab={};rows=[]
@@ -185,7 +185,7 @@ blockquote{margin:16px 0;padding:12px 16px;border-left:5px solid var(--acc);back
 li.task{list-style:none;margin-left:-22px}li.task input{transform:scale(1.15);margin-right:6px;accent-color:var(--acc)}.hid h3~*{filter:blur(6px);user-select:none;pointer-events:none}
 .ab{margin:8px 0;background:var(--acc);color:#fff;border:0;border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}
 @media(max-width:900px){.wrap{grid-template-columns:1fr}nav{display:none}main{padding:12px}article{padding:20px}}
-@media print{header,nav,.ab{display:none}.wrap{display:block}article{border:0;padding:0;max-width:none}.hid h3~*{filter:none}h2{break-before:page}table,.mw{break-inside:avoid}}"""
+@media print{header,nav,.ab{display:none}.wrap{display:block}article{border:0;padding:0;max-width:none}.hid h3~*{filter:none}h2{break-before:page}table,.mw,figure{break-inside:avoid}}"""
 JS_G="""(function(){var K='__K__',th=document.getElementById('th'),v=localStorage.getItem(K+'t')||'light';document.documentElement.dataset.theme=v;th.value=v;
 th.onchange=function(){document.documentElement.dataset.theme=th.value;localStorage.setItem(K+'t',th.value)};
 var b=[].slice.call(document.querySelectorAll('li.task input')),s=JSON.parse(localStorage.getItem(K+'c')||'{}');
@@ -205,7 +205,8 @@ html,body{margin:0;height:100%;background:#0d1b2a;font-family:"Segoe UI",Roboto,
 .s p,.s li{font-size:23px;line-height:1.45;margin:6px 0}.s ul,.s ol{padding-left:34px;margin:4px 0}.s li li{font-size:20px}.s li::marker{color:var(--acc);font-weight:700}
 .s table{border-collapse:collapse;width:100%;font-size:19px;margin:4px 0 10px}.s th{background:var(--pri);color:#fff;text-align:left;padding:9px 12px}.s td{border-bottom:1px solid var(--line);padding:8px 12px;vertical-align:top}.s tr:nth-child(even) td{background:var(--soft)}
 .s a{color:var(--acc)}.s code{background:var(--soft);padding:1px 6px;border-radius:4px;color:var(--pri)}.s strong{color:var(--pri)}.s blockquote{margin:14px 0 0;padding:12px 18px;background:#e9f6f0;border-left:6px solid var(--ac2);border-radius:0 10px 10px 0}.s blockquote p{font-size:21px;margin:0}
-.s figure{margin:6px 0;text-align:center}.s figure img{max-width:100%;max-height:440px;object-fit:contain}.s figcaption{font-size:15px;color:var(--mu)}.s img.il{max-height:1.4em;vertical-align:middle}.s .mw{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.s pre.mermaid{margin:0}
+.s figure{margin:6px 0;text-align:center}.s figure img{max-width:100%;max-height:440px;object-fit:contain}.s figcaption{font-size:15px;color:var(--mu)}.s img.il{max-height:1.4em;vertical-align:middle}
+.s .mw{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.s pre.mermaid{margin:0}
 .s.title{background:linear-gradient(135deg,#0b3d6e,#0a5c9a 60%,#0a7cc1);color:#fff}.s.title:before{background:var(--ac2)}.s.title:after{color:#cfe3f5}.s.title .in{justify-content:center}
 .s.title h1{color:#fff;font-size:58px;border-bottom:4px solid var(--ac2);display:inline-block}.s.title h2{color:#d6ecff;font-size:32px}.s.title p{color:#e8f2fb;font-size:22px}.s.title strong{color:#fff}
 .s.highlight{background:linear-gradient(#fff,#f2f7fc)}.nt{display:none}.sn .s.on .nt{display:block;position:absolute;left:60px;right:60px;bottom:44px;background:#fff8d6;border:1px solid #e6cf6a;border-radius:8px;padding:10px 14px;font-size:16px}
@@ -323,11 +324,11 @@ def guia_docx(md,path,foot):
             elif k=='p':
                 p=d.add_paragraph();fill(p,b[1])
                 if inq:shade(p._p,inq[0]);lborder(p,inq[1])
-            elif k=='table':table(b[1])
             elif k=='img':
                 p=d.add_paragraph();p.alignment=1;pic(p.add_run(),b[2])
                 if b[1]:
                     c=d.add_paragraph();c.alignment=1;r=c.add_run(b[1]);r.italic=True;r.font.size=Pt(9)
+            elif k=='table':table(b[1])
             elif k=='list':
                 for dp,od,ck,t in b[1]:
                     if ck is not None:

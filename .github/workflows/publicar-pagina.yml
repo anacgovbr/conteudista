@@ -38,11 +38,13 @@ jobs:
       - name: Testar o gerador com o curso de exemplo
         run: python tools/gerador.py web/exemplo/guia.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste
 
+      - name: Verificar sintaxe dos scripts da página
+        run: node --check web/editor.js
+
       - name: Montar a página (sem nenhum curso salvo)
         run: |
           mkdir -p site/wheels
-          cp web/index.html site/
-          cp tools/gerador.py site/
+          cp web/index.html web/editor.js tools/gerador.py site/
           cp -r web/exemplo site/exemplo
           pip download --no-deps --only-binary=:all: --dest site/wheels python-docx python-pptx XlsxWriter typing_extensions
           python -c "import os,json;json.dump(sorted(f for f in os.listdir('site/wheels') if f.endswith('.whl')),open('site/wheels/wheels.json','w'))"
