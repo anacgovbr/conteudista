@@ -175,7 +175,25 @@
 .mde-gal{border-top:1px solid #dfe5ee;background:#fbfcfe}
 .mde-gal>summary{cursor:pointer;padding:6px 10px;font:600 13px "Segoe UI",Arial,sans-serif;color:#0b3d6e;list-style:none;display:flex;gap:8px;align-items:center}
 .mde-gal>summary::-webkit-details-marker{display:none}.mde-gal>summary::before{content:'▸';transition:transform .15s}.mde-gal[open]>summary::before{transform:rotate(90deg)}
-.mde-gal>summary .gb{margin-left:auto}
+.mde-gal>summary .gtools{margin-left:auto;display:flex;gap:6px;align-items:center}.mde-gal>summary .gtools select{width:auto!important;max-width:210px;padding:2px 4px;font-size:12px;border:1px solid #c9d6e6;border-radius:5px}
+.mde-gh{padding:0 10px 4px;color:#5a6676;font:12px "Segoe UI",Arial,sans-serif}
+.mde-gi{cursor:grab;position:relative}.mde-gi.arr{opacity:.4}.mde-gi.alvo-e{box-shadow:-4px 0 0 #0a7cc1}.mde-gi.alvo-d{box-shadow:4px 0 0 #0a7cc1}
+.mde-gi .ord{position:absolute;top:4px;left:4px;background:#0b3d6e;color:#fff;border-radius:10px;padding:0 7px;font:700 11px "Segoe UI",Arial,sans-serif}
+.mde-gi .ac.a2 button{background:#fff!important}
+.mde-dlg{position:fixed;inset:0;z-index:1950;background:rgba(11,25,45,.55);display:flex;align-items:center;justify-content:center;padding:14px}
+.mde-dw{background:#fff;border-radius:12px;width:min(720px,100%);max-height:92vh;overflow:auto;box-shadow:0 10px 40px rgba(0,0,0,.35);font:14px/1.5 "Segoe UI",Roboto,Arial,sans-serif;color:#1b2430}
+.mde-dw h3{margin:0;padding:12px 18px;border-bottom:1px solid #dfe5ee;color:#0b3d6e;font-size:16px}
+.mde-dw .bd{padding:14px 18px;display:grid;grid-template-columns:240px 1fr;gap:16px}
+.mde-dw .pv{background:repeating-conic-gradient(#f3f6fa 0 25%,#fff 0 50%) 50%/14px 14px;border:1px solid #dfe5ee;border-radius:8px;display:flex;align-items:center;justify-content:center;min-height:160px}
+.mde-dw .pv img{max-width:100%;max-height:220px}
+.mde-dw label{display:block;font-weight:600;font-size:12.5px;color:#0b3d6e;margin:8px 0 3px}
+.mde-dw input[type=number],.mde-dw select{width:100%;padding:6px;border:1px solid #dfe5ee;border-radius:6px;font:inherit}
+.mde-dw .lin{display:flex;gap:8px;align-items:center}.mde-dw .lin>*{flex:1}
+.mde-dw .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.mde-dw .chips button{margin:0!important;padding:3px 8px!important;font-size:12px!important;background:#eaf1f8!important;color:#0b3d6e!important;border:1px solid #c9d6e6!important;border-radius:12px!important;cursor:pointer}
+.mde-dw .res{margin-top:10px;padding:8px 10px;background:#f3f6fa;border-radius:6px;font-size:13px}.mde-dw .res b{color:#0b3d6e}
+.mde-dw .ft{display:flex;justify-content:flex-end;gap:8px;padding:10px 18px;border-top:1px solid #dfe5ee}
+.mde-dw .ft button{margin:0!important}
+@media(max-width:700px){.mde-dw .bd{grid-template-columns:1fr}}
 .mde-gl{display:flex;flex-wrap:wrap;gap:10px;padding:4px 10px 10px}
 .mde-gi{width:176px;border:1px solid #dfe5ee;border-radius:8px;background:#fff;overflow:hidden;font:12px "Segoe UI",Arial,sans-serif;display:flex;flex-direction:column}
 .mde-gi .th{height:90px;display:flex;align-items:center;justify-content:center;background:repeating-conic-gradient(#f3f6fa 0 25%,#fff 0 50%) 50%/14px 14px;cursor:pointer}
@@ -206,7 +224,7 @@
     const st = document.createElement('div'); st.className = 'mde-st';
     body.append(ta, pv);
     const gal = document.createElement('details'); gal.className = 'mde-gal';
-    gal.innerHTML = '<summary>Imagens do texto <span class="gc">(0)</span><button type="button" class="mde-gb gb">+ Adicionar imagens</button></summary><div class="mde-gl"></div>';
+    gal.innerHTML = '<summary>Imagens do texto <span class="gc">(0)</span><span class="gtools"><select class="gord" title="Reordenar as imagens no texto"><option value="">Ordenar…</option><option value="inv">Inverter a ordem</option><option value="alt">Por legenda (A → Z)</option><option value="tam">Por tamanho do arquivo (menor → maior)</option><option value="larg">Por largura (menor → maior)</option></select><button type="button" class="mde-gb gb2" title="Reduzir as imagens grandes de uma vez">Reduzir todas…</button><button type="button" class="mde-gb gb">+ Adicionar imagens</button></span></summary><div class="mde-gh">Arraste os cartões (ou use ◀ ▶) para mudar a ordem das imagens no texto. “Redimensionar” altera a imagem em si (pixels e peso do arquivo), o que também muda o tamanho no DOCX e no PPTX.</div><div class="mde-gl"></div>';
     box.append(tb, body, st, gal);
     real.hidden = true; real.after(box);
     const fileIn = document.createElement('input'); fileIn.type = 'file'; fileIn.accept = 'image/*'; fileIn.multiple = true; fileIn.hidden = true; box.append(fileIn);
@@ -267,6 +285,131 @@
       const post = v.slice(ta.selectionEnd).startsWith('\n') ? '\n' : '\n\n';
       ins(pre + text + post, pre.length, pre.length + text.length);
     }
+    /* ---------- substituição do texto inteiro (preserva desfazer e cursor) ---------- */
+    function substituirTexto(novo) {
+      if (novo === ta.value) return false;
+      const p = ta.selectionStart, top = ta.scrollTop; ta.focus(); ta.setSelectionRange(0, ta.value.length); ins(novo, 0, 0);
+      const q = Math.min(p, ta.value.length); ta.setSelectionRange(q, q); ta.scrollTop = top; galAssin = ''; galeria(); return true;
+    }
+    /* ---------- ordenar: as imagens trocam de posição no texto (cada uma leva sua legenda) ---------- */
+    function reordenar(nova) {
+      const l = imagensNoTexto(), atual = l.map(x => x.n); if (nova.join() === atual.join()) return;
+      const info = new Map(l.map(x => [x.n, x])), mapa = new Map(atual.map((n, k) => [n, nova[k]])), cont = new Map();
+      const novo = ta.value.replace(/!\[([^\]]*)\]\(img:(\d+)\)/g, (m, alt, ns) => {
+        const n = +ns, alvo = mapa.get(n); if (!alvo) return m;
+        const j = cont.get(n) || 0; cont.set(n, j + 1); const al = info.get(alvo).alts;
+        return '![' + (al[j] !== undefined ? al[j] : al[0]) + '](img:' + alvo + ')';
+      });
+      if (substituirTexto(novo) && opt.onInfo) opt.onInfo('Ordem das imagens atualizada no texto (Ctrl+Z desfaz).');
+    }
+    gal.querySelector('.gord').onchange = e => {
+      const v = e.target.value; e.target.selectedIndex = 0; if (!v) return;
+      const l = imagensNoTexto(); if (l.length < 2) return;
+      const dimsDe = x => new Promise(ok => { const i = new Image(); i.onload = () => ok(i.naturalWidth); i.onerror = () => ok(0); i.src = x.dados; });
+      (async () => {
+        let o = l.slice();
+        if (v === 'inv') o.reverse();
+        else if (v === 'alt') o.sort((a, b) => (a.alts[0] || '').localeCompare(b.alts[0] || '', 'pt-BR', { numeric: true }));
+        else if (v === 'tam') o.sort((a, b) => tamanhoB64(a.dados) - tamanhoB64(b.dados));
+        else if (v === 'larg') { const w = new Map(); for (const x of o) w.set(x.n, await dimsDe(x)); o.sort((a, b) => w.get(a.n) - w.get(b.n)); }
+        reordenar(o.map(x => x.n));
+      })();
+    };
+    gal.querySelector('.gtools').addEventListener('click', e => { if (e.target.closest('select,button')) e.preventDefault(); });
+    /* ---------- redimensionar (canvas, com redução em etapas para manter a nitidez) ---------- */
+    const carregar = d => new Promise((ok, err) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => err(new Error('Imagem inválida')); i.src = d; });
+    async function reamostrar(dados, w, h, mime, q) {
+      const img = await carregar(dados); let c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; c.getContext('2d').drawImage(img, 0, 0);
+      while (c.width / 2 >= w && c.height / 2 >= h) { const d = document.createElement('canvas'); d.width = Math.round(c.width / 2); d.height = Math.round(c.height / 2); const x = d.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(c, 0, 0, d.width, d.height); c = d; }
+      const f = document.createElement('canvas'); f.width = w; f.height = h; const x = f.getContext('2d');
+      if (mime === 'image/jpeg') { x.fillStyle = '#fff'; x.fillRect(0, 0, w, h); }
+      x.imageSmoothingQuality = 'high'; x.drawImage(c, 0, 0, w, h);
+      let out = f.toDataURL(mime, q); if (!out.startsWith('data:' + mime)) out = f.toDataURL('image/png');
+      return out;
+    }
+    const mimeDe = d => (d.match(/^data:([^;,]+)/) || [])[1] || 'image/png';
+    const saidaMime = (orig, esc) => esc !== 'manter' ? esc : (/jpe?g|webp/.test(orig) ? orig : 'image/png');
+    function trocarImagens(mapa) {  // mapa: n → novo dataURL
+      const tr = new Map(); mapa.forEach((d, n) => tr.set(n, addImg(d)));
+      return substituirTexto(ta.value.replace(/(!\[[^\]]*\]\(img:)(\d+)\)/g, (m, a, n) => tr.has(+n) ? a + tr.get(+n) + ')' : m));
+    }
+    function dialogo(titulo, corpo, aoMontar) {
+      const d = document.createElement('div'); d.className = 'mde-dlg';
+      d.innerHTML = '<div class="mde-dw" role="dialog" aria-modal="true"><h3>' + titulo + '</h3>' + corpo + '<div class="ft"><button type="button" class="sec" data-x>Cancelar</button><button type="button" data-ok>Aplicar</button></div></div>';
+      document.body.appendChild(d);
+      const fechar = () => { d.remove(); document.removeEventListener('keydown', esc1, true); ta.focus(); };
+      const esc1 = e => { if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); fechar(); } };
+      document.addEventListener('keydown', esc1, true);
+      d.addEventListener('click', e => { if (e.target === d) fechar(); });
+      d.querySelector('[data-x]').onclick = fechar;
+      aoMontar(d, fechar);
+    }
+    async function dlgRedimensionar(n) {
+      const dados = imgs[n - 1]; if (!dados) return;
+      const om = mimeDe(dados);
+      if (/svg/.test(om)) { alert('Imagens SVG são vetoriais e não precisam de redimensionamento.'); return; }
+      const img = await carregar(dados), W = img.naturalWidth, H = img.naturalHeight, orig = tamanhoB64(dados);
+      dialogo('Redimensionar imagem (img:' + n + ')',
+        '<div class="bd"><div><div class="pv"><img alt="" src="' + dados + '"></div><div class="res">Original: <b>' + W + '×' + H + '</b> · ' + fmtTam(orig) + ' · ' + om.replace('image/', '').toUpperCase() + '</div></div>' +
+        '<div><label>Largura × altura (px) — proporção mantida</label><div class="lin"><input type="number" data-w min="16" max="' + W + '" value="' + W + '"><span style="flex:0">×</span><input type="number" data-h min="16" max="' + H + '" value="' + H + '"></div>' +
+        '<div class="chips"><button type="button" data-p=".25">25%</button><button type="button" data-p=".5">50%</button><button type="button" data-p=".75">75%</button><button type="button" data-p="1">100%</button><button type="button" data-m="1600">máx. 1600</button><button type="button" data-m="1280">máx. 1280</button><button type="button" data-m="800">máx. 800</button><button type="button" data-m="400">máx. 400</button></div>' +
+        '<label>Formato</label><select data-f><option value="manter">Manter (' + (/jpe?g|webp/.test(om) ? om.replace('image/', '').toUpperCase() : 'PNG') + ')</option><option value="image/jpeg">JPEG (fotos; menor)</option><option value="image/png">PNG (desenhos, prints, transparência)</option><option value="image/webp">WebP (menor; nem todo Office antigo exibe)</option></select>' +
+        '<label>Qualidade (JPEG/WebP): <span data-qv>85</span>%</label><input type="range" data-q min="40" max="100" value="85" style="width:100%">' +
+        (/gif/.test(om) ? '<p style="color:#9a5b00;font-size:12.5px;margin:6px 0 0">GIF animado perde a animação ao redimensionar.</p>' : '') +
+        '<div class="res" data-r>Novo tamanho: calculando…</div></div></div>',
+        (d, fechar) => {
+          const iw = d.querySelector('[data-w]'), ih = d.querySelector('[data-h]'), fs = d.querySelector('[data-f]'), qs = d.querySelector('[data-q]'), rs = d.querySelector('[data-r]'), pv = d.querySelector('.pv img');
+          let t, resultado = null;
+          const calc = () => { clearTimeout(t); t = setTimeout(async () => {
+            const w = Math.max(16, Math.min(W, +iw.value || W)), h = Math.max(16, Math.round(w * H / W)), m = saidaMime(om, fs.value);
+            resultado = await reamostrar(dados, w, h, m, qs.value / 100); pv.src = resultado;
+            const nt = tamanhoB64(resultado), dif = Math.round((1 - nt / orig) * 100);
+            rs.innerHTML = 'Novo: <b>' + w + '×' + h + '</b> · <b>' + fmtTam(nt) + '</b> · ' + mimeDe(resultado).replace('image/', '').toUpperCase() + ' (' + (dif >= 0 ? dif + '% menor' : (-dif) + '% maior') + ')';
+          }, 200); };
+          iw.oninput = () => { ih.value = Math.round((+iw.value || W) * H / W); calc(); };
+          ih.oninput = () => { iw.value = Math.round((+ih.value || H) * W / H); calc(); };
+          d.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { iw.value = Math.round(W * b.dataset.p); iw.oninput(); });
+          d.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { iw.value = Math.min(W, +b.dataset.m); iw.oninput(); });
+          fs.onchange = calc; qs.oninput = () => { d.querySelector('[data-qv]').textContent = qs.value; calc(); };
+          d.querySelector('[data-ok]').onclick = async () => {
+            if (!resultado) return;
+            if (trocarImagens(new Map([[n, resultado]])) && opt.onInfo) opt.onInfo('Imagem redimensionada: ' + fmtTam(orig) + ' → ' + fmtTam(tamanhoB64(resultado)) + ' (Ctrl+Z desfaz).');
+            fechar();
+          };
+          calc(); iw.focus(); iw.select();
+        });
+    }
+    function dlgReduzirTodas() {
+      const l = imagensNoTexto().filter(x => !/svg/.test(mimeDe(x.dados)));
+      if (!l.length) { alert('Não há imagens para reduzir.'); return; }
+      const total = l.reduce((s, x) => s + tamanhoB64(x.dados), 0);
+      dialogo('Reduzir todas as imagens',
+        '<div class="bd" style="grid-template-columns:1fr"><div>' + l.length + ' imagem(ns), ' + fmtTam(total) + ' no total. Apenas imagens maiores que o limite são redimensionadas.' +
+        '<label>Largura máxima (px)</label><select data-m><option>1920</option><option>1600</option><option selected>1280</option><option>1024</option><option>800</option></select>' +
+        '<label>Formato</label><select data-f><option value="manter">Manter o formato de cada imagem</option><option value="image/jpeg">Converter para JPEG (exceto transparências: use “Manter”)</option></select>' +
+        '<label>Qualidade (JPEG/WebP): <span data-qv>85</span>%</label><input type="range" data-q min="40" max="100" value="85" style="width:100%">' +
+        '<label style="font-weight:400"><input type="checkbox" data-s checked> Também recomprimir imagens acima de 300 KB mesmo sem reduzir a largura</label>' +
+        '<div class="res" data-r>Clique em Aplicar para processar.</div></div></div>',
+        (d, fechar) => {
+          const qs = d.querySelector('[data-q]'); qs.oninput = () => d.querySelector('[data-qv]').textContent = qs.value;
+          d.querySelector('[data-ok]').onclick = async () => {
+            const max = +d.querySelector('[data-m]').value, f = d.querySelector('[data-f]').value, q = qs.value / 100, rec = d.querySelector('[data-s]').checked, rs = d.querySelector('[data-r]');
+            const mapa = new Map(); let antes = 0, depois = 0, k = 0;
+            for (const x of l) {
+              rs.textContent = 'Processando ' + (++k) + ' de ' + l.length + '…';
+              const img = await carregar(x.dados), W = img.naturalWidth, H = img.naturalHeight, om = mimeDe(x.dados), t0 = tamanhoB64(x.dados);
+              if (W <= max && !(rec && t0 > 300 * 1024) && f === 'manter') continue;
+              const w = Math.min(W, max), h = Math.round(w * H / W), nd = await reamostrar(x.dados, w, h, saidaMime(om, f), q), t1 = tamanhoB64(nd);
+              if (t1 < t0) { mapa.set(x.n, nd); antes += t0; depois += t1; }
+            }
+            if (!mapa.size) { rs.textContent = 'Nenhuma imagem precisou de redução.'; return; }
+            trocarImagens(mapa);
+            if (opt.onInfo) opt.onInfo(mapa.size + ' imagem(ns) reduzida(s): ' + fmtTam(antes) + ' → ' + fmtTam(depois) + ' (Ctrl+Z desfaz).');
+            fechar();
+          };
+        });
+    }
+    gal.querySelector('.gb2').onclick = e => { e.preventDefault(); dlgReduzirTodas(); };
     function moverLinha(d) {
       const v = ta.value, [s, e] = lineRange(), bloco = v.slice(s, e), ss = ta.selectionStart - s, se = ta.selectionEnd - s;
       if (d < 0) { if (s === 0) return; const ps = v.lastIndexOf('\n', s - 2) + 1, ant = v.slice(ps, s - 1); ta.setSelectionRange(ps, e); ins(bloco + '\n' + ant); ta.setSelectionRange(ps + ss, ps + se); }
@@ -298,7 +441,7 @@
     function imagensNoTexto() {  // [{n, dados, alts:[], usos}]
       const mapa = new Map(), re = /!\[([^\]]*)\]\(img:(\d+)\)/g; let m;
       while ((m = re.exec(ta.value))) { const n = +m[2]; if (!imgs[n - 1]) continue; const it = mapa.get(n) || { n, dados: imgs[n - 1], alts: [], usos: 0 }; it.usos++; it.alts.push(m[1]); mapa.set(n, it); }
-      return [...mapa.values()].sort((a, b) => a.n - b.n);
+      return [...mapa.values()];  // ordem = primeira aparição no texto
     }
     let galAssin = '';
     function galeria() {
@@ -307,14 +450,31 @@
       if (assin === galAssin) return; galAssin = assin;
       const gl = gal.querySelector('.mde-gl');
       if (!l.length) { gl.innerHTML = '<div class="mde-ge">Nenhuma imagem no texto. Arraste imagens para o editor, cole com Ctrl+V ou use “+ Adicionar imagens”. Elas são guardadas em base64 dentro do próprio Markdown.</div>'; return; }
-      gl.innerHTML = l.map(x => '<div class="mde-gi" data-n="' + x.n + '"><div class="th" title="Ir para a imagem no texto"><img alt="" src="' + x.dados + '"></div>' +
-        '<div class="mt"><b>(img:' + x.n + ')</b> <span>' + fmtTam(tamanhoB64(x.dados)) + (x.usos > 1 ? ' · ' + x.usos + ' usos' : '') + '</span>' +
+      gl.innerHTML = l.map((x, k) => '<div class="mde-gi" draggable="true" data-n="' + x.n + '"><span class="ord" title="Posição no texto">' + (k + 1) + '</span><div class="th" title="Ir para a imagem no texto"><img alt="" src="' + x.dados + '"></div>' +
+        '<div class="mt"><b>(img:' + x.n + ')</b> <span class="dim"></span> <span>' + fmtTam(tamanhoB64(x.dados)) + (x.usos > 1 ? ' · ' + x.usos + ' usos' : '') + '</span>' +
         '<input type="text" value="' + esc(x.alts[0]) + '" title="Descrição (texto alternativo / legenda)" placeholder="Descrição / legenda"></div>' +
-        '<div class="ac"><button type="button" data-a="ins" title="Inserir de novo no cursor">Inserir</button><button type="button" data-a="ver" title="Localizar no texto">Localizar</button><button type="button" class="rm" data-a="rm" title="Remover do texto">Remover</button></div></div>').join('');
+        '<div class="ac"><button type="button" data-a="ins" title="Inserir de novo no cursor">Inserir</button><button type="button" data-a="ver" title="Localizar no texto">Localizar</button><button type="button" class="rm" data-a="rm" title="Remover do texto">Remover</button></div>' +
+        '<div class="ac a2"><button type="button" data-a="esq" title="Mover para antes"' + (k === 0 ? ' disabled' : '') + '>◀</button><button type="button" data-a="red" title="Redimensionar / comprimir">Redimensionar</button><button type="button" data-a="dir" title="Mover para depois"' + (k === l.length - 1 ? ' disabled' : '') + '>▶</button></div></div>').join('');
+      const ordem = l.map(x => x.n);
       gl.querySelectorAll('.mde-gi').forEach(card => {
         const n = +card.dataset.n, ref = '](img:' + n + ')';
         const localizar = () => { const i = ta.value.indexOf(ref); if (i < 0) return; const a = ta.value.lastIndexOf('![', i); ta.focus(); ta.setSelectionRange(a, i + ref.length); const lin = ta.value.slice(0, a).split('\n').length; ta.scrollTop = Math.max(0, (lin - 3) * parseFloat(getComputedStyle(ta).lineHeight || 20)); };
         card.querySelector('.th').onclick = localizar;
+        const im = card.querySelector('.th img'); const dimF = () => { card.querySelector('.dim').textContent = im.naturalWidth + '×' + im.naturalHeight + ' ·'; }; if (im.complete) dimF(); else im.onload = dimF;
+        const mover = d => { const o = ordem.slice(), i = o.indexOf(n), j = i + d; if (j < 0 || j >= o.length) return; [o[i], o[j]] = [o[j], o[i]]; reordenar(o); };
+        card.querySelector('[data-a="esq"]').onclick = () => mover(-1);
+        card.querySelector('[data-a="dir"]').onclick = () => mover(1);
+        card.querySelector('[data-a="red"]').onclick = () => dlgRedimensionar(n);
+        card.addEventListener('dragstart', e => { if (e.target.closest('input,button')) { e.preventDefault(); return; } e.dataTransfer.setData('text/x-mde-img', String(n)); e.dataTransfer.effectAllowed = 'move'; card.classList.add('arr'); });
+        card.addEventListener('dragend', () => { card.classList.remove('arr'); gl.querySelectorAll('.mde-gi').forEach(c => c.classList.remove('alvo-e', 'alvo-d')); });
+        card.addEventListener('dragover', e => { if (![...e.dataTransfer.types].includes('text/x-mde-img')) return; e.preventDefault(); e.stopPropagation(); const r = card.getBoundingClientRect(), dir = e.clientX > r.left + r.width / 2; card.classList.toggle('alvo-d', dir); card.classList.toggle('alvo-e', !dir); });
+        card.addEventListener('dragleave', () => card.classList.remove('alvo-e', 'alvo-d'));
+        card.addEventListener('drop', e => {
+          const src = +e.dataTransfer.getData('text/x-mde-img'); if (!src) return;
+          e.preventDefault(); e.stopPropagation();
+          const dir = card.classList.contains('alvo-d'); card.classList.remove('alvo-e', 'alvo-d'); if (src === n) return;
+          const o = ordem.filter(x => x !== src); let j = o.indexOf(n) + (dir ? 1 : 0); o.splice(j, 0, src); reordenar(o);
+        });
         card.querySelector('[data-a="ver"]').onclick = localizar;
         card.querySelector('[data-a="ins"]').onclick = () => { const alt = card.querySelector('input').value.replace(/[\[\]]/g, ''); ins('![' + alt + '](img:' + n + ')'); };
         card.querySelector('[data-a="rm"]').onclick = () => {
