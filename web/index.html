@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Conteudista ANAC — Gerador de Cursos (Markdown → HTML, DOCX e PPTX)</title>
+<style>
+:root{--pri:#0b3d6e;--acc:#0a7cc1;--ok:#1e7b4f;--err:#b42318;--bg:#f6f8fb;--line:#dfe5ee;--th:#eaf1f8;--ink:#1b2430;--mu:#5a6676}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
+header{background:var(--pri);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+header h1{font-size:18px;margin:0;flex:1}header small{opacity:.85;font-weight:400}
+main{max-width:1200px;margin:auto;padding:20px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:20px}
+h2{color:var(--pri);font-size:18px;margin:0 0 10px}h3{color:var(--pri);font-size:15px;margin:16px 0 6px}
+.note{color:var(--mu);margin:4px 0 12px}
+.priv{background:#e9f6f0;border-left:5px solid var(--ok);padding:10px 14px;border-radius:0 8px 8px 0;margin:0 0 16px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+label{font-weight:600;font-size:13px;color:var(--pri);display:block;margin-bottom:4px}
+input[type=text]{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;font:inherit}
+textarea{width:100%;height:360px;padding:10px;border:1px solid var(--line);border-radius:8px;font:12.5px/1.45 Consolas,monospace;resize:vertical}
+.drop{border:2px dashed var(--line);border-radius:8px;padding:8px;text-align:center;color:var(--mu);font-size:13px;margin-bottom:6px;cursor:pointer}
+.drop.over{border-color:var(--acc);background:var(--th)}
+button,.btn{background:var(--acc);color:#fff;border:0;border-radius:6px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;margin:4px 6px 4px 0}
+.sec{background:#fff!important;color:var(--acc)!important;border:1px solid var(--acc)!important}
+button:disabled{opacity:.5;cursor:wait}
+#log{background:#0d1b2a;color:#cfe3f5;font:12px/1.45 Consolas,monospace;border-radius:8px;padding:10px;height:140px;overflow:auto;white-space:pre-wrap;margin-top:12px}
+.ok{color:#5fd39b}.err{color:#ff8a80}
+iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:8px;margin-top:10px;background:#fff}
+ol li{margin:4px 0}code{background:var(--th);padding:1px 5px;border-radius:4px}
+@media(max-width:900px){.grid,.row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Conteudista ANAC <small>· Markdown → Guia (HTML/DOCX) e Apresentação (HTML/PPTX)</small></h1>
+  <span id="ver"></span>
+</header>
+<main>
+
+<section class="card">
+  <h2>Como funciona</h2>
+  <p class="priv"><b>Privacidade:</b> a conversão acontece inteiramente no seu navegador. O conteúdo dos cursos <b>não é enviado, publicado nem salvo</b> em servidor algum. Ao fechar ou recarregar a página, tudo é descartado.</p>
+  <ol>
+    <li>Cole ou arraste o <code>guia.md</code> e o <code>apresentacao.md</code> (gerados pelo agente "Gerador de Cursos ANAC" ou editados por você).</li>
+    <li>Ajuste o prefixo e o rodapé, se quiser.</li>
+    <li>Clique em <b>Gerar arquivos</b> e baixe os 6 arquivos (ou o ZIP).</li>
+  </ol>
+  <p class="note">Na primeira geração, o navegador carrega o motor Python (20 a 60 segundos). As gerações seguintes são imediatas.</p>
+</section>
+
+<section class="card">
+  <h2>Gerar curso</h2>
+  <div class="row">
+    <div><label for="pref">Prefixo dos arquivos</label><input id="pref" type="text" value="Meu_Curso"></div>
+    <div><label for="rod">Rodapé (slides e DOCX)</label><input id="rod" type="text" placeholder="Ex.: CDPP · GTPL · SAR/ANAC"></div>
+    <div><label for="bar">Barra superior do guia (HTML)</label><input id="bar" type="text" placeholder="Opcional (padrão: título do guia)"></div>
+  </div>
+  <div class="grid">
+    <div>
+      <label>Guia de treinamento (guia.md)</label>
+      <div class="drop" data-t="g">Arraste o <b>guia.md</b> aqui ou clique para selecionar</div>
+      <textarea id="g" spellcheck="false" placeholder="# Título do curso — Guia Prático"></textarea>
+    </div>
+    <div>
+      <label>Apresentação (apresentacao.md)</label>
+      <div class="drop" data-t="s">Arraste o <b>apresentacao.md</b> aqui ou clique para selecionar</div>
+      <textarea id="s" spellcheck="false" placeholder="---&#10;title: Título&#10;---&#10;&#10;# Slide 1"></textarea>
+    </div>
+  </div>
+  <p>
+    <button id="go">Gerar arquivos</button>
+    <button id="ex" class="sec">Carregar exemplo</button>
+    <button id="clr" class="sec">Limpar tudo</button>
+    <input id="fmd" type="file" accept=".md,.txt" hidden>
+  </p>
+  <div id="log">Pronto. Nenhum conteúdo é armazenado por esta página.</div>
+  <h3>Arquivos gerados</h3>
+  <div id="res" class="note">Nenhum arquivo gerado ainda.</div>
+  <iframe id="prev" title="Pré-visualização" hidden></iframe>
+</section>
+
+<section class="card">
+  <h2>Dicas</h2>
+  <ul>
+    <li><b>DOCX:</b> o sumário é atualizado ao abrir no Word (ou botão direito → <b>Atualizar campo</b>).</li>
+    <li><b>Fluxos Mermaid:</b> desenhados no HTML; no DOCX e no PPTX aparecem como tabela "De | Condição | Para".</li>
+    <li><b>Links:</b> use o formato <code>[texto](https://endereco)</code>; ficam clicáveis nos três formatos.</li>
+    <li><b>Rede bloqueada?</b> A página precisa acessar <code>cdn.jsdelivr.net</code> para carregar o motor Python.</li>
+  </ul>
+</section>
+</main>
+
+<script>
+const PYODIDE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
+const $ = id => document.getElementById(id);
+const log = (m, c) => { const L = $('log'); L.innerHTML += '\n' + (c ? '<span class="' + c + '">' + m + '</span>' : m); L.scrollTop = L.scrollHeight; };
+let py = null, urls = [];
+
+// ---------- Entrada de arquivos (somente em memória) ----------
+let alvo = 'g';
+document.querySelectorAll('.drop').forEach(d => {
+  d.onclick = () => { alvo = d.dataset.t; $('fmd').click(); };
+  d.ondragover = e => { e.preventDefault(); d.classList.add('over'); };
+  d.ondragleave = () => d.classList.remove('over');
+  d.ondrop = async e => { e.preventDefault(); d.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) { $(d.dataset.t).value = await f.text(); sugerirPrefixo(); } };
+});
+$('fmd').onchange = async e => { const f = e.target.files[0]; if (f) { $(alvo).value = await f.text(); sugerirPrefixo(); } e.target.value = ''; };
+
+function sugerirPrefixo() {
+  if ($('pref').value !== 'Meu_Curso') return;
+  const m = $('g').value.match(/^#\s+(.+)$/m); if (!m) return;
+  const p = m[1].split(/[—–-]/)[0].normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w]+/g, '_').replace(/^_|_$/g, '').slice(0, 60);
+  if (p) $('pref').value = p;
+}
+
+$('ex').onclick = async () => {
+  try {
+    $('g').value = await (await fetch('exemplo/guia.md', { cache: 'no-store' })).text();
+    $('s').value = await (await fetch('exemplo/apresentacao.md', { cache: 'no-store' })).text();
+    $('pref').value = 'Exemplo'; log('Exemplo carregado.', 'ok');
+  } catch { log('Exemplo indisponível.', 'err'); }
+};
+
+function limparDownloads() { urls.forEach(u => URL.revokeObjectURL(u)); urls = []; $('res').innerHTML = 'Nenhum arquivo gerado ainda.'; $('prev').hidden = true; $('prev').src = 'about:blank'; }
+$('clr').onclick = () => { $('g').value = ''; $('s').value = ''; $('pref').value = 'Meu_Curso'; $('rod').value = ''; $('bar').value = ''; limparDownloads(); log('Conteúdo e arquivos descartados da memória.', 'ok'); };
+
+// ---------- Motor Python (Pyodide) ----------
+function loadScript(src) {
+  return new Promise((ok, err) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => err(new Error('Falha ao carregar ' + src)); document.head.appendChild(s); });
+}
+async function prepararPython() {
+  if (py) return py;
+  const ger = await fetch('gerador.py', { cache: 'no-store' });
+  if (!ger.ok) throw new Error('gerador.py não encontrado no site.');
+  const src = await ger.text();
+  log('Carregando motor Python (Pyodide)…');
+  await loadScript(PYODIDE_URL + 'pyodide.js');
+  py = await loadPyodide({ indexURL: PYODIDE_URL });
+  log('Carregando bibliotecas (lxml, Pillow)…');
+  await py.loadPackage(['micropip', 'lxml', 'pillow']);
+  log('Instalando python-docx e python-pptx…');
+  let wheels = null;
+  try { const r = await fetch('wheels/wheels.json', { cache: 'no-store' }); if (r.ok) wheels = (await r.json()).map(w => new URL('wheels/' + w, location.href).href); } catch {}
+  py.globals.set('WHEELS', wheels);
+  await py.runPythonAsync(`
+import micropip
+w = WHEELS.to_py() if WHEELS is not None else None
+if w:
+    await micropip.install(w, deps=False)
+else:
+    await micropip.install(['python-docx', 'python-pptx'])
+`);
+  py.FS.mkdirTree('/app'); py.FS.writeFile('/app/gerador.py', src);
+  $('ver').textContent = 'Motor pronto · Python ' + py.runPython('import sys; sys.version.split()[0]');
+  log('Motor pronto' + (wheels ? ' (bibliotecas do próprio site).' : ' (bibliotecas do PyPI).'), 'ok');
+  return py;
+}
+
+// ---------- Geração ----------
+$('go').onclick = async () => {
+  const gm = $('g').value.trim(), sm = $('s').value.trim();
+  if (!gm || !sm) { log('Preencha (ou arraste) o guia.md e o apresentacao.md.', 'err'); return; }
+  $('go').disabled = true;
+  try {
+    await prepararPython();
+    const pref = ($('pref').value.trim() || 'Curso').replace(/[^\w.-]+/g, '_');
+    py.globals.set('GM', gm + '\n'); py.globals.set('SM', sm + '\n');
+    py.globals.set('PREF', pref); py.globals.set('ROD', $('rod').value); py.globals.set('BAR', $('bar').value);
+    log('Gerando arquivos…');
+    const out = py.runPython(`
+import sys, os, shutil, zipfile
+if '/app' not in sys.path: sys.path.insert(0, '/app')
+import gerador
+shutil.rmtree('/saida', ignore_errors=True)
+arqs, res = gerador.gerar(GM, SM, PREF, ROD, BAR, '/saida')
+zp = '/saida/Curso_%s.zip' % PREF
+with zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:
+    for f in arqs: z.write(f, os.path.basename(f))
+'\\n'.join([res] + arqs + [zp])`);
+    const linhas = out.split('\n'), res = linhas[0], files = linhas.slice(1);
+    log(res, res.includes('ERRO') ? 'err' : 'ok');
+    limparDownloads();
+    const tipos = { md: 'text/markdown', html: 'text/html', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', zip: 'application/zip' };
+    let h = '';
+    for (const f of files) {
+      const nome = f.split('/').pop(), ext = nome.split('.').pop();
+      const u = URL.createObjectURL(new Blob([py.FS.readFile(f)], { type: tipos[ext] || 'application/octet-stream' })); urls.push(u);
+      h += '<a class="btn' + (ext === 'zip' ? '' : ' sec') + '" href="' + u + '" download="' + nome + '">⬇ ' + nome + '</a>';
+      if (ext === 'html') h += '<a class="btn sec" href="#" data-u="' + u + '">👁 ver</a>';
+    }
+    py.runPython("import shutil; shutil.rmtree('/saida', ignore_errors=True)");
+    $('res').innerHTML = h;
+    $('res').querySelectorAll('[data-u]').forEach(a => a.onclick = e => { e.preventDefault(); $('prev').hidden = false; $('prev').src = a.dataset.u; });
+  } catch (e) {
+    log('Erro: ' + e.message, 'err');
+    if (/pyodide|cdn|fetch|micropip|carregar/i.test(e.message)) log('Verifique se a rede permite acesso a cdn.jsdelivr.net.', 'err');
+    console.error(e);
+  } finally { $('go').disabled = false; }
+};
+</script>
+</body>
+</html>
