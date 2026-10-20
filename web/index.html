@@ -9,7 +9,8 @@
 :root{--pri:#0b3d6e;--acc:#0a7cc1;--ok:#1e7b4f;--err:#b42318;--wa:#9a5b00;--bg:#f6f8fb;--line:#dfe5ee;--th:#eaf1f8;--ink:#1b2430;--mu:#5a6676}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
 header{background:var(--pri);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-header h1{font-size:18px;margin:0;flex:1}header small{opacity:.85;font-weight:400}#ver{font-size:12px;opacity:.9}
+header h1{font-size:18px;margin:0;flex:1}
+.hb{display:flex;gap:6px}.hb button{background:rgba(255,255,255,.14)!important;border:1px solid rgba(255,255,255,.45)!important;color:#fff!important;margin:0;padding:6px 12px;font-size:13px}.hb button:hover{background:rgba(255,255,255,.28)!important}header small{opacity:.85;font-weight:400}#ver{font-size:12px;opacity:.9}
 main{max-width:1500px;margin:auto;padding:20px}
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:20px}
 h2{color:var(--pri);font-size:18px;margin:0 0 10px}h3{color:var(--pri);font-size:15px;margin:18px 0 6px}
@@ -42,11 +43,17 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
 @media(max-width:900px){.grid,.grid3,.row{grid-template-columns:1fr}}
 </style>
 <script src="editor.js"></script>
+<script src="ajuda.js" defer></script>
 </head>
 <body>
 <header>
   <h1>Conteudista ANAC <small>· Markdown → Guia (HTML/DOCX) e Apresentação (HTML/PPTX)</small></h1>
   <span id="ver"></span>
+  <nav class="hb" aria-label="Ajuda">
+    <button type="button" id="btnTour" title="Tutorial rápido (Alt+Shift+T)">▶ Tutorial</button>
+    <button type="button" id="btnHelp" title="Ajuda (F1 ou Alt+Shift+H)">? Ajuda</button>
+    <button type="button" id="btnKeys" title="Atalhos de teclado (Alt+Shift+K)">⌨ Atalhos</button>
+  </nav>
 </header>
 <main>
 
@@ -68,7 +75,7 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
     <div><label for="rod">Rodapé (slides e DOCX)</label><input id="rod" type="text" placeholder="Ex.: CDPP · GTPL · SAR/ANAC"></div>
     <div><label for="bar">Barra superior do guia (HTML)</label><input id="bar" type="text" placeholder="Opcional (padrão: título do guia)"></div>
   </div>
-  <div class="tabs">
+  <div class="tabs" id="abas">
     <button id="tg" type="button">Guia de treinamento (guia.md)</button>
     <button id="ts" type="button" class="off">Apresentação (apresentacao.md)</button>
   </div>
@@ -94,13 +101,14 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
   <iframe id="prev" title="Pré-visualização" hidden></iframe>
 </section>
 
-<section class="card">
+<section class="card" id="secShare">
   <h2>Guardar e compartilhar</h2>
   <div class="grid3">
-    <div class="panel">
+    <div class="panel" id="pLocal">
       <h3 style="margin-top:0">1. Na sua máquina</h3>
       <p class="note">Fica <b>somente neste computador</b> (armazenamento do navegador ou pasta escolhida).</p>
-      <label class="inl"><input type="checkbox" id="auto"> Salvar automaticamente neste navegador</label>
+      <label class="inl"><input type="checkbox" id="auto" checked> Salvar automaticamente neste navegador</label>
+      <p id="autost" class="note" style="margin:0 0 4px;font-size:12.5px"></p>
       <label for="dname" style="margin-top:8px">Nome do rascunho</label>
       <input id="dname" type="text" placeholder="Ex.: Curso SAR v2">
       <p>
@@ -111,7 +119,7 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
       <div id="drafts" class="note">Nenhum rascunho salvo.</div>
       <p><button id="dclear" class="mini dan">Apagar todos os dados locais</button></p>
     </div>
-    <div class="panel">
+    <div class="panel" id="pLink">
       <h3 style="margin-top:0">2. Link criptografado</h3>
       <p class="note">O conteúdo é cifrado no navegador (<b>AES-256-GCM</b>) antes de sair do computador. Quem tiver o link completo (e a senha, se houver) consegue abrir.</p>
       <label for="mode">Onde guardar</label>
@@ -136,9 +144,10 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
       <input id="pw" type="password" placeholder="Se usar, envie a senha por outro canal" autocomplete="new-password">
       <p class="note" id="pwnote" style="margin:4px 0 0">No PrivateBin, a senha é compatível com o próprio site (ele pedirá a senha ao abrir). Prefira senhas sem acentos.</p>
       <label class="inl"><input type="checkbox" id="keep"> Lembrar os links neste navegador</label>
+      <p id="tam" class="note" style="margin:8px 0 0">Tamanho estimado: —</p>
       <p><button id="share">Criar link</button></p>
     </div>
-    <div class="panel">
+    <div class="panel" id="pOpen">
       <h3 style="margin-top:0">3. Abrir um link</h3>
       <p class="note">Cole um link criado aqui (autocontido ou PrivateBin) para carregar o conteúdo e as imagens nos editores.</p>
       <label for="olink">Link</label>
@@ -364,22 +373,24 @@ async function listarRascunhos() {
   });
 }
 async function salvarRascunho(nome) {
-  const p = pacote(); if (!p.g.trim() && !p.s.trim()) { log('Nada para salvar.', 'wa'); return; }
+  const p = pacote(); if (!p.g.trim() && !p.s.trim()) { if (nome !== 'Autossalvo') log('Nada para salvar.', 'wa'); return; }
   await dbPut('rascunhos', Object.assign(p, { nome, data: Date.now() }));
+  if (nome === 'Autossalvo') $('autost').textContent = 'Salvo automaticamente às ' + new Date().toLocaleTimeString('pt-BR') + ' (' + tamanho(p.g.length + p.s.length) + ').';
   if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
   listarRascunhos();
 }
 $('dsave').onclick = async () => { const n = $('dname').value.trim() || ($('pref').value + ' ' + new Date().toLocaleString('pt-BR')); await salvarRascunho(n); log('Rascunho "' + n + '" salvo neste navegador.', 'ok'); };
 let tAuto = null;
 function agendarAuto() { if (!$('auto').checked) return; clearTimeout(tAuto); tAuto = setTimeout(() => salvarRascunho('Autossalvo'), 1500); }
-$('auto').checked = localStorage.getItem('conteudista.auto') === '1';
-$('auto').onchange = () => { localStorage.setItem('conteudista.auto', $('auto').checked ? '1' : '0'); if ($('auto').checked) { agendarAuto(); log('Salvamento automático ativado (somente neste navegador).', 'ok'); } };
+$('auto').checked = localStorage.getItem('conteudista.auto') !== '0';  // padrão: ativado
+$('auto').onchange = () => { localStorage.setItem('conteudista.auto', $('auto').checked ? '1' : '0'); $('autost').textContent = $('auto').checked ? 'Ativado: as alterações são salvas neste navegador.' : 'Desativado.'; if ($('auto').checked) { agendarAuto(); log('Salvamento automático ativado (somente neste navegador).', 'ok'); } };
+$('autost').textContent = $('auto').checked ? 'Ativado: as alterações são salvas neste navegador.' : 'Desativado.';
 $('keep').checked = localStorage.getItem('conteudista.keep') === '1';
 $('keep').onchange = () => localStorage.setItem('conteudista.keep', $('keep').checked ? '1' : '0');
 $('dclear').onclick = async () => {
   if (!confirm('Apagar todos os rascunhos, links lembrados e preferências deste navegador?')) return;
-  await dbClear('rascunhos'); await dbClear('links'); ['conteudista.auto', 'conteudista.keep', 'mde.modo'].forEach(k => localStorage.removeItem(k));
-  $('auto').checked = false; $('keep').checked = false; listarRascunhos(); listarLinks(); log('Dados locais apagados.', 'ok');
+  await dbClear('rascunhos'); await dbClear('links'); ['conteudista.keep', 'mde.modo', 'conteudista.tour'].forEach(k => localStorage.removeItem(k));
+  localStorage.setItem('conteudista.auto', '0'); $('keep').checked = false; listarRascunhos(); listarLinks(); log('Dados locais apagados.', 'ok');
 };
 function baixar(nome, blob) { const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = nome; a.click(); setTimeout(() => URL.revokeObjectURL(u), 4000); }
 $('mdl').onclick = () => {
@@ -483,7 +494,10 @@ $('pwnote').hidden = true;
 $('share').onclick = async () => {
   const d = pacote(); if (!d.g.trim() && !d.s.trim()) { log('Nada para compartilhar.', 'wa'); return; }
   const fal = await embutirTudo(true); if (fal.length) log('Atenção: imagens não embutidas ficarão como referência externa: ' + fal.join(', '), 'wa');
-  const d2 = pacote(), pw = $('pw').value; $('share').disabled = true;
+  const d2 = pacote(), pw = $('pw').value;
+  const n = await estimarTamanho();
+  if (!confirm('Tamanho a enviar: ' + tamanho(n) + ($('mode').value === 'pb' ? ' (PrivateBin, cifrado)' : ' (link autocontido)') + '.\n\nContinuar?')) { log('Envio cancelado.', 'wa'); return; }
+  $('share').disabled = true;
   try {
     let item;
     if ($('mode').value === 'self') {
@@ -605,9 +619,42 @@ $('go').onclick = async () => {
   } finally { $('go').disabled = false; }
 };
 
+/* =========================== Tamanho antes do envio =========================== */
+let tTam = null, ultimoTam = 0;
+async function estimarTamanho() {
+  const d = pacote(); if (!d.g.trim() && !d.s.trim()) { $('tam').innerHTML = 'Tamanho estimado: —'; ultimoTam = 0; return 0; }
+  const bruto = enc.encode(d.g + d.s).length;
+  let alvo, n, extra = '';
+  if ($('mode').value === 'self') {
+    n = Math.ceil((await deflate(enc.encode(JSON.stringify(d)))).length * 4 / 3) + location.href.length + 60; alvo = 'link';
+    extra = n > 30000 ? ' <span style="color:var(--wa)">(longo: pode ser cortado por e-mail/Teams)</span>' : '';
+  } else {
+    let cont;
+    const ex = extrairImagens(d);
+    if ($('anexo').checked && ex.arqs.length) {
+      const zip = await zipCriar([{ nome: 'g.md', dados: enc.encode(ex.d.g) }, { nome: 's.md', dados: enc.encode(ex.d.s) }, ...ex.arqs]);
+      cont = { paste: paraTexto(ex.d), attachment: 'data:application/zip;base64,' + b64(zip), attachment_name: 'x.zip' };
+      extra = ' · ' + ex.arqs.length + ' imagem(ns) em anexo';
+    } else cont = { paste: paraTexto(d) };
+    n = Math.ceil((await deflate(enc.encode(JSON.stringify(cont)))).length * 4 / 3) + 400; alvo = 'envio ao PrivateBin';
+    extra += n > PB_LIMITE ? ' <span style="color:var(--err)"><b>acima do limite de 10 MB</b></span>' : n > PB_LIMITE * 0.8 ? ' <span style="color:var(--wa)">(perto do limite de 10 MB)</span>' : '';
+  }
+  ultimoTam = n;
+  $('tam').innerHTML = 'Conteúdo: <b>' + tamanho(bruto) + '</b> · ' + alvo + ' cifrado: <b>' + tamanho(n) + '</b>' + extra;
+  return n;
+}
+function agendarTamanho() { clearTimeout(tTam); tTam = setTimeout(() => estimarTamanho().catch(() => {}), 700); }
+['g', 's', 'pref', 'rod', 'bar'].forEach(id => $(id).addEventListener('input', agendarTamanho));
+['mode', 'anexo'].forEach(id => $(id).addEventListener('change', agendarTamanho));
+setInterval(() => { const k = $('g').value.length + ':' + $('s').value.length; if (k !== agendarTamanho.k) { agendarTamanho.k = k; agendarTamanho(); } }, 1200);
+
 listarRascunhos().catch(() => $('drafts').textContent = 'Armazenamento local indisponível neste navegador.');
 listarLinks().catch(() => {});
 statusImagens();
+(async () => {  // recupera o último autossalvamento se a tela estiver vazia
+  if (location.hash.startsWith('#cx=') || $('g').value || $('s').value) return;
+  try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}
+})();
 </script>
 </body>
 </html>
