@@ -80,11 +80,11 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
     <button id="ts" type="button" class="off">Apresentação (apresentacao.md)</button>
   </div>
   <div id="pg">
-    <div class="drop" data-t="g">Arraste o <b>guia.md</b> e suas <b>imagens</b> aqui, ou clique para selecionar</div>
+    <div class="drop" data-t="g">Arraste o <b>guia.md</b> e/ou <b>imagens</b> aqui, ou clique para selecionar. Imagens também podem ser soltas no editor ou coladas com <b>Ctrl+V</b>.</div>
     <textarea id="g" spellcheck="false" placeholder="# Título do curso — Guia Prático"></textarea>
   </div>
   <div id="ps" hidden>
-    <div class="drop" data-t="s">Arraste o <b>apresentacao.md</b> e suas <b>imagens</b> aqui, ou clique para selecionar</div>
+    <div class="drop" data-t="s">Arraste o <b>apresentacao.md</b> e/ou <b>imagens</b> aqui, ou clique para selecionar. Imagens também podem ser soltas no editor ou coladas com <b>Ctrl+V</b>.</div>
     <textarea id="s" spellcheck="false" placeholder="---&#10;title: Título&#10;---&#10;&#10;# Slide 1"></textarea>
   </div>
   <div id="imgst" class="note">Imagens: nenhuma referência encontrada.</div>
@@ -175,8 +175,8 @@ let py = null, urls = [], ultimos = [];
 
 /* =========================== Editores =========================== */
 const ED = {
-  g: MDEditor.create($('g'), { tipo: 'guia', onFiles: f => receberArquivos(f, 'g') }),
-  s: MDEditor.create($('s'), { tipo: 'slides', onFiles: f => receberArquivos(f, 's') })
+  g: MDEditor.create($('g'), { tipo: 'guia', onFiles: f => receberArquivos(f, 'g'), onInfo: m => log(m, 'ok') }),
+  s: MDEditor.create($('s'), { tipo: 'slides', onFiles: f => receberArquivos(f, 's'), onInfo: m => log(m, 'ok') })
 };
 const refreshEditors = () => { ED.g.refresh(); ED.s.refresh(); };
 function aba(t) { $('pg').hidden = t !== 'g'; $('ps').hidden = t !== 's'; $('tg').classList.toggle('off', t !== 'g'); $('ts').classList.toggle('off', t !== 's'); ED[t].render(); }
@@ -309,21 +309,36 @@ function restaurarImagens(d, mapa) {  // mapa: nome → Uint8Array
 /* =========================== Entrada de arquivos =========================== */
 let alvo = 'g';
 async function receberArquivos(files, t) {
-  let md = null;
-  for (const f of files) {
-    if (f.type.startsWith('image/')) imgMap.set(f.name.toLowerCase(), await blobToDataURL(f));
-    else if (/\.(md|markdown|txt)$/i.test(f.name) || f.type.startsWith('text/')) { if (!md) md = f; }
+  files = [...files];
+  const ims = files.filter(MDEditor.ehImagem), md = files.find(f => !MDEditor.ehImagem(f) && (/\.(md|markdown|txt)$/i.test(f.name) || (f.type || '').startsWith('text/')));
+  if (md) { $(t).value = await md.text(); sugerirPrefixo(); log('Arquivo carregado: ' + md.name, 'ok'); refreshEditors(); }
+  // 1) imagens citadas no texto por nome (ex.: ![x](figura.png)) → substituídas por base64
+  const citadas = new Set(pendentes($('g').value + '\n' + $('s').value).map(nomeBase));
+  const soltas = [];
+  for (const f of ims) { imgMap.set(f.name.toLowerCase(), await MDEditor.lerImagem(f)); if (!citadas.has(f.name.toLowerCase())) soltas.push(f); }
+  const nCit = ims.length - soltas.length;
+  if (nCit) await embutirTudo(true);
+  if (nCit) log(nCit + ' imagem(ns) associada(s) às referências do texto e convertida(s) para base64.', 'ok');
+  // 2) demais imagens → inseridas no editor (na posição do cursor)
+  if (soltas.length) {
+    aba(t);
+    const n = await ED[t].inserirImagens(soltas, true);
+    log(n + ' imagem(ns) inserida(s) no texto da aba ' + (t === 'g' ? 'Guia' : 'Apresentação') + '. Veja “Imagens do texto” abaixo do editor.', 'ok');
   }
-  if (md) { $(t).value = await md.text(); sugerirPrefixo(); log('Arquivo carregado: ' + md.name, 'ok'); }
-  const nimg = [...files].filter(f => f.type.startsWith('image/')).length;
-  if (nimg) log(nimg + ' imagem(ns) recebida(s).', 'ok');
-  await embutirTudo(true);
+  statusImagens(); agendarAuto();
 }
+// Impede que o navegador abra a imagem (e saia da página) quando ela é solta fora das áreas de edição
+addEventListener('dragover', e => { if ([...(e.dataTransfer || {}).types || []].includes('Files')) e.preventDefault(); });
+addEventListener('drop', e => {
+  if (!e.dataTransfer || !e.dataTransfer.files.length || e.defaultPrevented) return;
+  e.preventDefault();
+  const t = $('ps').hidden ? 'g' : 's'; receberArquivos(e.dataTransfer.files, t);
+});
 document.querySelectorAll('.drop').forEach(d => {
   d.onclick = () => { alvo = d.dataset.t; $('fmd').click(); };
   d.ondragover = e => { e.preventDefault(); d.classList.add('over'); };
   d.ondragleave = () => d.classList.remove('over');
-  d.ondrop = e => { e.preventDefault(); d.classList.remove('over'); receberArquivos(e.dataTransfer.files, d.dataset.t); };
+  d.ondrop = e => { e.preventDefault(); e.stopPropagation(); d.classList.remove('over'); receberArquivos(e.dataTransfer.files, d.dataset.t); };
 });
 ['g', 's'].forEach(id => $(id).addEventListener('input', () => { statusImagens(); agendarAuto(); }));
 $('fmd').onchange = async e => { await receberArquivos(e.target.files, alvo); e.target.value = ''; };

@@ -126,7 +126,9 @@
 <li>Modos <b>Editar</b>, <b>Dividido</b> (editor + prévia) e <b>Prévia</b>; tela cheia pelo último botão da barra.</li>
 <li><b>Desfazer/refazer</b>: <kbd>Ctrl+Z</kbd> e <kbd>Ctrl+Y</kbd> (ou <kbd>Ctrl+Shift+Z</kbd>), ou os dois primeiros botões da barra. Funciona também para ações dos botões, arquivos arrastados e rascunhos abertos (até 300 passos por editor).</li>
 <li>Outros atalhos do editor: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+I</kbd> itálico, <kbd>Ctrl+E</kbd> código, <kbd>Ctrl+K</kbd> link, <kbd>Ctrl+Shift+1/2/3</kbd> títulos, <kbd>Ctrl+Shift+7/8/9</kbd> listas, <kbd>Alt+↑/↓</kbd> mover linha. Lista completa no botão <b>Atalhos</b>.</li>
-<li><b>Imagens</b>: arraste, cole (<kbd>Ctrl+V</kbd>) ou use o botão de imagem. Ficam em base64 dentro do texto e aparecem no editor como <code>(img:N)</code>.</li>
+<li><b>Imagens</b>: arraste para o editor (entram onde o cursor estiver), cole com <kbd>Ctrl+V</kbd> (print de tela ou imagem copiada) ou use o botão de imagem. Ficam em base64 dentro do texto e aparecem no editor como <code>(img:N)</code>.</li>
+<li><b>Imagens do texto</b> (painel abaixo do editor): miniaturas de todas as imagens, com tamanho, descrição editável e botões <b>Inserir</b>, <b>Localizar</b> e <b>Remover</b>.</li>
+<li>Se o texto já cita uma imagem pelo nome (ex.: <code>![Figura](fluxo.png)</code>), arraste o arquivo <code>fluxo.png</code>: ele é associado à referência e convertido para base64.</li>
 <li>Na apresentação, cada slide é separado por uma linha <code>---</code>. Use os botões <b>Slide</b>, <b>Capa</b>, <b>Destaque</b> e <b>Notas</b>.</li>
 </ul>
 <h4>Salvar e recuperar</h4>
@@ -147,7 +149,8 @@
 <table><tr><th>Sintoma</th><th>O que fazer</th></tr>
 <tr><td>“Falha ao carregar … cdn.jsdelivr.net”</td><td>A rede bloqueou o motor Python. Tente outra rede ou peça liberação do endereço.</td></tr>
 <tr><td>“CORS ou rede bloqueada” no PrivateBin</td><td>Use o <b>link autocontido</b> ou outra instância do PrivateBin.</td></tr>
-<tr><td>Imagens “pendentes”</td><td>Arraste os arquivos de imagem citados no texto para a área da aba.</td></tr>
+<tr><td>Imagens “pendentes”</td><td>Arraste os arquivos de imagem citados no texto (com o mesmo nome) para a área da aba ou para o editor.</td></tr>
+<tr><td>Imagem não aparece</td><td>Confira o painel <b>Imagens do texto</b>; use <b>Localizar</b>. Arquivos muito grandes deixam o curso pesado — prefira PNG/JPG até ~1 MB.</td></tr>
 <tr><td>Sumário vazio no DOCX</td><td>No Word, clique com o botão direito no sumário → <b>Atualizar campo</b>.</td></tr>
 <tr><td>Fluxos Mermaid no DOCX/PPTX</td><td>Aparecem como tabela “De | Condição | Para” (desenho só no HTML).</td></tr></table>
 <h4>Tutorial</h4>

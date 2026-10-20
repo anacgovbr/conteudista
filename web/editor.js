@@ -9,6 +9,18 @@
 (function (global) {
   'use strict';
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const EXT_IMG = /\.(png|jpe?g|gif|webp|bmp|svg|ico|avif)$/i;
+  const MIME_EXT = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', bmp: 'image/bmp', svg: 'image/svg+xml', ico: 'image/x-icon', avif: 'image/avif' };
+  const ehImagem = f => !!f && ((f.type || '').startsWith('image/') || EXT_IMG.test(f.name || ''));
+  function lerImagem(f) {  // → data URL com MIME correto mesmo quando o sistema não informa o tipo
+    return new Promise((ok, err) => {
+      const r = new FileReader();
+      r.onload = () => { let d = String(r.result); if (!/^data:image\//.test(d)) { const e = ((f.name || '').split('.').pop() || 'png').toLowerCase(); d = 'data:' + (MIME_EXT[e] || 'image/png') + d.slice(d.indexOf(';')); } ok(d); };
+      r.onerror = err; r.readAsDataURL(f);
+    });
+  }
+  const tamanhoB64 = d => Math.round((d.length - d.indexOf(',') - 1) * 3 / 4);
+  const fmtTam = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
   const DATA_IMG = /\(data:image\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=\s]+\)/gi;
 
   /* ---------------------------- Renderizador ---------------------------- */
@@ -158,6 +170,23 @@
 .mde-pv .sl .sn{position:absolute;right:8px;bottom:4px;font-size:11px;color:#8a96a6}.mde-pv .sl.title .sn{color:#cfe3f5}.mde-pv .sl.title .nt{color:#ffe08a}
 .mde-pv .sl .nt{position:absolute;left:22px;right:40px;bottom:4px;font-size:11px;color:#7a6400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mde-pv .sl figure img{max-height:180px}
+.mde{position:relative}
+.mde.drag::after{content:'Solte as imagens para inserir no texto';position:absolute;inset:38px 0 24px 0;display:flex;align-items:center;justify-content:center;background:rgba(10,124,193,.12);border:3px dashed #0a7cc1;color:#0b3d6e;font:600 16px "Segoe UI",Arial,sans-serif;z-index:5;pointer-events:none}
+.mde-gal{border-top:1px solid #dfe5ee;background:#fbfcfe}
+.mde-gal>summary{cursor:pointer;padding:6px 10px;font:600 13px "Segoe UI",Arial,sans-serif;color:#0b3d6e;list-style:none;display:flex;gap:8px;align-items:center}
+.mde-gal>summary::-webkit-details-marker{display:none}.mde-gal>summary::before{content:'▸';transition:transform .15s}.mde-gal[open]>summary::before{transform:rotate(90deg)}
+.mde-gal>summary .gb{margin-left:auto}
+.mde-gl{display:flex;flex-wrap:wrap;gap:10px;padding:4px 10px 10px}
+.mde-gi{width:176px;border:1px solid #dfe5ee;border-radius:8px;background:#fff;overflow:hidden;font:12px "Segoe UI",Arial,sans-serif;display:flex;flex-direction:column}
+.mde-gi .th{height:90px;display:flex;align-items:center;justify-content:center;background:repeating-conic-gradient(#f3f6fa 0 25%,#fff 0 50%) 50%/14px 14px;cursor:pointer}
+.mde-gi .th img{max-width:100%;max-height:90px;object-fit:contain}
+.mde-gi .mt{padding:4px 6px;color:#1b2430;line-height:1.3}.mde-gi .mt b{color:#0b3d6e}.mde-gi .mt span{color:#5a6676}
+.mde-gi input{width:100%;border:1px solid #dfe5ee;border-radius:4px;padding:2px 4px;font:12px "Segoe UI",Arial,sans-serif;margin-top:3px}
+.mde-gi .ac{display:flex;gap:2px;padding:0 4px 5px}.mde-gi .ac button{flex:1;margin:0!important;padding:3px 0!important;font:600 11.5px "Segoe UI",Arial,sans-serif!important;border-radius:4px!important;background:#eaf1f8!important;color:#0b3d6e!important;border:1px solid #c9d6e6!important;cursor:pointer}
+.mde-gi .ac button.rm{background:#fff!important;color:#b42318!important;border-color:#e8b4ae!important}
+.mde-gi.nu{opacity:.6}.mde-gi.nu .mt::after{content:' · não usada';color:#9a5b00}
+.mde-ge{padding:4px 12px 10px;color:#5a6676;font:13px "Segoe UI",Arial,sans-serif}
+.mde-gb{background:#0a7cc1!important;color:#fff!important;border:0!important;border-radius:5px;padding:3px 10px!important;margin:0!important;font:600 12px "Segoe UI",Arial,sans-serif!important;cursor:pointer}
 @media(max-width:900px){.mde-body{flex-direction:column;height:auto;resize:none}.mde-ta{min-height:300px}.mde-pv{border-left:0;border-top:1px solid #dfe5ee;min-height:300px}}`;
   function injectCSS() { if (document.getElementById('mde-css')) return; const s = document.createElement('style'); s.id = 'mde-css'; s.textContent = CSS; document.head.appendChild(s); }
 
@@ -175,7 +204,10 @@
     const ta = document.createElement('textarea'); ta.className = 'mde-ta'; ta.spellcheck = true; ta.lang = 'pt-BR'; ta.placeholder = real.placeholder || '';
     const pv = document.createElement('div'); pv.className = 'mde-pv';
     const st = document.createElement('div'); st.className = 'mde-st';
-    body.append(ta, pv); box.append(tb, body, st);
+    body.append(ta, pv);
+    const gal = document.createElement('details'); gal.className = 'mde-gal';
+    gal.innerHTML = '<summary>Imagens do texto <span class="gc">(0)</span><button type="button" class="mde-gb gb">+ Adicionar imagens</button></summary><div class="mde-gl"></div>';
+    box.append(tb, body, st, gal);
     real.hidden = true; real.after(box);
     const fileIn = document.createElement('input'); fileIn.type = 'file'; fileIn.accept = 'image/*'; fileIn.multiple = true; fileIn.hidden = true; box.append(fileIn);
 
@@ -205,10 +237,13 @@
       const v = ta.value, words = (v.replace(/\(img:\d+\)/g, '').match(/[\wÀ-ÿ]+/g) || []).length;
       const ni = (real.value.match(/!\[[^\]]*\]\(/g) || []).length;
       const extra = tipo === 'slides' ? 'Slides: ' + (real.value.replace(/^---\n[\s\S]*?\n---\n/, '').split(/\n---\s*\n/).filter(p => p.trim()).length) : 'Seções: ' + (v.match(/^## /gm) || []).length;
+      galeria();
       st.innerHTML = '<span>Palavras: ' + words.toLocaleString('pt-BR') + '</span><span>Linhas: ' + v.split('\n').length + '</span><span>Imagens: ' + ni + '</span><span>' + extra + '</span><span style="flex:1"></span><span>' + (real.value.length / 1024).toFixed(1) + ' KB</span>';
     }
 
-    let emCmd = false;
+    let emCmd = false, tocado = false;
+    ta.addEventListener('focus', () => { tocado = true; });
+    ta.addEventListener('mousedown', () => { tocado = true; });
     function ins(text, selFrom, selTo) {
       ta.focus();
       const s = ta.selectionStart;
@@ -245,11 +280,54 @@
     }
     async function imagensDeArquivos(files) {
       const out = [];
-      for (const f of files) if (f.type.startsWith('image/')) {
-        const d = await new Promise((ok, err) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = err; r.readAsDataURL(f); });
-        out.push('![' + f.name.replace(/\.[^.]+$/, '') + '](img:' + addImg(d) + ')');
+      for (const f of files) if (ehImagem(f)) {
+        const d = await lerImagem(f), nome = (f.name && f.name !== 'image.png' ? f.name : 'imagem colada').replace(/\.[^.]+$/, '').replace(/[\[\]]/g, '');
+        out.push('![' + nome + '](img:' + addImg(d) + ')');
       }
       return out;
+    }
+    async function inserirImagens(files, comoBloco) {  // insere no cursor; retorna quantas
+      if (!tocado) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+      const t = await imagensDeArquivos([...files]); if (!t.length) return 0;
+      const v = ta.value, p = ta.selectionStart, sozinha = (!v.slice(0, p).trim() || v.slice(0, p).endsWith('\n')) && (!v.slice(ta.selectionEnd).trim() || v.slice(ta.selectionEnd).startsWith('\n'));
+      if (comoBloco || t.length > 1 || sozinha) block(t.join('\n\n')); else ins(t.join(' '));
+      ta.setSelectionRange(ta.selectionEnd, ta.selectionEnd);  // cursor após as imagens (não deixa seleção)
+      galeria(); if (!gal.open) gal.open = true;
+      return t.length;
+    }
+    function imagensNoTexto() {  // [{n, dados, alts:[], usos}]
+      const mapa = new Map(), re = /!\[([^\]]*)\]\(img:(\d+)\)/g; let m;
+      while ((m = re.exec(ta.value))) { const n = +m[2]; if (!imgs[n - 1]) continue; const it = mapa.get(n) || { n, dados: imgs[n - 1], alts: [], usos: 0 }; it.usos++; it.alts.push(m[1]); mapa.set(n, it); }
+      return [...mapa.values()].sort((a, b) => a.n - b.n);
+    }
+    let galAssin = '';
+    function galeria() {
+      const l = imagensNoTexto(), assin = l.map(x => x.n + ':' + x.usos + ':' + x.alts.join('|')).join(',');
+      gal.querySelector('.gc').textContent = '(' + l.length + ')';
+      if (assin === galAssin) return; galAssin = assin;
+      const gl = gal.querySelector('.mde-gl');
+      if (!l.length) { gl.innerHTML = '<div class="mde-ge">Nenhuma imagem no texto. Arraste imagens para o editor, cole com Ctrl+V ou use “+ Adicionar imagens”. Elas são guardadas em base64 dentro do próprio Markdown.</div>'; return; }
+      gl.innerHTML = l.map(x => '<div class="mde-gi" data-n="' + x.n + '"><div class="th" title="Ir para a imagem no texto"><img alt="" src="' + x.dados + '"></div>' +
+        '<div class="mt"><b>(img:' + x.n + ')</b> <span>' + fmtTam(tamanhoB64(x.dados)) + (x.usos > 1 ? ' · ' + x.usos + ' usos' : '') + '</span>' +
+        '<input type="text" value="' + esc(x.alts[0]) + '" title="Descrição (texto alternativo / legenda)" placeholder="Descrição / legenda"></div>' +
+        '<div class="ac"><button type="button" data-a="ins" title="Inserir de novo no cursor">Inserir</button><button type="button" data-a="ver" title="Localizar no texto">Localizar</button><button type="button" class="rm" data-a="rm" title="Remover do texto">Remover</button></div></div>').join('');
+      gl.querySelectorAll('.mde-gi').forEach(card => {
+        const n = +card.dataset.n, ref = '](img:' + n + ')';
+        const localizar = () => { const i = ta.value.indexOf(ref); if (i < 0) return; const a = ta.value.lastIndexOf('![', i); ta.focus(); ta.setSelectionRange(a, i + ref.length); const lin = ta.value.slice(0, a).split('\n').length; ta.scrollTop = Math.max(0, (lin - 3) * parseFloat(getComputedStyle(ta).lineHeight || 20)); };
+        card.querySelector('.th').onclick = localizar;
+        card.querySelector('[data-a="ver"]').onclick = localizar;
+        card.querySelector('[data-a="ins"]').onclick = () => { const alt = card.querySelector('input').value.replace(/[\[\]]/g, ''); ins('![' + alt + '](img:' + n + ')'); };
+        card.querySelector('[data-a="rm"]').onclick = () => {
+          if (!confirm('Remover esta imagem do texto (todas as ocorrências)? Use Ctrl+Z para desfazer.')) return;
+          const pc = ta.selectionStart; ta.focus(); ta.setSelectionRange(0, ta.value.length);
+          ins(ta.value.replace(new RegExp('\\n?!\\[[^\\]]*\\]\\(img:' + n + '\\)\\n?', 'g'), m => m.startsWith('\n') && m.endsWith('\n') ? '\n' : ''), 0, 0);
+          const q = Math.min(pc, ta.value.length); ta.setSelectionRange(q, q); galeria();
+        };
+        card.querySelector('input').onchange = e => {
+          const alt = e.target.value.replace(/[\[\]]/g, ''), novo = ta.value.replace(new RegExp('!\\[[^\\]]*\\]\\(img:' + n + '\\)', 'g'), '![' + alt + '](img:' + n + ')');
+          if (novo !== ta.value) { const p = ta.selectionStart; ta.focus(); ta.setSelectionRange(0, ta.value.length); ins(novo, 0, 0); ta.setSelectionRange(p, p); galeria(); }
+        };
+      });
     }
     function tabela() {
       const c = Math.max(1, Math.min(8, parseInt(prompt('Número de colunas:', '3')) || 3)), r = Math.max(1, Math.min(30, parseInt(prompt('Número de linhas (sem o cabeçalho):', '3')) || 3));
@@ -322,25 +400,38 @@
       }
     });
     ta.addEventListener('paste', async e => {
-      const files = [...((e.clipboardData || {}).files || [])].filter(f => f.type.startsWith('image/'));
-      if (!files.length) return;
-      e.preventDefault(); const t = await imagensDeArquivos(files); ins(t.join('\n'));
+      const cd = e.clipboardData; if (!cd) return;
+      let files = [...(cd.items || [])].filter(i => i.kind === 'file').map(i => i.getAsFile()).filter(ehImagem);
+      if (!files.length) files = [...(cd.files || [])].filter(ehImagem);
+      if (!files.length) {  // imagem copiada de página web (HTML com <img src="data:...">)
+        const h = cd.getData('text/html'), m = h && h.match(/<img[^>]+src="(data:image\/[^"]+)"/i);
+        if (m) { e.preventDefault(); ins('![imagem colada](img:' + addImg(m[1]) + ')'); galeria(); }
+        return;
+      }
+      e.preventDefault(); const n = await inserirImagens(files, true); if (n && opt.onInfo) opt.onInfo(n + ' imagem(ns) colada(s) no texto.');
     });
-    ta.addEventListener('dragover', e => e.preventDefault());
-    ta.addEventListener('drop', async e => {
-      const files = [...e.dataTransfer.files]; if (!files.length) return;
-      e.preventDefault();
-      if (files.some(f => !f.type.startsWith('image/')) && opt.onFiles) { opt.onFiles(files); return; }
-      const t = await imagensDeArquivos(files); if (t.length) ins(t.join('\n'));
+    let dragN = 0;
+    const temArquivos = e => [...((e.dataTransfer || {}).types || [])].includes('Files');
+    box.addEventListener('dragenter', e => { if (!temArquivos(e)) return; e.preventDefault(); dragN++; box.classList.add('drag'); });
+    box.addEventListener('dragleave', () => { if (--dragN <= 0) { dragN = 0; box.classList.remove('drag'); } });
+    box.addEventListener('dragover', e => { if (temArquivos(e)) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; } });
+    box.addEventListener('drop', async e => {
+      dragN = 0; box.classList.remove('drag');
+      const files = [...((e.dataTransfer || {}).files || [])]; if (!files.length) return;
+      e.preventDefault(); e.stopPropagation();
+      if (files.some(f => !ehImagem(f)) && opt.onFiles) { opt.onFiles(files); return; }
+      if (e.target === ta && document.caretPositionFromPoint) { const c = document.caretPositionFromPoint(e.clientX, e.clientY); if (c && c.offsetNode === ta) ta.setSelectionRange(c.offset, c.offset); }
+      const n = await inserirImagens(files); if (n && opt.onInfo) opt.onInfo(n + ' imagem(ns) inserida(s) no texto.');
     });
-    fileIn.onchange = async () => { const t = await imagensDeArquivos([...fileIn.files]); if (t.length) block(t.join('\n\n')); fileIn.value = ''; };
+    gal.querySelector('.gb').onclick = e => { e.preventDefault(); fileIn.click(); };
+    fileIn.onchange = async () => { const n = await inserirImagens([...fileIn.files], true); if (n && opt.onInfo) opt.onInfo(n + ' imagem(ns) inserida(s) no texto.'); fileIn.value = ''; };
     let sync = false;
     ta.addEventListener('scroll', () => { if (box.dataset.m !== 's' || sync) return; sync = true; pv.scrollTop = (ta.scrollTop / Math.max(1, ta.scrollHeight - ta.clientHeight)) * (pv.scrollHeight - pv.clientHeight); requestAnimationFrame(() => sync = false); });
     pv.addEventListener('scroll', () => { if (box.dataset.m !== 's' || sync) return; sync = true; ta.scrollTop = (pv.scrollTop / Math.max(1, pv.scrollHeight - pv.clientHeight)) * (ta.scrollHeight - ta.clientHeight); requestAnimationFrame(() => sync = false); });
 
     pull(); snap('ini'); preview(); status(); atualizaUR();
     setInterval(pull, 600);
-    return { refresh: pull, textarea: ta, element: box, render: () => preview(), desfazer, refazer };
+    return { refresh: pull, textarea: ta, element: box, render: () => preview(), desfazer, refazer, inserirImagens, ehImagem };
   }
 
   const ATALHOS = [
@@ -351,5 +442,5 @@
     ['Tab / Shift + Tab', 'Aumentar / diminuir recuo (listas)'], ['Enter', 'Continuar lista ou checklist (Enter em item vazio encerra)'],
     ['Ctrl + V', 'Colar texto ou imagem (imagem vira base64)'], ['Esc', 'Sair da tela cheia']
   ];
-  global.MDEditor = { create, render, renderSlides, ATALHOS };
+  global.MDEditor = { create, render, renderSlides, ATALHOS, ehImagem, lerImagem };
 })(window);
