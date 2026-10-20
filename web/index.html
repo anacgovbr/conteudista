@@ -3,32 +3,40 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
 <title>Conteudista ANAC — Gerador de Cursos (Markdown → HTML, DOCX e PPTX)</title>
 <style>
-:root{--pri:#0b3d6e;--acc:#0a7cc1;--ok:#1e7b4f;--err:#b42318;--bg:#f6f8fb;--line:#dfe5ee;--th:#eaf1f8;--ink:#1b2430;--mu:#5a6676}
+:root{--pri:#0b3d6e;--acc:#0a7cc1;--ok:#1e7b4f;--err:#b42318;--wa:#9a5b00;--bg:#f6f8fb;--line:#dfe5ee;--th:#eaf1f8;--ink:#1b2430;--mu:#5a6676}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
 header{background:var(--pri);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-header h1{font-size:18px;margin:0;flex:1}header small{opacity:.85;font-weight:400}
+header h1{font-size:18px;margin:0;flex:1}header small{opacity:.85;font-weight:400}#ver{font-size:12px;opacity:.9}
 main{max-width:1200px;margin:auto;padding:20px}
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:20px}
-h2{color:var(--pri);font-size:18px;margin:0 0 10px}h3{color:var(--pri);font-size:15px;margin:16px 0 6px}
-.note{color:var(--mu);margin:4px 0 12px}
-.priv{background:#e9f6f0;border-left:5px solid var(--ok);padding:10px 14px;border-radius:0 8px 8px 0;margin:0 0 16px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+h2{color:var(--pri);font-size:18px;margin:0 0 10px}h3{color:var(--pri);font-size:15px;margin:18px 0 6px}
+.note{color:var(--mu);margin:4px 0 10px;font-size:14px}
+.box{padding:10px 14px;border-radius:0 8px 8px 0;margin:0 0 12px}.priv{background:#e9f6f0;border-left:5px solid var(--ok)}.warn{background:#fff4e0;border-left:5px solid var(--wa)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
 label{font-weight:600;font-size:13px;color:var(--pri);display:block;margin-bottom:4px}
-input[type=text]{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;font:inherit}
+label.inl{display:inline-flex;align-items:center;gap:6px;font-weight:400;color:var(--ink);margin:4px 14px 4px 0}
+input[type=text],input[type=password],input[type=url],select{width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;font:inherit;background:#fff}
 textarea{width:100%;height:360px;padding:10px;border:1px solid var(--line);border-radius:8px;font:12.5px/1.45 Consolas,monospace;resize:vertical}
 .drop{border:2px dashed var(--line);border-radius:8px;padding:8px;text-align:center;color:var(--mu);font-size:13px;margin-bottom:6px;cursor:pointer}
 .drop.over{border-color:var(--acc);background:var(--th)}
-button,.btn{background:var(--acc);color:#fff;border:0;border-radius:6px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;margin:4px 6px 4px 0}
+button,.btn{background:var(--acc);color:#fff;border:0;border-radius:6px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;margin:4px 6px 4px 0}
 .sec{background:#fff!important;color:var(--acc)!important;border:1px solid var(--acc)!important}
+.dan{background:#fff!important;color:var(--err)!important;border:1px solid var(--err)!important}
+.mini{padding:4px 9px;font-size:13px;font-weight:600}
 button:disabled{opacity:.5;cursor:wait}
-#log{background:#0d1b2a;color:#cfe3f5;font:12px/1.45 Consolas,monospace;border-radius:8px;padding:10px;height:140px;overflow:auto;white-space:pre-wrap;margin-top:12px}
-.ok{color:#5fd39b}.err{color:#ff8a80}
+#log{background:#0d1b2a;color:#cfe3f5;font:12px/1.45 Consolas,monospace;border-radius:8px;padding:10px;height:150px;overflow:auto;white-space:pre-wrap;margin-top:12px}
+.ok{color:#5fd39b}.err{color:#ff8a80}.wa{color:#ffc266}
+#imgst{font-size:13px;margin:6px 0}
 iframe{width:100%;height:560px;border:1px solid var(--line);border-radius:8px;margin-top:10px;background:#fff}
-ol li{margin:4px 0}code{background:var(--th);padding:1px 5px;border-radius:4px}
-@media(max-width:900px){.grid,.row{grid-template-columns:1fr}}
+table{border-collapse:collapse;width:100%;font-size:13.5px;margin-top:6px}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:middle}th{background:var(--th);color:var(--pri)}
+td.url{word-break:break-all;font:12px Consolas,monospace}
+.panel{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fbfcfe}
+code{background:var(--th);padding:1px 5px;border-radius:4px}
+@media(max-width:900px){.grid,.grid3,.row{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -40,13 +48,13 @@ ol li{margin:4px 0}code{background:var(--th);padding:1px 5px;border-radius:4px}
 
 <section class="card">
   <h2>Como funciona</h2>
-  <p class="priv"><b>Privacidade:</b> a conversão acontece inteiramente no seu navegador. O conteúdo dos cursos <b>não é enviado, publicado nem salvo</b> em servidor algum. Ao fechar ou recarregar a página, tudo é descartado.</p>
+  <p class="box priv"><b>Privacidade:</b> a conversão roda inteiramente no seu navegador. Por padrão, <b>nada é enviado nem salvo</b>. Você decide se quer guardar o conteúdo <b>na sua máquina</b> (rascunhos no navegador ou em uma pasta) ou <b>compartilhar por link criptografado</b> — a chave fica só no link, nunca no servidor.</p>
   <ol>
-    <li>Cole ou arraste o <code>guia.md</code> e o <code>apresentacao.md</code> (gerados pelo agente "Gerador de Cursos ANAC" ou editados por você).</li>
-    <li>Ajuste o prefixo e o rodapé, se quiser.</li>
+    <li>Cole ou arraste o <code>guia.md</code> e o <code>apresentacao.md</code>. Arraste também as <b>imagens</b> referenciadas (ou cole com <b>Ctrl+V</b>): elas são convertidas para <b>base64</b> e passam a fazer parte do texto.</li>
     <li>Clique em <b>Gerar arquivos</b> e baixe os 6 arquivos (ou o ZIP).</li>
+    <li>Opcional: salve na sua máquina ou crie um link criptografado (seção <b>Guardar e compartilhar</b>).</li>
   </ol>
-  <p class="note">Na primeira geração, o navegador carrega o motor Python (20 a 60 segundos). As gerações seguintes são imediatas.</p>
+  <p class="note">Na primeira geração, o navegador carrega o motor Python (20 a 60 segundos).</p>
 </section>
 
 <section class="card">
@@ -59,80 +67,413 @@ ol li{margin:4px 0}code{background:var(--th);padding:1px 5px;border-radius:4px}
   <div class="grid">
     <div>
       <label>Guia de treinamento (guia.md)</label>
-      <div class="drop" data-t="g">Arraste o <b>guia.md</b> aqui ou clique para selecionar</div>
+      <div class="drop" data-t="g">Arraste o <b>guia.md</b> e suas <b>imagens</b> aqui, ou clique para selecionar</div>
       <textarea id="g" spellcheck="false" placeholder="# Título do curso — Guia Prático"></textarea>
     </div>
     <div>
       <label>Apresentação (apresentacao.md)</label>
-      <div class="drop" data-t="s">Arraste o <b>apresentacao.md</b> aqui ou clique para selecionar</div>
+      <div class="drop" data-t="s">Arraste o <b>apresentacao.md</b> e suas <b>imagens</b> aqui, ou clique para selecionar</div>
       <textarea id="s" spellcheck="false" placeholder="---&#10;title: Título&#10;---&#10;&#10;# Slide 1"></textarea>
     </div>
   </div>
+  <div id="imgst" class="note">Imagens: nenhuma referência encontrada.</div>
   <p>
     <button id="go">Gerar arquivos</button>
+    <button id="emb" class="sec">Embutir imagens (base64)</button>
     <button id="ex" class="sec">Carregar exemplo</button>
-    <button id="clr" class="sec">Limpar tudo</button>
-    <input id="fmd" type="file" accept=".md,.txt" hidden>
+    <button id="clr" class="sec">Limpar tela</button>
+    <input id="fmd" type="file" accept=".md,.txt,.markdown,image/*" multiple hidden>
   </p>
-  <div id="log">Pronto. Nenhum conteúdo é armazenado por esta página.</div>
+  <div id="log">Pronto. Nenhum conteúdo é armazenado sem sua autorização.</div>
   <h3>Arquivos gerados</h3>
   <div id="res" class="note">Nenhum arquivo gerado ainda.</div>
   <iframe id="prev" title="Pré-visualização" hidden></iframe>
 </section>
 
 <section class="card">
-  <h2>Dicas</h2>
-  <ul>
-    <li><b>DOCX:</b> o sumário é atualizado ao abrir no Word (ou botão direito → <b>Atualizar campo</b>).</li>
-    <li><b>Fluxos Mermaid:</b> desenhados no HTML; no DOCX e no PPTX aparecem como tabela "De | Condição | Para".</li>
-    <li><b>Links:</b> use o formato <code>[texto](https://endereco)</code>; ficam clicáveis nos três formatos.</li>
-    <li><b>Rede bloqueada?</b> A página precisa acessar <code>cdn.jsdelivr.net</code> para carregar o motor Python.</li>
-  </ul>
+  <h2>Guardar e compartilhar</h2>
+  <div class="grid3">
+    <div class="panel">
+      <h3 style="margin-top:0">1. Na sua máquina</h3>
+      <p class="note">Fica <b>somente neste computador</b> (armazenamento do navegador ou pasta escolhida).</p>
+      <label class="inl"><input type="checkbox" id="auto"> Salvar automaticamente neste navegador</label>
+      <label for="dname" style="margin-top:8px">Nome do rascunho</label>
+      <input id="dname" type="text" placeholder="Ex.: Curso SAR v2">
+      <p>
+        <button id="dsave" class="mini">Salvar rascunho</button>
+        <button id="fsave" class="mini sec" title="Salva os .md (e os arquivos gerados) em uma pasta do computador">Salvar em pasta…</button>
+        <button id="mdl" class="mini sec">Baixar .md</button>
+      </p>
+      <div id="drafts" class="note">Nenhum rascunho salvo.</div>
+      <p><button id="dclear" class="mini dan">Apagar todos os dados locais</button></p>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0">2. Link criptografado</h3>
+      <p class="note">O conteúdo é cifrado no navegador (<b>AES-256-GCM</b>) antes de sair do computador. Quem tiver o link completo consegue abrir.</p>
+      <label for="mode">Onde guardar</label>
+      <select id="mode">
+        <option value="self">Link autocontido (sem servidor — conteúdo vai no próprio link)</option>
+        <option value="pb">PrivateBin (repositório criptografado)</option>
+      </select>
+      <div id="pbopts" hidden>
+        <label for="pbi" style="margin-top:8px">Instância PrivateBin</label>
+        <input id="pbi" type="url" value="https://privatebin.net/">
+        <div class="grid" style="gap:8px;margin-top:8px">
+          <div><label for="exp">Expira em</label>
+            <select id="exp"><option value="1hour">1 hora</option><option value="1day">1 dia</option><option value="1week" selected>1 semana</option><option value="1month">1 mês</option><option value="1year">1 ano</option><option value="never">Nunca</option></select></div>
+          <div><label class="inl" style="margin-top:22px"><input type="checkbox" id="burn"> Apagar após 1ª leitura</label></div>
+        </div>
+      </div>
+      <div id="pwopts">
+        <label for="pw" style="margin-top:8px">Senha (opcional)</label>
+        <input id="pw" type="password" placeholder="Se usar, envie a senha por outro canal" autocomplete="new-password">
+      </div>
+      <label class="inl"><input type="checkbox" id="keep"> Lembrar os links neste navegador</label>
+      <p><button id="share">Criar link</button></p>
+    </div>
+    <div class="panel">
+      <h3 style="margin-top:0">3. Abrir um link</h3>
+      <p class="note">Cole um link criado aqui (autocontido ou PrivateBin) para carregar o conteúdo nos editores.</p>
+      <label for="olink">Link</label>
+      <input id="olink" type="url" placeholder="https://…">
+      <label for="opw" style="margin-top:8px">Senha (se houver)</label>
+      <input id="opw" type="password" autocomplete="off">
+      <p><button id="open" class="sec">Abrir link</button></p>
+    </div>
+  </div>
+  <h3>Links criados</h3>
+  <div id="links" class="note">Nenhum link nesta sessão.</div>
+  <p class="box warn" style="margin-top:12px"><b>Atenção:</b> não compartilhe dados pessoais ou informações restritas por link, mesmo criptografado, sem autorização da sua chefia. Links longos (autocontidos) podem ser cortados por e-mail ou Teams — prefira o PrivateBin para conteúdos grandes.</p>
 </section>
 </main>
 
 <script>
+'use strict';
 const PYODIDE_URL = 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/';
 const $ = id => document.getElementById(id);
-const log = (m, c) => { const L = $('log'); L.innerHTML += '\n' + (c ? '<span class="' + c + '">' + m + '</span>' : m); L.scrollTop = L.scrollHeight; };
-let py = null, urls = [];
+const enc = new TextEncoder(), dec = new TextDecoder();
+const log = (m, c) => { const L = $('log'); L.innerHTML += '\n' + (c ? '<span class="' + c + '">' + esc(m) + '</span>' : esc(m)); L.scrollTop = L.scrollHeight; };
+const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+let py = null, urls = [], ultimos = [];  // ultimos: [{nome, blob}]
 
-// ---------- Entrada de arquivos (somente em memória) ----------
+/* =========================== Utilitários de bytes =========================== */
+const b64 = u8 => { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode.apply(null, u8.subarray(i, i + 0x8000)); return btoa(s); };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+const b64u = u8 => b64(u8).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+const unb64u = s => unb64(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4));
+async function streamBytes(u8, ts) { return new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(ts)).arrayBuffer()); }
+const deflate = u8 => streamBytes(u8, new CompressionStream('deflate-raw'));
+const inflate = u8 => streamBytes(u8, new DecompressionStream('deflate-raw'));
+const B58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+function b58enc(u8) {
+  let n = 0n; for (const b of u8) n = n * 256n + BigInt(b);
+  let s = ''; while (n > 0n) { s = B58[Number(n % 58n)] + s; n /= 58n; }
+  for (const b of u8) { if (b === 0) s = '1' + s; else break; }
+  return s;
+}
+function b58dec(s, len) {
+  let n = 0n; for (const ch of s) { const i = B58.indexOf(ch); if (i < 0) throw new Error('Chave inválida no link.'); n = n * 58n + BigInt(i); }
+  const out = []; while (n > 0n) { out.unshift(Number(n % 256n)); n /= 256n; }
+  for (const ch of s) { if (ch === '1') out.unshift(0); else break; }
+  while (len && out.length < len) out.unshift(0);
+  return new Uint8Array(out);
+}
+const blobToDataURL = b => new Promise((ok, err) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = err; r.readAsDataURL(b); });
+
+/* =========================== Conteúdo (pacote) =========================== */
+const SEP = '<!-- conteudista:apresentacao -->';
+const pacote = () => ({ v: 1, g: $('g').value, s: $('s').value, p: $('pref').value, r: $('rod').value, b: $('bar').value });
+function aplicar(d) { $('g').value = d.g || ''; $('s').value = d.s || ''; $('pref').value = d.p || 'Meu_Curso'; $('rod').value = d.r || ''; $('bar').value = d.b || ''; statusImagens(); }
+function paraTexto(d) {  // Markdown único (legível no PrivateBin)
+  const cfg = JSON.stringify({ p: d.p, r: d.r, b: d.b });
+  return '<!-- conteudista:config ' + cfg + ' -->\n' + d.g + '\n\n' + SEP + '\n\n' + d.s;
+}
+function deTexto(t) {
+  let cfg = {}; const m = t.match(/^<!-- conteudista:config (\{.*?\}) -->\n?/);
+  if (m) { try { cfg = JSON.parse(m[1]); } catch {} t = t.slice(m[0].length); }
+  const i = t.indexOf(SEP); const g = i < 0 ? t : t.slice(0, i), s = i < 0 ? '' : t.slice(i + SEP.length);
+  return { g: g.replace(/\s+$/, '\n'), s: s.replace(/^\s+/, ''), p: cfg.p, r: cfg.r, b: cfg.b };
+}
+
+/* =========================== Imagens → base64 =========================== */
+const IMG = /!\[([^\]]*)\]\(([^)\s]+)\)/g;
+const imgMap = new Map();   // nome do arquivo (minúsculo) → dataURL
+const nomeBase = src => { try { src = decodeURIComponent(src); } catch {} return src.split(/[\\/]/).pop().split(/[?#]/)[0].toLowerCase(); };
+function pendentes(txt) { return [...txt.matchAll(IMG)].map(m => m[2]).filter(s => !s.startsWith('data:')); }
+function statusImagens() {
+  const t = $('g').value + '\n' + $('s').value, tot = [...t.matchAll(IMG)].length, pen = pendentes(t);
+  $('imgst').innerHTML = !tot ? 'Imagens: nenhuma referência encontrada.' :
+    'Imagens: <b>' + (tot - pen.length) + '</b> de ' + tot + ' em base64' +
+    (pen.length ? ' · <span style="color:var(--wa)">pendentes: ' + esc([...new Set(pen.map(nomeBase))].join(', ')) + ' — arraste esses arquivos para embutir.</span>' : ' ✔');
+}
+async function embutir(txt, rel) {
+  const falhas = []; let n = 0; const cache = new Map();
+  for (const src of new Set(pendentes(txt))) {
+    let data = imgMap.get(nomeBase(src));
+    if (!data && /^https?:\/\//i.test(src)) {
+      try { const r = await fetch(src, { mode: 'cors' }); if (!r.ok) throw 0; const b = await r.blob(); if (!b.type.startsWith('image/')) throw 0; data = await blobToDataURL(b); }
+      catch { data = null; }
+    }
+    if (data) { cache.set(src, data); n++; } else falhas.push(src);
+  }
+  const out = txt.replace(IMG, (m, alt, src) => cache.has(src) ? '![' + alt + '](' + cache.get(src) + ')' : m);
+  return { out, n, falhas };
+}
+async function embutirTudo(silencioso) {
+  const a = await embutir($('g').value), b = await embutir($('s').value);
+  $('g').value = a.out; $('s').value = b.out; statusImagens();
+  const n = a.n + b.n, f = [...new Set([...a.falhas, ...b.falhas])];
+  if (n) log('Imagens convertidas para base64: ' + n + '.', 'ok');
+  if (f.length && !silencioso) log('Imagens não encontradas (arraste os arquivos ou verifique o endereço): ' + f.join(', '), 'wa');
+  if (n) agendarAuto();
+  return f;
+}
+$('emb').onclick = () => embutirTudo(false);
+
+/* =========================== Entrada de arquivos =========================== */
 let alvo = 'g';
+async function receberArquivos(files, t) {
+  let md = null;
+  for (const f of files) {
+    if (f.type.startsWith('image/')) { imgMap.set(f.name.toLowerCase(), await blobToDataURL(f)); }
+    else if (/\.(md|markdown|txt)$/i.test(f.name) || f.type.startsWith('text/')) { if (!md) md = f; }
+  }
+  if (md) { $(t).value = await md.text(); sugerirPrefixo(); log('Arquivo carregado: ' + md.name, 'ok'); }
+  const nimg = [...files].filter(f => f.type.startsWith('image/')).length;
+  if (nimg) log(nimg + ' imagem(ns) recebida(s).', 'ok');
+  await embutirTudo(true);
+}
 document.querySelectorAll('.drop').forEach(d => {
   d.onclick = () => { alvo = d.dataset.t; $('fmd').click(); };
   d.ondragover = e => { e.preventDefault(); d.classList.add('over'); };
   d.ondragleave = () => d.classList.remove('over');
-  d.ondrop = async e => { e.preventDefault(); d.classList.remove('over'); const f = e.dataTransfer.files[0]; if (f) { $(d.dataset.t).value = await f.text(); sugerirPrefixo(); } };
+  d.ondrop = e => { e.preventDefault(); d.classList.remove('over'); receberArquivos(e.dataTransfer.files, d.dataset.t); };
 });
-$('fmd').onchange = async e => { const f = e.target.files[0]; if (f) { $(alvo).value = await f.text(); sugerirPrefixo(); } e.target.value = ''; };
+['g', 's'].forEach(id => {
+  const ta = $(id);
+  ta.ondragover = e => e.preventDefault();
+  ta.ondrop = e => { if (e.dataTransfer.files.length) { e.preventDefault(); receberArquivos(e.dataTransfer.files, id); } };
+  ta.addEventListener('paste', async e => {
+    const it = [...(e.clipboardData || {}).items || []].find(i => i.type.startsWith('image/'));
+    if (!it) return;
+    e.preventDefault();
+    const data = await blobToDataURL(it.getAsFile()), ins = '![imagem colada](' + data + ')';
+    const a = ta.selectionStart, b = ta.selectionEnd; ta.value = ta.value.slice(0, a) + ins + ta.value.slice(b);
+    ta.selectionStart = ta.selectionEnd = a + ins.length; statusImagens(); agendarAuto(); log('Imagem colada e convertida para base64.', 'ok');
+  });
+  ta.addEventListener('input', () => { statusImagens(); agendarAuto(); });
+});
+$('fmd').onchange = async e => { await receberArquivos(e.target.files, alvo); e.target.value = ''; };
+['pref', 'rod', 'bar'].forEach(id => $(id).addEventListener('input', agendarAuto));
 
 function sugerirPrefixo() {
   if ($('pref').value !== 'Meu_Curso') return;
   const m = $('g').value.match(/^#\s+(.+)$/m); if (!m) return;
-  const p = m[1].split(/[—–-]/)[0].normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w]+/g, '_').replace(/^_|_$/g, '').slice(0, 60);
+  const p = m[1].split(/[—–]| - /)[0].normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w]+/g, '_').replace(/^_|_$/g, '').slice(0, 60);
   if (p) $('pref').value = p;
 }
-
 $('ex').onclick = async () => {
   try {
     $('g').value = await (await fetch('exemplo/guia.md', { cache: 'no-store' })).text();
     $('s').value = await (await fetch('exemplo/apresentacao.md', { cache: 'no-store' })).text();
-    $('pref').value = 'Exemplo'; log('Exemplo carregado.', 'ok');
+    $('pref').value = 'Exemplo'; statusImagens(); log('Exemplo carregado.', 'ok');
   } catch { log('Exemplo indisponível.', 'err'); }
 };
+function limparDownloads() { urls.forEach(u => URL.revokeObjectURL(u)); urls = []; ultimos = []; $('res').innerHTML = 'Nenhum arquivo gerado ainda.'; $('prev').hidden = true; $('prev').src = 'about:blank'; }
+$('clr').onclick = () => { aplicar({}); imgMap.clear(); limparDownloads(); log('Tela limpa (rascunhos salvos não foram apagados).', 'ok'); };
 
-function limparDownloads() { urls.forEach(u => URL.revokeObjectURL(u)); urls = []; $('res').innerHTML = 'Nenhum arquivo gerado ainda.'; $('prev').hidden = true; $('prev').src = 'about:blank'; }
-$('clr').onclick = () => { $('g').value = ''; $('s').value = ''; $('pref').value = 'Meu_Curso'; $('rod').value = ''; $('bar').value = ''; limparDownloads(); log('Conteúdo e arquivos descartados da memória.', 'ok'); };
-
-// ---------- Motor Python (Pyodide) ----------
-function loadScript(src) {
-  return new Promise((ok, err) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => err(new Error('Falha ao carregar ' + src)); document.head.appendChild(s); });
+/* =========================== Persistência local (IndexedDB) =========================== */
+let dbp = null;
+function db() {
+  if (dbp) return dbp;
+  dbp = new Promise((ok, err) => {
+    const r = indexedDB.open('conteudista', 1);
+    r.onupgradeneeded = () => { r.result.createObjectStore('rascunhos', { keyPath: 'nome' }); r.result.createObjectStore('links', { keyPath: 'id', autoIncrement: true }); };
+    r.onsuccess = () => ok(r.result); r.onerror = () => err(r.error);
+  });
+  return dbp;
 }
+async function tx(store, mode, fn) { const d = await db(); return new Promise((ok, err) => { const t = d.transaction(store, mode), s = t.objectStore(store); const r = fn(s); t.oncomplete = () => ok(r && r.result); t.onerror = () => err(t.error); }); }
+const dbPut = (st, v) => tx(st, 'readwrite', s => s.put(v));
+const dbDel = (st, k) => tx(st, 'readwrite', s => s.delete(k));
+const dbAll = st => tx(st, 'readonly', s => s.getAll());
+const dbClear = st => tx(st, 'readwrite', s => s.clear());
+
+async function listarRascunhos() {
+  const l = (await dbAll('rascunhos')).sort((a, b) => b.data - a.data);
+  if (!l.length) { $('drafts').innerHTML = 'Nenhum rascunho salvo.'; return; }
+  $('drafts').innerHTML = '<table><tr><th>Rascunho</th><th>Salvo em</th><th></th></tr>' + l.map(r =>
+    '<tr><td>' + esc(r.nome) + '<br><small>' + Math.round((r.g.length + r.s.length) / 1024) + ' KB</small></td><td><small>' + new Date(r.data).toLocaleString('pt-BR') + '</small></td>' +
+    '<td><button class="mini sec" data-a="ab" data-n="' + esc(r.nome) + '">Abrir</button><button class="mini dan" data-a="ex" data-n="' + esc(r.nome) + '">Excluir</button></td></tr>').join('') + '</table>';
+  $('drafts').querySelectorAll('button').forEach(b => b.onclick = async () => {
+    const n = b.dataset.n;
+    if (b.dataset.a === 'ab') { const r = (await dbAll('rascunhos')).find(x => x.nome === n); if (r) { aplicar(r); $('dname').value = n === 'Autossalvo' ? '' : n; log('Rascunho "' + n + '" aberto.', 'ok'); } }
+    else if (confirm('Excluir o rascunho "' + n + '"?')) { await dbDel('rascunhos', n); listarRascunhos(); log('Rascunho excluído.', 'ok'); }
+  });
+}
+async function salvarRascunho(nome) {
+  const p = pacote(); if (!p.g.trim() && !p.s.trim()) { log('Nada para salvar.', 'wa'); return; }
+  await dbPut('rascunhos', Object.assign(p, { nome, data: Date.now() }));
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist();
+  listarRascunhos();
+}
+$('dsave').onclick = async () => { const n = $('dname').value.trim() || ($('pref').value + ' ' + new Date().toLocaleString('pt-BR')); await salvarRascunho(n); log('Rascunho "' + n + '" salvo neste navegador.', 'ok'); };
+let tAuto = null;
+function agendarAuto() { if (!$('auto').checked) return; clearTimeout(tAuto); tAuto = setTimeout(() => salvarRascunho('Autossalvo'), 1500); }
+$('auto').checked = localStorage.getItem('conteudista.auto') === '1';
+$('auto').onchange = () => { localStorage.setItem('conteudista.auto', $('auto').checked ? '1' : '0'); if ($('auto').checked) { agendarAuto(); log('Salvamento automático ativado (somente neste navegador).', 'ok'); } };
+$('keep').checked = localStorage.getItem('conteudista.keep') === '1';
+$('keep').onchange = () => localStorage.setItem('conteudista.keep', $('keep').checked ? '1' : '0');
+$('dclear').onclick = async () => {
+  if (!confirm('Apagar todos os rascunhos, links lembrados e preferências deste navegador?')) return;
+  await dbClear('rascunhos'); await dbClear('links'); localStorage.removeItem('conteudista.auto'); localStorage.removeItem('conteudista.keep');
+  $('auto').checked = false; $('keep').checked = false; listarRascunhos(); listarLinks(); log('Dados locais apagados.', 'ok');
+};
+
+function baixar(nome, blob) { const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = nome; a.click(); setTimeout(() => URL.revokeObjectURL(u), 4000); }
+$('mdl').onclick = () => {
+  const p = pacote(), x = (p.p || 'Curso').replace(/[^\w.-]+/g, '_');
+  baixar('Treinamento_' + x + '.md', new Blob([p.g], { type: 'text/markdown' }));
+  setTimeout(() => baixar('Apresentacao_' + x + '.md', new Blob([p.s], { type: 'text/markdown' })), 400);
+};
+$('fsave').onclick = async () => {
+  if (!window.showDirectoryPicker) { log('Seu navegador não permite escolher pasta; os arquivos serão baixados para Downloads.', 'wa'); $('mdl').click(); ultimos.forEach((f, i) => setTimeout(() => baixar(f.nome, f.blob), 900 + i * 400)); return; }
+  try {
+    const dir = await window.showDirectoryPicker({ mode: 'readwrite' });
+    const p = pacote(), x = (p.p || 'Curso').replace(/[^\w.-]+/g, '_');
+    const arqs = [{ nome: 'Treinamento_' + x + '.md', blob: new Blob([p.g]) }, { nome: 'Apresentacao_' + x + '.md', blob: new Blob([p.s]) }]
+      .concat(ultimos.filter(f => !f.nome.endsWith('.md')));
+    for (const f of arqs) { const h = await dir.getFileHandle(f.nome, { create: true }); const w = await h.createWritable(); await w.write(f.blob); await w.close(); }
+    log(arqs.length + ' arquivo(s) salvos na pasta "' + dir.name + '".', 'ok');
+  } catch (e) { if (e.name !== 'AbortError') log('Não foi possível salvar na pasta: ' + e.message, 'err'); }
+};
+
+/* =========================== Criptografia =========================== */
+async function aesKeyFromPw(pw, salt, it) {
+  const k = await crypto.subtle.importKey('raw', enc.encode(pw), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: it, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+// --- Link autocontido: #cx=1.<iv>.<ct>.<chave>  |  #cx=2.<sal>.<iv>.<ct> (senha) ---
+async function criarAutocontido(d, pw) {
+  const plain = await deflate(enc.encode(JSON.stringify(d))), iv = crypto.getRandomValues(new Uint8Array(12));
+  let key, frag;
+  if (pw) {
+    const salt = crypto.getRandomValues(new Uint8Array(16)); key = await aesKeyFromPw(pw, salt, 310000);
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plain));
+    frag = '2.' + b64u(salt) + '.' + b64u(iv) + '.' + b64u(ct);
+  } else {
+    const raw = crypto.getRandomValues(new Uint8Array(32)); key = await crypto.subtle.importKey('raw', raw, 'AES-GCM', false, ['encrypt']);
+    const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, plain));
+    frag = '1.' + b64u(iv) + '.' + b64u(ct) + '.' + b64u(raw);
+  }
+  return location.origin + location.pathname + '#cx=' + frag;
+}
+async function abrirAutocontido(frag, pw) {
+  const p = frag.split('.'); let key, iv, ct;
+  if (p[0] === '1') { iv = unb64u(p[1]); ct = unb64u(p[2]); key = await crypto.subtle.importKey('raw', unb64u(p[3]), 'AES-GCM', false, ['decrypt']); }
+  else if (p[0] === '2') { if (!pw) throw new Error('Este link exige senha.'); key = await aesKeyFromPw(pw, unb64u(p[1]), 310000); iv = unb64u(p[2]); ct = unb64u(p[3]); }
+  else throw new Error('Formato de link desconhecido.');
+  let pt; try { pt = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ct)); } catch { throw new Error('Não foi possível decifrar (senha incorreta ou link incompleto).'); }
+  return JSON.parse(dec.decode(await inflate(pt)));
+}
+// --- PrivateBin (formato v2: PBKDF2-SHA256 100000, AES-256-GCM, compressão zlib/deflate-raw, chave base58 no fragmento) ---
+async function pbKey(raw, salt) {
+  const k = await crypto.subtle.importKey('raw', raw, 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' }, k, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+const pbBase = u => { const x = new URL(u); return x.origin + x.pathname; };
+async function criarPrivateBin(texto, inst, expire, burn) {
+  const raw = crypto.getRandomValues(new Uint8Array(32)), iv = crypto.getRandomValues(new Uint8Array(16)), salt = crypto.getRandomValues(new Uint8Array(8));
+  const adata = [[b64(iv), b64(salt), 100000, 256, 128, 'aes', 'gcm', 'zlib'], 'markdown', 0, burn ? 1 : 0];
+  const key = await pbKey(raw, salt);
+  const ct = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: enc.encode(JSON.stringify(adata)), tagLength: 128 }, key,
+    await deflate(enc.encode(JSON.stringify({ paste: texto })))));
+  const base = pbBase(inst);
+  let r;
+  try { r = await fetch(base, { method: 'POST', headers: { 'X-Requested-With': 'JSONHttpRequest', 'Content-Type': 'application/json' }, body: JSON.stringify({ v: 2, adata, ct: b64(ct), meta: { expire } }) }); }
+  catch { throw new Error('A instância não aceitou a requisição a partir deste site (CORS ou rede bloqueada). Use o link autocontido ou outra instância.'); }
+  const j = await r.json().catch(() => ({}));
+  if (j.status !== 0) throw new Error('PrivateBin recusou: ' + (j.message || ('HTTP ' + r.status)));
+  return { url: base + '?' + j.id + '#' + b58enc(raw), del: base + '?pasteid=' + j.id + '&deletetoken=' + j.deletetoken };
+}
+async function abrirPrivateBin(link) {
+  const u = new URL(link), id = u.search.replace(/^\?(pasteid=)?/, '').split('&')[0], k = u.hash.replace(/^#-?/, '');
+  if (!id || !k) throw new Error('Link PrivateBin incompleto (falta o identificador ou a chave após #).');
+  let r;
+  try { r = await fetch(u.origin + u.pathname + '?pasteid=' + encodeURIComponent(id), { headers: { 'X-Requested-With': 'JSONHttpRequest' } }); }
+  catch { throw new Error('Não foi possível consultar a instância (CORS ou rede). Abra o link no navegador e copie o texto para os editores.'); }
+  const j = await r.json(); if (j.status !== 0) throw new Error('PrivateBin: ' + (j.message || 'conteúdo indisponível (expirado ou apagado).'));
+  const sp = j.adata[0], key = await pbKey(b58dec(k, 32), unb64(sp[1]));
+  let pt;
+  try { pt = new Uint8Array(await crypto.subtle.decrypt({ name: 'AES-GCM', iv: unb64(sp[0]), additionalData: enc.encode(JSON.stringify(j.adata)), tagLength: sp[4] }, key, unb64(j.ct))); }
+  catch { throw new Error('Não foi possível decifrar (chave incorreta ou conteúdo protegido por senha no PrivateBin).'); }
+  if (sp[7] === 'zlib') pt = await inflate(pt);
+  return deTexto(JSON.parse(dec.decode(pt)).paste);
+}
+
+/* =========================== Compartilhar / abrir =========================== */
+let sessaoLinks = [];
+$('mode').onchange = () => { const pb = $('mode').value === 'pb'; $('pbopts').hidden = !pb; $('pwopts').hidden = pb; };
+$('share').onclick = async () => {
+  const d = pacote(); if (!d.g.trim() && !d.s.trim()) { log('Nada para compartilhar.', 'wa'); return; }
+  const fal = await embutirTudo(true); if (fal.length) log('Atenção: imagens não embutidas ficarão como referência externa: ' + fal.join(', '), 'wa');
+  const d2 = pacote(); $('share').disabled = true;
+  try {
+    let item;
+    if ($('mode').value === 'self') {
+      const url = await criarAutocontido(d2, $('pw').value);
+      item = { tipo: 'Autocontido' + ($('pw').value ? ' + senha' : ''), url, del: '', nome: d2.p, data: Date.now() };
+      if (url.length > 30000) log('Link com ' + url.length.toLocaleString('pt-BR') + ' caracteres: pode ser cortado por e-mail/Teams. Considere o PrivateBin.', 'wa');
+    } else {
+      const r = await criarPrivateBin(paraTexto(d2), $('pbi').value, $('exp').value, $('burn').checked);
+      item = { tipo: 'PrivateBin (' + $('exp').selectedOptions[0].text + ($('burn').checked ? ', leitura única' : '') + ')', url: r.url, del: r.del, nome: d2.p, data: Date.now() };
+    }
+    sessaoLinks.unshift(item);
+    if ($('keep').checked) await dbPut('links', item);
+    listarLinks(); log('Link criptografado criado.', 'ok');
+    try { await navigator.clipboard.writeText(item.url); log('Link copiado para a área de transferência.', 'ok'); } catch {}
+  } catch (e) { log('Erro: ' + e.message, 'err'); }
+  finally { $('share').disabled = false; }
+};
+async function listarLinks() {
+  let l = sessaoLinks.slice();
+  if ($('keep').checked) { const g = await dbAll('links'); g.forEach(x => { if (!l.some(y => y.url === x.url)) l.push(x); }); }
+  l.sort((a, b) => b.data - a.data);
+  if (!l.length) { $('links').innerHTML = 'Nenhum link nesta sessão.'; return; }
+  $('links').innerHTML = '<table><tr><th>Curso</th><th>Tipo</th><th>Link</th><th></th></tr>' + l.map((x, i) =>
+    '<tr><td>' + esc(x.nome || '') + '<br><small>' + new Date(x.data).toLocaleString('pt-BR') + '</small></td><td>' + esc(x.tipo) + '</td>' +
+    '<td class="url">' + esc(x.url.length > 140 ? x.url.slice(0, 140) + '…' : x.url) + '</td>' +
+    '<td><button class="mini" data-c="' + i + '">Copiar</button>' + (x.del ? '<a class="btn mini dan" href="' + esc(x.del) + '" target="_blank" rel="noopener">Apagar no servidor</a>' : '') +
+    (x.id ? '<button class="mini sec" data-f="' + x.id + '">Esquecer</button>' : '') + '</td></tr>').join('') + '</table>';
+  $('links').querySelectorAll('[data-c]').forEach(b => b.onclick = async () => { try { await navigator.clipboard.writeText(l[+b.dataset.c].url); log('Link copiado.', 'ok'); } catch { prompt('Copie o link:', l[+b.dataset.c].url); } });
+  $('links').querySelectorAll('[data-f]').forEach(b => b.onclick = async () => { await dbDel('links', +b.dataset.f); listarLinks(); });
+}
+async function abrirLink(link, pw) {
+  const u = new URL(link.trim(), location.href), h = u.hash;
+  if (h.startsWith('#cx=')) return abrirAutocontido(h.slice(4), pw);
+  if (u.search.length > 1 && h.length > 1) return abrirPrivateBin(u.href);
+  throw new Error('Link não reconhecido.');
+}
+$('open').onclick = async () => {
+  try { const d = await abrirLink($('olink').value, $('opw').value); aplicar(d); log('Conteúdo carregado do link.', 'ok'); $('g').scrollIntoView({ behavior: 'smooth' }); }
+  catch (e) { log('Erro: ' + e.message, 'err'); }
+};
+// Abrir automaticamente link autocontido recebido na URL
+(async () => {
+  if (!location.hash.startsWith('#cx=')) return;
+  const frag = location.hash.slice(4);
+  history.replaceState(null, '', location.pathname);  // remove a chave da barra de endereço
+  try {
+    const pw = frag.startsWith('2.') ? prompt('Este conteúdo está protegido por senha. Digite a senha:') : '';
+    aplicar(await abrirAutocontido(frag, pw)); log('Conteúdo recebido por link criptografado carregado nos editores.', 'ok');
+  } catch (e) { log('Erro ao abrir o link: ' + e.message, 'err'); }
+})();
+
+/* =========================== Motor Python (Pyodide) =========================== */
+function loadScript(src) { return new Promise((ok, err) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => err(new Error('Falha ao carregar ' + src)); document.head.appendChild(s); }); }
 async function prepararPython() {
   if (py) return py;
-  const ger = await fetch('gerador.py', { cache: 'no-store' });
-  if (!ger.ok) throw new Error('gerador.py não encontrado no site.');
+  const ger = await fetch('gerador.py', { cache: 'no-store' }); if (!ger.ok) throw new Error('gerador.py não encontrado no site.');
   const src = await ger.text();
   log('Carregando motor Python (Pyodide)…');
   await loadScript(PYODIDE_URL + 'pyodide.js');
@@ -143,61 +484,51 @@ async function prepararPython() {
   let wheels = null;
   try { const r = await fetch('wheels/wheels.json', { cache: 'no-store' }); if (r.ok) wheels = (await r.json()).map(w => new URL('wheels/' + w, location.href).href); } catch {}
   py.globals.set('WHEELS', wheels);
-  await py.runPythonAsync(`
-import micropip
-w = WHEELS.to_py() if WHEELS is not None else None
-if w:
-    await micropip.install(w, deps=False)
-else:
-    await micropip.install(['python-docx', 'python-pptx'])
-`);
+  await py.runPythonAsync("import micropip\nw = WHEELS.to_py() if WHEELS is not None else None\nif w:\n    await micropip.install(w, deps=False)\nelse:\n    await micropip.install(['python-docx', 'python-pptx'])\n");
   py.FS.mkdirTree('/app'); py.FS.writeFile('/app/gerador.py', src);
   $('ver').textContent = 'Motor pronto · Python ' + py.runPython('import sys; sys.version.split()[0]');
-  log('Motor pronto' + (wheels ? ' (bibliotecas do próprio site).' : ' (bibliotecas do PyPI).'), 'ok');
+  log('Motor pronto.', 'ok');
   return py;
 }
 
-// ---------- Geração ----------
+/* =========================== Geração =========================== */
 $('go').onclick = async () => {
-  const gm = $('g').value.trim(), sm = $('s').value.trim();
-  if (!gm || !sm) { log('Preencha (ou arraste) o guia.md e o apresentacao.md.', 'err'); return; }
+  if (!$('g').value.trim() || !$('s').value.trim()) { log('Preencha (ou arraste) o guia.md e o apresentacao.md.', 'err'); return; }
   $('go').disabled = true;
   try {
+    const fal = await embutirTudo(true);
+    if (fal.length) log('Imagens não embutidas (aparecerão como [imagem] no DOCX/PPTX): ' + fal.join(', '), 'wa');
     await prepararPython();
     const pref = ($('pref').value.trim() || 'Curso').replace(/[^\w.-]+/g, '_');
-    py.globals.set('GM', gm + '\n'); py.globals.set('SM', sm + '\n');
+    py.globals.set('GM', $('g').value.trim() + '\n'); py.globals.set('SM', $('s').value.trim() + '\n');
     py.globals.set('PREF', pref); py.globals.set('ROD', $('rod').value); py.globals.set('BAR', $('bar').value);
     log('Gerando arquivos…');
-    const out = py.runPython(`
-import sys, os, shutil, zipfile
-if '/app' not in sys.path: sys.path.insert(0, '/app')
-import gerador
-shutil.rmtree('/saida', ignore_errors=True)
-arqs, res = gerador.gerar(GM, SM, PREF, ROD, BAR, '/saida')
-zp = '/saida/Curso_%s.zip' % PREF
-with zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:
-    for f in arqs: z.write(f, os.path.basename(f))
-'\\n'.join([res] + arqs + [zp])`);
+    const out = py.runPython("import sys, os, shutil, zipfile\nif '/app' not in sys.path: sys.path.insert(0, '/app')\nimport gerador\nshutil.rmtree('/saida', ignore_errors=True)\narqs, res = gerador.gerar(GM, SM, PREF, ROD, BAR, '/saida')\nzp = '/saida/Curso_%s.zip' % PREF\nwith zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:\n    [z.write(f, os.path.basename(f)) for f in arqs]\n'\\n'.join([res] + arqs + [zp])");
     const linhas = out.split('\n'), res = linhas[0], files = linhas.slice(1);
     log(res, res.includes('ERRO') ? 'err' : 'ok');
     limparDownloads();
     const tipos = { md: 'text/markdown', html: 'text/html', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', zip: 'application/zip' };
     let h = '';
     for (const f of files) {
-      const nome = f.split('/').pop(), ext = nome.split('.').pop();
-      const u = URL.createObjectURL(new Blob([py.FS.readFile(f)], { type: tipos[ext] || 'application/octet-stream' })); urls.push(u);
+      const nome = f.split('/').pop(), ext = nome.split('.').pop(), blob = new Blob([py.FS.readFile(f)], { type: tipos[ext] || 'application/octet-stream' });
+      const u = URL.createObjectURL(blob); urls.push(u); ultimos.push({ nome, blob });
       h += '<a class="btn' + (ext === 'zip' ? '' : ' sec') + '" href="' + u + '" download="' + nome + '">⬇ ' + nome + '</a>';
       if (ext === 'html') h += '<a class="btn sec" href="#" data-u="' + u + '">👁 ver</a>';
     }
     py.runPython("import shutil; shutil.rmtree('/saida', ignore_errors=True)");
     $('res').innerHTML = h;
     $('res').querySelectorAll('[data-u]').forEach(a => a.onclick = e => { e.preventDefault(); $('prev').hidden = false; $('prev').src = a.dataset.u; });
+    agendarAuto();
   } catch (e) {
     log('Erro: ' + e.message, 'err');
-    if (/pyodide|cdn|fetch|micropip|carregar/i.test(e.message)) log('Verifique se a rede permite acesso a cdn.jsdelivr.net.', 'err');
+    if (/pyodide|cdn|carregar/i.test(e.message)) log('Verifique se a rede permite acesso a cdn.jsdelivr.net.', 'err');
     console.error(e);
   } finally { $('go').disabled = false; }
 };
+
+listarRascunhos().catch(() => $('drafts').textContent = 'Armazenamento local indisponível neste navegador.');
+listarLinks().catch(() => {});
+statusImagens();
 </script>
 </body>
 </html>

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-# GERADOR PADRÃO DE CURSO v3.2 — Guia (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
+# GERADOR PADRÃO DE CURSO v3.3 (imagens em base64) — Guia (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
 # Requisitos: Python 3 + python-docx + python-pptx. HTML usa só biblioteca padrão.
-# Uso: python gerador.py guia.md apresentacao.md --prefixo NOME --rodape "TEXTO" [--barra "TEXTO"] [--saida pasta]
+# Uso: python gerador.py guia.md apresentacao.md --prefixo NOME --rodape "TEXTO" [--barra "TEXTO"] [--saida pasta] [--sem-embutir]
+# Imagens ![alt](caminho|URL) sao convertidas para data:URI base64 (texto puro) nos .md de saida.
 # Saída: Treinamento_<prefixo>.md/.html/.docx  e  Apresentacao_<prefixo>.md/.html/.pptx
-import re,html,argparse,os
+import re,html,argparse,os,base64,io,mimetypes
 E=html.escape
 # ============================== PARSER COMUM ==============================
 def slug(s):
@@ -22,6 +23,8 @@ def blocks(md):
             i+=1;o.append(('code',lg,'\n'.join(b)));continue
         m=re.match(r'^(#{1,6})\s+(.*)$',l)
         if m:o.append(('h',len(m.group(1)),m.group(2).strip()));i+=1;continue
+        m=re.match(r'^\s*!\[([^\]]*)\]\(([^)\s]+)\)\s*$',l)
+        if m:o.append(('img',m.group(1),m.group(2)));i+=1;continue
         if l.startswith('|'):
             r=[]
             while i<n and L[i].startswith('|'):r.append(L[i]);i+=1
@@ -51,19 +54,57 @@ def blocks(md):
         o.append(('p',' '.join(b)))
     return o
 def runs(t):
-    out=[];pat=re.compile(r'`([^`]+)`|\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)|(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?![\w*])')
+    out=[];pat=re.compile(r'`([^`]+)`|!\[([^\]]*)\]\(([^)\s]+)\)|\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)|(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?![\w*])')
     p=0
     for m in pat.finditer(t):
         if m.start()>p:out.append((t[p:m.start()],0,0,0,None))
         if m.group(1) is not None:out.append((m.group(1),0,0,1,None))
-        elif m.group(2) is not None:
-            for x in runs(m.group(2)):out.append((x[0],1,x[2],x[3],x[4]))
-        elif m.group(3) is not None:out.append((m.group(3),0,0,0,m.group(4)))
-        else:out.append((m.group(5),0,1,0,None))
+        elif m.group(3) is not None:out.append((m.group(2),0,0,2,m.group(3)))
+        elif m.group(4) is not None:
+            for x in runs(m.group(4)):out.append((x[0],1,x[2],x[3],x[4]))
+        elif m.group(6) is not None:out.append((m.group(5),0,0,0,m.group(6)))
+        else:out.append((m.group(7),0,1,0,None))
         p=m.end()
     if p<len(t):out.append((t[p:],0,0,0,None))
     return out
 def plain(t):return ''.join(r[0] for r in runs(t))
+IMG=re.compile(r'!\[([^\]]*)\]\(([^)\s]+)\)')
+def img_bytes(src):
+    """Bytes e tipo MIME de uma imagem data:URI ou arquivo local; None se indisponivel ou SVG."""
+    try:
+        if src.startswith('data:'):
+            h,d=src.split(',',1);mime=h[5:].split(';')[0]
+            raw=base64.b64decode(d) if ';base64' in h else __import__('urllib.parse').parse.unquote_to_bytes(d)
+        elif os.path.isfile(src):
+            raw=open(src,'rb').read();mime=mimetypes.guess_type(src)[0] or ''
+        else:return None
+        if 'svg' in mime:return None
+        return raw
+    except Exception:return None
+def img_size(raw):
+    try:
+        from PIL import Image
+        im=Image.open(io.BytesIO(raw));return im.size
+    except Exception:return (800,450)
+def embed_images(md,base_dir='.'):
+    """Substitui imagens locais/remotas por data:URI base64. Retorna (md, embutidas, falhas)."""
+    ok=[0];fail=[]
+    def rep(m):
+        alt,src=m.group(1),m.group(2)
+        if src.startswith('data:'):return m.group(0)
+        raw=None;mime=None
+        try:
+            if re.match(r'https?://',src):
+                import urllib.request
+                with urllib.request.urlopen(src,timeout=15) as r:raw=r.read();mime=r.headers.get_content_type()
+            else:
+                p=src if os.path.isabs(src) else os.path.join(base_dir,src)
+                p=__import__('urllib.parse').parse.unquote(p)
+                raw=open(p,'rb').read();mime=mimetypes.guess_type(p)[0]
+        except Exception:fail.append(src);return m.group(0)
+        mime=mime or 'image/png';ok[0]+=1
+        return '![%s](data:%s;base64,%s)'%(alt,mime,base64.b64encode(raw).decode())
+    return IMG.sub(rep,md),ok[0],fail
 def mermaid_edges(code):
     lab={};rows=[]
     node=r'([A-Za-z0-9_]+)\s*(\(\(\(.*?\)\)\)|\(\(.*?\)\)|\[.*?\]|\{.*?\}|\(.*?\))?'
@@ -92,6 +133,7 @@ def mermaid_edges(code):
 def inl(t):
     s=''
     for x,b,i,c,u in runs(t):
+        if c==2:s+='<img class="il" src="%s" alt="%s">'%(E(u),E(x));continue
         h=E(x,quote=False)
         if c:h='<code>'+h+'</code>'
         if i:h='<em>'+h+'</em>'
@@ -117,6 +159,7 @@ def html_of(bl,toc=None):
             if toc is not None and b[1] in(2,3):toc.append((b[1],sid,plain(b[2])))
             o.append('<h%d id="%s">%s</h%d>'%(b[1],sid,inl(b[2]),b[1]))
         elif k=='p':o.append('<p>'+inl(b[1])+'</p>')
+        elif k=='img':o.append('<figure><img src="%s" alt="%s">%s</figure>'%(E(b[2]),E(b[1]),'<figcaption>%s</figcaption>'%E(b[1]) if b[1] else ''))
         elif k=='table':
             r=b[1];t='<div class="tbl"><table><thead><tr>'+''.join('<th>%s</th>'%inl(c) for c in r[0])+'</tr></thead><tbody>'
             t+=''.join('<tr>'+''.join('<td>%s</td>'%inl(c) for c in x)+'</tr>' for x in r[1:]);o.append(t+'</tbody></table></div>')
@@ -137,6 +180,7 @@ main{padding:28px 40px 80px;min-width:0}article{background:var(--pa);border:1px 
 h1{color:var(--pri);font-size:30px;line-height:1.25}h2{color:var(--pri);font-size:23px;margin:42px 0 12px;padding-top:6px;border-top:3px solid var(--acc);scroll-margin-top:70px}h3{color:var(--pri);font-size:18px;margin:28px 0 8px;scroll-margin-top:70px}a{color:var(--acc);word-break:break-word}
 .tbl{overflow-x:auto;margin:14px 0}table{border-collapse:collapse;width:100%;font-size:14.5px}th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}th{background:var(--th);color:var(--pri)}
 code{background:var(--code);padding:1px 5px;border-radius:4px;font:.9em Consolas,monospace}pre.code{background:var(--code);padding:14px;border-radius:8px;overflow:auto}.mw{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin:14px 0;overflow-x:auto}pre.mermaid{margin:0;color:#333}
+figure{margin:16px 0;text-align:center}figure img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px}figcaption{color:#5a6676;font-size:13px;margin-top:4px}img.il{max-height:1.6em;vertical-align:middle}
 blockquote{margin:16px 0;padding:12px 16px;border-left:5px solid var(--acc);background:var(--th);border-radius:0 8px 8px 0}blockquote p{margin:4px 0}blockquote.tip{border-left-color:var(--ok)}blockquote.warning{border-left-color:var(--wa)}
 li.task{list-style:none;margin-left:-22px}li.task input{transform:scale(1.15);margin-right:6px;accent-color:var(--acc)}.hid h3~*{filter:blur(6px);user-select:none;pointer-events:none}
 .ab{margin:8px 0;background:var(--acc);color:#fff;border:0;border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}
@@ -161,7 +205,7 @@ html,body{margin:0;height:100%;background:#0d1b2a;font-family:"Segoe UI",Roboto,
 .s p,.s li{font-size:23px;line-height:1.45;margin:6px 0}.s ul,.s ol{padding-left:34px;margin:4px 0}.s li li{font-size:20px}.s li::marker{color:var(--acc);font-weight:700}
 .s table{border-collapse:collapse;width:100%;font-size:19px;margin:4px 0 10px}.s th{background:var(--pri);color:#fff;text-align:left;padding:9px 12px}.s td{border-bottom:1px solid var(--line);padding:8px 12px;vertical-align:top}.s tr:nth-child(even) td{background:var(--soft)}
 .s a{color:var(--acc)}.s code{background:var(--soft);padding:1px 6px;border-radius:4px;color:var(--pri)}.s strong{color:var(--pri)}.s blockquote{margin:14px 0 0;padding:12px 18px;background:#e9f6f0;border-left:6px solid var(--ac2);border-radius:0 10px 10px 0}.s blockquote p{font-size:21px;margin:0}
-.s .mw{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.s pre.mermaid{margin:0}
+.s figure{margin:6px 0;text-align:center}.s figure img{max-width:100%;max-height:440px;object-fit:contain}.s figcaption{font-size:15px;color:var(--mu)}.s img.il{max-height:1.4em;vertical-align:middle}.s .mw{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.s pre.mermaid{margin:0}
 .s.title{background:linear-gradient(135deg,#0b3d6e,#0a5c9a 60%,#0a7cc1);color:#fff}.s.title:before{background:var(--ac2)}.s.title:after{color:#cfe3f5}.s.title .in{justify-content:center}
 .s.title h1{color:#fff;font-size:58px;border-bottom:4px solid var(--ac2);display:inline-block}.s.title h2{color:#d6ecff;font-size:32px}.s.title p{color:#e8f2fb;font-size:22px}.s.title strong{color:#fff}
 .s.highlight{background:linear-gradient(#fff,#f2f7fc)}.nt{display:none}.sn .s.on .nt{display:block;position:absolute;left:60px;right:60px;bottom:44px;background:#fff8d6;border:1px solid #e6cf6a;border-radius:8px;padding:10px 14px;font-size:16px}
@@ -239,8 +283,18 @@ def guia_docx(md,path,foot):
         if size:
             z=OxmlElement('w:sz');z.set(qn('w:val'),str(int(size*2)));rp.append(z)
         r.append(rp);t=OxmlElement('w:t');t.text=text;t.set(qn('xml:space'),'preserve');r.append(t);h.append(r);p._p.append(h)
+    def pic(run,src,maxcm=16.0,hcm=None):
+        raw=img_bytes(src)
+        if raw is None:run.text='[imagem]';return False
+        w,h=img_size(raw)
+        try:
+            if hcm:run.add_picture(io.BytesIO(raw),height=Cm(hcm))
+            else:run.add_picture(io.BytesIO(raw),width=Cm(min(maxcm,w/96*2.54)))
+            return True
+        except Exception:run.text='[imagem]';return False
     def fill(p,t,color=None,size=None,bold=False):
         for x,b,i,c,u in runs(t):
+            if c==2:pic(p.add_run(),u,hcm=0.5);continue
             if u:link(p,x,u,b,size);continue
             r=p.add_run(x);r.bold=bool(b) or bold;r.italic=bool(i)
             if c:r.font.name='Consolas';r.font.size=Pt(10);r.font.color.rgb=PRI
@@ -270,6 +324,10 @@ def guia_docx(md,path,foot):
                 p=d.add_paragraph();fill(p,b[1])
                 if inq:shade(p._p,inq[0]);lborder(p,inq[1])
             elif k=='table':table(b[1])
+            elif k=='img':
+                p=d.add_paragraph();p.alignment=1;pic(p.add_run(),b[2])
+                if b[1]:
+                    c=d.add_paragraph();c.alignment=1;r=c.add_run(b[1]);r.italic=True;r.font.size=Pt(9)
             elif k=='list':
                 for dp,od,ck,t in b[1]:
                     if ck is not None:
@@ -320,6 +378,7 @@ def slides_pptx(t,sl,path,foot):
         r=s.shapes.add_shape(shape,Inches(x),Inches(y),Inches(w),Inches(h));r.fill.solid();r.fill.fore_color.rgb=col;r.line.fill.background();r.shadow.inherit=False;return r
     def addruns(par,t,size,color,bold=False):
         for x,b,i,c,u in runs(t):
+            if c==2:x='[%s]'%(x or 'imagem');u=None;c=0
             r=par.add_run();r.text=x;f=r.font;f.size=Pt(size);f.bold=bool(b) or bold;f.italic=bool(i);f.name='Consolas' if c else 'Segoe UI'
             f.color.rgb=ACC if (u and color==INK) else (PRI if (b and color==INK) else color)
             if u:r.hyperlink.address=u;f.underline=True
@@ -339,6 +398,11 @@ def slides_pptx(t,sl,path,foot):
         if k=='quote':return sum(est(x,size-1) for x in b[2])+0.32
         if k=='code':return est(('table',mermaid_edges(b[2])),size) if b[1]=='mermaid' else len(b[2].split('\n'))*0.22+0.2
         if k=='h':return 0.5
+        if k=='img':
+            raw=img_bytes(b[2])
+            if raw is None:return 0.4
+            w,h=img_size(raw);hh=min(4.6,CW*h/max(w,1),h/96)
+            return hh+(0.35 if b[1] else 0)+0.1
         return 0.4
     def draw(s,b,y,size,col,x=L,w=CW):
         k=b[0];h=est(b,size)
@@ -368,6 +432,15 @@ def slides_pptx(t,sl,path,foot):
             rect(s,x,y,w,h-0.05,bg);rect(s,x,y,0.08,h-0.05,AC2 if b[1]!='warning' else RGBColor(0x9A,0x5B,0))
             yy=y+0.1
             for q in b[2]:draw(s,q,yy,size-1,col,x+0.2,w-0.3);yy+=est(q,size-1)
+        elif k=='img':
+            raw=img_bytes(b[2])
+            if raw is None:
+                tb,tf=tbox(s,x,y,w,0.4);addruns(tf.paragraphs[0],'[imagem: %s]'%(b[1] or 'sem descrição'),size,col)
+            else:
+                iw,ih=img_size(raw);hh=min(4.6,w*ih/max(iw,1),ih/96);ww=hh*iw/max(ih,1)
+                s.shapes.add_picture(io.BytesIO(raw),Inches(x+(w-ww)/2),Inches(y),Inches(ww),Inches(hh))
+                if b[1]:
+                    tb,tf=tbox(s,x,y+hh+0.03,w,0.32);tf.paragraphs[0].alignment=2;addruns(tf.paragraphs[0],b[1],12,MU)
         elif k=='code':
             if b[1]=='mermaid':draw(s,('table',mermaid_edges(b[2])),y,size,col,x,w)
             else:
@@ -413,10 +486,16 @@ def gerar(gm,sm,prefixo='Curso',rodape='',barra='',saida='.'):
     except Exception as e:msg+=' | docx: ERRO %s'%e
     try:slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
     except Exception as e:msg+=' | pptx: ERRO %s'%e
-    res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'))
+    res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d | imagens: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'),len(IMG.findall(gm))+len(IMG.findall(sm)))
     return arqs,res
 if __name__=='__main__':
-    a=argparse.ArgumentParser();a.add_argument('guia');a.add_argument('apresentacao');a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.');a=a.parse_args()
-    _,res=gerar(open(a.guia,encoding='utf-8').read(),open(a.apresentacao,encoding='utf-8').read(),a.prefixo,a.rodape,a.barra,a.saida)
+    a=argparse.ArgumentParser();a.add_argument('guia');a.add_argument('apresentacao');a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.')
+    a.add_argument('--sem-embutir',action='store_true',help='não converter imagens para base64');a=a.parse_args()
+    gm=open(a.guia,encoding='utf-8').read();sm=open(a.apresentacao,encoding='utf-8').read()
+    if not a.sem_embutir:
+        gm,n1,f1=embed_images(gm,os.path.dirname(os.path.abspath(a.guia)));sm,n2,f2=embed_images(sm,os.path.dirname(os.path.abspath(a.apresentacao)))
+        if n1+n2:print('Imagens embutidas em base64: %d'%(n1+n2))
+        for f in f1+f2:print('AVISO: imagem não encontrada/baixada: %s'%f)
+    _,res=gerar(gm,sm,a.prefixo,a.rodape,a.barra,a.saida)
     print(res)
     if 'ERRO' in res:raise SystemExit(1)
