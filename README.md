@@ -56,3 +56,23 @@ python tools/gerador.py guia.md apresentacao.md --prefixo Meu_Curso --rodape "SI
 ## Atalhos do editor (com o cursor no editor)
 
 `Ctrl+Z` desfazer · `Ctrl+Y` / `Ctrl+Shift+Z` refazer · `Ctrl+B` negrito · `Ctrl+I` itálico · `Ctrl+E` código · `Ctrl+K` link · `Ctrl+Shift+1/2/3` títulos · `Ctrl+Shift+7/8/9` lista numerada / marcadores / checklist · `Ctrl+Shift+.` citação · `Ctrl+L` selecionar linha · `Ctrl+Shift+D` duplicar linha · `Alt+↑/↓` mover linha · `Tab`/`Shift+Tab` recuo · `Enter` continua listas.
+
+<!-- locucao -->
+## Locução (texto em fala, no navegador)
+
+Aba **Locução** (`Alt+Shift+3`): gera áudio a partir de texto com o modelo aberto **Kokoro-82M** (`onnx-community/Kokoro-82M-v1.0-ONNX`, `dtype: "q8"`, ~86 MB), 100% no navegador.
+
+| Item | Como funciona |
+|---|---|
+| Motor | `web/locucao-worker.js` (Web Worker) com `kokoro-js@1.2.1`; WebGPU com fallback automático para WASM; teste de áudio após carregar; barra de progresso real do download |
+| Vozes pt-BR | `pf_dora` (feminina), `pm_alex` (masculina), `pm_santa`. O `kokoro-js` 1.2.1 só aceita vozes inglesas e só fonemiza inglês; para pt-BR o worker fonemiza com espeak-ng (`phonemizer`, idioma pt-br = `lang "p"` do Kokoro), carrega `voices/<voz>.bin` do repositório ONNX e chama o modelo diretamente |
+| Textos longos | Fragmentação por frases (≤ 250 caracteres em pt-BR), geração trecho a trecho, cancelamento |
+| Áudio | Costura PCM via Web Audio API com micro-fades (sem estalos) e pausa configurável; WAV PCM 16 bits, 24 kHz |
+| Histórico/cache | IndexedDB `KokoroTTS_DB` / `audio_history` (índice `text + voice + speed`); texto idêntico com a mesma voz, velocidade e pausa é servido do histórico; painel com Ouvir, Baixar, Usar texto, Excluir e busca |
+| Integração | Importa notas do apresentador, texto dos slides ou o guia (sem Markdown); ajuda e atalhos (`Alt+Shift+3`, `Alt+Shift+N`) |
+
+## Arquivos gerados guardados no navegador
+
+`web/gerados.js`: após cada **Gerar arquivos**, guarda os 6 arquivos + ZIP no IndexedDB `conteudista_arquivos` (últimos 10 por padrão), com download, visualização do HTML e exclusão.
+
+> Não use o `atualizar-conteudista.ps1` com um `conteudista-web.zip` anterior a esta versão: ele substitui todo o repositório e removeria a Locução.
