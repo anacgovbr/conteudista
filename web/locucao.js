@@ -272,7 +272,7 @@
         else if (m.tipo === 'fase') status(m.fase === 'carregando' ? 'Carregando o Piper…' : 'Preparando a voz (primeira síntese de teste)…');
         else if (m.tipo === 'pronto') {
           pip.ouvintes.delete(ouvir); pip.pronto = true; pip.carregando = null; pip.falhou = false; pip.info = m; pip.velInit = m.velocidade || vel; container.style.display = 'none';
-          ocupado(false); atualizarMotorUI(); logApp('Locução: Piper ativo (voz ' + m.voz + ', ' + m.sr + ' Hz, velocidade ' + (m.nativo ? 'nativa' : 'por WSOLA') + (m.local ? ', modelos deste site' : '') + ').', 'ok'); ok(true);
+          ocupado(false); atualizarMotorUI(); logApp('Locução: Piper ativo (voz ' + m.voz + ', ' + m.sr + ' Hz, velocidade ' + (m.nativo ? 'nativa' : 'por WSOLA') + (m.local ? ', modelos deste site' : '') + (m.biblioteca ? ', biblioteca ' + (m.biblioteca === 'local' ? 'deste site' : 'do CDN') : '') + ').', 'ok'); ok(true);
         } else if (m.tipo === 'erro' && (m.etapa === 'init' || m.etapa === 'worker')) {
           pip.ouvintes.delete(ouvir); container.style.display = 'none';
           status('Erro ao carregar o Piper: ' + m.msg + ' — as vozes do Kokoro continuam disponíveis.');

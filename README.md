@@ -98,6 +98,6 @@ Para a Locução funcionar em redes que bloqueiam o Hugging Face ou o jsDelivr, 
 | Variável do repositório (Settings → Secrets and variables → Actions → Variables) | Padrão | Opções |
 |---|---|---|
 | `MODELOS_LOCAIS` | `piper-ptbr,piper-catalogo` | perfis de `web/modelos.json`: `piper-ptbr` (~63 MB), `piper-catalogo`, `kokoro-fp32` (~330 MB), `kokoro-q8` (~90 MB) ou `nenhum` |
-| `BIBLIOTECAS_LOCAIS` | `piper,kokoro,espeak` | pacotes npm copiados para `vendor/` (se a cópia falhar, usa-se o CDN) |
+| `BIBLIOTECAS_LOCAIS` | `piper,kokoro,espeak` | pacotes npm copiados para `vendor/`; as dependências deles (ex.: `onnxruntime-web`) continuam vindo do jsDelivr. Se a biblioteca local falhar, a Locução usa a do CDN automaticamente. Use `nenhum` para sempre usar o CDN |
 
 O GitHub Pages limita o site a ~1 GB. Para acrescentar outra voz do Piper, inclua um perfil em `web/modelos.json` com as URLs `.onnx` e `.onnx.json` da voz. Teste local: `python tools/hospedar_modelos.py --perfis piper-ptbr --saida site`.

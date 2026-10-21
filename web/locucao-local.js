@@ -41,10 +41,13 @@ export async function ativarEspelhos(base) {
   return estado;
 }
 
+/** Erro típico de biblioteca local com dependência não resolvida (ex.: import('onnxruntime-web')). */
+export const ehErroModulo = e => /resolve module specifier|bare specifier|Failed to fetch dynamically imported module|Cannot find module|Importing a module script failed/i.test(String((e && e.message) || e));
+
 /** Importa o primeiro módulo disponível: cópia local (vendor) e depois as URLs de CDN. */
-export async function importarPrimeiro(base, locais, cdns) {
+export async function importarPrimeiro(base, locais, cdns, semLocal) {
   let erro;
-  for (const u of [...(locais || []).filter(Boolean).map(x => new URL(x, base).href), ...cdns]) {
+  for (const u of [...(semLocal ? [] : (locais || []).filter(Boolean).map(x => new URL(x, base).href)), ...cdns]) {
     try { return { mod: await import(u), url: u }; } catch (e) { erro = e; }
   }
   throw erro || new Error('Falha ao importar ' + cdns[0]);

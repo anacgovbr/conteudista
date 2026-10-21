@@ -1,5 +1,8 @@
 # Novidades do Conteudista
 
+## 1.19.2 — 21/10/2026
+- Correção do erro “Failed to resolve module specifier 'onnxruntime-web'” no Piper: bibliotecas hospedadas no site passam a apontar suas dependências para o jsDelivr e, se ainda falharem, a Locução usa automaticamente a versão do CDN (os modelos continuam vindo do site).
+
 ## 1.19.1 — 21/10/2026
 - Correção na publicação: chave do cache dos modelos sem vírgulas (erro “cannot contain commas”).
 

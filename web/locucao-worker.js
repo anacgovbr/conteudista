@@ -13,7 +13,7 @@
    Mensagens recebidas: {tipo:'init', dtype, device, fon} | {tipo:'gerar', id, trechos[], voice, speed} | {tipo:'cancelar', id} | {tipo:'fon', fon}
    Mensagens enviadas:  progresso | fase | aviso | pronto | trecho (pcm transferível) | fim | erro
    ===================================================================================== */
-import { ativarEspelhos, importarPrimeiro } from './locucao-local.js';
+import { ativarEspelhos, importarPrimeiro, ehErroModulo } from './locucao-local.js';
 
 const BASE = new URL('./', self.location.href).href;
 const KOKORO_CDN = ['https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js', 'https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/+esm'];
@@ -37,9 +37,21 @@ function avaliar(pcm) {
 }
 
 /* ---------------------------- Inicialização ---------------------------- */
-async function init({ dtype = 'fp32', device = 'auto' }) {
+let kokoroSemLocal = false, espeakSemLocal = false;
+async function init(op) {
+  try { return await init_(op); }
+  catch (e) {
+    if (!kokoroSemLocal && espelhos && espelhos.vendor.kokoro && ehErroModulo(e)) {
+      kokoroSemLocal = true;
+      post({ tipo: 'aviso', msg: 'Biblioteca local do Kokoro incompleta (' + ((e && e.message) || e) + '); usando a versão do CDN.' });
+      return init_(op);
+    }
+    throw e;
+  }
+}
+async function init_({ dtype = 'fp32', device = 'auto' }) {
   espelhos = await ativarEspelhos(BASE);
-  const { mod, url } = await importarPrimeiro(BASE, [espelhos.vendor.kokoro], KOKORO_CDN);
+  const { mod, url } = await importarPrimeiro(BASE, [espelhos.vendor.kokoro], KOKORO_CDN, kokoroSemLocal);
   const KokoroTTS = mod.KokoroTTS || (mod.default && mod.default.KokoroTTS);
   if (!KokoroTTS) throw new Error('kokoro-js não exportou KokoroTTS.');
   const arquivos = new Map();
@@ -82,12 +94,23 @@ let espeakMod = null, fonModo = 'auto', fonUsado = null, g2p = null;
 const espeakOk = new Map();
 const comTempo = (p, ms, msg) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(msg)), ms))]);
 async function espeakRodar(texto, lang) {
+  try { return await espeakRodar_(texto, lang); }
+  catch (e) {
+    if (!espeakSemLocal && espeakMod && espeakMod.local && (ehErroModulo(e) || /wasm|fetch|abort/i.test(String(e && e.message)))) {
+      espeakSemLocal = true; espeakMod = null;
+      post({ tipo: 'aviso', msg: 'Biblioteca local do espeak-ng falhou (' + ((e && e.message) || e) + '); usando a versão do CDN.' });
+      return espeakRodar_(texto, lang);
+    }
+    throw e;
+  }
+}
+async function espeakRodar_(texto, lang) {
   if (!espeakMod) {
     const ses = espelhos || await ativarEspelhos(BASE);
-    const { mod, url } = await comTempo(importarPrimeiro(BASE, [ses.vendor.espeak], ESPEAK_CDN), 30000, 'tempo esgotado ao carregar o espeak-ng');
+    const { mod, url } = await comTempo(importarPrimeiro(BASE, [ses.vendor.espeak], ESPEAK_CDN, espeakSemLocal), 30000, 'tempo esgotado ao carregar o espeak-ng');
     const fn = mod.default || mod.ESpeakNg || mod.ESpeakNG || mod;
     if (typeof fn !== 'function') throw new Error('espeak-ng indisponível');
-    espeakMod = { fn, base: url.slice(0, url.lastIndexOf('/') + 1) };
+    espeakMod = { fn, base: url.slice(0, url.lastIndexOf('/') + 1), local: url.startsWith(BASE) };
   }
   const limpo = texto.replace(/["\n\r]+/g, ' ').trim();
   if (!limpo) return '';

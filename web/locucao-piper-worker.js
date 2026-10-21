@@ -11,7 +11,7 @@
                         | {tipo:'vozes'} | {tipo:'remover'}
    Mensagens enviadas:  progresso | fase | aviso | pronto | trecho | fim | vozes | removido | erro
    ===================================================================================== */
-import { ativarEspelhos, importarPrimeiro } from './locucao-local.js';
+import { ativarEspelhos, importarPrimeiro, ehErroModulo } from './locucao-local.js';
 
 const BASE = new URL('./', self.location.href).href;
 const PIPER_CDN = [
@@ -20,7 +20,7 @@ const PIPER_CDN = [
   'https://esm.sh/@mintplex-labs/piper-tts-web@1.0.4'
 ];
 const VOZ_PADRAO = 'pt_BR-faber-medium';
-let lib = null, vozAtual = null, cancelado = null, espelhos = null;
+let lib = null, libLocal = false, semLocal = false, vozAtual = null, cancelado = null, espelhos = null;
 let velocidade = 1, nativo = false;   // nativo = a biblioteca leu a configuração com o length_scale ajustado
 const post = (m, t) => self.postMessage(m, t || []);
 
@@ -75,7 +75,8 @@ async function carregarLib() {
   if (lib) return lib;
   espelhos = await ativarEspelhos(BASE);
   try {
-    const { mod } = await importarPrimeiro(BASE, [espelhos.vendor.piper], PIPER_CDN);
+    const { mod, url } = await importarPrimeiro(BASE, [espelhos.vendor.piper], PIPER_CDN, semLocal);
+    libLocal = url.startsWith(BASE);
     lib = mod.predict ? mod : (mod.default && mod.default.predict ? mod.default : null);
     if (!lib) throw new Error('biblioteca sem predict()');
     return lib;
@@ -128,7 +129,19 @@ async function listarVozes() {
 }
 
 /* ---------------------------- Inicialização ---------------------------- */
-async function init({ voz, velocidade: vel }) {
+async function init(op) {
+  try { return await init_(op); }
+  catch (e) {
+    // biblioteca hospedada no site com dependência não resolvida → usa a do CDN (os modelos continuam locais)
+    if (libLocal && !semLocal && ehErroModulo(e)) {
+      semLocal = true; lib = null; libLocal = false;
+      post({ tipo: 'aviso', msg: 'Biblioteca local do Piper incompleta (' + ((e && e.message) || e) + '); usando a versão do CDN.' });
+      return init_(op);
+    }
+    throw e;
+  }
+}
+async function init_({ voz, velocidade: vel }) {
   voz = voz || VOZ_PADRAO; velocidade = +vel > 0 ? +vel : 1; nativo = false;
   post({ tipo: 'fase', fase: 'carregando', device: 'wasm' });
   await carregarLib();
@@ -147,7 +160,7 @@ async function init({ voz, velocidade: vel }) {
   const teste = await falar('Teste.', voz);
   if (!teste.pcm.length || rms(teste.pcm) < 1e-4) throw new Error('O áudio de teste do Piper saiu vazio.');
   vozAtual = voz;
-  post({ tipo: 'pronto', dtype: 'medium', device: 'wasm', motor: 'piper', voz, sr: teste.sr, velocidade, nativo, local: espelhos.ativo });
+  post({ tipo: 'pronto', dtype: 'medium', device: 'wasm', motor: 'piper', voz, sr: teste.sr, velocidade, nativo, local: espelhos.ativo, biblioteca: libLocal ? 'local' : 'cdn' });
 }
 
 /* ---------------------------- Mensagens ---------------------------- */
