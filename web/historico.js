@@ -201,26 +201,49 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
 .hist-back[hidden]{display:none}
 .hist-back #secHist{width:min(1400px,100%);margin:0;box-shadow:0 10px 40px rgba(0,0,0,.35);position:relative}
 #secHist .hx{position:absolute;top:14px;right:16px;margin:0}
-.mde-tb button.hbtn{display:inline-flex;align-items:center;gap:4px}`;
+.mde-tb button.hbtn{display:inline-flex;align-items:center;gap:4px}
+#secHist .htop{display:flex;align-items:center;gap:10px;margin:0 0 6px}#secHist .htop h2{flex:1;margin:0}
+#secHist .htop .hx{position:static;flex:0 0 auto}
+@media(max-width:700px){
+  .mde-tb button.hbtn .ht{display:none}
+  .mde-tb button.hbtn{min-width:36px;min-height:34px;justify-content:center}
+  .hist-back{padding:0;align-items:stretch}
+  .hist-back #secHist{width:100%;min-height:100%;border-radius:0;border:0;padding:0 14px 20px}
+  #secHist .htop{position:sticky;top:0;z-index:3;background:#fff;margin:0 -14px 8px;padding:10px 14px;border-bottom:1px solid #dfe5ee}
+  #secHist .htop h2{font-size:16px;line-height:1.25}
+  #secHist .htop .hx{min-height:38px;padding:6px 12px}
+  #secHist>.note{font-size:12.5px;margin:4px 0 8px}
+  #secHist .hrow{gap:8px}#secHist .hrow>div,#secHist .hrow>div.lg{min-width:0;flex:1 1 100%}
+  #secHist .hrow.op>div{flex:1 1 calc(50% - 8px)}
+  #secHist .hrow.op>div.go{flex:1 1 100%}#secHist .hrow.op>div.go button{width:100%;min-height:42px}
+  #secHist .hrow.troca{justify-content:center;margin:2px 0}
+  #secHist .hrow.acts{display:grid;grid-template-columns:1fr 1fr;gap:6px}#secHist .hrow.acts button{width:100%;min-height:38px}
+  #secHist .dfst{font-size:12.5px;gap:6px 12px}
+  #secHist .dfwrap{max-height:none}
+  table.df{font-size:11.5px}table.df col.n,table.df td.n{width:30px}table.df td{padding:1px 4px}
+  #secHist .dg img{height:70px;max-width:120px}
+}`;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secHist';
-  sec.innerHTML = '<button type="button" class="sec mini hx" id="hFechar" title="Fechar (Esc)">Fechar ✕</button><h2>Histórico e comparação (antes e depois)</h2>' +
+  sec.innerHTML = '<div class="htop"><h2>Histórico e comparação</h2><button type="button" class="sec mini hx" id="hFechar" title="Fechar (Esc)">Fechar ✕</button></div>' +
     '<p class="note">Versões guardadas <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), arquivos carregados, conteúdos abertos de links, rascunhos, exemplo, versões marcadas e momentos de geração/compartilhamento. Escolha duas versões e compare.</p>' +
     '<div class="hrow"><div class="lg"><label for="hA">Versão A (antes)</label><select id="hA"></select></div>' +
-    '<div style="min-width:auto"><button type="button" class="sec mini" id="hTroca" title="Trocar A e B">⇄</button></div>' +
+    '<div class="hrow troca" style="min-width:auto;margin:0"><button type="button" class="sec mini" id="hTroca" title="Trocar A e B">⇄</button></div>' +
     '<div class="lg"><label for="hB">Versão B (depois)</label><select id="hB"></select></div></div>' +
-    '<div class="hrow"><div><label for="hDoc">Documento</label><select id="hDoc"><option value="g">Guia</option><option value="s">Apresentação</option><option value="a">Ambos</option></select></div>' +
+    '<div class="hrow op"><div><label for="hDoc">Documento</label><select id="hDoc"><option value="g">Guia</option><option value="s">Apresentação</option><option value="a">Ambos</option></select></div>' +
     '<div><label for="hModo">Exibição</label><select id="hModo"><option value="l">Lado a lado</option><option value="u">Unificada</option></select></div>' +
     '<div><label for="hCtx">Mostrar</label><select id="hCtx"><option value="3">Só alterações (± 3 linhas)</option><option value="10">Alterações (± 10 linhas)</option><option value="-1">Texto completo</option></select></div>' +
-    '<div style="min-width:auto"><button type="button" id="hGo">Comparar</button></div></div>' +
-    '<div class="hrow"><button type="button" class="sec mini" id="hMarca">★ Marcar versão atual…</button><button type="button" class="sec mini" id="hResA">Restaurar A</button><button type="button" class="sec mini" id="hResB">Restaurar B</button><button type="button" class="sec mini" id="hBx">Baixar A e B (.md)</button><button type="button" class="dan mini" id="hDel">Excluir A</button><button type="button" class="dan mini" id="hLimpa">Limpar histórico</button></div>' +
+    '<div class="go" style="min-width:auto"><button type="button" id="hGo">Comparar</button></div></div>' +
+    '<div class="hrow acts"><button type="button" class="sec mini" id="hMarca">★ Marcar versão atual…</button><button type="button" class="sec mini" id="hResA">Restaurar A</button><button type="button" class="sec mini" id="hResB">Restaurar B</button><button type="button" class="sec mini" id="hBx">Baixar A e B (.md)</button><button type="button" class="dan mini" id="hDel">Excluir A</button><button type="button" class="dan mini" id="hLimpa">Limpar histórico</button></div>' +
     '<p class="hint" id="hInfo"></p><div id="hRes"></div>';
   // Janela sobreposta: só aparece quando o botão "Histórico" (barra do editor) é clicado
   const back = document.createElement('div'); back.className = 'hist-back'; back.hidden = true; back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true'); back.setAttribute('aria-label', 'Histórico e comparação');
   back.appendChild(sec); document.body.appendChild(back);
   function abrir(doc) {
     if (doc) $('hDoc').value = doc;
+    if (matchMedia('(max-width: 700px)').matches && !abrir.modoDefinido) { $('hModo').value = 'u'; abrir.modoDefinido = true; }  // celular: exibição unificada
+    back.scrollTop = 0;
     back.hidden = false; document.body.style.overflow = 'hidden';
     montarSelects().then(async () => { const l = await lista(); if ($('hA').value === 'atual' && l[0]) $('hA').value = String(l[0].id); $('hB').value = 'atual'; executar(); });
     setTimeout(() => $('hA').focus(), 30);
@@ -234,7 +257,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     const tb = document.querySelector('#' + id + ' .mde-tb'); if (!tb) return;
     const fs = [...tb.querySelectorAll('button')].pop();
     const b = document.createElement('button'); b.type = 'button'; b.className = 'hbtn'; b.title = 'Histórico e comparação de versões (Alt+Shift+V)';
-    b.innerHTML = ICO + ' Histórico'; b.onclick = () => abrir(doc);
+    b.innerHTML = ICO + '<span class="ht"> Histórico</span>'; b.setAttribute('aria-label', 'Histórico e comparação'); b.onclick = () => abrir(doc);
     tb.insertBefore(b, fs);
   });
 

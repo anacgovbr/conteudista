@@ -6,6 +6,7 @@ on:
     paths:
       - "web/**"
       - "tools/**"
+      - "CHANGELOG.md"
       - ".github/workflows/publicar-pagina.yml"
   workflow_dispatch:
 
@@ -48,6 +49,7 @@ jobs:
           node -e "import('/tmp/ptbr-g2p.mjs').then(m=>{const r=m.phonemizePTBR('Olá, mundo. A gestão de processos.');console.log(r);if(!/ˈ/.test(r))process.exit(1)})"
           node --check web/ajuda.js
           node --check web/historico.js
+          node --check web/changelog.js
           python -c "import re;s=open('web/index.html',encoding='utf-8').read();open('/tmp/app.js','w',encoding='utf-8').write(re.findall(r'<script>(.*?)</script>',s,re.S)[-1])"
           node --check /tmp/app.js
 
@@ -56,6 +58,7 @@ jobs:
           mkdir -p site/wheels
           cp web/index.html web/*.js tools/gerador.py site/
           cp -r web/exemplo site/exemplo
+          cp CHANGELOG.md site/
           pip download --no-deps --only-binary=:all: --dest site/wheels python-docx python-pptx XlsxWriter typing_extensions
           python -c "import os,json;json.dump(sorted(f for f in os.listdir('site/wheels') if f.endswith('.whl')),open('site/wheels/wheels.json','w'))"
           touch site/.nojekyll

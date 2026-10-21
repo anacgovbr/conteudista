@@ -33,6 +33,7 @@ web/historico.js         ← histórico de versões e comparação (diff)
 web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
 web/locucao.js           ← aba Locução (interface, histórico de áudio)
 web/locucao-worker.js    ← motor de voz Kokoro-82M (Web Worker)
+web/changelog.js         ← botão Novidades (lê o CHANGELOG.md)
 web/ptbr-g2p.js          ← fonemizador interno pt-BR (regras; usado quando o espeak-ng não oferece português)
 web/exemplo/             ← curso de exemplo (fictício)
 tools/gerador.py         ← motor de conversão (o mesmo do agente "Gerador de Cursos ANAC")
@@ -41,6 +42,8 @@ tools/requirements.txt
 ```
 
 ## Manutenção
+
+- A cada mudança, acrescente uma entrada curta no topo do `CHANGELOG.md` e atualize `VERSAO` em `web/changelog.js`.
 
 - Alterou o visual dos arquivos gerados? Edite `tools/gerador.py`; o workflow testa e republica.
 - Mantenha a mesma versão do `gerador.py` na PARTE 6 do `Pacote_Gerador_Cursos.txt` do agente.

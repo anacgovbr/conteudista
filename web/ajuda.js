@@ -168,6 +168,8 @@
 <tr><td>Fluxos Mermaid no DOCX/PPTX</td><td>Aparecem como tabela “De | Condição | Para” (desenho só no HTML).</td></tr></table>
 <h4>Tutorial</h4>
 <p>O tutorial abre sozinho na primeira visita. Para vê-lo de novo, use o botão <b>▶ Tutorial</b>, o botão <b>↺ Reiniciar tutorial</b> desta janela ou <kbd>Alt+Shift+R</kbd>. Dentro do tutorial, <b>↺</b> volta ao primeiro passo.</p>
+<h4>Novidades</h4>
+<p>O botão <b>★ Novidades</b> no topo (ou <kbd>Alt+Shift+U</kbd>) mostra o que mudou em cada versão. Um ponto verde indica versão ainda não vista.</p>
 <h4>Privacidade</h4>
 <p>Não inclua dados pessoais ou informações restritas em links compartilhados sem autorização. O conteúdo só sai do seu computador quando você cria um link.</p>`;
   function secoes(html) {  // agrupa a ajuda em seções pesquisáveis
@@ -228,7 +230,8 @@
     { g: 'Ajuda', k: 'T', d: 'Tutorial', f: iniciar },
     { g: 'Ajuda', k: 'R', d: 'Reiniciar o tutorial (do primeiro passo)', f: reiniciar },
     { g: 'Ajuda', k: 'H', d: 'Ajuda (também F1)', f: () => ajuda() },
-    { g: 'Ajuda', k: 'K', d: 'Esta lista de atalhos', f: () => atalhos() }
+    { g: 'Ajuda', k: 'K', d: 'Esta lista de atalhos', f: () => atalhos() },
+    { g: 'Ajuda', k: 'U', d: 'Novidades (changelog)', f: () => window.Conteudista && Conteudista.novidades && Conteudista.novidades() }
   ];
   const EDITOR = ((window.MDEditor && MDEditor.ATALHOS) || []).map(a => isMac ? [a[0].replace(/Ctrl/g, '⌘ Cmd').replace(/Alt/g, '⌥ Option'), a[1]] : a);
   function atalhos() {
