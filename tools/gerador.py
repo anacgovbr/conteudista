@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# GERADOR PADRÃO DE CURSO v3.3 (imagens em base64) — Guia (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
+# GERADOR PADRÃO DE CURSO v3.4 (imagens em base64; temas: govbr [padrão] e classico) — Guia (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
 # Requisitos: Python 3 + python-docx + python-pptx (+ Pillow). HTML usa só biblioteca padrão.
-# Uso: python gerador.py guia.md apresentacao.md --prefixo NOME --rodape "TEXTO" [--barra "TEXTO"] [--saida pasta] [--sem-embutir]
+# Uso: python gerador.py guia.md apresentacao.md --prefixo NOME --rodape "TEXTO" [--barra "TEXTO"] [--saida pasta] [--sem-embutir] [--tema govbr|classico]
 # Imagens ![alt](caminho|URL) sao convertidas para data:URI base64 (texto puro) nos .md de saida.
 # Saída: Treinamento_<prefixo>.md/.html/.docx  e  Apresentacao_<prefixo>.md/.html/.pptx
 import re,html,argparse,os,base64,io,mimetypes
@@ -168,6 +168,44 @@ def html_of(bl,toc=None):
         elif k=='code':o.append('<div class="mw"><pre class="mermaid">%s</pre></div>'%E(b[2]) if b[1]=='mermaid' else '<pre class="code"><code>%s</code></pre>'%E(b[2]))
     return '\n'.join(o)
 MER='<script type="module">try{const m=(await import("https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs")).default;m.initialize({startOnLoad:false});await m.run({querySelector:"pre.mermaid"})}catch(e){console.warn("Mermaid offline",e)}</script>'
+# ============================== TEMAS (layout dos arquivos gerados) ==============================
+# Cada tema troca a paleta e a fonte de TODOS os arquivos (HTML, DOCX e PPTX). As cores "base" do código são as do
+# tema clássico; o mapa de cada tema diz por qual cor cada uma é trocada. Para criar um tema novo (ex.: ANAC),
+# copie o bloco 'govbr', ajuste 'map', fontes e 'extra_*' e registre em TEMAS.
+_GOV_MAP={'#0b3d6e':'#0c326f','#0a7cc1':'#1351b4','#19a974':'#168821','#0a5c9a':'#155bcb','#eaf1f8':'#dbe8fb','#dfe5ee':'#cccccc','#d9e2ee':'#cccccc',
+ '#1b2430':'#333333','#5a6676':'#636363','#f6f8fb':'#f8f8f8','#eef4fa':'#edf5ff','#0d1b2a':'#071d41','#1e7b4f':'#168821','#e9f6f0':'#e3f5e1',
+ '#fff4e0':'#fff5c2','#9a5b00':'#8a5c00','#f1f4f8':'#f8f8f8','#f2f7fc':'#edf5ff','#d6ecff':'#dbe8fb','#e8f2fb':'#edf5ff','#cfe3f5':'#c5d4eb'}
+TEMAS={
+ 'govbr':{'nome':'Padrão gov.br (Design System do Governo Federal)','map':_GOV_MAP,
+   'fonte':"'Rawline','Raleway',\"Segoe UI\",Arial,sans-serif",
+   'import':"@import url('https://fonts.cdnfonts.com/css/rawline');@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&display=swap');",
+   'extra_g':"""[data-theme=light] header{background:#fff;color:#333;border-top:4px solid #1351b4;box-shadow:0 1px 6px rgba(0,0,0,.16)}
+[data-theme=light] header .t{color:#333}[data-theme=light] header #pg{color:#636363}
+[data-theme=light] header button,[data-theme=light] header select{background:#fff;color:#1351b4;border:1px solid #1351b4;border-radius:100em;font-weight:600;padding:6px 14px}
+[data-theme=light] header button:hover{background:rgba(19,81,180,.12)}
+[data-theme=light] article{border:0;border-radius:4px;box-shadow:0 1px 6px rgba(0,0,0,.16)}
+[data-theme=light] th{background:#ededed;color:#333}
+h1,h2,h3{font-weight:700}.ab{border-radius:100em;font-weight:600;padding:8px 20px}
+:focus-visible{outline:4px dashed #c2850c;outline-offset:4px}
+nav a.on{font-weight:600}""",
+   'extra_s':""".s h1{font-weight:700}.s.title h1{border-bottom-color:#ffcd07}.s.title:before{background:#ffcd07}
+#hud button{border-radius:100em}""",
+   'docx_font':'Arial','pptx_font':'Arial','pptx_destaque':'FFCD07'},
+ 'classico':{'nome':'Clássico (layout original do Conteudista)','map':{},'fonte':None,'import':'','extra_g':'','extra_s':'',
+   'docx_font':'Calibri','pptx_font':'Segoe UI','pptx_destaque':None},
+}
+TEMA_PADRAO='govbr'
+def tema_de(t):return TEMAS.get(t or TEMA_PADRAO) or TEMAS[TEMA_PADRAO]
+def _cor(h,T):
+    h=h.lower();h=h if h.startswith('#') else '#'+h;return T['map'].get(h,h)
+def tcss(css,T,extra=''):
+    css=re.sub(r'#[0-9a-fA-F]{6}\b',lambda m:_cor(m.group(0),T),css)
+    if T.get('fonte'):css=css.replace('"Segoe UI",Roboto,Arial,sans-serif',T['fonte'])
+    return (T.get('import') or '')+css+(extra or '')
+def thex(h,T):return _cor(h,T)[1:].upper()
+def trgb(h,T):
+    from docx.shared import RGBColor as _R
+    return _R.from_string(thex(h,T))
 CSS_G=""":root{--bg:#f6f8fb;--pa:#fff;--ink:#1b2430;--pri:#0b3d6e;--acc:#0a7cc1;--line:#dfe5ee;--th:#eaf1f8;--ok:#1e7b4f;--wa:#9a5b00;--code:#f1f4f8}
 [data-theme=dark]{--bg:#0f1520;--pa:#162030;--ink:#e6edf5;--pri:#8cc4ff;--acc:#5fb3ff;--line:#2a3a50;--th:#1e2c40;--ok:#5fd39b;--wa:#ffc266;--code:#1c283a}
 [data-theme=contrast]{--bg:#000;--pa:#000;--ink:#fff;--pri:#ffd400;--acc:#00e5ff;--line:#fff;--th:#1a1a1a;--ok:#0f8;--wa:#ffd400;--code:#111}
@@ -224,7 +262,8 @@ D.getElementById('p').onclick=function(){g(i-1)};D.getElementById('n').onclick=f
 var x0=null;addEventListener('touchstart',function(e){x0=e.touches[0].clientX});addEventListener('touchend',function(e){if(x0===null)return;var d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>50)g(i+(d<0?1:-1));x0=null})})();"""
 def title_of(md,d):
     m=re.search(r'^#\s+(.+)$',md,re.M);return plain(m.group(1)).strip() if m else d
-def guia_html(md,bar):
+def guia_html(md,bar,tema=None):
+    T=tema_de(tema)
     toc=[];b=html_of(blocks(md),toc)
     hs=list(re.finditer(r'<h2 id="[^"]+">(.*?)</h2>',b))
     for k,m in enumerate(hs):
@@ -234,7 +273,7 @@ def guia_html(md,bar):
     return ('<!DOCTYPE html><html lang="pt-BR" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title><style>%s</style></head><body>'
     '<header><span class="t">%s</span><span id="pg" style="font-size:13px"></span><select id="th" aria-label="Tema"><option value="light">Tema claro</option><option value="dark">Tema escuro</option><option value="contrast">Alto contraste</option></select>'
     '<button id="rs">Limpar checklists</button><button onclick="print()">Imprimir / PDF</button></header><div class="wrap"><nav aria-label="Sumário"><ul>%s</ul></nav><main><article>%s</article></main></div><script>%s</script>%s</body></html>'
-    )%(E(t),CSS_G,E(bar or t),tc,b,JS_G.replace('__K__',slug(t)[:40]),MER)
+    )%(E(t),tcss(CSS_G,T,T['extra_g']),E(bar or t),tc,b,JS_G.replace('__K__',slug(t)[:40]),MER)
 def split_slides(md):
     t='Apresentação';fm=re.match(r'^---\n(.*?)\n---\n',md,re.S)
     if fm:
@@ -249,26 +288,36 @@ def split_slides(md):
         p=re.sub(r'<!--.*?-->','',p,flags=re.S).strip()
         if p:out.append((c,blocks(p),n))
     return t,out
-def slides_html(t,sl,foot):
+def slides_html(t,sl,foot,tema=None):
+    T=tema_de(tema)
     o=''.join('<section class="s %s"><div class="in">%s</div><aside class="nt">%s</aside></section>'%(c,html_of(b),E(n)) for c,b,n in sl)
     return ('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title><style>%s</style></head><body>'
     '<div id="st">%s</div><div id="bar"></div><div id="hud"><button id="p">◀</button><span id="c"></span><button id="n">▶</button><button id="b1">Notas (N)</button><button id="b2">Tela cheia (F)</button></div><script>%s</script>%s</body></html>'
-    )%(E(t),CSS_S.replace('__F__',foot.replace('"','')),o,JS_S,MER)
+    )%(E(t),tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s']),o,JS_S,MER)
 # ============================== DOCX ==============================
-def guia_docx(md,path,foot):
+def guia_docx(md,path,foot,tema=None):
+    T=tema_de(tema);C=lambda h:trgb(h,T);H=lambda h:thex(h,T);FONTE=T['docx_font']
     from docx import Document
     from docx.shared import Pt,RGBColor,Cm
     from docx.enum.text import WD_BREAK
     from docx.oxml.ns import qn
     from docx.oxml import OxmlElement
-    PRI=RGBColor(0x0B,0x3D,0x6E);ACC=RGBColor(0x0A,0x7C,0xC1)
+    PRI=C('0B3D6E');ACC=C('0A7CC1')
     d=Document();sec=d.sections[0];sec.page_height=Cm(29.7);sec.page_width=Cm(21)
     for a in('left_margin','right_margin'):setattr(sec,a,Cm(2.2))
     sec.top_margin=Cm(2);sec.bottom_margin=Cm(2)
-    stl=d.styles['Normal'];stl.font.name='Calibri';stl.font.size=Pt(11);stl.paragraph_format.space_after=Pt(4)
-    stl.element.rPr.rFonts.set(qn('w:eastAsia'),'Calibri')
+    stl=d.styles['Normal'];stl.font.name=FONTE;stl.font.size=Pt(11);stl.paragraph_format.space_after=Pt(4)
+    stl.element.rPr.rFonts.set(qn('w:eastAsia'),FONTE)
     for nm,sz in(('Title',24),('Heading 1',16),('Heading 2',13)):
-        s=d.styles[nm];s.font.name='Calibri';s.font.size=Pt(sz);s.font.color.rgb=PRI;s.font.bold=True
+        s=d.styles[nm];s.font.name=FONTE;s.font.size=Pt(sz);s.font.color.rgb=PRI;s.font.bold=True
+    if T is not TEMAS['classico']:  # força a fonte do tema também nos títulos (remove a fonte do tema do Word)
+        for nm in('Title','Heading 1','Heading 2','Heading 3','List Bullet','List Number'):
+            try:
+                st_=d.styles[nm];st_.font.name=FONTE;rf=st_.element.get_or_add_rPr().get_or_add_rFonts()
+                for at in('w:asciiTheme','w:hAnsiTheme','w:eastAsiaTheme','w:cstheme'):rf.attrib.pop(qn(at),None)
+                rf.set(qn('w:eastAsia'),FONTE)
+            except KeyError:pass
+        rf=stl.element.rPr.rFonts;rf.set(qn('w:eastAsia'),FONTE)
     def shade(el,fill):
         pr=el.get_or_add_tcPr() if hasattr(el,'get_or_add_tcPr') else el.get_or_add_pPr()
         sh=OxmlElement('w:shd');sh.set(qn('w:val'),'clear');sh.set(qn('w:color'),'auto');sh.set(qn('w:fill'),fill);pr.append(sh)
@@ -279,7 +328,7 @@ def guia_docx(md,path,foot):
     def link(p,text,url,bold=False,size=None):
         r_id=p.part.relate_to(url,'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink',is_external=True)
         h=OxmlElement('w:hyperlink');h.set(qn('r:id'),r_id);r=OxmlElement('w:r');rp=OxmlElement('w:rPr')
-        c=OxmlElement('w:color');c.set(qn('w:val'),'0A7CC1');u=OxmlElement('w:u');u.set(qn('w:val'),'single');rp.append(c);rp.append(u)
+        c=OxmlElement('w:color');c.set(qn('w:val'),H('0A7CC1'));u=OxmlElement('w:u');u.set(qn('w:val'),'single');rp.append(c);rp.append(u)
         if bold:rp.append(OxmlElement('w:b'))
         if size:
             z=OxmlElement('w:sz');z.set(qn('w:val'),str(int(size*2)));rp.append(z)
@@ -308,7 +357,7 @@ def guia_docx(md,path,foot):
                 cell=tb.cell(ri,ci);cell.text='';p=cell.paragraphs[0];p.paragraph_format.space_after=Pt(0)
                 fill(p,r[ci] if ci<len(r) else '',size=10,bold=(ri==0))
                 if ri==0:
-                    shade(cell._tc,'EAF1F8')
+                    shade(cell._tc,H('EAF1F8'))
                     for x in p.runs:x.font.color.rgb=PRI
         tr=tb.rows[0]._tr;trPr=tr.get_or_add_trPr();h=OxmlElement('w:tblHeader');h.set(qn('w:val'),'true');trPr.append(h)
         d.add_paragraph().paragraph_format.space_after=Pt(2)
@@ -340,14 +389,14 @@ def guia_docx(md,path,foot):
                     p.paragraph_format.space_after=Pt(2)
                     if inq:shade(p._p,inq[0]);lborder(p,inq[1])
             elif k=='quote':
-                col={'tip':('E9F6F0','1E7B4F'),'warning':('FFF4E0','9A5B00')}.get(b[1],('EAF1F8','0A7CC1'))
+                col={'tip':(H('E9F6F0'),H('1E7B4F')),'warning':(H('FFF4E0'),H('9A5B00'))}.get(b[1],(H('EAF1F8'),H('0A7CC1')))
                 render(b[2],col)
             elif k=='code':
                 if b[1]=='mermaid':
                     p=d.add_paragraph();r=p.add_run('Fluxo (representação em tabela):');r.bold=True;r.font.color.rgb=ACC
                     table(mermaid_edges(b[2]))
                 else:
-                    p=d.add_paragraph();r=p.add_run(b[2]);r.font.name='Consolas';r.font.size=Pt(9);shade(p._p,'F1F4F8')
+                    p=d.add_paragraph();r=p.add_run(b[2]);r.font.name='Consolas';r.font.size=Pt(9);shade(p._p,H('F1F4F8'))
     bl=blocks(re.sub(r'<!--.*?-->','',md,flags=re.S))
     hi=next((i for i,x in enumerate(bl) if x[0]=='h' and x[1]==2),len(bl))
     render(bl[:hi])
@@ -362,25 +411,27 @@ def guia_docx(md,path,foot):
             t=OxmlElement('w:t');t.text='Clique com o botão direito e escolha "Atualizar campo" para gerar o sumário.';r._r.append(t)
     d.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
     render(bl[hi:])
-    fp=sec.footer.paragraphs[0];fp.text=foot or ' ';fp.runs[0].font.size=Pt(8);fp.runs[0].font.color.rgb=RGBColor(0x5A,0x66,0x76)
+    fp=sec.footer.paragraphs[0];fp.text=foot or ' ';fp.runs[0].font.size=Pt(8);fp.runs[0].font.color.rgb=C('5A6676')
     s=d.settings.element;u=OxmlElement('w:updateFields');u.set(qn('w:val'),'true');s.append(u)
     d.save(path)
 # ============================== PPTX ==============================
-def slides_pptx(t,sl,path,foot):
+def slides_pptx(t,sl,path,foot,tema=None):
+    T=tema_de(tema);H=lambda h:thex(h,T);FONTE=T['pptx_font']
     from pptx import Presentation
     from pptx.util import Inches,Pt
     from pptx.dml.color import RGBColor
+    C=lambda h:RGBColor.from_string(thex(h,T))
     from pptx.enum.shapes import MSO_SHAPE
     from pptx.enum.text import MSO_ANCHOR
-    PRI=RGBColor(0x0B,0x3D,0x6E);ACC=RGBColor(0x0A,0x7C,0xC1);AC2=RGBColor(0x19,0xA9,0x74);INK=RGBColor(0x1B,0x24,0x30)
-    WH=RGBColor(255,255,255);MU=RGBColor(0x5A,0x66,0x76);SOFT=RGBColor(0xEE,0xF4,0xFA)
+    PRI=C('0B3D6E');ACC=C('0A7CC1');AC2=C('19A974');INK=C('1B2430')
+    WH=C('FFFFFF');MU=C('5A6676');SOFT=C('EEF4FA');DEST=RGBColor.from_string(T['pptx_destaque']) if T.get('pptx_destaque') else AC2
     P=Presentation();P.slide_width=Inches(13.333);P.slide_height=Inches(7.5);W=13.333;L=0.62;CW=W-2*L
     def rect(s,x,y,w,h,col,shape=MSO_SHAPE.RECTANGLE):
         r=s.shapes.add_shape(shape,Inches(x),Inches(y),Inches(w),Inches(h));r.fill.solid();r.fill.fore_color.rgb=col;r.line.fill.background();r.shadow.inherit=False;return r
     def addruns(par,t,size,color,bold=False):
         for x,b,i,c,u in runs(t):
             if c==2:x='[%s]'%(x or 'imagem');u=None;c=0
-            r=par.add_run();r.text=x;f=r.font;f.size=Pt(size);f.bold=bool(b) or bold;f.italic=bool(i);f.name='Consolas' if c else 'Segoe UI'
+            r=par.add_run();r.text=x;f=r.font;f.size=Pt(size);f.bold=bool(b) or bold;f.italic=bool(i);f.name='Consolas' if c else FONTE
             f.color.rgb=ACC if (u and color==INK) else (PRI if (b and color==INK) else color)
             if u:r.hyperlink.address=u;f.underline=True
     def tbox(s,x,y,w,h):
@@ -417,7 +468,7 @@ def slides_pptx(t,sl,path,foot):
                 p=tf.paragraphs[0] if n==0 else tf.add_paragraph();n+=1
                 p.space_after=Pt(4);sz=size-2*min(dp,1)
                 bullet=('☑ ' if ck else '☐ ') if ck is not None else ('%d. '%n if od and dp==0 else '• ' if dp==0 else '– ')
-                r=p.add_run();r.text='    '*dp+bullet;r.font.size=Pt(sz);r.font.bold=True;r.font.color.rgb=ACC if col==INK else col;r.font.name='Segoe UI'
+                r=p.add_run();r.text='    '*dp+bullet;r.font.size=Pt(sz);r.font.bold=True;r.font.color.rgb=ACC if col==INK else col;r.font.name=FONTE
                 addruns(p,t,sz,col)
         elif k=='table':
             rows=b[1];nc=max(len(r) for r in rows);ts=size-3
@@ -429,8 +480,8 @@ def slides_pptx(t,sl,path,foot):
                     addruns(tf.paragraphs[0],r[ci] if ci<len(r) else '',ts,WH if ri==0 else INK,ri==0)
                     c.fill.solid();c.fill.fore_color.rgb=PRI if ri==0 else (SOFT if ri%2==0 else WH)
         elif k=='quote':
-            bg={'warning':RGBColor(0xFF,0xF4,0xE0)}.get(b[1],RGBColor(0xE9,0xF6,0xF0))
-            rect(s,x,y,w,h-0.05,bg);rect(s,x,y,0.08,h-0.05,AC2 if b[1]!='warning' else RGBColor(0x9A,0x5B,0))
+            bg={'warning':C('FFF4E0')}.get(b[1],C('E9F6F0'))
+            rect(s,x,y,w,h-0.05,bg);rect(s,x,y,0.08,h-0.05,AC2 if b[1]!='warning' else C('9A5B00'))
             yy=y+0.1
             for q in b[2]:draw(s,q,yy,size-1,col,x+0.2,w-0.3);yy+=est(q,size-1)
         elif k=='img':
@@ -449,18 +500,18 @@ def slides_pptx(t,sl,path,foot):
         return h
     for idx,(cls,bl,notes) in enumerate(sl):
         s=P.slides.add_slide(P.slide_layouts[6]);istitle=cls=='title'
-        if istitle:rect(s,0,0,W,7.5,PRI);rect(s,0,0,0.15,7.5,AC2)
+        if istitle:rect(s,0,0,W,7.5,PRI);rect(s,0,0,0.15,7.5,DEST)
         else:
-            if cls=='highlight':rect(s,0,0,W,7.5,RGBColor(0xF2,0xF7,0xFC))
+            if cls=='highlight':rect(s,0,0,W,7.5,C('F2F7FC'))
             rect(s,0,0,0.15,7.5,PRI)
         h1=[b for b in bl if b[0]=='h' and b[1]==1];rest=[b for b in bl if not(b[0]=='h' and b[1]==1)]
         if istitle:
             sub=[b for b in rest if b[0]=='h'];body=[b for b in rest if b[0]!='h'];y=2.2
             if h1:
                 tb,tf=tbox(s,L,y,CW,1.3);tf.vertical_anchor=MSO_ANCHOR.BOTTOM;addruns(tf.paragraphs[0],h1[0][2],50,WH,True);y+=1.4
-                rect(s,L,y,min(CW,len(plain(h1[0][2]))*0.36),0.06,AC2);y+=0.25
-            for b in sub:tb,tf=tbox(s,L,y,CW,0.7);addruns(tf.paragraphs[0],b[2],28,RGBColor(0xD6,0xEC,0xFF),True);y+=0.75
-            for b in body:y+=draw(s,b,y,20,RGBColor(0xE8,0xF2,0xFB))
+                rect(s,L,y,min(CW,len(plain(h1[0][2]))*0.36),0.06,DEST);y+=0.25
+            for b in sub:tb,tf=tbox(s,L,y,CW,0.7);addruns(tf.paragraphs[0],b[2],28,C('D6ECFF'),True);y+=0.75
+            for b in body:y+=draw(s,b,y,20,C('E8F2FB'))
         else:
             y=0.45
             if h1:
@@ -469,34 +520,35 @@ def slides_pptx(t,sl,path,foot):
             avail=6.75-y;size=22
             while size>12 and sum(est(b,size) for b in rest)>avail:size-=1
             for b in rest:y+=draw(s,b,y,size,INK)
-        tb,tf=tbox(s,L,7.05,8,0.3);addruns(tf.paragraphs[0],foot,11,RGBColor(0xCF,0xE3,0xF5) if istitle else MU)
-        tb,tf=tbox(s,W-1.5,7.05,1,0.3);addruns(tf.paragraphs[0],'%d / %d'%(idx+1,len(sl)),11,RGBColor(0xCF,0xE3,0xF5) if istitle else MU)
+        tb,tf=tbox(s,L,7.05,8,0.3);addruns(tf.paragraphs[0],foot,11,C('CFE3F5') if istitle else MU)
+        tb,tf=tbox(s,W-1.5,7.05,1,0.3);addruns(tf.paragraphs[0],'%d / %d'%(idx+1,len(sl)),11,C('CFE3F5') if istitle else MU)
         if notes:s.notes_slide.notes_text_frame.text=notes
     P.core_properties.title=t;P.save(path)
 # ============================== EXECUÇÃO ==============================
-def gerar(gm,sm,prefixo='Curso',rodape='',barra='',saida='.'):
+def gerar(gm,sm,prefixo='Curso',rodape='',barra='',saida='.',tema=None):
+    tema=tema if tema in TEMAS else TEMA_PADRAO
     """Gera os 6 arquivos a partir do texto dos dois .md. Retorna (lista de caminhos, resumo)."""
     os.makedirs(saida,exist_ok=True)
-    gm_=re.sub(r'<!--.*?-->','',gm,flags=re.S);g=guia_html(gm_,barra);t,sl=split_slides(sm)
+    gm_=re.sub(r'<!--.*?-->','',gm,flags=re.S);g=guia_html(gm_,barra,tema);t,sl=split_slides(sm)
     P=lambda e,n:os.path.join(saida,n+prefixo+e)
     arqs=[P('.md','Treinamento_'),P('.html','Treinamento_'),P('.md','Apresentacao_'),P('.html','Apresentacao_')]
-    open(arqs[1],'w',encoding='utf-8').write(g);open(arqs[3],'w',encoding='utf-8').write(slides_html(t,sl,rodape))
+    open(arqs[1],'w',encoding='utf-8').write(g);open(arqs[3],'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema))
     open(arqs[0],'w',encoding='utf-8').write(gm);open(arqs[2],'w',encoding='utf-8').write(sm)
     msg=''
-    try:guia_docx(gm_,P('.docx','Treinamento_'),rodape or title_of(gm_,''));arqs.append(P('.docx','Treinamento_'));msg+=' | docx: ok'
+    try:guia_docx(gm_,P('.docx','Treinamento_'),rodape or title_of(gm_,''),tema);arqs.append(P('.docx','Treinamento_'));msg+=' | docx: ok'
     except Exception as e:msg+=' | docx: ERRO %s'%e
-    try:slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
+    try:slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape,tema);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
     except Exception as e:msg+=' | pptx: ERRO %s'%e
-    res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d | imagens: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'),len(IMG.findall(gm))+len(IMG.findall(sm)))
+    res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d | imagens: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'),len(IMG.findall(gm))+len(IMG.findall(sm)))+' | tema: '+tema
     return arqs,res
 if __name__=='__main__':
     a=argparse.ArgumentParser();a.add_argument('guia');a.add_argument('apresentacao');a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.')
-    a.add_argument('--sem-embutir',action='store_true',help='não converter imagens para base64');a=a.parse_args()
+    a.add_argument('--sem-embutir',action='store_true',help='não converter imagens para base64');a.add_argument('--tema',default=TEMA_PADRAO,choices=sorted(TEMAS),help='layout dos arquivos (padrão: %(default)s)');a=a.parse_args()
     gm=open(a.guia,encoding='utf-8').read();sm=open(a.apresentacao,encoding='utf-8').read()
     if not a.sem_embutir:
         gm,n1,f1=embed_images(gm,os.path.dirname(os.path.abspath(a.guia)));sm,n2,f2=embed_images(sm,os.path.dirname(os.path.abspath(a.apresentacao)))
         if n1+n2:print('Imagens embutidas em base64: %d'%(n1+n2))
         for f in f1+f2:print('AVISO: imagem não encontrada/baixada: %s'%f)
-    _,res=gerar(gm,sm,a.prefixo,a.rodape,a.barra,a.saida)
+    _,res=gerar(gm,sm,a.prefixo,a.rodape,a.barra,a.saida,a.tema)
     print(res)
     if 'ERRO' in res:raise SystemExit(1)

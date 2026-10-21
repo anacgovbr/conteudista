@@ -17,7 +17,7 @@ h2{color:var(--pri);font-size:18px;margin:0 0 10px}h3{color:var(--pri);font-size
 .note{color:var(--mu);margin:4px 0 10px;font-size:14px}
 .box{padding:10px 14px;border-radius:0 8px 8px 0;margin:0 0 12px}.priv{background:#e3f5e1;border-left:5px solid var(--ok)}.warn{background:#fff5c2;border-left:5px solid var(--wa)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
 .tabs{display:flex;gap:4px;margin:8px 0 0}.tabs button{border-radius:8px 8px 0 0!important;margin:0}
 .tabs button.off{background:#fff!important;color:var(--acc)!important;border:1px solid var(--line)!important;border-bottom:0!important}
 label{font-weight:600;font-size:13px;color:var(--pri);display:block;margin-bottom:4px}
@@ -77,6 +77,7 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
     <div><label for="pref">Prefixo dos arquivos</label><input id="pref" type="text" value="Meu_Curso"></div>
     <div><label for="rod">Rodapé (slides e DOCX)</label><input id="rod" type="text" placeholder="Ex.: CDPP · GTPL · SAR/ANAC"></div>
     <div><label for="bar">Barra superior do guia (HTML)</label><input id="bar" type="text" placeholder="Opcional (padrão: título do guia)"></div>
+    <div><label for="tema">Layout dos arquivos gerados</label><select id="tema" title="Aplica-se ao guia (HTML/DOCX) e à apresentação (HTML/PPTX)"><option value="govbr">Padrão gov.br (padrão)</option><option value="classico">Clássico (layout original)</option></select></div>
   </div>
   <div class="tabs" id="abas">
     <button id="tg" type="button">Guia de treinamento (guia.md)</button>
@@ -620,9 +621,9 @@ $('go').onclick = async () => {
     await prepararPython();
     const pref = ($('pref').value.trim() || 'Curso').replace(/[^\w.-]+/g, '_');
     py.globals.set('GM', $('g').value.trim() + '\n'); py.globals.set('SM', $('s').value.trim() + '\n');
-    py.globals.set('PREF', pref); py.globals.set('ROD', $('rod').value); py.globals.set('BAR', $('bar').value);
+    py.globals.set('PREF', pref); py.globals.set('ROD', $('rod').value); py.globals.set('BAR', $('bar').value); py.globals.set('TEMA', $('tema').value);
     log('Gerando arquivos…');
-    const out = py.runPython("import sys, os, shutil, zipfile\nif '/app' not in sys.path: sys.path.insert(0, '/app')\nimport gerador\nshutil.rmtree('/saida', ignore_errors=True)\narqs, res = gerador.gerar(GM, SM, PREF, ROD, BAR, '/saida')\nzp = '/saida/Curso_%s.zip' % PREF\nwith zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:\n    [z.write(f, os.path.basename(f)) for f in arqs]\n'\\n'.join([res] + arqs + [zp])");
+    const out = py.runPython("import sys, os, shutil, zipfile\nif '/app' not in sys.path: sys.path.insert(0, '/app')\nimport gerador\nshutil.rmtree('/saida', ignore_errors=True)\narqs, res = gerador.gerar(GM, SM, PREF, ROD, BAR, '/saida', TEMA)\nzp = '/saida/Curso_%s.zip' % PREF\nwith zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:\n    [z.write(f, os.path.basename(f)) for f in arqs]\n'\\n'.join([res] + arqs + [zp])");
     const linhas = out.split('\n'), res = linhas[0], files = linhas.slice(1);
     log(res, res.includes('ERRO') ? 'err' : 'ok');
     limparDownloads();
@@ -677,6 +678,8 @@ setInterval(() => { const k = $('g').value.length + ':' + $('s').value.length; i
 
 listarRascunhos().catch(() => $('drafts').textContent = 'Armazenamento local indisponível neste navegador.');
 listarLinks().catch(() => {});
+$('tema').value = localStorage.getItem('conteudista.tema') || 'govbr';
+$('tema').onchange = () => { localStorage.setItem('conteudista.tema', $('tema').value); log('Layout dos arquivos: ' + $('tema').selectedOptions[0].text + '. Clique em Gerar arquivos para aplicar.', 'ok'); };
 $('btnContraste').onclick = () => { const on = document.documentElement.classList.toggle('contraste'); localStorage.setItem('conteudista.contraste', on ? '1' : '0'); };
 if (localStorage.getItem('conteudista.contraste') === '1') document.documentElement.classList.add('contraste');
 statusImagens();

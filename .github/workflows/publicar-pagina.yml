@@ -37,7 +37,9 @@ jobs:
         run: pip install -r tools/requirements.txt
 
       - name: Testar o gerador com o curso de exemplo
-        run: python tools/gerador.py web/exemplo/guia.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste
+        run: |
+          python tools/gerador.py web/exemplo/guia.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste --tema govbr
+          python tools/gerador.py web/exemplo/guia.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste2 --tema classico
 
       - name: Verificar sintaxe dos scripts da página
         run: |

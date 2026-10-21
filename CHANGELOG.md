@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.14 — 21/10/2026
+- Arquivos gerados (guia HTML/DOCX e apresentação HTML/PPTX) com **layout gov.br** por padrão.
+- Novo campo **Layout dos arquivos gerados**: gov.br ou Clássico (layout original, mantido sem alterações).
+
 ## 1.13 — 21/10/2026
 - Visual alinhado ao **Padrão Digital de Governo (gov.br/ds)**: fonte Rawline, cores, botões, abas, foco, cabeçalho e rodapé.
 - Atalhos de acessibilidade “Ir para o conteúdo” e alto contraste.
