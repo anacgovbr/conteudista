@@ -117,9 +117,6 @@
 #secLoc .loc-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px}
 #secLoc .loc-box{border:1px solid #cccccc;border-radius:10px;padding:14px 16px;background:#f8f8f8;margin-bottom:14px}
 #secLoc .loc-box h3{margin:0 0 8px;color:#0c326f;font-size:15px}
-#secLoc details.lx>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer}#secLoc details.lx>summary::-webkit-details-marker{display:none}
-#secLoc details.lx>summary::before{content:'▸';color:#1351b4;transition:transform .15s}#secLoc details.lx[open]>summary::before{transform:rotate(90deg)}
-#secLoc details.lx>summary h3{margin:0;flex:1}#secLoc details.lx[open]>summary{margin-bottom:10px}#secLoc details.lx>summary:hover h3{color:#1351b4}
 #secLoc details.loc-box>summary{cursor:pointer;font-weight:600;color:#0c326f}
 #secLoc details.loc-box[open]>summary{margin-bottom:10px}
 #secLoc .lin{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}#secLoc .lin>div{flex:1;min-width:150px}
@@ -131,15 +128,11 @@
 #secLoc .cont{font-size:12.5px;color:#636363;margin:4px 0 0}
 #secLoc audio{width:100%;margin:8px 0}
 #secLoc .acoes button,#secLoc .acoes a{margin:4px 6px 4px 0}
-#secLoc .rec{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:4px 0 12px;padding:12px 16px;border-radius:10px;background:#edf5ff;border:1px solid #adcdff;border-left:6px solid #1351b4}
-#secLoc .rec .rec-txt{flex:1;min-width:220px;display:flex;flex-direction:column;gap:2px}#secLoc .rec .rec-txt b{font-size:15px;color:#0c326f}#secLoc .rec .rec-txt span{font-size:13px;color:#333}
-#secLoc .rec button{margin:0;line-height:1.3!important;padding:10px 22px!important;min-height:44px}#secLoc .rec .tts-loading-container{flex-basis:100%;margin:2px 0 0}
-#secLoc .rec.ok{background:#e3f5e1;border-color:#9ad09f;border-left-color:#168821}#secLoc .rec.ok .rec-txt b{color:#0f5e17}
-#secLoc .rec.ld{background:#fffbe6;border-color:#ffe08a;border-left-color:#ffcd07}#secLoc .rec.wa{background:#fff5c2;border-color:#e6c84e;border-left-color:#8a5c00}
-@media(max-width:700px){#secLoc .rec button{width:100%}}
+#secLoc .rec{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 10px;padding:8px 10px;border-radius:8px;background:#edf5ff;border:1px solid #adcdff}
+#secLoc .rec.ok{background:#e3f5e1;border-color:#9ad09f}#secLoc .rec button{margin:0}#secLoc .rec span{font-size:13px;color:#333;flex:1;min-width:200px}
 #secLoc .aviso{font-size:13px;padding:8px 10px;border-radius:0 6px 6px 0;margin:8px 0;background:#e3f5e1;border-left:4px solid #168821}
 #secLoc .aviso.wa{background:#fff5c2;border-left-color:#8a5c00}#secLoc .aviso.er{background:#fde0db;border-left-color:#e52207}
-#secLoc .loc-hist{border:1px solid #cccccc;border-radius:10px;padding:12px;background:#fff;align-self:start}#secLoc .loc-hist .hl{max-height:640px}
+#secLoc .loc-hist{border:1px solid #cccccc;border-radius:10px;padding:12px;background:#fff;max-height:880px;display:flex;flex-direction:column}
 #secLoc .loc-hist h3{margin:0 0 8px;color:#0c326f;font-size:15px}
 #secLoc .hl{overflow:auto;flex:1;margin-top:8px;display:flex;flex-direction:column;gap:8px}
 #secLoc .hc{border:1px solid #cccccc;border-radius:8px;padding:8px 10px;background:#f8f8f8}
@@ -161,19 +154,17 @@
   main.parentNode.insertBefore(abas, main);
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secLoc'; sec.hidden = true;
   sec.innerHTML = '<h2>Locução</h2>' +
-    '<div class="rec" id="locRec" role="status" aria-live="polite"><div class="rec-txt"><b id="locRecTit">Recursos de áudio não carregados</b><span id="locRecInfo"></span></div>' +
-      '<button type="button" id="locCarregar">Carregar recursos de áudio</button>' +
-      '<div class="tts-loading-container" id="locRecBarC"><div class="tts-progress-bar" id="locRecBar"></div></div></div>' +
     '<p class="note">Transforme texto em fala. O áudio é gerado <b>no seu computador</b>; o texto não é enviado a nenhum servidor.</p>' +
     '<div class="loc-grid"><div>' +
-    '<details class="loc-box lx" id="locBoxTexto" open><summary><h3>1. Texto</h3><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>' +
+    '<div class="loc-box"><h3>1. Texto</h3>' +
       '<div class="lin"><div><label for="locFonte">Trazer texto do curso</label><select id="locFonte"><option value="notas">Notas do apresentador (todos os slides)</option><option value="slides">Texto dos slides</option><option value="guia">Guia de treinamento</option></select></div>' +
       '<div style="flex:0"><button type="button" class="sec" id="locImportar">Importar</button></div></div>' +
       '<label for="locTexto" style="margin-top:10px">Texto a ser narrado</label>' +
       '<textarea id="locTexto" spellcheck="true" lang="pt-BR" placeholder="Digite, cole ou importe o texto. Frases bem pontuadas soam mais naturais."></textarea>' +
       '<p class="cont" id="locCont">0 caracteres</p>' +
-    '</details>' +
-    '<details class="loc-box lx" id="locBoxVoz"><summary><h3>2. Voz</h3><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>' +
+    '</div>' +
+    '<div class="loc-box"><h3>2. Voz</h3>' +
+      '<div class="rec" id="locRec"><span id="locRecInfo">Os recursos de áudio (vozes) são carregados só quando você precisar. Na primeira vez o download pode levar alguns minutos.</span><button type="button" id="locCarregar">Carregar recursos de áudio</button></div>' +
       '<div class="lin"><div><label for="locIdioma">Idioma</label><select id="locIdioma"></select></div>' +
       '<div><label for="locVoz">Voz</label><select id="locVoz"></select></div></div>' +
       '<div class="lin" style="margin-top:8px">' +
@@ -181,28 +172,28 @@
       '<div><label for="locPausa">Pausa entre frases</label><select id="locPausa"><option value="0">Sem pausa extra</option><option value="150">Curta</option><option value="300" selected>Média</option><option value="600">Longa</option></select></div></div>' +
       '<p class="acoes"><button type="button" id="locGerar" title="Alt+Shift+N">Gerar locução</button><button type="button" class="sec" id="locCancelar" disabled>Cancelar</button><button type="button" class="sec" id="locLimpar">Limpar texto</button></p>' +
       '<div id="locBarC" class="tts-loading-container"><div id="locBar" class="tts-progress-bar"></div></div><span id="locSt" class="tts-status-text" role="status" aria-live="polite"></span>' +
-    '</details>' +
-    '<details class="loc-box lx" id="locBoxOuvir"><summary><h3>3. Ouvir e baixar</h3><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>' +
+    '</div>' +
+    '<div class="loc-box"><h3>3. Ouvir e baixar</h3>' +
       '<div id="locAviso"></div><audio id="locAudio" controls preload="none"></audio>' +
       '<div class="lin"><div style="flex:0 1 220px"><label for="locFmt">Formato do arquivo</label><select id="locFmt"><option value="mp3">MP3 (padrão)</option><option value="ogg">OGG (menor)</option><option value="wav">WAV (sem compressão)</option></select></div>' +
       '<div style="flex:0"><button type="button" class="sec" id="locBaixar" disabled>Baixar</button></div></div>' +
       '<p class="cont" id="locInfo">Nenhum áudio ainda.</p>' +
-    '</details>' +
-    '<details class="loc-box lx" id="locAvancado"><summary><h3>Opções avançadas</h3><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>' +
+    '</div>' +
+    '<details class="loc-box" id="locAvancado"><summary>Opções avançadas</summary>' +
       '<p class="tec" id="locTec">Recursos de áudio não carregados.</p><p class="tec" id="locLocalInfo"></p>' +
       '<div class="lin"><div><label for="locDtype">Qualidade das vozes Kokoro</label><select id="locDtype"><option value="fp32">Máxima (recomendada; necessária fora do inglês)</option><option value="q8">Reduzida (só inglês; download menor)</option></select></div>' +
-      '<div><label for="locDevice">Processamento</label><select id="locDevice"><option value="auto">Automático</option><option value="wasm">Somente processador</option><option value="webgpu">Somente placa de vídeo</option></select></div>' +
+      '<div><label for="locDevice">Processamento</label><select id="locDevice"><option value="auto">Automático (WASM, recomendado)</option><option value="wasm">Somente processador (WASM)</option><option value="webgpu">Placa de vídeo (WebGPU, experimental)</option></select></div>' +
       '<div><label for="locFon">Pronúncia (vozes Kokoro)</label><select id="locFon"><option value="auto">Automática</option><option value="espeak">Somente espeak-ng</option><option value="interno">Regras internas (português)</option></select></div></div>' +
       '<p class="tec" id="locFonInfo"></p>' +
       '<p class="acoes"><button type="button" class="sec" id="locAtivar">Preparar a voz agora</button><button type="button" class="sec" id="locRemModelo">Remover vozes baixadas</button></p>' +
       '<label class="inl"><input type="checkbox" id="locPreload"> Carregar os recursos de áudio automaticamente ao abrir a página</label>' +
     '</details>' +
     '</div>' +
-    '<details class="loc-hist lx" id="locBoxHist" aria-label="Histórico de locuções"><summary><h3>Histórico <span id="locHistN"></span></h3><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>' +
+    '<aside class="loc-hist" aria-label="Histórico de locuções"><h3>Histórico <span id="locHistN"></span></h3>' +
       '<input type="search" id="locBusca" placeholder="Buscar no histórico…" aria-label="Buscar no histórico">' +
       '<div class="hl" id="locHist"><div class="vazio">Carregando…</div></div>' +
       '<p class="cont" id="locUso"></p><p class="acoes"><button type="button" class="dan mini" id="locLimparHist">Limpar histórico</button></p>' +
-    '</details></div>';
+    '</aside></div>';
   main.appendChild(sec);
   function mostrarAba(nome) {
     abas.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.aba === nome));
@@ -239,9 +230,6 @@
   const motorDe = v => ehPiper(v) ? pip : tts;
   function status(t) { $('locSt').textContent = t || ''; }
   function tec(t) { $('locTec').textContent = t; }
-  let recPct = null;
-  function progRec(pct) { recPct = pct; const c = $('locRecBarC'); if (pct === null) { c.style.display = 'none'; } else { c.style.display = 'block'; $('locRecBar').style.width = Math.max(0, Math.min(100, pct)) + '%'; } atualizarRecursosUI(); }
-  const abrirBox = id => { const d = $(id); if (d) d.open = true; };
   function progresso(pct) { const c = $('locBarC'); if (pct === null) { c.style.display = 'none'; return; } c.style.display = 'block'; $('locBar').style.width = Math.max(0, Math.min(100, pct)) + '%'; }
   function chip(estado) { const c = $('locChip'); c.className = 'ch' + (estado === 'ok' ? ' ok' : estado === 'ld' ? ' ld' : ''); c.title = estado === 'ok' ? 'Voz pronta' : estado === 'ld' ? 'Preparando a voz' : recursos ? 'Voz não preparada' : 'Recursos de áudio não carregados'; }
   function ocupado(sim) {
@@ -251,18 +239,13 @@
     if (!sim) atualizarMotorUI();
   }
   function atualizarRecursosUI() {
-    const r = $('locRec'), v = $('locVoz') && $('locVoz').value, mo = motorDe(v), btn = $('locCarregar');
-    let cls = '', tit, info, rot = 'Carregar recursos de áudio', ver = true;
-    if (!recursos) { tit = 'Recursos de áudio não carregados'; info = 'Carregue as vozes para gerar áudio. O download acontece só na primeira vez (pode levar alguns minutos) e fica guardado neste navegador.'; }
-    else if (mo.carregando) { cls = 'ld'; ver = false; tit = 'Carregando recursos de áudio…' + (recPct !== null ? ' ' + recPct + '%' : ''); info = 'Preparando a voz ' + nomeVoz(v).split(' · ')[0] + '. Você pode continuar escrevendo o texto.'; }
-    else if (mo.pronto) { cls = 'ok'; ver = false; tit = '✓ Recursos de áudio carregados — voz pronta'; info = 'Escolha a voz em “2. Voz” e gere a locução.'; }
-    else if (mo.falhou) { cls = 'wa'; rot = 'Tentar de novo'; tit = 'Não foi possível preparar esta voz agora'; info = 'Ao gerar, outra voz do mesmo idioma será usada automaticamente. Verifique a conexão e tente de novo.'; }
-    else { cls = 'ok'; ver = false; tit = '✓ Recursos de áudio carregados'; info = 'A voz escolhida é preparada ao gerar a locução.'; }
-    r.className = 'rec' + (cls ? ' ' + cls : '');
-    $('locRecTit').textContent = tit; $('locRecInfo').textContent = info;
-    btn.hidden = !ver; btn.style.display = ver ? '' : 'none'; btn.textContent = rot;
+    const r = $('locRec'), mo = motorDe($('locVoz').value);
+    r.classList.toggle('ok', recursos);
+    $('locCarregar').hidden = recursos;
+    $('locRecInfo').textContent = !recursos ? 'Os recursos de áudio (vozes) são carregados só quando você precisar. Na primeira vez o download pode levar alguns minutos.'
+      : mo.pronto ? '✓ Recursos de áudio carregados. A voz está pronta.' : mo.carregando ? 'Recursos de áudio carregados. Preparando a voz…' : '✓ Recursos de áudio carregados. A voz é preparada ao gerar.';
     $('locGerar').disabled = !recursos || !!geracao;
-    $('locGerar').title = recursos ? 'Alt+Shift+N' : 'Carregue os recursos de áudio primeiro (no topo da página)';
+    $('locGerar').title = recursos ? 'Alt+Shift+N' : 'Carregue os recursos de áudio primeiro';
   }
   function atualizarMotorUI() {
     const mo = motorDe($('locVoz').value);
@@ -283,20 +266,20 @@
     vel = +vel > 0 ? +vel : (+$('locVel').value || 1);
     if (pip.pronto) return Promise.resolve(true);
     if (pip.carregando) return pip.carregando;
-    chip('ld'); progRec(0);
+    progresso(0); status('Preparando a voz…'); chip('ld');
     pip.carregando = new Promise((ok, falha) => {
       try { pip.worker = new Worker(new URL('locucao-piper-worker.js', scriptSrc), { type: 'module' }); }
       catch (e) { pip.carregando = null; falha(e); return; }
       pip.worker.onmessage = e => pip.ouvintes.forEach(f => f(e.data));
       pip.worker.onerror = e => { e.preventDefault && e.preventDefault(); pip.ouvintes.forEach(f => f({ tipo: 'erro', etapa: 'init', msg: (e && e.message) || 'Falha ao iniciar.' })); };
       const ouvir = m => {
-        if (m.tipo === 'progresso') { const pc = Math.round((m.loaded / m.total) * 100); progRec(pc); }
+        if (m.tipo === 'progresso') { const pc = Math.round((m.loaded / m.total) * 100); progresso(pc); status('Preparando a voz… ' + pc + '%'); }
         else if (m.tipo === 'aviso') logApp('Locução: ' + m.msg, 'wa');
         else if (m.tipo === 'pronto') {
           pip.ouvintes.delete(ouvir); pip.pronto = true; pip.carregando = null; pip.falhou = false; pip.info = m; pip.velInit = m.velocidade || vel;
-          progRec(null); atualizarMotorUI(); logApp('Locução: voz pronta (Piper, ' + m.voz + ').', 'ok'); avisarEstado(); ok(true);
+          progresso(null); status('Voz pronta.'); atualizarMotorUI(); logApp('Locução: voz pronta (Piper, ' + m.voz + ').', 'ok'); avisarEstado(); ok(true);
         } else if (m.tipo === 'erro' && (m.etapa === 'init' || m.etapa === 'worker')) {
-          pip.ouvintes.delete(ouvir); progRec(null);
+          pip.ouvintes.delete(ouvir); progresso(null);
           if (pip.worker) pip.worker.terminate(); pip.worker = null; pip.pronto = false; pip.carregando = null; pip.falhou = true;
           logApp('Locução: Piper indisponível — ' + m.msg, 'wa'); console.warn('Piper:', m.msg); atualizarMotorUI(); avisarEstado(); falha(new Error(m.msg));
         }
@@ -310,20 +293,20 @@
   function initTTS() {
     if (tts.pronto) return Promise.resolve(true);
     if (tts.carregando) return tts.carregando;
-    chip('ld'); progRec(0);
+    progresso(0); status('Preparando a voz…'); chip('ld');
     tts.carregando = new Promise((ok, falha) => {
       try { tts.worker = new Worker(new URL('locucao-worker.js', scriptSrc), { type: 'module' }); }
       catch (e) { tts.carregando = null; falha(e); return; }
       tts.worker.onmessage = e => tts.ouvintes.forEach(f => f(e.data));
       tts.worker.onerror = e => { e.preventDefault && e.preventDefault(); tts.ouvintes.forEach(f => f({ tipo: 'erro', etapa: 'init', msg: (e && e.message) || 'Falha ao iniciar.' })); };
       const ouvir = m => {
-        if (m.tipo === 'progresso') { const pc = Math.round((m.loaded / m.total) * 100); progRec(pc); }
+        if (m.tipo === 'progresso') { const pc = Math.round((m.loaded / m.total) * 100); progresso(pc); status('Preparando a voz… ' + pc + '%'); }
         else if (m.tipo === 'aviso' && !m.fon) logApp('Locução: ' + m.msg, 'wa');
         else if (m.tipo === 'pronto') {
           tts.ouvintes.delete(ouvir); tts.pronto = true; tts.carregando = null; tts.falhou = false; tts.info = m;
-          progRec(null); atualizarMotorUI(); logApp('Locução: voz pronta (Kokoro, ' + m.device + ', ' + m.dtype + ').', 'ok'); avisarEstado(); ok(true);
+          progresso(null); status('Voz pronta.'); atualizarMotorUI(); logApp('Locução: voz pronta (Kokoro, ' + m.device + ', ' + m.dtype + ').', 'ok'); avisarEstado(); ok(true);
         } else if (m.tipo === 'erro' && (m.etapa === 'init' || m.etapa === 'worker')) {
-          tts.ouvintes.delete(ouvir); progRec(null);
+          tts.ouvintes.delete(ouvir); progresso(null);
           logApp('Locução: Kokoro indisponível — ' + m.msg, 'wa'); console.warn('Kokoro:', m.msg);
           encerrarMotor(); tts.falhou = true; atualizarMotorUI(); avisarEstado(); falha(new Error(m.msg));
         }
@@ -342,7 +325,7 @@
   /* ---------------------------- Recursos de áudio sob demanda ---------------------------- */
   function marcarRecursos() {
     if (recursos) return;
-    recursos = true; abrirBox('locBoxVoz');
+    recursos = true;
     carregarCatalogoPiper();
     fetch(new URL('modelos/manifest.json', scriptSrc).href, { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(m => {
       $('locLocalInfo').textContent = m && m.arquivos ? 'Vozes hospedadas neste site: ' + ((m.perfis || []).join(', ') || Object.keys(m.arquivos).length + ' arquivo(s)') + (m.vendor && Object.keys(m.vendor).length ? ' · bibliotecas: ' + Object.keys(m.vendor).join(', ') : '') + '.' : 'Vozes baixadas da internet (Hugging Face/jsDelivr).';
@@ -360,7 +343,7 @@
     if (mo.falhou) return Promise.resolve(false);
     return iniciarMotor(v, op.vel || +$('locVel').value || 1).then(() => true, () => false);
   }
-  $('locCarregar').onclick = () => { motorDe($('locVoz').value).falhou = false; abrirBox('locBoxVoz'); carregarRecursos().then(() => atualizarMotorUI()); };
+  $('locCarregar').onclick = () => { carregarRecursos().then(ok => { if (!ok) status('Não foi possível preparar esta voz agora; ao gerar, uma voz alternativa será usada se necessário.'); }); };
   $('locAtivar').onclick = () => { motorDe($('locVoz').value).falhou = false; return ativarMotorDaVoz().catch(() => status('Não foi possível preparar esta voz agora. Verifique a conexão e tente novamente.')); };
   $('locRemModelo').onclick = async () => {
     if (!confirm('Remover do navegador as vozes baixadas?\nElas serão baixadas de novo no próximo uso. O histórico de áudios não é apagado.')) return;
@@ -518,7 +501,7 @@
   /* ---------------------------- Geração pela tela ---------------------------- */
   function definirAudio(blob, nome, info, aviso, tipo) {
     if (currentAudioUrl) URL.revokeObjectURL(currentAudioUrl);
-    currentAudioUrl = URL.createObjectURL(blob); currentBlob = blob; currentNome = nome; abrirBox('locBoxOuvir');
+    currentAudioUrl = URL.createObjectURL(blob); currentBlob = blob; currentNome = nome;
     $('locAudio').src = currentAudioUrl; $('locBaixar').disabled = false;
     $('locInfo').textContent = info;
     $('locAviso').innerHTML = aviso ? '<div class="aviso' + (tipo ? ' ' + tipo : '') + '">' + esc(aviso) + '</div>' : '';
@@ -551,7 +534,7 @@
     } finally { ocupado(false); setTimeout(() => progresso(null), 800); }
   }
   $('locGerar').onclick = async () => {
-    if (!recursos) { $('locRec').scrollIntoView({ block: 'center', behavior: 'smooth' }); $('locCarregar').focus(); return; }
+    if (!recursos) { $('locAviso').innerHTML = '<div class="aviso wa">Clique em <b>Carregar recursos de áudio</b> primeiro.</div>'; $('locCarregar').focus(); return; }
     const t = $('locTexto').value;
     if (!t.trim()) { $('locAviso').innerHTML = '<div class="aviso wa">Digite ou importe um texto primeiro.</div>'; $('locTexto').focus(); return; }
     try { await generateSpeechAdvanced(t, $('locVoz').value, +$('locVel').value || 1, +$('locPausa').value); $('locAudio').play().catch(() => {}); } catch { /* exibido na tela */ }
@@ -633,7 +616,7 @@
     if (b.dataset.a === 'ouvir') { itemAtual = id; definirAudio(it.audioBlob, nomeArquivo(it.voice, it.text), infoAudio(it), 'Carregado do histórico.'); $('locAudio').play().catch(() => {}); carregarHistorico(); }
     else if (b.dataset.a === 'baixar') baixarBlob(it.audioBlob, nomeArquivo(it.voice, it.text));
     else if (b.dataset.a === 'texto') {
-      abrirBox('locBoxTexto'); abrirBox('locBoxVoz'); $('locTexto').value = it.text; preencherVozes($('locIdioma'), $('locVoz'), it.voice); localStorage.setItem(PREF.voz, $('locVoz').value); atualizarMotorUI();
+      $('locTexto').value = it.text; preencherVozes($('locIdioma'), $('locVoz'), it.voice); localStorage.setItem(PREF.voz, $('locVoz').value); atualizarMotorUI();
       $('locVel').value = it.speed; velTxt(); if (it.pausa !== undefined) $('locPausa').value = String(it.pausa); contar(); $('locTexto').focus();
     } else if (b.dataset.a === 'excluir') {
       if (!confirm('Excluir este áudio do histórico?')) return;
@@ -677,14 +660,13 @@
   }, true);
   const AJUDA = '<h4>Locução (texto em fala)</h4><ul>' +
     '<li>Aba <b>Locução</b> (<kbd>Alt+Shift+3</kbd>): transforma texto em fala <b>no seu navegador</b>. O texto não sai do computador.</li>' +
-    '<li>Para deixar a página leve, os <b>recursos de áudio</b> (vozes) só são baixados quando você clica em <b>Carregar recursos de áudio</b> (no topo da aba Locução, que mostra o andamento e o resultado) ou liga a <b>Narração dos slides</b>. Na primeira vez pode levar alguns minutos; depois ficam guardados no navegador.</li>' +
-    '<li>As seções <b>2. Voz</b>, <b>3. Ouvir e baixar</b>, <b>Opções avançadas</b> e <b>Histórico</b> começam recolhidas (clique em <b>mostrar</b>); elas abrem sozinhas quando necessário.</li>' +
+    '<li>Para deixar a página leve, os <b>recursos de áudio</b> (vozes) só são baixados quando você clica em <b>Carregar recursos de áudio</b> (aba Locução) ou liga a <b>Narração dos slides</b>. Na primeira vez pode levar alguns minutos; depois ficam guardados no navegador.</li>' +
     '<li><b>1. Texto</b>: digite, cole ou <b>importe</b> do curso (notas do apresentador, texto dos slides ou guia).</li>' +
     '<li><b>2. Voz</b>: escolha o <b>idioma</b>, a <b>voz</b> (as <b>Recomendadas</b> aparecem primeiro), a <b>velocidade</b> e a <b>pausa entre frases</b>. <kbd>Alt+Shift+N</kbd> gera.</li>' +
     '<li>Se uma voz não puder ser usada no momento, outra voz do mesmo idioma é usada automaticamente.</li>' +
     '<li><b>3. Ouvir e baixar</b>: escolha o formato do arquivo — <b>MP3</b> (padrão), <b>OGG</b> (menor) ou <b>WAV</b> (sem compressão).</li>' +
     '<li><b>Histórico</b>: cada áudio fica guardado neste navegador e pode ser ouvido e baixado sem carregar os recursos de áudio.</li>' +
-    '<li><b>Opções avançadas</b> (recolhidas): preparar a voz, remover vozes baixadas, carregar os recursos automaticamente e ajustes técnicos.</li></ul>';
+    '<li><b>Opções avançadas</b> (recolhidas): preparar a voz, remover vozes baixadas, carregar os recursos automaticamente e ajustes técnicos. Em <b>Processamento</b>, o modo Automático usa <b>WASM</b>, mais compatível. WebGPU é experimental e só é usado quando escolhido.</li></ul>';
   const KB = '<div class="kbG"><h4>Locução</h4><table class="kbT"><tr><td style="width:46%"><kbd>Alt + Shift + 3</kbd></td><td>Abrir a aba Locução</td></tr><tr><td><kbd>Alt + Shift + N</kbd></td><td>Gerar locução (na aba Locução)</td></tr><tr><td><kbd>Alt + Shift + 1 / 2</kbd></td><td>Voltar à aba Curso (Guia / Apresentação)</td></tr></table></div>';
   new MutationObserver(() => {
     const c = document.getElementById('hlpC');

@@ -111,7 +111,7 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
     <input id="fmd" type="file" accept=".md,.txt,.markdown,image/*" multiple hidden>
   </p>
   <div id="log">Pronto. Nenhum conteúdo é armazenado sem sua autorização.</div>
-  <details class="sx" id="dxRes"><summary><h3>Arquivos gerados</h3><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>
+  <details class="sx" id="dxRes"><summary><h3>Arquivos gerados</h3><span class="sxh">mostrar</span></summary>
   <div id="res" class="note">Nenhum arquivo gerado ainda.</div>
   <iframe id="prev" title="Pré-visualização" hidden></iframe>
   </details>
@@ -130,8 +130,8 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
       <p>
         <button id="dsave" class="mini">Salvar rascunho</button>
         <button id="fsave" class="mini sec" title="Salva os .md (e os arquivos gerados) em uma pasta do computador">Salvar na pasta…</button>
-        <button id="mdl" class="mini sec" title="Baixar os arquivos .md (guia e apresentação)" aria-label="Baixar os arquivos .md">⬇ .MD</button>
-        <button id="zdl" class="mini sec" title="Baixar um .zip com tudo: .md, HTML, DOCX e PPTX (gera os arquivos se necessário)" aria-label="Baixar o curso completo em .zip">⬇ .ZIP</button>
+        <button id="mdl" class="mini sec">Baixar .md</button>
+        <button id="zdl" class="mini sec" title="Um único arquivo .zip com os .md e os arquivos já gerados">Baixar .zip</button>
       </p>
       <div id="drafts" class="note">Nenhum rascunho salvo.</div>
       <p><button id="dclear" class="mini dan">Apagar todos os dados locais</button></p>
@@ -174,7 +174,7 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
       <p><button id="open" class="sec">Abrir link</button></p>
     </div>
   </div>
-  <details class="sx" id="dxLinks"><summary><h3>Links criados</h3><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>
+  <details class="sx" id="dxLinks"><summary><h3>Links criados</h3><span class="sxh">mostrar</span></summary>
   <div id="links" class="note">Nenhum link nesta sessão.</div>
   </details>
   <p class="box warn" style="margin-top:12px"><b>Atenção:</b> não compartilhe dados pessoais ou informações restritas por link, mesmo criptografado, sem autorização da sua chefia. Links longos (autocontidos) podem ser cortados por e-mail ou Teams — prefira o PrivateBin para conteúdos grandes. A instância pública privatebin.net aceita até cerca de 10 MB por envio.</p>
@@ -191,8 +191,7 @@ const $ = id => document.getElementById(id);
 const enc = new TextEncoder(), dec = new TextDecoder();
 const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const log = (m, c) => { const L = $('log'); L.innerHTML += '\n' + (c ? '<span class="' + c + '">' + esc(m) + '</span>' : esc(m)); L.scrollTop = L.scrollHeight; };
-let py = null, urls = [], ultimos = [], assinaturaGerada = '';
-const assinaturaAtual = () => [$('g').value.trim(), $('s').value.trim(), $('pref').value.trim(), $('rod').value, $('bar').value, $('tema').value].join('\u0001');
+let py = null, urls = [], ultimos = [];
 
 /* =========================== Editores =========================== */
 const ED = {
@@ -437,21 +436,13 @@ function baixar(nome, blob) { const u = URL.createObjectURL(blob); const a = doc
 $('zdl').onclick = async () => {
   const p = pacote(), x = (p.p || 'Curso').replace(/[^\w.-]+/g, '_');
   if (!p.g.trim() && !p.s.trim()) { log('Nada para baixar.', 'wa'); return; }
-  // ZIP sempre completo: gera (ou atualiza) os arquivos antes, se ainda não foram gerados para o conteúdo atual
-  const temGerados = ultimos.some(f => /\.(html|docx|pptx)$/i.test(f.nome));
-  if (!temGerados || assinaturaGerada !== assinaturaAtual()) {
-    log(temGerados ? 'O conteúdo mudou desde a última geração: gerando os arquivos de novo para o ZIP…' : 'Gerando os arquivos (HTML, DOCX e PPTX) para o ZIP…');
-    $('zdl').disabled = true;
-    try { await $('go').onclick(); } finally { $('zdl').disabled = false; }
-    if (!ultimos.some(f => /\.(html|docx|pptx)$/i.test(f.nome))) { log('Não foi possível gerar os arquivos; o ZIP terá só os .md.', 'wa'); }
-  }
   const arqs = [];
   if (p.g.trim()) arqs.push({ nome: 'Treinamento_' + x + '.md', dados: enc.encode(p.g) });
   if (p.s.trim()) arqs.push({ nome: 'Apresentacao_' + x + '.md', dados: enc.encode(p.s) });
   for (const f of ultimos) if (!/\.(md|zip)$/i.test(f.nome)) arqs.push({ nome: f.nome, dados: new Uint8Array(await f.blob.arrayBuffer()) });
   const z = await zipCriar(arqs);
   baixar('Curso_' + x + '.zip', new Blob([z], { type: 'application/zip' }));
-  log('ZIP baixado com ' + arqs.length + ' arquivo(s): ' + arqs.map(a => a.nome.split('.').pop().toUpperCase()).filter((v, i, l) => l.indexOf(v) === i).join(', ') + '.', 'ok');
+  log('ZIP baixado com ' + arqs.length + ' arquivo(s)' + (arqs.length > 2 ? '' : ' (gere os arquivos para incluir HTML, DOCX e PPTX)') + '.', 'ok');
 };
 $('mdl').onclick = () => {
   const p = pacote(), x = (p.p || 'Curso').replace(/[^\w.-]+/g, '_');
@@ -595,13 +586,57 @@ async function listarLinks() {
   if ($('keep').checked) { const g = await dbAll('links'); g.forEach(x => { if (!l.some(y => y.url === x.url)) l.push(x); }); }
   l.sort((a, b) => b.data - a.data);
   if (!l.length) { $('links').innerHTML = 'Nenhum link nesta sessão.'; return; }
-  $('links').innerHTML = '<table><tr><th>Curso</th><th>Tipo</th><th>Link</th><th></th></tr>' + l.map((x, i) =>
-    '<tr><td>' + esc(x.nome || '') + '<br><small>' + new Date(x.data).toLocaleString('pt-BR') + '</small></td><td>' + esc(x.tipo) + '</td>' +
-    '<td class="url">' + esc(x.url.length > 140 ? x.url.slice(0, 140) + '…' : x.url) + '</td>' +
-    '<td><button class="mini" data-c="' + i + '">Copiar</button>' + (x.del ? '<a class="btn mini dan" href="' + esc(x.del) + '" target="_blank" rel="noopener">Apagar no servidor</a>' : '') +
-    (x.id ? '<button class="mini sec" data-f="' + x.id + '">Esquecer</button>' : '') + '</td></tr>').join('') + '</table>';
-  $('links').querySelectorAll('[data-c]').forEach(b => b.onclick = async () => { try { await navigator.clipboard.writeText(l[+b.dataset.c].url); log('Link copiado.', 'ok'); } catch { prompt('Copie o link:', l[+b.dataset.c].url); } });
+  $('links').innerHTML = '<table><tr><th>Curso</th><th>Tipo</th><th>Link e QR Code</th><th></th></tr>' + l.map((x, i) => {
+    const cur = linkCurto(x.url);
+    return '<tr><td>' + esc(x.nome || '') + '<br><small>' + new Date(x.data).toLocaleString('pt-BR') + '</small></td><td>' + esc(x.tipo) + '</td>' +
+    '<td class="url"><div class="url-wrap"><a class="url-link" href="' + esc(x.url) + '" target="_blank" rel="noopener" title="Abrir o link em uma nova aba"><b>' + esc(cur.tipo) + '</b><code>' + esc(cur.id) + '</code><small>' + esc(cur.host) + '</small></a>' +
+    '<div class="url-qr" data-q="' + i + '" title="QR Code do link completo" aria-label="QR Code do link"></div></div></td>' +
+    '<td class="link-acoes"><button class="mini" data-c="' + i + '">Copiar</button><span class="copy-ok" data-ok="' + i + '" role="status" aria-live="polite"></span>' + (x.del ? '<a class="btn mini dan" href="' + esc(x.del) + '" target="_blank" rel="noopener">Apagar no servidor</a>' : '') +
+    (x.id ? '<button class="mini sec" data-f="' + x.id + '">Esquecer</button>' : '') + '</td></tr>';
+  }).join('') + '</table>';
+  $('links').querySelectorAll('[data-c]').forEach(b => b.onclick = async () => {
+    const i = +b.dataset.c, ok = $('links').querySelector('[data-ok="' + i + '"]');
+    try {
+      await navigator.clipboard.writeText(l[i].url);
+      b.textContent = '✓ Copiado'; b.classList.add('copiado');
+      ok.textContent = 'URL copiada. Cole no navegador ou onde desejar guardar com Ctrl+V.';
+      log('URL copiada para a área de transferência. Cole no navegador ou onde desejar guardar com Ctrl+V.', 'ok');
+      setTimeout(() => { b.textContent = 'Copiar'; b.classList.remove('copiado'); ok.textContent = ''; }, 4500);
+    } catch { prompt('Copie o link e cole onde desejar guardar:', l[i].url); ok.textContent = 'Selecione e copie a URL exibida.'; }
+  });
+  renderizarQRCodes(l);
   $('links').querySelectorAll('[data-f]').forEach(b => b.onclick = async () => { await dbDel('links', +b.dataset.f); listarLinks(); });
+}
+function linkCurto(link) {
+  try {
+    const u = new URL(link, location.href);
+    if (u.hash.startsWith('#cx=')) { const f = u.hash.slice(4); return { tipo: 'Autocontido', id: (f.slice(0, 10) || 'link') + '…', host: u.host }; }
+    const id = (u.searchParams.get('pasteid') || u.search.replace(/^\?/, '').split('&')[0] || u.hash.replace(/^#/, '')).slice(0, 10);
+    return { tipo: 'PrivateBin', id: (id || 'link') + '…', host: u.host };
+  } catch { return { tipo: 'Link', id: String(link).slice(0, 12) + '…', host: '' }; }
+}
+let qrP = null;
+function carregarQR() {
+  if (window.QRCode) return Promise.resolve(window.QRCode);
+  if (qrP) return qrP;
+  qrP = new Promise((ok, falha) => {
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js';
+    s.onload = () => window.QRCode ? ok(window.QRCode) : falha(new Error('biblioteca QR Code indisponível'));
+    s.onerror = () => falha(new Error('não foi possível carregar o gerador de QR Code'));
+    document.head.appendChild(s);
+  }).catch(e => { qrP = null; throw e; });
+  return qrP;
+}
+async function renderizarQRCodes(links) {
+  const caixas = [...$('links').querySelectorAll('[data-q]')]; if (!caixas.length) return;
+  try {
+    const Q = await carregarQR();
+    caixas.forEach(c => { const i = +c.dataset.q; c.innerHTML = ''; new Q(c, { text: links[i].url, width: 88, height: 88, correctLevel: Q.CorrectLevel ? Q.CorrectLevel.M : 0 }); });
+  } catch (e) {
+    caixas.forEach(c => { c.innerHTML = '<span class="qr-off" title="' + esc(e.message) + '">QR indisponível</span>'; });
+    log('QR Code indisponível: ' + e.message + '.', 'wa');
+  }
 }
 function rotuloLink(l) { try { const u = new URL(l.trim(), location.href); return u.hash.startsWith('#cx=') ? 'Link autocontido' : 'PrivateBin ' + u.host + ' · ' + u.search.slice(1, 9); } catch { return 'Link'; } }
 async function abrirLink(link, pw) {
@@ -680,7 +715,6 @@ $('go').onclick = async () => {
     $('res').innerHTML = h;
     $('res').querySelectorAll('[data-u]').forEach(a => a.onclick = e => { e.preventDefault(); $('prev').hidden = false; $('prev').src = a.dataset.u; });
     agendarAuto();
-    if (!res.includes('ERRO')) assinaturaGerada = assinaturaAtual();
     if (window.Hist && !res.includes('ERRO')) Hist.registrar('gerado', 'Arquivos gerados: ' + pref);
   } catch (e) {
     log('Erro: ' + e.message, 'err');
