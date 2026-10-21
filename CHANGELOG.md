@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.25 — 21/10/2026
+- Página mais leve: os **recursos de áudio** só são baixados ao clicar em **Carregar recursos de áudio** (aba Locução) ou ao ligar a **Narração dos slides**.
+- A seção **Gerar curso** começa expandida e pode ser recolhida.
+- **Links criados**: o link aparece de forma curta (tipo e identificador) e, no celular, cada link vira um cartão; **Copiar** continua copiando o link completo.
+
 ## 1.24 - 21/10/2026
 - Narracao dos slides: idioma, voz, velocidade e formato ficam em **Opcoes avancadas de voz** (recolhidas), com um resumo da voz escolhida.
 - Novo botao **Historico de audio** no painel: janela com busca, Ouvir, Baixar (MP3, OGG ou WAV), Usar esta voz e Excluir.

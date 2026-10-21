@@ -3,10 +3,12 @@
    Interface simples: Idioma → Voz → Velocidade → Pausa. O motor de cada voz fica escondido:
      · Piper (locucao-piper-worker.js) — voz padrão Faber (português do Brasil) e catálogo do Piper
      · Kokoro-82M v1.0 (locucao-worker.js) — inglês, espanhol, francês, hindi, italiano e português
+   Recursos de áudio SOB DEMANDA: nada é baixado ao abrir a página. Os recursos (catálogo de vozes e
+   modelo da voz) só são carregados pelo botão "Carregar recursos de áudio" (aba Locução) ou ao ligar
+   "Narração dos slides" (Locucao.carregarRecursos()).
    Se a voz escolhida não puder ser preparada, usa automaticamente uma voz alternativa do mesmo idioma.
    - Histórico/cache: IndexedDB "KokoroTTS_DB" / "audio_history" (índice text+voice+speed)
    - Download em MP3 (padrão), OGG ou WAV (audio-codec.js)
-   - API para a narração dos slides: Locucao.sintetizar(), Locucao.preencherVozes() …
    ===================================================================================== */
 (function () {
   'use strict';
@@ -40,7 +42,6 @@
   const ehPiper = v => /^piper:/.test(v || '');
   const QUAL = { high: 4, medium: 3, low: 2, x_low: 1 };
   let catCache = null;
-  /** Lista unificada: [{ v, lang, nome, rec }] — sem nomes de motores. */
   function catalogo() {
     if (catCache) return catCache;
     const l = [];
@@ -100,7 +101,7 @@
     selIdioma.addEventListener('change', () => { preencherListaVozes(selIdioma.value, selVoz, null); aoMudar && aoMudar(); });
     selVoz.addEventListener('change', () => aoMudar && aoMudar());
   }
-  const PREF = { migr: 'loc.migr117', migr118: 'loc.migr118', fon: 'loc.fon', preload: 'loc.preload', dtype: 'loc.dtype', device: 'loc.device', voz: 'loc.voz', vel: 'loc.vel', pausa: 'loc.pausa', fmt: 'loc.fmt' };
+  const PREF = { migr: 'loc.migr117', migr118: 'loc.migr118', migr125: 'loc.migrSobDemanda', fon: 'loc.fon', preload: 'loc.preload', dtype: 'loc.dtype', device: 'loc.device', voz: 'loc.voz', vel: 'loc.vel', pausa: 'loc.pausa', fmt: 'loc.fmt' };
 
   /* ---------------------------- Estilos ---------------------------- */
   const css = `
@@ -127,6 +128,8 @@
 #secLoc .cont{font-size:12.5px;color:#636363;margin:4px 0 0}
 #secLoc audio{width:100%;margin:8px 0}
 #secLoc .acoes button,#secLoc .acoes a{margin:4px 6px 4px 0}
+#secLoc .rec{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 10px;padding:8px 10px;border-radius:8px;background:#edf5ff;border:1px solid #adcdff}
+#secLoc .rec.ok{background:#e3f5e1;border-color:#9ad09f}#secLoc .rec button{margin:0}#secLoc .rec span{font-size:13px;color:#333;flex:1;min-width:200px}
 #secLoc .aviso{font-size:13px;padding:8px 10px;border-radius:0 6px 6px 0;margin:8px 0;background:#e3f5e1;border-left:4px solid #168821}
 #secLoc .aviso.wa{background:#fff5c2;border-left-color:#8a5c00}#secLoc .aviso.er{background:#fde0db;border-left-color:#e52207}
 #secLoc .loc-hist{border:1px solid #cccccc;border-radius:10px;padding:12px;background:#fff;max-height:880px;display:flex;flex-direction:column}
@@ -147,7 +150,7 @@
   const main = document.querySelector('main');
   const abas = document.createElement('nav'); abas.id = 'abasApp'; abas.setAttribute('aria-label', 'Áreas da aplicação');
   abas.innerHTML = '<button type="button" data-aba="curso" class="on" title="Guia, apresentação e arquivos">Curso</button>' +
-    '<button type="button" data-aba="locucao" title="Texto em fala (Alt+Shift+3)">Locução <span class="ch" id="locChip" title="Voz não preparada"></span></button>';
+    '<button type="button" data-aba="locucao" title="Texto em fala (Alt+Shift+3)">Locução <span class="ch" id="locChip" title="Recursos de áudio não carregados"></span></button>';
   main.parentNode.insertBefore(abas, main);
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secLoc'; sec.hidden = true;
   sec.innerHTML = '<h2>Locução</h2>' +
@@ -161,6 +164,7 @@
       '<p class="cont" id="locCont">0 caracteres</p>' +
     '</div>' +
     '<div class="loc-box"><h3>2. Voz</h3>' +
+      '<div class="rec" id="locRec"><span id="locRecInfo">Os recursos de áudio (vozes) são carregados só quando você precisar. Na primeira vez o download pode levar alguns minutos.</span><button type="button" id="locCarregar">Carregar recursos de áudio</button></div>' +
       '<div class="lin"><div><label for="locIdioma">Idioma</label><select id="locIdioma"></select></div>' +
       '<div><label for="locVoz">Voz</label><select id="locVoz"></select></div></div>' +
       '<div class="lin" style="margin-top:8px">' +
@@ -176,13 +180,13 @@
       '<p class="cont" id="locInfo">Nenhum áudio ainda.</p>' +
     '</div>' +
     '<details class="loc-box" id="locAvancado"><summary>Opções avançadas</summary>' +
-      '<p class="tec" id="locTec">Nenhuma voz preparada.</p><p class="tec" id="locLocalInfo"></p>' +
+      '<p class="tec" id="locTec">Recursos de áudio não carregados.</p><p class="tec" id="locLocalInfo"></p>' +
       '<div class="lin"><div><label for="locDtype">Qualidade das vozes Kokoro</label><select id="locDtype"><option value="fp32">Máxima (recomendada; necessária fora do inglês)</option><option value="q8">Reduzida (só inglês; download menor)</option></select></div>' +
       '<div><label for="locDevice">Processamento</label><select id="locDevice"><option value="auto">Automático</option><option value="wasm">Somente processador</option><option value="webgpu">Somente placa de vídeo</option></select></div>' +
       '<div><label for="locFon">Pronúncia (vozes Kokoro)</label><select id="locFon"><option value="auto">Automática</option><option value="espeak">Somente espeak-ng</option><option value="interno">Regras internas (português)</option></select></div></div>' +
       '<p class="tec" id="locFonInfo"></p>' +
       '<p class="acoes"><button type="button" class="sec" id="locAtivar">Preparar a voz agora</button><button type="button" class="sec" id="locRemModelo">Remover vozes baixadas</button></p>' +
-      '<label class="inl"><input type="checkbox" id="locPreload"> Preparar a voz ao abrir a página</label>' +
+      '<label class="inl"><input type="checkbox" id="locPreload"> Carregar os recursos de áudio automaticamente ao abrir a página</label>' +
     '</details>' +
     '</div>' +
     '<aside class="loc-hist" aria-label="Histórico de locuções"><h3>Histórico <span id="locHistN"></span></h3>' +
@@ -194,7 +198,7 @@
   function mostrarAba(nome) {
     abas.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.aba === nome));
     [...main.children].forEach(el => { if (el.tagName === 'SECTION') el.hidden = nome === 'locucao' ? el !== sec : el === sec; });
-    if (nome === 'locucao') { carregarHistorico(); const mo = motorDe($('locVoz').value); if (!mo.pronto && !mo.carregando && !mo.falhou && $('locPreload').checked) ativarMotorDaVoz().catch(() => {}); }
+    if (nome === 'locucao') carregarHistorico();
   }
   abas.addEventListener('click', e => { const b = e.target.closest('button[data-aba]'); if (b) mostrarAba(b.dataset.aba); });
   document.addEventListener('click', e => { if (e.target.closest('#tg,#ts,#btnTour') && !sec.hidden) mostrarAba('curso'); }, true);
@@ -203,7 +207,8 @@
   const pref = (k, d) => { const v = localStorage.getItem(PREF[k]); return v === null ? d : v; };
   if (!localStorage.getItem(PREF.migr)) { const v = localStorage.getItem(PREF.voz); if (!v || /^p[fm]_/.test(v)) localStorage.setItem(PREF.voz, VOZ_PADRAO); localStorage.setItem(PREF.migr, '1'); }
   if (!localStorage.getItem(PREF.migr118)) { localStorage.setItem(PREF.dtype, 'fp32'); localStorage.setItem(PREF.migr118, '1'); }
-  $('locPreload').checked = pref('preload', '1') === '1';
+  if (!localStorage.getItem(PREF.migr125)) { localStorage.setItem(PREF.preload, '0'); localStorage.setItem(PREF.migr125, '1'); }  // recursos de áudio sob demanda
+  $('locPreload').checked = pref('preload', '0') === '1';
   $('locFon').value = pref('fon', 'auto'); $('locDtype').value = pref('dtype', 'fp32'); $('locDevice').value = pref('device', 'auto');
   $('locVel').value = pref('vel', '1'); $('locPausa').value = pref('pausa', '300'); $('locFmt').value = pref('fmt', 'mp3');
   preencherVozes($('locIdioma'), $('locVoz'), pref('voz', VOZ_PADRAO));
@@ -219,18 +224,28 @@
   $('locFon').onchange = () => { localStorage.setItem(PREF.fon, $('locFon').value); if (tts.worker) tts.worker.postMessage({ tipo: 'fon', fon: $('locFon').value }); };
 
   /* ---------------------------- Estado e mensagens ---------------------------- */
-  let currentAudioUrl = null, currentBlob = null, currentNome = 'locucao', geracao = null, idGer = 0, itemAtual = null;
+  let currentAudioUrl = null, currentBlob = null, currentNome = 'locucao', geracao = null, idGer = 0, itemAtual = null, recursos = false;
   const tts = { nome: 'Kokoro', worker: null, pronto: false, carregando: null, info: null, ouvintes: new Set() };
   const pip = { nome: 'Piper', worker: null, pronto: false, carregando: null, info: null, ouvintes: new Set() };
   const motorDe = v => ehPiper(v) ? pip : tts;
   function status(t) { $('locSt').textContent = t || ''; }
   function tec(t) { $('locTec').textContent = t; }
   function progresso(pct) { const c = $('locBarC'); if (pct === null) { c.style.display = 'none'; return; } c.style.display = 'block'; $('locBar').style.width = Math.max(0, Math.min(100, pct)) + '%'; }
-  function chip(estado) { const c = $('locChip'); c.className = 'ch' + (estado === 'ok' ? ' ok' : estado === 'ld' ? ' ld' : ''); c.title = estado === 'ok' ? 'Voz pronta' : estado === 'ld' ? 'Preparando a voz' : 'Voz não preparada'; }
+  function chip(estado) { const c = $('locChip'); c.className = 'ch' + (estado === 'ok' ? ' ok' : estado === 'ld' ? ' ld' : ''); c.title = estado === 'ok' ? 'Voz pronta' : estado === 'ld' ? 'Preparando a voz' : recursos ? 'Voz não preparada' : 'Recursos de áudio não carregados'; }
   function ocupado(sim) {
-    ['locGerar', 'locImportar', 'locRemModelo', 'locAtivar', 'locDtype', 'locDevice'].forEach(id => { $(id).disabled = sim; });
+    ['locImportar', 'locRemModelo', 'locAtivar', 'locDtype', 'locDevice'].forEach(id => { $(id).disabled = sim; });
+    $('locGerar').disabled = sim || !recursos;
     $('locCancelar').disabled = !sim;
     if (!sim) atualizarMotorUI();
+  }
+  function atualizarRecursosUI() {
+    const r = $('locRec'), mo = motorDe($('locVoz').value);
+    r.classList.toggle('ok', recursos);
+    $('locCarregar').hidden = recursos;
+    $('locRecInfo').textContent = !recursos ? 'Os recursos de áudio (vozes) são carregados só quando você precisar. Na primeira vez o download pode levar alguns minutos.'
+      : mo.pronto ? '✓ Recursos de áudio carregados. A voz está pronta.' : mo.carregando ? 'Recursos de áudio carregados. Preparando a voz…' : '✓ Recursos de áudio carregados. A voz é preparada ao gerar.';
+    $('locGerar').disabled = !recursos || !!geracao;
+    $('locGerar').title = recursos ? 'Alt+Shift+N' : 'Carregue os recursos de áudio primeiro';
   }
   function atualizarMotorUI() {
     const mo = motorDe($('locVoz').value);
@@ -238,8 +253,9 @@
     $('locAtivar').disabled = !!mo.pronto || !!mo.carregando;
     $('locAtivar').textContent = mo.pronto ? '✓ Voz pronta' : 'Preparar a voz agora';
     const p = pip.info, k = tts.info;
-    tec('Motores: Piper ' + (pip.pronto ? 'ativo' + (p ? ' (' + p.voz + ', ' + p.sr + ' Hz, velocidade ' + (p.nativo ? 'no modelo' : 'por processamento do áudio') + (p.biblioteca ? ', biblioteca ' + (p.biblioteca === 'local' ? 'do site' : 'do CDN') : '') + ')' : '') : pip.falhou ? 'indisponível' : 'desligado') +
+    tec(!recursos ? 'Recursos de áudio não carregados.' : 'Motores: Piper ' + (pip.pronto ? 'ativo' + (p ? ' (' + p.voz + ', ' + p.sr + ' Hz, velocidade ' + (p.nativo ? 'no modelo' : 'por processamento do áudio') + (p.biblioteca ? ', biblioteca ' + (p.biblioteca === 'local' ? 'do site' : 'do CDN') : '') + ')' : '') : pip.falhou ? 'indisponível' : 'desligado') +
       ' · Kokoro ' + (tts.pronto ? 'ativo' + (k ? ' (' + String(k.device).toUpperCase() + ', ' + k.dtype + ')' : '') : tts.falhou ? 'indisponível' : 'desligado') + '. Voz atual: ' + $('locVoz').value + '.');
+    atualizarRecursosUI();
   }
   function encerrarMotor() { if (tts.worker) tts.worker.terminate(); tts.worker = null; tts.pronto = false; tts.carregando = null; atualizarMotorUI(); }
   function encerrarPiper() { if (pip.worker) pip.worker.terminate(); pip.worker = null; pip.pronto = false; pip.carregando = null; atualizarMotorUI(); }
@@ -261,16 +277,17 @@
         else if (m.tipo === 'aviso') logApp('Locução: ' + m.msg, 'wa');
         else if (m.tipo === 'pronto') {
           pip.ouvintes.delete(ouvir); pip.pronto = true; pip.carregando = null; pip.falhou = false; pip.info = m; pip.velInit = m.velocidade || vel;
-          progresso(null); status('Voz pronta.'); atualizarMotorUI(); logApp('Locução: voz pronta (Piper, ' + m.voz + ').', 'ok'); ok(true);
+          progresso(null); status('Voz pronta.'); atualizarMotorUI(); logApp('Locução: voz pronta (Piper, ' + m.voz + ').', 'ok'); avisarEstado(); ok(true);
         } else if (m.tipo === 'erro' && (m.etapa === 'init' || m.etapa === 'worker')) {
           pip.ouvintes.delete(ouvir); progresso(null);
           if (pip.worker) pip.worker.terminate(); pip.worker = null; pip.pronto = false; pip.carregando = null; pip.falhou = true;
-          logApp('Locução: Piper indisponível — ' + m.msg, 'wa'); console.warn('Piper:', m.msg); atualizarMotorUI(); falha(new Error(m.msg));
+          logApp('Locução: Piper indisponível — ' + m.msg, 'wa'); console.warn('Piper:', m.msg); atualizarMotorUI(); avisarEstado(); falha(new Error(m.msg));
         }
       };
       pip.ouvintes.add(ouvir);
       pip.worker.postMessage({ tipo: 'init', voz, velocidade: vel });
     });
+    atualizarMotorUI();
     return pip.carregando;
   }
   function initTTS() {
@@ -287,21 +304,46 @@
         else if (m.tipo === 'aviso' && !m.fon) logApp('Locução: ' + m.msg, 'wa');
         else if (m.tipo === 'pronto') {
           tts.ouvintes.delete(ouvir); tts.pronto = true; tts.carregando = null; tts.falhou = false; tts.info = m;
-          progresso(null); status('Voz pronta.'); atualizarMotorUI(); logApp('Locução: voz pronta (Kokoro, ' + m.device + ', ' + m.dtype + ').', 'ok'); ok(true);
+          progresso(null); status('Voz pronta.'); atualizarMotorUI(); logApp('Locução: voz pronta (Kokoro, ' + m.device + ', ' + m.dtype + ').', 'ok'); avisarEstado(); ok(true);
         } else if (m.tipo === 'erro' && (m.etapa === 'init' || m.etapa === 'worker')) {
           tts.ouvintes.delete(ouvir); progresso(null);
           logApp('Locução: Kokoro indisponível — ' + m.msg, 'wa'); console.warn('Kokoro:', m.msg);
-          encerrarMotor(); tts.falhou = true; atualizarMotorUI(); falha(new Error(m.msg));
+          encerrarMotor(); tts.falhou = true; atualizarMotorUI(); avisarEstado(); falha(new Error(m.msg));
         }
       };
       tts.ouvintes.add(ouvir);
       if (!tts.fonOuv) tts.fonOuv = tts.ouvintes.add(m => { if (m.tipo === 'aviso' && m.fon) $('locFonInfo').textContent = m.msg; });
       tts.worker.postMessage({ tipo: 'init', dtype: $('locDtype').value, device: $('locDevice').value, fon: $('locFon').value });
     });
+    atualizarMotorUI();
     return tts.carregando;
   }
-  const iniciarMotor = (v, vel) => ehPiper(v) ? initPiper(v, vel) : initTTS();
+  const iniciarMotor = (v, vel) => { marcarRecursos(); return ehPiper(v) ? initPiper(v, vel) : initTTS(); };
   const ativarMotorDaVoz = () => iniciarMotor($('locVoz').value, +$('locVel').value || 1);
+  function avisarEstado() { document.dispatchEvent(new CustomEvent('locucao:estado', { detail: { recursos, pronto: motorDe($('locVoz').value).pronto } })); }
+
+  /* ---------------------------- Recursos de áudio sob demanda ---------------------------- */
+  function marcarRecursos() {
+    if (recursos) return;
+    recursos = true;
+    carregarCatalogoPiper();
+    fetch(new URL('modelos/manifest.json', scriptSrc).href, { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(m => {
+      $('locLocalInfo').textContent = m && m.arquivos ? 'Vozes hospedadas neste site: ' + ((m.perfis || []).join(', ') || Object.keys(m.arquivos).length + ' arquivo(s)') + (m.vendor && Object.keys(m.vendor).length ? ' · bibliotecas: ' + Object.keys(m.vendor).join(', ') : '') + '.' : 'Vozes baixadas da internet (Hugging Face/jsDelivr).';
+    }).catch(() => {});
+    logApp('Locução: recursos de áudio carregados sob demanda.', 'ok');
+    atualizarMotorUI(); avisarEstado();
+  }
+  /** Carrega os recursos de áudio (catálogo de vozes) e prepara a voz. op.semVoz: só marca os recursos. op.voz/op.vel: voz a preparar. */
+  function carregarRecursos(op) {
+    op = op || {};
+    marcarRecursos();
+    if (op.semVoz) return Promise.resolve(false);
+    const v = op.voz || $('locVoz').value, mo = motorDe(v);
+    if (mo.pronto) return Promise.resolve(true);
+    if (mo.falhou) return Promise.resolve(false);
+    return iniciarMotor(v, op.vel || +$('locVel').value || 1).then(() => true, () => false);
+  }
+  $('locCarregar').onclick = () => { carregarRecursos().then(ok => { if (!ok) status('Não foi possível preparar esta voz agora; ao gerar, uma voz alternativa será usada se necessário.'); }); };
   $('locAtivar').onclick = () => { motorDe($('locVoz').value).falhou = false; return ativarMotorDaVoz().catch(() => status('Não foi possível preparar esta voz agora. Verifique a conexão e tente novamente.')); };
   $('locRemModelo').onclick = async () => {
     if (!confirm('Remover do navegador as vozes baixadas?\nElas serão baixadas de novo no próximo uso. O histórico de áudios não é apagado.')) return;
@@ -420,6 +462,7 @@
     op = op || {}; vel = +vel > 0 ? +vel : 1; pausaMs = +pausaMs >= 0 ? +pausaMs : 300;
     if (!String(texto || '').trim()) return null;
     if (!op.semCache) { const c = await findCachedAudio(texto, voz, vel, pausaMs); if (c && c.audioBlob) return { blob: c.audioBlob, duracao: c.duracao || 0, voz, doHistorico: true, id: c.id }; }
+    marcarRecursos();
     let eng = motorDe(voz);
     if (eng === pip && pip.pronto && pip.info && pip.info.nativo && Math.abs(vel - (pip.velInit || 1)) > 0.001) encerrarPiper();
     if (!eng.pronto) {
@@ -491,6 +534,7 @@
     } finally { ocupado(false); setTimeout(() => progresso(null), 800); }
   }
   $('locGerar').onclick = async () => {
+    if (!recursos) { $('locAviso').innerHTML = '<div class="aviso wa">Clique em <b>Carregar recursos de áudio</b> primeiro.</div>'; $('locCarregar').focus(); return; }
     const t = $('locTexto').value;
     if (!t.trim()) { $('locAviso').innerHTML = '<div class="aviso wa">Digite ou importe um texto primeiro.</div>'; $('locTexto').focus(); return; }
     try { await generateSpeechAdvanced(t, $('locVoz').value, +$('locVel').value || 1, +$('locPausa').value); $('locAudio').play().catch(() => {}); } catch { /* exibido na tela */ }
@@ -586,7 +630,7 @@
     try { if (!navigator.storage || !navigator.storage.estimate) return; const e = await navigator.storage.estimate(); $('locUso').textContent = 'Espaço usado neste navegador: ' + fmtTam(e.usage || 0) + '.'; } catch { /* sem estimativa */ }
   }
 
-  /* ---------------------------- Catálogo do Piper (em segundo plano) ---------------------------- */
+  /* ---------------------------- Catálogo do Piper (somente depois de carregar os recursos) ---------------------------- */
   let catalogoCarregando = false;
   function carregarCatalogoPiper() {
     if (catalogoCarregando || (piperCatalogo && piperCatalogo.length > PIPER_MINIMO.length)) return;
@@ -616,13 +660,13 @@
   }, true);
   const AJUDA = '<h4>Locução (texto em fala)</h4><ul>' +
     '<li>Aba <b>Locução</b> (<kbd>Alt+Shift+3</kbd>): transforma texto em fala <b>no seu navegador</b>. O texto não sai do computador.</li>' +
+    '<li>Para deixar a página leve, os <b>recursos de áudio</b> (vozes) só são baixados quando você clica em <b>Carregar recursos de áudio</b> (aba Locução) ou liga a <b>Narração dos slides</b>. Na primeira vez pode levar alguns minutos; depois ficam guardados no navegador.</li>' +
     '<li><b>1. Texto</b>: digite, cole ou <b>importe</b> do curso (notas do apresentador, texto dos slides ou guia).</li>' +
-    '<li><b>2. Voz</b>: escolha o <b>idioma</b>, a <b>voz</b> (as <b>Recomendadas</b> aparecem primeiro), a <b>velocidade</b> e a <b>pausa entre frases</b>. Na primeira vez a voz é preparada (pode levar alguns minutos); depois é imediata. <kbd>Alt+Shift+N</kbd> gera.</li>' +
+    '<li><b>2. Voz</b>: escolha o <b>idioma</b>, a <b>voz</b> (as <b>Recomendadas</b> aparecem primeiro), a <b>velocidade</b> e a <b>pausa entre frases</b>. <kbd>Alt+Shift+N</kbd> gera.</li>' +
     '<li>Se uma voz não puder ser usada no momento, outra voz do mesmo idioma é usada automaticamente.</li>' +
     '<li><b>3. Ouvir e baixar</b>: escolha o formato do arquivo — <b>MP3</b> (padrão), <b>OGG</b> (menor) ou <b>WAV</b> (sem compressão).</li>' +
-    '<li><b>Histórico</b>: cada áudio fica guardado neste navegador; gerar de novo o mesmo texto com as mesmas opções usa o histórico, sem processar.</li>' +
-    '<li>Se uma palavra soar estranha, escreva-a como se fala (ex.: siglas por extenso).</li>' +
-    '<li><b>Opções avançadas</b> (recolhidas): preparar a voz, remover vozes baixadas e ajustes técnicos — normalmente não é preciso mexer.</li></ul>';
+    '<li><b>Histórico</b>: cada áudio fica guardado neste navegador e pode ser ouvido e baixado sem carregar os recursos de áudio.</li>' +
+    '<li><b>Opções avançadas</b> (recolhidas): preparar a voz, remover vozes baixadas, carregar os recursos automaticamente e ajustes técnicos.</li></ul>';
   const KB = '<div class="kbG"><h4>Locução</h4><table class="kbT"><tr><td style="width:46%"><kbd>Alt + Shift + 3</kbd></td><td>Abrir a aba Locução</td></tr><tr><td><kbd>Alt + Shift + N</kbd></td><td>Gerar locução (na aba Locução)</td></tr><tr><td><kbd>Alt + Shift + 1 / 2</kbd></td><td>Voltar à aba Curso (Guia / Apresentação)</td></tr></table></div>';
   new MutationObserver(() => {
     const c = document.getElementById('hlpC');
@@ -636,17 +680,15 @@
     if (/Dados locais apagados/.test(logEl.lastChild && logEl.lastChild.textContent || '')) tx('readwrite', s => s.clear()).then(carregarHistorico).catch(() => {});
   }).observe(logEl, { childList: true });
 
-  /* ---------------------------- Montagem ---------------------------- */
-  contar(); carregarHistorico(); atualizarMotorUI(); carregarCatalogoPiper();
-  fetch(new URL('modelos/manifest.json', scriptSrc).href, { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(m => {
-    $('locLocalInfo').textContent = m && m.arquivos ? 'Vozes hospedadas neste site: ' + ((m.perfis || []).join(', ') || Object.keys(m.arquivos).length + ' arquivo(s)') + (m.vendor && Object.keys(m.vendor).length ? ' · bibliotecas: ' + Object.keys(m.vendor).join(', ') : '') + '.' : 'Vozes baixadas da internet (Hugging Face/jsDelivr).';
-  }).catch(() => {});
+  /* ---------------------------- Montagem (sem carregar recursos de áudio) ---------------------------- */
+  contar(); carregarHistorico(); atualizarMotorUI();
   if ($('locPreload').checked && !location.hash.startsWith('#cx=')) {
-    const go = () => ativarMotorDaVoz().catch(() => status(''));
+    const go = () => carregarRecursos().catch(() => {});
     if (document.readyState === 'complete') setTimeout(go, 800); else addEventListener('load', () => setTimeout(go, 800));
   }
   window.Locucao = {
     VOZ_PADRAO, KOKORO, idiomas, vozesDoIdioma, nomeVoz, nomeIdioma, idiomaDaVoz, alternativaPara, preencherVozes, ligarSelects,
+    carregarRecursos, recursosCarregados: () => recursos, vozPronta: v => !!motorDe(v || $('locVoz').value).pronto,
     sintetizar, cancelar, converter, baixarBlob, limparMd, slidesDe, initTTS, initPiper, motorDe, mostrarAba,
     generateSpeechAdvanced, splitTextIntoChunks, mergeAudioBlobsWithWebAudio, audioBufferToWavBlob, openHistoryDB, findCachedAudio, saveAudioToHistory, loadHistoryList
   };

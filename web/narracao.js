@@ -2,6 +2,7 @@
    Conteudista — Narração dos slides (notas do apresentador → áudio no HTML e no PPTX)
    - Painel "Narração dos slides" na aba Curso, visível SOMENTE com a aba "Apresentação" selecionada
      (desligado por padrão)
+   - Recursos de áudio sob demanda: só são carregados quando a caixa é marcada pelo usuário (ou ao gerar)
    - Ao ligar: mostra um resumo da voz; as opções (idioma, voz, velocidade, formato, avanço) ficam em
      "Opções avançadas de voz", sempre recolhidas ao abrir a página
    - Botão "Histórico de áudio": janela sobreposta (como o Histórico do texto) com busca, Ouvir, Baixar,
@@ -55,7 +56,7 @@
   const box = document.createElement('div'); box.id = 'narrBox'; box.className = 'panel';
   box.innerHTML = '<label class="inl tit"><input type="checkbox" id="narrOn"> Narração dos slides — gerar áudio a partir das notas do apresentador</label>' +
     '<div id="narrOp" hidden>' +
-      '<div class="nres"><span id="narrResumo"></span><button type="button" class="sec mini" id="narrHist" title="Áudios já gerados neste navegador (Locução e narração)">' + ICO + ' Histórico de áudio</button></div>' +
+      '<div class="nres"><span id="narrResumo"></span><span id="narrSt" class="note" style="margin:0"></span><button type="button" class="sec mini" id="narrHist" title="Áudios já gerados neste navegador (Locução e narração)">' + ICO + ' Histórico de áudio</button></div>' +
       '<details class="nav" id="narrAv"><summary>Opções avançadas de voz</summary>' +
         '<div class="lin"><div><label for="narrIdioma">Idioma</label><select id="narrIdioma"></select></div><div><label for="narrVoz">Voz</label><select id="narrVoz"></select></div>' +
         '<div><label for="narrVel">Velocidade: <span id="narrVelV">1,00</span>×</label><input type="range" id="narrVel" min="0.5" max="2" step="0.05" value="1"></div>' +
@@ -88,7 +89,21 @@
   }
   velTxt(); resumo();
   const mostrar = () => { $('narrOp').hidden = !$('narrOn').checked; info(); };
-  $('narrOn').onchange = () => { localStorage.setItem(PREF.on, $('narrOn').checked ? '1' : '0'); mostrar(); };
+  /* Recursos de áudio: carregados somente quando o usuário marca a caixa */
+  function estadoVoz() {
+    const st_ = $('narrSt'); if (!st_) return;
+    if (!L().recursosCarregados || !L().recursosCarregados()) { st_.textContent = ''; return; }
+    st_.textContent = L().vozPronta && L().vozPronta($('narrVoz').value) ? '· ✓ voz pronta' : '· preparando a voz…';
+  }
+  document.addEventListener('locucao:estado', estadoVoz);
+  function carregarRecursosNarr() {
+    if (!L().carregarRecursos) return;
+    estadoVoz();
+    L().carregarRecursos({ voz: $('narrVoz').value, vel: +$('narrVel').value || 1 }).then(ok => {
+      $('narrSt').textContent = ok ? '· ✓ voz pronta' : '· a voz será preparada ao gerar os arquivos';
+    });
+  }
+  $('narrOn').onchange = () => { localStorage.setItem(PREF.on, $('narrOn').checked ? '1' : '0'); mostrar(); if ($('narrOn').checked) carregarRecursosNarr(); };
   $('narrAuto').onchange = () => { localStorage.setItem(PREF.auto, $('narrAuto').checked ? '1' : '0'); resumo(); };
   $('narrVel').oninput = () => { velTxt(); localStorage.setItem(PREF.vel, $('narrVel').value); resumo(); info(); };
   $('narrFmt').onchange = () => { localStorage.setItem(PREF.fmt, $('narrFmt').value); resumo(); info(); };
@@ -204,6 +219,7 @@
     const alvos = notas.map((n, i) => [i, L().limparMd(n || '')]).filter(x => x[1]);
     if (!alvos.length) { logApp('Narração: nenhum slide tem notas do apresentador; arquivos gerados sem áudio.', 'wa'); return ''; }
     const voz = $('narrVoz').value || L().VOZ_PADRAO, vel = +$('narrVel').value || 1, fmt = $('narrFmt').value, pausa = 300;
+    if (L().carregarRecursos) L().carregarRecursos({ semVoz: true });
     py.runPython("import shutil, os\nshutil.rmtree('/narr', ignore_errors=True)\nos.makedirs('/narr', exist_ok=True)");
     const man = { html: {}, pptx: {}, duracoes: {}, avancar: $('narrAuto').checked };
     let total = 0, aviso = '';
