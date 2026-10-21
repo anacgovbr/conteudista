@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# GERADOR PADRÃO DE CURSO v3.4 (imagens em base64; temas: govbr [padrão] e classico) — Guia (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
+# GERADOR PADRÃO DE CURSO v3.5 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX) — Guia (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
 # Requisitos: Python 3 + python-docx + python-pptx (+ Pillow). HTML usa só biblioteca padrão.
-# Uso: python gerador.py guia.md apresentacao.md --prefixo NOME --rodape "TEXTO" [--barra "TEXTO"] [--saida pasta] [--sem-embutir] [--tema govbr|classico]
+# Uso: python gerador.py guia.md apresentacao.md --prefixo NOME --rodape "TEXTO" [--barra "TEXTO"] [--saida pasta] [--sem-embutir] [--tema govbr|classico] [--audios pasta] [--avancar]
 # Imagens ![alt](caminho|URL) sao convertidas para data:URI base64 (texto puro) nos .md de saida.
 # Saída: Treinamento_<prefixo>.md/.html/.docx  e  Apresentacao_<prefixo>.md/.html/.pptx
 import re,html,argparse,os,base64,io,mimetypes
@@ -288,12 +288,66 @@ def split_slides(md):
         p=re.sub(r'<!--.*?-->','',p,flags=re.S).strip()
         if p:out.append((c,blocks(p),n))
     return t,out
-def slides_html(t,sl,foot,tema=None):
+def notas_para_narracao(md):
+    """Texto a narrar em cada slide (mesma ordem de split_slides). <!-- narracao: texto --> substitui a nota;
+    <!-- narracao: nao --> deixa o slide sem áudio. Slides sem notas: ''."""
+    fm=re.match(r'^---\n(.*?)\n---\n',md or '',re.S)
+    if fm:md=md[fm.end():]
+    out=[]
+    for p in [p.strip() for p in re.split(r'\n---\s*\n',md or '') if p.strip()]:
+        n='';m=re.search(r'<!--\s*notas:\s*(.*?)-->',p,re.S)
+        if m:n=m.group(1).strip()
+        m=re.search(r'<!--\s*narra[cç][aã]o:\s*(.*?)-->',p,re.S|re.I)
+        if m:
+            v=m.group(1).strip();n='' if v.lower() in('nao','não','no','off','0','-') else v
+        if re.sub(r'<!--.*?-->','',p,flags=re.S).strip():out.append(n)
+    return out
+def _narr(narr):
+    """Normaliza a configuração de narração: {'html':{idx:caminho},'pptx':{idx:caminho},'avancar':bool}."""
+    if not narr:return {'html':{},'pptx':{},'avancar':False,'duracoes':{}}
+    if isinstance(narr,str):
+        import json as _j;narr=_j.loads(narr) if narr.strip() else {}
+    f=lambda d:{int(k):v for k,v in (d or {}).items() if v and os.path.isfile(v)}
+    dur={}
+    for k,v in (narr.get('duracoes') or {}).items():
+        try:dur[int(k)]=float(v)
+        except Exception:pass
+    return {'html':f(narr.get('html')),'pptx':f(narr.get('pptx')),'avancar':bool(narr.get('avancar')),'duracoes':dur}
+MIME_AUDIO={'.mp3':'audio/mpeg','.ogg':'audio/ogg','.oga':'audio/ogg','.opus':'audio/ogg','.wav':'audio/wav','.m4a':'audio/mp4'}
+CSS_NARR="""#ini{position:fixed;inset:0;z-index:20;background:rgba(7,29,65,.82);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#fff;font-family:inherit}
+#ini button{font-family:inherit;font-weight:600;font-size:22px;padding:14px 28px;border-radius:100em;border:0;background:#fff;color:#0b3d6e;cursor:pointer}#ini a{color:#dbe8fb;font-size:15px;cursor:pointer;text-decoration:underline}
+#hud button[aria-pressed=true]{background:rgba(255,255,255,.4)}.s .tem-som{position:absolute;right:16px;top:12px;font-size:18px;opacity:.55}
+@media print{#ini{display:none}.s .tem-som{display:none}}"""
+JS_NARR="""(function(){var D=document,S=[].slice.call(D.querySelectorAll('.s')),A={},on=false,auto=__AUTO__,cur=-1,t=null;
+[].slice.call(D.querySelectorAll('audio.narr')).forEach(function(a){A[+a.dataset.s]=a;a.addEventListener('ended',function(){if(auto&&on&&+a.dataset.s===cur){t=setTimeout(function(){if(cur<S.length-1)D.getElementById('n').click()},700)}})});
+function atual(){for(var k=0;k<S.length;k++)if(S[k].classList.contains('on'))return k;return 0}
+function tocar(k){clearTimeout(t);Object.keys(A).forEach(function(x){A[x].pause();A[x].currentTime=0});cur=k;if(on&&A[k]){A[k].play().catch(function(){})}else if(on&&auto&&!A[k]){t=setTimeout(function(){if(cur<S.length-1)D.getElementById('n').click()},4000)}}
+var bn=D.getElementById('bn'),ba=D.getElementById('ba');
+function marca(){bn.setAttribute('aria-pressed',on);bn.textContent=on?'🔊 Narração (M)':'🔇 Narração (M)';ba.setAttribute('aria-pressed',auto);ba.textContent=auto?'⏭ Avanço automático: sim (A)':'⏭ Avanço automático: não (A)'}
+function narr(v){on=v;marca();if(on)tocar(atual());else{clearTimeout(t);Object.keys(A).forEach(function(x){A[x].pause()})}}
+D.addEventListener('slide',function(e){tocar(e.detail)});
+bn.onclick=function(){narr(!on)};ba.onclick=function(){auto=!auto;marca();if(auto&&on&&A[cur]&&A[cur].ended)tocar(cur)};
+addEventListener('keydown',function(e){if(e.key=='m'||e.key=='M')narr(!on);else if(e.key=='a'||e.key=='A'){ba.click()}});
+var ini=D.getElementById('ini');D.getElementById('ini1').onclick=function(){ini.remove();narr(true)};D.getElementById('ini0').onclick=function(){ini.remove();narr(false)};
+S.forEach(function(x,k){if(A[k]){var m=D.createElement('span');m.className='tem-som';m.title='Este slide tem narração';m.textContent='🔊';x.appendChild(m)}});marca()})();"""
+def slides_html(t,sl,foot,tema=None,audios=None,avancar=False):
     T=tema_de(tema)
     o=''.join('<section class="s %s"><div class="in">%s</div><aside class="nt">%s</aside></section>'%(c,html_of(b),E(n)) for c,b,n in sl)
+    if audios:return _slides_html_narrado(t,sl,foot,T,o,audios,avancar)
     return ('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title><style>%s</style></head><body>'
     '<div id="st">%s</div><div id="bar"></div><div id="hud"><button id="p">◀</button><span id="c"></span><button id="n">▶</button><button id="b1">Notas (N)</button><button id="b2">Tela cheia (F)</button></div><script>%s</script>%s</body></html>'
     )%(E(t),tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s']),o,JS_S,MER)
+def _slides_html_narrado(t,sl,foot,T,o,audios,avancar):
+    aud=''
+    for k,cam in sorted(audios.items()):
+        if 0<=k<len(sl):
+            mime=MIME_AUDIO.get(os.path.splitext(cam)[1].lower(),'audio/mpeg')
+            aud+='<audio class="narr" data-s="%d" preload="auto" src="data:%s;base64,%s"></audio>'%(k,mime,base64.b64encode(open(cam,'rb').read()).decode())
+    js=JS_S.replace("history.replaceState(null,'','#'+(i+1))}","history.replaceState(null,'','#'+(i+1));D.dispatchEvent(new CustomEvent('slide',{detail:i}))}")
+    return ('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title><style>%s</style></head><body>'
+    '<div id="st">%s</div><div id="bar"></div><div id="hud"><button id="p">◀</button><span id="c"></span><button id="n">▶</button><button id="bn" aria-pressed="false">🔇 Narração (M)</button><button id="ba" aria-pressed="false">⏭ Avanço automático (A)</button><button id="b1">Notas (N)</button><button id="b2">Tela cheia (F)</button></div>'
+    '<div id="ini" role="dialog" aria-label="Iniciar apresentação"><button id="ini1">▶ Iniciar com narração</button><a id="ini0" role="button" tabindex="0">Iniciar sem som</a></div>%s<script>%s</script><script>%s</script>%s</body></html>'
+    )%(E(t),tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+CSS_NARR,o,aud,js,JS_NARR.replace('__AUTO__','true' if avancar else 'false'),MER)
 # ============================== DOCX ==============================
 def guia_docx(md,path,foot,tema=None):
     T=tema_de(tema);C=lambda h:trgb(h,T);H=lambda h:thex(h,T);FONTE=T['docx_font']
@@ -415,7 +469,7 @@ def guia_docx(md,path,foot,tema=None):
     s=d.settings.element;u=OxmlElement('w:updateFields');u.set(qn('w:val'),'true');s.append(u)
     d.save(path)
 # ============================== PPTX ==============================
-def slides_pptx(t,sl,path,foot,tema=None):
+def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None):
     T=tema_de(tema);H=lambda h:thex(h,T);FONTE=T['pptx_font']
     from pptx import Presentation
     from pptx.util import Inches,Pt
@@ -523,9 +577,83 @@ def slides_pptx(t,sl,path,foot,tema=None):
         tb,tf=tbox(s,L,7.05,8,0.3);addruns(tf.paragraphs[0],foot,11,C('CFE3F5') if istitle else MU)
         tb,tf=tbox(s,W-1.5,7.05,1,0.3);addruns(tf.paragraphs[0],'%d / %d'%(idx+1,len(sl)),11,C('CFE3F5') if istitle else MU)
         if notes:s.notes_slide.notes_text_frame.text=notes
+        if audios and idx in audios:
+            try:_pptx_audio(s,audios[idx],W,avancar,(duracoes or {}).get(idx))
+            except Exception as e:print('AVISO: narração do slide %d não incluída no PPTX: %s'%(idx+1,e))
     P.core_properties.title=t;P.save(path)
+def _icone_som():
+    try:
+        from PIL import Image,ImageDraw
+        im=Image.new('RGBA',(96,96),(0,0,0,0));d=ImageDraw.Draw(im)
+        d.rounded_rectangle((2,2,94,94),18,fill=(19,81,180,255));d.polygon([(22,38),(38,38),(56,22),(56,74),(38,58),(22,58)],fill='white')
+        d.arc((50,30,78,66),-50,50,fill='white',width=5);d.arc((52,20,90,76),-50,50,fill='white',width=5)
+        b=io.BytesIO();im.save(b,'PNG');return b.getvalue()
+    except Exception:
+        return base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==')
+def _wav_dur(dados):
+    try:
+        import struct
+        if dados[:4]==b'RIFF':
+            p=12;br=0
+            while p+8<=len(dados):
+                cid=dados[p:p+4];tam=struct.unpack('<I',dados[p+4:p+8])[0]
+                if cid==b'fmt ':br=struct.unpack('<I',dados[p+16:p+20])[0]
+                if cid==b'data' and br:return tam/br
+                p+=8+tam+(tam&1)
+    except Exception:pass
+    return None
+def _mp3_dur(dados):
+    """Duração aproximada de um MP3 (CBR) pelo cabeçalho do primeiro quadro."""
+    try:
+        i=0
+        if dados[:3]==b'ID3':i=10+((dados[6]&127)<<21|(dados[7]&127)<<14|(dados[8]&127)<<7|(dados[9]&127))
+        while i<len(dados)-4 and not(dados[i]==0xFF and dados[i+1]&0xE0==0xE0):i+=1
+        h=dados[i+1:i+3];ver=(h[0]>>3)&3;br_i=(h[1]>>4)&15
+        tab1=[0,32,40,48,56,64,80,96,112,128,160,192,224,256,320];tab2=[0,8,16,24,32,40,48,56,64,80,96,112,128,144,160]
+        br=(tab1 if ver==3 else tab2)[br_i]*1000
+        return (len(dados)-i)*8/br if br else None
+    except Exception:return None
+def _pptx_audio(s,cam,W,avancar,dur=None):
+    """Embute o áudio no slide (início automático, ícone fora da área visível) e, se pedido, avança o slide ao fim."""
+    from pptx.media import Video
+    from pptx.oxml import parse_xml
+    from pptx.opc.constants import RELATIONSHIP_TYPE as RT
+    from pptx.util import Inches
+    ext=os.path.splitext(cam)[1].lower();mime=MIME_AUDIO.get(ext,'audio/mpeg');dados=open(cam,'rb').read()
+    part=s.part;media=Video.from_blob(dados,mime,'narracao'+ext)
+    mp=part.package.get_or_add_media_part(media)
+    r_media=part.relate_to(mp,RT.MEDIA);r_audio=part.relate_to(mp,RT.AUDIO)
+    _,r_img=part.get_or_add_image_part(io.BytesIO(_icone_som()))
+    tree=s.shapes._spTree;sid=max([int(x) for x in tree.xpath('//p:cNvPr/@id')]+[1])+1
+    x,y,tam=Inches(W+0.3),Inches(0.3),Inches(0.4)
+    pic=parse_xml(('<p:pic xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
+      '<p:nvPicPr><p:cNvPr id="%d" name="Narração"><a:hlinkClick r:id="" action="ppaction://media"/></p:cNvPr><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr>'
+      '<p:nvPr><a:audioFile r:link="%s"/><p:extLst><p:ext uri="{DAA4B4D4-6D71-4841-9C94-3DE7FCFB9230}"><p14:media xmlns:p14="http://schemas.microsoft.com/office/powerpoint/2010/main" r:embed="%s"/></p:ext></p:extLst></p:nvPr></p:nvPicPr>'
+      '<p:blipFill><a:blip r:embed="%s"/><a:stretch><a:fillRect/></a:stretch></p:blipFill>'
+      '<p:spPr><a:xfrm><a:off x="%d" y="%d"/><a:ext cx="%d" cy="%d"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>')%(sid,r_audio,r_media,r_img,x,y,tam,tam))
+    tree.append(pic)
+    sld=s._element
+    for velho in sld.xpath('./p:transition|./p:timing'):sld.remove(velho)
+    ns='xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"'
+    novos=[]
+    dur=dur or (_wav_dur(dados) if ext=='.wav' else _mp3_dur(dados) if ext=='.mp3' else None)
+    if avancar:
+        if dur:novos.append(parse_xml('<p:transition %s advTm="%d"/>'%(ns,int(dur*1000)+800)))
+    novos.append(parse_xml(('<p:timing %s><p:tnLst><p:par><p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot"><p:childTnLst>'
+      '<p:par><p:cTn id="2" fill="hold"><p:stCondLst><p:cond delay="indefinite"/><p:cond evt="onBegin" delay="0"><p:tn val="2"/></p:cond></p:stCondLst><p:childTnLst>'
+      '<p:par><p:cTn id="3" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>'
+      '<p:par><p:cTn id="4" presetID="1" presetClass="mediacall" presetSubtype="0" fill="hold" nodeType="afterEffect"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>'
+      '<p:cmd type="call" cmd="playFrom(0.0)"><p:cBhvr><p:cTn id="5" dur="%d" fill="hold"/><p:tgtEl><p:spTgt spid="%d"/></p:tgtEl></p:cBhvr></p:cmd>'
+      '</p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par></p:childTnLst></p:cTn></p:par>'
+      '<p:audio><p:cMediaNode vol="80000"><p:cTn id="6" fill="hold" display="0"><p:stCondLst><p:cond delay="indefinite"/></p:stCondLst>'
+      '<p:endCondLst><p:cond evt="onStopAudio" delay="0"><p:tgtEl><p:sldTgt/></p:tgtEl></p:cond></p:endCondLst></p:cTn><p:tgtEl><p:spTgt spid="%d"/></p:tgtEl></p:cMediaNode></p:audio>'
+      '</p:childTnLst></p:cTn></p:par></p:tnLst></p:timing>')%(ns,int((dur or 1)*1000),sid,sid)))
+    ext_=sld.xpath('./p:extLst')
+    for el in novos:
+        if ext_:ext_[0].addprevious(el)
+        else:sld.append(el)
 # ============================== EXECUÇÃO ==============================
-def gerar(gm,sm,prefixo='Curso',rodape='',barra='',saida='.',tema=None):
+def gerar(gm,sm,prefixo='Curso',rodape='',barra='',saida='.',tema=None,narracao=None):
     tema=tema if tema in TEMAS else TEMA_PADRAO
     """Gera os arquivos do que estiver preenchido: guia (MD/HTML/DOCX) e/ou apresentação (MD/HTML/PPTX)."""
     gm=gm or '';sm=sm or ''
@@ -542,24 +670,34 @@ def gerar(gm,sm,prefixo='Curso',rodape='',barra='',saida='.',tema=None):
         except Exception as e:msg+=' | docx: ERRO %s'%e
     else:msg+=' | guia: vazio (não gerado)'
     if tem_s:
-        t,sl=split_slides(sm)
-        open(P('.md','Apresentacao_'),'w',encoding='utf-8').write(sm);open(P('.html','Apresentacao_'),'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema))
+        t,sl=split_slides(sm);nr=_narr(narracao)
+        open(P('.md','Apresentacao_'),'w',encoding='utf-8').write(sm);open(P('.html','Apresentacao_'),'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema,nr['html'],nr['avancar']))
         arqs+=[P('.md','Apresentacao_'),P('.html','Apresentacao_')]
-        try:slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape,tema);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
+        try:slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape,tema,nr['pptx'],nr['avancar'],nr['duracoes']);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
         except Exception as e:msg+=' | pptx: ERRO %s'%e
+        if nr['html'] or nr['pptx']:msg+=' | narração: %d slide(s)'%len(set(nr['html'])|set(nr['pptx']))
     else:msg+=' | apresentação: vazia (não gerada)'
     res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d | imagens: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'),len(IMG.findall(gm))+len(IMG.findall(sm)))+' | tema: '+tema
     return arqs,res
 if __name__=='__main__':
     a=argparse.ArgumentParser();a.add_argument('guia',help="arquivo do guia ('-' para não gerar)");a.add_argument('apresentacao',nargs='?',default='-',help="arquivo da apresentação ('-' ou omitido para não gerar)");a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.')
-    a.add_argument('--sem-embutir',action='store_true',help='não converter imagens para base64');a.add_argument('--tema',default=TEMA_PADRAO,choices=sorted(TEMAS),help='layout dos arquivos (padrão: %(default)s)');a=a.parse_args()
+    a.add_argument('--sem-embutir',action='store_true',help='não converter imagens para base64');a.add_argument('--tema',default=TEMA_PADRAO,choices=sorted(TEMAS),help='layout dos arquivos (padrão: %(default)s)');a.add_argument('--audios',default='',help='pasta com a narração por slide: 1.mp3, 2.ogg, 3.wav… (número do slide)');a.add_argument('--avancar',action='store_true',help='avançar os slides ao fim da narração');a=a.parse_args()
     ler=lambda f:'' if f in('-','') else open(f,encoding='utf-8').read()
     gm=ler(a.guia);sm=ler(a.apresentacao)
     if not a.sem_embutir:
         gm,n1,f1=embed_images(gm,os.path.dirname(os.path.abspath(a.guia if a.guia!='-' else '.')));sm,n2,f2=embed_images(sm,os.path.dirname(os.path.abspath(a.apresentacao if a.apresentacao!='-' else '.')))
         if n1+n2:print('Imagens embutidas em base64: %d'%(n1+n2))
         for f in f1+f2:print('AVISO: imagem não encontrada/baixada: %s'%f)
-    try:_,res=gerar(gm,sm,a.prefixo,a.rodape,a.barra,a.saida,a.tema)
+    narr=None
+    if a.audios and os.path.isdir(a.audios):
+        narr={'html':{},'pptx':{},'avancar':a.avancar}
+        for f in sorted(os.listdir(a.audios)):
+            m=re.match(r'^(\d+)\.(mp3|ogg|wav)$',f,re.I)
+            if not m:continue
+            k=str(int(m.group(1))-1);cam=os.path.join(a.audios,f)
+            narr['html'][k]=cam
+            if m.group(2).lower()!='ogg' and (k not in narr['pptx'] or m.group(2).lower()=='mp3'):narr['pptx'][k]=cam
+    try:_,res=gerar(gm,sm,a.prefixo,a.rodape,a.barra,a.saida,a.tema,narr)
     except ValueError as e:print('ERRO: %s'%e);raise SystemExit(1)
     print(res)
     if 'ERRO' in res:raise SystemExit(1)

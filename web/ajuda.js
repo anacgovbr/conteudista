@@ -134,6 +134,15 @@
 <li>Se o texto já cita uma imagem pelo nome (ex.: <code>![Figura](fluxo.png)</code>), arraste o arquivo <code>fluxo.png</code>: ele é associado à referência e convertido para base64.</li>
 <li>Na apresentação, cada slide é separado por uma linha <code>---</code>. Use os botões <b>Slide</b>, <b>Capa</b>, <b>Destaque</b> e <b>Notas</b>.</li>
 </ul>
+<h4>Narração dos slides</h4>
+<ul>
+<li>Marque <b>Narração dos slides</b> (acima de <b>Gerar arquivos</b>) para transformar as <b>notas do apresentador</b> (<code>&lt;!-- notas: … --&gt;</code>) em áudio dentro da apresentação.</li>
+<li>Escolha idioma, voz (padrão: <b>Faber</b>), velocidade e formato do áudio: <b>MP3</b> (padrão), <b>OGG</b> (menor) ou <b>WAV</b> (sem compressão). No PowerPoint o áudio vai em MP3 (ou WAV, se escolhido).</li>
+<li><b>HTML</b>: a apresentação abre com “Iniciar com narração”; o botão <b>Narração</b> (<kbd>M</kbd>) liga/desliga o som e <b>Avanço automático</b> (<kbd>A</kbd>) passa ao próximo slide quando o áudio termina.</li>
+<li><b>PPTX</b>: o áudio de cada slide começa sozinho na apresentação de slides. Com “Avançar os slides sozinho”, dá para usar <b>Arquivo → Exportar → Criar um vídeo</b> no PowerPoint.</li>
+<li>Para falar um texto diferente da nota, use <code>&lt;!-- narracao: texto --&gt;</code>; para um slide sem som, <code>&lt;!-- narracao: nao --&gt;</code>.</li>
+<li>Áudios já gerados (mesmo texto, voz e velocidade) são reaproveitados do histórico da Locução.</li>
+</ul>
 <h4>Salvar e recuperar</h4>
 <table><tr><th>Como</th><th>Onde fica</th><th>Como recuperar</th></tr>
 <tr><td><b>Salvamento automático</b> (ligado por padrão)</td><td>Neste navegador, neste computador</td><td>Abra a página de novo: o último trabalho volta sozinho</td></tr>

@@ -56,8 +56,32 @@
     }
   },
   "bibliotecas": {
-    "piper": { "pacote": "@mintplex-labs/piper-tts-web@1.0.4", "entrada": ["dist/piper-tts-web.js", "dist/index.js"] },
-    "kokoro": { "pacote": "kokoro-js@1.2.1", "entrada": ["dist/kokoro.web.js"] },
-    "espeak": { "pacote": "espeak-ng@1.0.2", "entrada": ["dist/espeak-ng.js", "espeak-ng.js"] }
+    "piper": {
+      "pacote": "@mintplex-labs/piper-tts-web@1.0.4",
+      "entrada": [
+        "dist/piper-tts-web.js",
+        "dist/index.js"
+      ]
+    },
+    "kokoro": {
+      "pacote": "kokoro-js@1.2.1",
+      "entrada": [
+        "dist/kokoro.web.js"
+      ]
+    },
+    "espeak": {
+      "pacote": "espeak-ng@1.0.2",
+      "entrada": [
+        "dist/espeak-ng.js",
+        "espeak-ng.js"
+      ]
+    },
+    "lamejs": {
+      "pacote": "lamejs@1.2.1",
+      "entrada": [
+        "lame.min.js",
+        "lame.all.js"
+      ]
+    }
   }
 }

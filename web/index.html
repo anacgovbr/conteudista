@@ -624,8 +624,11 @@ $('go').onclick = async () => {
     const pref = ($('pref').value.trim() || 'Curso').replace(/[^\w.-]+/g, '_');
     py.globals.set('GM', $('g').value.trim() + '\n'); py.globals.set('SM', $('s').value.trim() + '\n');
     py.globals.set('PREF', pref); py.globals.set('ROD', $('rod').value); py.globals.set('BAR', $('bar').value); py.globals.set('TEMA', $('tema').value);
+    let narr = '';
+    if (window.Narracao && $('s').value.trim()) { try { narr = await Narracao.preparar(py); } catch (e) { log('Narração não incluída: ' + e.message, 'wa'); narr = ''; } }
+    py.globals.set('NARR', narr);
     log('Gerando arquivos…');
-    const out = py.runPython("import sys, os, shutil, zipfile\nif '/app' not in sys.path: sys.path.insert(0, '/app')\nimport gerador\nshutil.rmtree('/saida', ignore_errors=True)\narqs, res = gerador.gerar(GM, SM, PREF, ROD, BAR, '/saida', TEMA)\nzp = '/saida/Curso_%s.zip' % PREF\nwith zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:\n    [z.write(f, os.path.basename(f)) for f in arqs]\n'\\n'.join([res] + arqs + [zp])");
+    const out = py.runPython("import sys, os, shutil, zipfile\nif '/app' not in sys.path: sys.path.insert(0, '/app')\nimport gerador\nshutil.rmtree('/saida', ignore_errors=True)\narqs, res = gerador.gerar(GM, SM, PREF, ROD, BAR, '/saida', TEMA, NARR or None)\nzp = '/saida/Curso_%s.zip' % PREF\nwith zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:\n    [z.write(f, os.path.basename(f)) for f in arqs]\n'\\n'.join([res] + arqs + [zp])");
     const linhas = out.split('\n'), res = linhas[0], files = linhas.slice(1);
     log(res, res.includes('ERRO') ? 'err' : 'ok');
     limparDownloads();
@@ -693,6 +696,8 @@ statusImagens();
 <script src="historico.js"></script>
 <script src="changelog.js"></script>
 <script src="gerados.js"></script>
+<script src="audio-codec.js"></script>
 <script src="locucao.js"></script>
+<script src="narracao.js"></script>
 </body>
 </html>

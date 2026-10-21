@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.20 — 21/10/2026
+- **Narração dos slides**: as notas do apresentador viram áudio dentro da apresentação HTML (botões Narração e Avanço automático) e do PPTX (início automático; avanço opcional para exportar vídeo).
+- **Locução mais simples**: só Idioma, Voz (Recomendadas/Outras), Velocidade e Pausa; troca automática para uma voz alternativa se a escolhida não puder ser usada; detalhes técnicos em “Opções avançadas” (recolhidas).
+- Download e narração em **MP3** (padrão), **OGG** ou **WAV**.
+
 ## 1.19.2 — 21/10/2026
 - Correção do erro “Failed to resolve module specifier 'onnxruntime-web'” no Piper: bibliotecas hospedadas no site passam a apontar suas dependências para o jsDelivr e, se ainda falharem, a Locução usa automaticamente a versão do CDN (os modelos continuam vindo do site).
 
