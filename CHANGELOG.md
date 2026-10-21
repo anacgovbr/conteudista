@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.29 — 21/10/2026
+- Novos temas de apresentação PPTX **ANAC 20 anos — claro** e **ANAC 20 anos — escuro**, baseados nos dois modelos oficiais fornecidos.
+- Nos dois novos temas, o Guia HTML/DOCX continua usando o padrão **gov.br**; somente a apresentação PPTX recebe a identidade ANAC 20 anos.
+
 ## 1.28 — 21/10/2026
 - **Links criados**: cada link agora é clicável e exibe um **QR Code** do endereço completo, facilitando a abertura no celular.
 - **Copiar** mostra confirmação visual: “URL copiada. Cole no navegador ou onde desejar guardar com Ctrl+V.” e registra a confirmação na tela.

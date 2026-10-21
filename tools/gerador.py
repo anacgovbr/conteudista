@@ -193,6 +193,10 @@ nav a.on{font-weight:600}""",
    'docx_font':'Arial','pptx_font':'Arial','pptx_destaque':'FFCD07'},
  'classico':{'nome':'Clássico (layout original do Conteudista)','map':{},'fonte':None,'import':'','extra_g':'','extra_s':'',
    'docx_font':'Calibri','pptx_font':'Segoe UI','pptx_destaque':None},
+ 'anac20-claro':{'nome':'ANAC 20 anos — claro','map':_GOV_MAP,'fonte':"'Rawline','Raleway',\"Segoe UI\",Arial,sans-serif",'import':'','extra_g':'','extra_s':'',
+   'docx_font':'Arial','pptx_font':'Arial','pptx_destaque':'D5A900','pptx_modelo':'anac20-claro','pptx_escuro':False},
+ 'anac20-escuro':{'nome':'ANAC 20 anos — escuro','map':_GOV_MAP,'fonte':"'Rawline','Raleway',\"Segoe UI\",Arial,sans-serif",'import':'','extra_g':'','extra_s':'',
+   'docx_font':'Arial','pptx_font':'Arial','pptx_destaque':'D5A900','pptx_modelo':'anac20-escuro','pptx_escuro':True},
 }
 TEMA_PADRAO='govbr'
 def tema_de(t):return TEMAS.get(t or TEMA_PADRAO) or TEMAS[TEMA_PADRAO]
@@ -263,7 +267,8 @@ var x0=null;addEventListener('touchstart',function(e){x0=e.touches[0].clientX});
 def title_of(md,d):
     m=re.search(r'^#\s+(.+)$',md,re.M);return plain(m.group(1)).strip() if m else d
 def guia_html(md,bar,tema=None):
-    T=tema_de(tema)
+    # Os temas ANAC 20 anos alteram somente a apresentação; o guia permanece no padrão gov.br.
+    T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema)
     toc=[];b=html_of(blocks(md),toc)
     hs=list(re.finditer(r'<h2 id="[^"]+">(.*?)</h2>',b))
     for k,m in enumerate(hs):
@@ -331,7 +336,8 @@ addEventListener('keydown',function(e){if(e.key=='m'||e.key=='M')narr(!on);else 
 var ini=D.getElementById('ini');D.getElementById('ini1').onclick=function(){ini.remove();narr(true)};D.getElementById('ini0').onclick=function(){ini.remove();narr(false)};
 S.forEach(function(x,k){if(A[k]){var m=D.createElement('span');m.className='tem-som';m.title='Este slide tem narração';m.textContent='🔊';x.appendChild(m)}});marca()})();"""
 def slides_html(t,sl,foot,tema=None,audios=None,avancar=False):
-    T=tema_de(tema)
+    # Os novos modelos foram solicitados para PPTX; o HTML mantém o padrão gov.br.
+    T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema)
     o=''.join('<section class="s %s"><div class="in">%s</div><aside class="nt">%s</aside></section>'%(c,html_of(b),E(n)) for c,b,n in sl)
     if audios:return _slides_html_narrado(t,sl,foot,T,o,audios,avancar)
     return ('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title><style>%s</style></head><body>'
@@ -350,7 +356,8 @@ def _slides_html_narrado(t,sl,foot,T,o,audios,avancar):
     )%(E(t),tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+CSS_NARR,o,aud,js,JS_NARR.replace('__AUTO__','true' if avancar else 'false'),MER)
 # ============================== DOCX ==============================
 def guia_docx(md,path,foot,tema=None):
-    T=tema_de(tema);C=lambda h:trgb(h,T);H=lambda h:thex(h,T);FONTE=T['docx_font']
+    # Os temas ANAC 20 anos alteram somente a apresentação; o DOCX permanece no padrão gov.br.
+    T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema);C=lambda h:trgb(h,T);H=lambda h:thex(h,T);FONTE=T['docx_font']
     from docx import Document
     from docx.shared import Pt,RGBColor,Cm
     from docx.enum.text import WD_BREAK
@@ -479,7 +486,21 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
     from pptx.enum.text import MSO_ANCHOR
     PRI=C('0B3D6E');ACC=C('0A7CC1');AC2=C('19A974');INK=C('1B2430')
     WH=C('FFFFFF');MU=C('5A6676');SOFT=C('EEF4FA');DEST=RGBColor.from_string(T['pptx_destaque']) if T.get('pptx_destaque') else AC2
+    modelo=T.get('pptx_modelo'); escuro=bool(T.get('pptx_escuro'))
+    if modelo:
+        # Paleta extraída dos arquivos oficiais de referência ANAC 20 anos.
+        PRI=RGBColor.from_string('FFFFFF' if escuro else '163B57');ACC=RGBColor.from_string('D5A900');AC2=RGBColor.from_string('16B8C4')
+        INK=RGBColor.from_string('FFFFFF' if escuro else '1F3545');WH=RGBColor.from_string('FFFFFF');MU=RGBColor.from_string('DCE8EE' if escuro else '607786');SOFT=RGBColor.from_string('14334A' if escuro else 'EFF7FA')
     P=Presentation();P.slide_width=Inches(13.333);P.slide_height=Inches(7.5);W=13.333;L=0.62;CW=W-2*L
+    pasta_modelo=os.path.join(os.path.dirname(os.path.abspath(__file__)),'temas',modelo) if modelo else ''
+    def fundo_anac(s,idx,cls):
+        if not modelo:return False
+        if cls=='title' and idx==0:nome='capa.png'
+        elif cls=='title' and idx==len(sl)-1:nome='encerramento.png'
+        else:nome='conteudo-%s.png'%('a' if idx%2 else 'b')
+        cam=os.path.join(pasta_modelo,nome)
+        if os.path.isfile(cam):s.shapes.add_picture(cam,0,0,width=Inches(W),height=Inches(7.5));return True
+        return False
     def rect(s,x,y,w,h,col,shape=MSO_SHAPE.RECTANGLE):
         r=s.shapes.add_shape(shape,Inches(x),Inches(y),Inches(w),Inches(h));r.fill.solid();r.fill.fore_color.rgb=col;r.line.fill.background();r.shadow.inherit=False;return r
     def addruns(par,t,size,color,bold=False):
@@ -553,28 +574,32 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                 tb,tf=tbox(s,x,y,w,h);r=tf.paragraphs[0].add_run();r.text=b[2];r.font.name='Consolas';r.font.size=Pt(12);r.font.color.rgb=col
         return h
     for idx,(cls,bl,notes) in enumerate(sl):
-        s=P.slides.add_slide(P.slide_layouts[6]);istitle=cls=='title'
-        if istitle:rect(s,0,0,W,7.5,PRI);rect(s,0,0,0.15,7.5,DEST)
-        else:
-            if cls=='highlight':rect(s,0,0,W,7.5,C('F2F7FC'))
-            rect(s,0,0,0.15,7.5,PRI)
+        s=P.slides.add_slide(P.slide_layouts[6]);istitle=cls=='title';tem_fundo=fundo_anac(s,idx,cls)
+        if not tem_fundo:
+            if istitle:rect(s,0,0,W,7.5,PRI);rect(s,0,0,0.15,7.5,DEST)
+            else:
+                if cls=='highlight':rect(s,0,0,W,7.5,C('F2F7FC'))
+                rect(s,0,0,0.15,7.5,PRI)
         h1=[b for b in bl if b[0]=='h' and b[1]==1];rest=[b for b in bl if not(b[0]=='h' and b[1]==1)]
         if istitle:
             sub=[b for b in rest if b[0]=='h'];body=[b for b in rest if b[0]!='h'];y=2.2
+            if modelo and idx==0:L0=5.15;CW0=7.35
+            elif modelo and idx==len(sl)-1:L0=0.85;CW0=11.63;y=4.65
+            else:L0=L;CW0=CW
             if h1:
-                tb,tf=tbox(s,L,y,CW,1.3);tf.vertical_anchor=MSO_ANCHOR.BOTTOM;addruns(tf.paragraphs[0],h1[0][2],50,WH,True);y+=1.4
-                rect(s,L,y,min(CW,len(plain(h1[0][2]))*0.36),0.06,DEST);y+=0.25
-            for b in sub:tb,tf=tbox(s,L,y,CW,0.7);addruns(tf.paragraphs[0],b[2],28,C('D6ECFF'),True);y+=0.75
-            for b in body:y+=draw(s,b,y,20,C('E8F2FB'))
+                tb,tf=tbox(s,L0,y,CW0,1.3);tf.vertical_anchor=MSO_ANCHOR.BOTTOM;addruns(tf.paragraphs[0],h1[0][2],50,(WH if not modelo or escuro else PRI),True);y+=1.4
+                rect(s,L0,y,min(CW0,len(plain(h1[0][2]))*0.36),0.06,DEST);y+=0.25
+            for b in sub:tb,tf=tbox(s,L0,y,CW0,0.7);addruns(tf.paragraphs[0],b[2],28,(C('D6ECFF') if not modelo else (WH if escuro else INK)),True);y+=0.75
+            for b in body:y+=draw(s,b,y,20,(WH if escuro else INK) if modelo else C('E8F2FB'),L0,CW0)
         else:
-            y=0.45
+            y=0.62 if modelo else 0.45
             if h1:
                 tb,tf=tbox(s,L,y,CW,0.9);tf.vertical_anchor=MSO_ANCHOR.BOTTOM;addruns(tf.paragraphs[0],h1[0][2],34,PRI,True);y+=0.95
                 rect(s,L,y,CW,0.05,ACC);y+=0.25
             avail=6.75-y;size=22
             while size>12 and sum(est(b,size) for b in rest)>avail:size-=1
             for b in rest:y+=draw(s,b,y,size,INK)
-        tb,tf=tbox(s,L,7.05,8,0.3);addruns(tf.paragraphs[0],foot,11,C('CFE3F5') if istitle else MU)
+        tb,tf=tbox(s,L,7.05,8,0.3);addruns(tf.paragraphs[0],foot,11,(WH if modelo and escuro else MU) if modelo else (C('CFE3F5') if istitle else MU))
         tb,tf=tbox(s,W-1.5,7.05,1,0.3);addruns(tf.paragraphs[0],'%d / %d'%(idx+1,len(sl)),11,C('CFE3F5') if istitle else MU)
         if notes:s.notes_slide.notes_text_frame.text=notes
         if audios and idx in audios:

@@ -87,7 +87,7 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
     <div><label for="pref">Prefixo dos arquivos</label><input id="pref" type="text" value="Meu_Curso"></div>
     <div><label for="rod">Rodapé (slides e DOCX)</label><input id="rod" type="text" placeholder="Ex.: CDPP · GTPL · SAR/ANAC"></div>
     <div><label for="bar">Barra superior do guia (HTML)</label><input id="bar" type="text" placeholder="Opcional (padrão: título do guia)"></div>
-    <div><label for="tema">Layout dos arquivos gerados</label><select id="tema" title="Aplica-se ao guia (HTML/DOCX) e à apresentação (HTML/PPTX)"><option value="govbr">Padrão gov.br (padrão)</option><option value="classico">Clássico (layout original)</option></select></div>
+    <div><label for="tema">Layout dos arquivos gerados</label><select id="tema" title="Aplica-se ao guia (HTML/DOCX) e à apresentação (HTML/PPTX)"><option value="govbr">Padrão gov.br (padrão)</option><option value="anac20-claro">ANAC 20 anos — claro (PPTX; guia gov.br)</option><option value="anac20-escuro">ANAC 20 anos — escuro (PPTX; guia gov.br)</option><option value="classico">Clássico (layout original)</option></select></div>
   </div>
   <p class="acoes-meta">
     <button id="ex" class="sec mini">Carregar exemplo</button>
@@ -677,6 +677,15 @@ async function prepararPython() {
   py.globals.set('WHEELS', wheels);
   await py.runPythonAsync("import micropip\nw = WHEELS.to_py() if WHEELS is not None else None\nif w:\n    await micropip.install(w, deps=False)\nelse:\n    await micropip.install(['python-docx', 'python-pptx'])\n");
   py.FS.mkdirTree('/app'); py.FS.writeFile('/app/gerador.py', src);
+  // Os fundos ANAC 20 anos são mantidos como arquivos separados para preservar a fidelidade dos modelos oficiais.
+  for (const tema of ['anac20-claro', 'anac20-escuro']) {
+    py.FS.mkdirTree('/app/temas/' + tema);
+    for (const arq of ['capa.png', 'conteudo-a.png', 'conteudo-b.png', 'encerramento.png']) {
+      const r = await fetch('temas/' + tema + '/' + arq, { cache: 'no-store' });
+      if (!r.ok) throw new Error('Fundo do tema ' + tema + ' não encontrado: ' + arq);
+      py.FS.writeFile('/app/temas/' + tema + '/' + arq, new Uint8Array(await r.arrayBuffer()));
+    }
+  }
   $('ver').textContent = 'Motor pronto · Python ' + py.runPython('import sys; sys.version.split()[0]');
   log('Motor pronto.', 'ok');
   return py;

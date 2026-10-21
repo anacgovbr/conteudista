@@ -68,6 +68,7 @@ jobs:
         run: |
           mkdir -p site/wheels
           cp web/index.html web/*.js web/*.css tools/gerador.py site/
+          cp -r tools/temas site/temas
           cp -r web/exemplo site/exemplo
           cp CHANGELOG.md site/
           pip download --no-deps --only-binary=:all: --dest site/wheels python-docx python-pptx XlsxWriter typing_extensions
