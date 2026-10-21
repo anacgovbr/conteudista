@@ -84,7 +84,7 @@
   const urls = new Map();
   function urlDe(chave, blob) { if (!urls.has(chave)) urls.set(chave, URL.createObjectURL(blob)); return urls.get(chave); }
   function limparUrls() { urls.forEach(u => URL.revokeObjectURL(u)); urls.clear(); }
-  const rotulo = n => { const e = n.split('.').pop().toLowerCase(); return (/^Treinamento_/.test(n) ? 'Guia ' : /^Apresentacao_/.test(n) ? 'Slides ' : '') + e.toUpperCase(); };
+  const rotulo = n => { const e = n.split('.').pop().toLowerCase(); return (/^Treinamento_/.test(n) ? 'Treinamento ' : /^Apresentacao_/.test(n) ? 'Apresentação ' : '') + e.toUpperCase(); };
   async function listar() {
     let l = [];
     try { l = await tx('readonly', s => s.getAll()); } catch (e) { $('gerLista').textContent = 'Armazenamento indisponível (' + e.message + ').'; return; }
@@ -95,7 +95,7 @@
       return '<tr><td>' + new Date(p.data).toLocaleString('pt-BR') + '<br><small>' + fmt(p.tam) + '</small></td><td><b>' + esc(p.prefixo) + '</b>' + (p.resumo ? '<br><small>' + esc(p.resumo) + '</small>' : '') + '</td><td>' +
         (zip ? '<a class="btn" href="' + urlDe(p.id + '/' + zip.nome, zip.blob) + '" download="' + esc(zip.nome) + '">⬇ ZIP</a>' : '') +
         outros.map(f => '<a class="btn sec" href="' + urlDe(p.id + '/' + f.nome, f.blob) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">' + rotulo(f.nome) + '</a>').join('') +
-        outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="sec" data-ver="' + p.id + '/' + esc(f.nome) + '">Ver ' + (/^Apresentacao_/.test(f.nome) ? 'slides' : 'guia') + '</button>').join('') +
+        outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="sec" data-ver="' + p.id + '/' + esc(f.nome) + '">Ver ' + (/^Apresentacao_/.test(f.nome) ? 'Apresentação' : 'Treinamento') + '</button>').join('') +
         '</td><td><button type="button" class="dan" data-del="' + p.id + '">Excluir</button></td></tr>';
     }).join('') + '</table>';
     uso(l.reduce((a, p) => a + p.tam, 0));

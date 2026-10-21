@@ -1,5 +1,8 @@
 # Novidades do Conteudista
 
+## 1.15 — 21/10/2026
+- Arquivos guardados no navegador: botões renomeados para **Treinamento** e **Apresentação** (antes “Guia” e “Slides”).
+
 ## 1.14 — 21/10/2026
 - Arquivos gerados (guia HTML/DOCX e apresentação HTML/PPTX) com **layout gov.br** por padrão.
 - Novo campo **Layout dos arquivos gerados**: gov.br ou Clássico (layout original, mantido sem alterações).
