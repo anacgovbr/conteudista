@@ -2,7 +2,7 @@
    Conteudista — Worker de Locução: Kokoro-82M v1.0 (multilíngue), 100% no navegador
    - Modelo: onnx-community/Kokoro-82M-v1.0-ONNX (versão multilíngue atual), dtype "fp32" (padrão) ou "q8"
      · fp32 é o padrão: idiomas além do inglês funcionam corretamente nele (q8 pode degradar/mudar a pronúncia)
-   - Dispositivo: WebAssembly (WASM) no modo Automático — opção mais compatível. WebGPU só é usado quando escolhido explicitamente
+   - Dispositivo: WebGPU com fallback automático para WebAssembly (WASM)
    - Idiomas (lang_code do Kokoro, conforme VOICES.md):
        a = inglês americano · b = inglês britânico  → G2P do próprio kokoro-js (tts.generate)
        e = espanhol (es) · f = francês (fr-fr) · h = hindi (hi) · i = italiano (it) · p = português do Brasil (pt-br)
@@ -62,10 +62,7 @@ async function init_({ dtype = 'fp32', device = 'auto' }) {
       post({ tipo: 'progresso', loaded: l, total: t, file: p.file });
     } else if (p && (p.status === 'ready' || p.status === 'done')) post({ tipo: 'fase', fase: p.status, file: p.file });
   };
-  // Não tente WebGPU no modo Automático. Alguns navegadores expõem navigator.gpu, mas não entregam um adaptador;
-  // depois dessa falha, versões do onnxruntime podem manter o backend WebGPU rejeitado em cache e contaminar
-  // a tentativa seguinte em WASM. O modo Automático usa WASM diretamente; WebGPU continua disponível por opção explícita.
-  const ordem = device === 'auto' ? ['wasm'] : [device];
+  const ordem = device === 'auto' ? (self.navigator && 'gpu' in self.navigator ? ['webgpu', 'wasm'] : ['wasm']) : [device];
   let ultimoErro = null;
   for (const dev of ordem) {
     try {
