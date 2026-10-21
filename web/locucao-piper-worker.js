@@ -34,11 +34,40 @@ function ajustarConfig(texto) {
     return JSON.stringify(j);
   } catch { return texto; }
 }
+/* ---------------------------- Espelhos das vozes (404 "Entry not found" → tenta outro repositório) ---------------------------- */
+const ESPELHOS_VOZES = [
+  'https://huggingface.co/rhasspy/piper-voices/resolve/main/',
+  'https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/',
+  'https://huggingface.co/diffusionstudio/piper-voices/resolve/main/'
+];
+let ultimoFalho = '';
+function instalarEspelhosVozes() {
+  if (self.__espelhosVozes) return; self.__espelhosVozes = true;
+  const anterior = self.fetch.bind(self);
+  self.fetch = async (input, init) => {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input && input.url;
+    const base = url && ESPELHOS_VOZES.find(b => url.startsWith(b));
+    if (!base) return anterior(input, init);
+    const resto = url.slice(base.length), ordem = [base].concat(ESPELHOS_VOZES.filter(b => b !== base));
+    let ultima = null;
+    for (const b of ordem) {
+      try {
+        const r = await anterior(b + resto, init && { method: init.method, headers: init.headers, signal: init.signal });
+        if (r.ok) return r;
+        ultima = r;
+      } catch (e) { ultima = ultima || e; }
+    }
+    ultimoFalho = resto;
+    if (ultima instanceof Response) return ultima;
+    throw ultima || new Error('falha ao baixar ' + resto);
+  };
+}
 const blobText = Blob.prototype.text, respText = Response.prototype.text, respJson = Response.prototype.json;
 Blob.prototype.text = async function () { return ajustarConfig(await blobText.call(this)); };
 Response.prototype.text = async function () { return ajustarConfig(await respText.call(this)); };
 Response.prototype.json = async function () {
-  const t = await respText.call(this.clone ? this : this);
+  const t = await respText.call(this);
+  if (!this.ok || /^\s*(Entry not found|Not Found|<)/i.test(t)) throw new Error('arquivo da voz não encontrado no servidor (' + (this.status || '?') + (ultimoFalho ? ': ' + ultimoFalho : this.url ? ': ' + this.url.split('/').slice(-1)[0] : '') + ')');
   return JSON.parse(ajustarConfig(t));
 };
 
@@ -74,6 +103,7 @@ function wsola(x, sr, taxa) {
 async function carregarLib() {
   if (lib) return lib;
   espelhos = await ativarEspelhos(BASE);
+  instalarEspelhosVozes();
   try {
     const { mod, url } = await importarPrimeiro(BASE, [espelhos.vendor.piper], PIPER_CDN, semLocal);
     libLocal = url.startsWith(BASE);

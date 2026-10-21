@@ -52,7 +52,8 @@
   function fechar() { const b = $('mdBack'); if (b) b.remove(); }
   function abrirAba(t) { const b = $(t === 's' ? 'ts' : 'tg'); if (b) b.click(); }
   function focarEditor(t) { abrirAba(t); setTimeout(() => { const ta = document.querySelector('#' + (t === 's' ? 'ps' : 'pg') + ' .mde-ta'); if (ta) { ta.focus(); ta.scrollIntoView({ block: 'center', behavior: 'smooth' }); } }, 60); }
-  function clicar(id, msg) { const b = $(id); if (!b) return; b.scrollIntoView({ block: 'center', behavior: 'smooth' }); b.click(); if (msg) toast(msg); }
+  const abrir = el => { if (window.abrirSecao) window.abrirSecao(el); };
+  function clicar(id, msg) { const b = $(id); if (!b) return; abrir(b); b.scrollIntoView({ block: 'center', behavior: 'smooth' }); b.click(); if (msg) toast(msg); }
 
   /* ---------------------------- Tutorial guiado ---------------------------- */
   const PASSOS = [
@@ -66,7 +67,7 @@
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
-  function alvoEl(p) { const a = typeof p.alvo === 'function' ? p.alvo() : p.alvo ? $(p.alvo) : null; return a && a.getClientRects().length ? a : null; }
+  function alvoEl(p) { const a = typeof p.alvo === 'function' ? p.alvo() : p.alvo ? $(p.alvo) : null; if (a) abrir(a); return a && a.getClientRects().length ? a : null; }
   function posicionar() {
     if (passo < 0) return;
     const el = alvoEl(PASSOS[passo]), vw = innerWidth, vh = innerHeight;
@@ -229,7 +230,7 @@
     { g: 'Salvar e recuperar', k: 'S', d: 'Salvar rascunho', f: () => clicar('dsave') },
     { g: 'Salvar e recuperar', k: 'A', d: 'Ligar/desligar salvamento automático', f: () => { const c = $('auto'); c.checked = !c.checked; c.dispatchEvent(new Event('change')); toast('Salvamento automático ' + (c.checked ? 'ligado' : 'desligado')); } },
     { g: 'Salvar e recuperar', k: 'L', d: 'Criar link criptografado', f: () => clicar('share') },
-    { g: 'Salvar e recuperar', k: 'O', d: 'Ir para “Abrir um link”', f: () => { const i = $('olink'); i.scrollIntoView({ block: 'center', behavior: 'smooth' }); i.focus(); } },
+    { g: 'Salvar e recuperar', k: 'O', d: 'Ir para “Abrir um link”', f: () => { const i = $('olink'); abrir(i); i.scrollIntoView({ block: 'center', behavior: 'smooth' }); i.focus(); } },
     { g: 'Navegação', k: '1', d: 'Aba Guia (foca o editor)', f: () => focarEditor('g') },
     { g: 'Navegação', k: '2', d: 'Aba Apresentação (foca o editor)', f: () => focarEditor('s') },
     { g: 'Navegação', k: 'M', d: 'Alternar modo do editor (Editar → Dividido → Prévia)', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); if (!vis) return; const ordem = ['e', 's', 'p'], i = (ordem.indexOf(vis.dataset.m) + 1) % 3; const b = vis.querySelector('.mde-tb [data-m="' + ordem[i] + '"]'); if (b) b.click(); toast(['Somente editor', 'Editor + prévia', 'Somente prévia'][i]); } },

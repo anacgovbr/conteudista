@@ -41,6 +41,10 @@ td.url{word-break:break-all;font:12px Consolas,monospace}
 .sub{border-top:1px dashed var(--line);margin-top:10px;padding-top:8px}
 code{background:var(--th);padding:1px 5px;border-radius:4px}
 @media(max-width:900px){.grid,.grid3,.row{grid-template-columns:1fr}}
+details.sx>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;border-radius:6px}details.sx>summary::-webkit-details-marker{display:none}
+details.sx>summary h2,details.sx>summary h3{margin:0;flex:1}details.sx>summary::before{content:'▸';color:var(--acc);font-size:15px;transition:transform .15s}details.sx[open]>summary::before{transform:rotate(90deg)}
+details.sx>summary .sxh{font-size:13px;color:var(--acc);font-weight:600}details.sx[open]>summary .sxh{display:none}details.sx[open]>summary{margin-bottom:10px}
+details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details.sx#dxRes,details.sx#dxLinks{margin-top:14px}
 </style>
 <link rel="stylesheet" href="govbr.css">
 <script src="editor.js"></script>
@@ -61,7 +65,7 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
 <main id="conteudo" tabindex="-1">
 
 <section class="card">
-  <h2>Como funciona</h2>
+<details class="sx" id="dxComo"><summary><h2>Como funciona</h2><span class="sxh">mostrar</span></summary>
   <p class="box priv"><b>Privacidade:</b> a conversão roda inteiramente no seu navegador. Por padrão, <b>nada é enviado nem salvo</b>. Você decide se quer guardar o conteúdo <b>na sua máquina</b> (rascunhos no navegador ou em uma pasta) ou <b>compartilhar por link criptografado</b> — a chave fica só no link (e, se quiser, numa senha), nunca no servidor.</p>
   <ol>
     <li>Cole, arraste ou escreva o <b>guia</b> e a <b>apresentação</b> no editor (barra de ferramentas, atalhos e prévia ao lado). Imagens arrastadas, coladas (Ctrl+V) ou inseridas pelo botão de imagem são convertidas para <b>base64</b>.</li>
@@ -69,6 +73,7 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
     <li>Opcional: salve na sua máquina ou crie um link criptografado (seção <b>Guardar e compartilhar</b>).</li>
   </ol>
   <p class="note">Atalhos do editor: <b>Ctrl+Z / Ctrl+Y</b> desfazer/refazer · <b>Ctrl+B</b> negrito · <b>Ctrl+I</b> itálico · <b>Ctrl+K</b> link · <b>Tab/Shift+Tab</b> recuo de listas · <b>Enter</b> continua listas e checklists · <b>Esc</b> sai da tela cheia. Lista completa: botão <b>⌨ Atalhos</b>. No editor, imagens aparecem como <code>(img:N)</code>; o texto completo em base64 é mantido e usado na geração.</p>
+</details>
 </section>
 
 <section class="card">
@@ -99,13 +104,14 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
     <input id="fmd" type="file" accept=".md,.txt,.markdown,image/*" multiple hidden>
   </p>
   <div id="log">Pronto. Nenhum conteúdo é armazenado sem sua autorização.</div>
-  <h3>Arquivos gerados</h3>
+  <details class="sx" id="dxRes"><summary><h3>Arquivos gerados</h3><span class="sxh">mostrar</span></summary>
   <div id="res" class="note">Nenhum arquivo gerado ainda.</div>
   <iframe id="prev" title="Pré-visualização" hidden></iframe>
+  </details>
 </section>
 
 <section class="card" id="secShare">
-  <h2>Guardar e compartilhar</h2>
+<details class="sx" id="dxShare"><summary><h2>Guardar e compartilhar</h2><span class="sxh">mostrar</span></summary>
   <div class="grid3">
     <div class="panel" id="pLocal">
       <h3 style="margin-top:0">1. Na sua máquina</h3>
@@ -160,9 +166,11 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
       <p><button id="open" class="sec">Abrir link</button></p>
     </div>
   </div>
-  <h3>Links criados</h3>
+  <details class="sx" id="dxLinks"><summary><h3>Links criados</h3><span class="sxh">mostrar</span></summary>
   <div id="links" class="note">Nenhum link nesta sessão.</div>
+  </details>
   <p class="box warn" style="margin-top:12px"><b>Atenção:</b> não compartilhe dados pessoais ou informações restritas por link, mesmo criptografado, sem autorização da sua chefia. Links longos (autocontidos) podem ser cortados por e-mail ou Teams — prefira o PrivateBin para conteúdos grandes. A instância pública privatebin.net aceita até cerca de 10 MB por envio.</p>
+</details>
 </section>
 </main>
 <footer class="br-footer"><div class="in"><span>Agência Nacional de Aviação Civil · Conteudista — gerador de cursos no navegador</span><span class="lic">Interface baseada no <a href="https://www.gov.br/ds/" target="_blank" rel="noopener">Padrão Digital de Governo</a> · <button type="button" id="btnContraste" class="sec mini" style="min-height:32px">Alto contraste</button></span></div></footer>
@@ -683,6 +691,18 @@ setInterval(() => { const k = $('g').value.length + ':' + $('s').value.length; i
 
 listarRascunhos().catch(() => $('drafts').textContent = 'Armazenamento local indisponível neste navegador.');
 listarLinks().catch(() => {});
+/* =========================== Seções recolhidas (abrem quando necessárias) =========================== */
+function abrirSecao(el) { for (let d = el && el.closest ? el.closest('details') : null; d; d = d.parentElement && d.parentElement.closest('details')) d.open = true; }
+window.abrirSecao = abrirSecao;
+['dxComo', 'dxRes', 'dxShare', 'dxLinks'].forEach(id => { const d = $(id); if (d) d.open = false; });
+// abre ao gerar arquivos ou criar links (depois da carga inicial, para não abrir com links antigos lembrados)
+setTimeout(() => {
+  new MutationObserver(() => { if ($('res').querySelector('a[download]')) abrirSecao($('res')); }).observe($('res'), { childList: true, subtree: true });
+  new MutationObserver(() => { if ($('links').querySelector('table')) abrirSecao($('links')); }).observe($('links'), { childList: true, subtree: true });
+}, 1500);
+// qualquer ação que leve a um elemento recolhido (foco, link interno, atalhos) abre a seção
+document.addEventListener('focusin', e => { if (e.target.closest && e.target.closest('details.sx:not([open])') && !e.target.matches('summary')) abrirSecao(e.target); });
+addEventListener('hashchange', () => { const a = location.hash && document.querySelector(location.hash); if (a) abrirSecao(a); });
 $('tema').value = localStorage.getItem('conteudista.tema') || 'govbr';
 $('tema').onchange = () => { localStorage.setItem('conteudista.tema', $('tema').value); log('Layout dos arquivos: ' + $('tema').selectedOptions[0].text + '. Clique em Gerar arquivos para aplicar.', 'ok'); };
 $('btnContraste').onclick = () => { const on = document.documentElement.classList.toggle('contraste'); localStorage.setItem('conteudista.contraste', on ? '1' : '0'); };
