@@ -107,7 +107,19 @@
   }
   $('gerLista').addEventListener('click', async e => {
     const v = e.target.closest('[data-ver]'), d = e.target.closest('[data-del]');
-    if (v && prev) { const u = urls.get(v.dataset.ver); if (u) { prev.hidden = false; prev.src = u; prev.scrollIntoView({ behavior: 'smooth', block: 'center' }); } }
+    if (v) {
+      e.preventDefault();
+      if (prev) {
+        const u = urls.get(v.dataset.ver);
+        if (u) {
+          for (let d = prev.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) d.open = true;
+          prev.hidden = false;
+          prev.src = u;
+          prev.style.scrollMarginTop = '96px';
+          requestAnimationFrame(() => requestAnimationFrame(() => prev.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })));
+        }
+      }
+    }
     if (d) { if (!confirm('Excluir este pacote de arquivos guardado?')) return; await tx('readwrite', s => s.delete(+d.dataset.del)); listar(); }
   });
   $('gerLimpar').onclick = async () => { if (!confirm('Apagar todos os pacotes de arquivos gerados guardados neste navegador?')) return; await tx('readwrite', s => s.clear()); listar(); };

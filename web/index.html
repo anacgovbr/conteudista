@@ -731,7 +731,15 @@ $('go').onclick = async () => {
     }
     py.runPython("import shutil; shutil.rmtree('/saida', ignore_errors=True)");
     $('res').innerHTML = '<div class="file-links">' + h + '</div>';
-    $('res').querySelectorAll('[data-u]').forEach(a => a.onclick = e => { e.preventDefault(); $('prev').hidden = false; $('prev').src = a.dataset.u; });
+    $('res').querySelectorAll('[data-u]').forEach(a => a.onclick = e => {
+  e.preventDefault();
+  const frame = $('prev');
+  for (let d = frame.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) d.open = true;
+  frame.hidden = false;
+  frame.src = a.dataset.u;
+  frame.style.scrollMarginTop = '96px';
+  requestAnimationFrame(() => requestAnimationFrame(() => frame.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })));
+});
     agendarAuto();
     if (window.Hist && !res.includes('ERRO')) Hist.registrar('gerado', 'Arquivos gerados: ' + pref);
   } catch (e) {
@@ -810,7 +818,7 @@ statusImagens();
 </script>
 <script src="historico.js?v=1.33"></script>
 <script src="changelog.js?v=1.33"></script>
-<script src="gerados.js?v=1.33"></script>
+<script src="gerados.js?v=20261021203817"></script>
 <script src="audio-codec.js?v=1.33"></script>
 <script src="locucao.js?v=1.33"></script>
 <script src="narracao.js?v=1.33"></script>
