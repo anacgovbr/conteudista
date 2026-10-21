@@ -134,6 +134,17 @@
 #secLoc .aviso.wa{background:#fff5c2;border-left-color:#8a5c00}#secLoc .aviso.er{background:#fde0db;border-left-color:#e52207}
 #secLoc .loc-hist{border:1px solid #cccccc;border-radius:10px;padding:12px;background:#fff;max-height:880px;display:flex;flex-direction:column}
 #secLoc .loc-hist h3{margin:0 0 8px;color:#0c326f;font-size:15px}
+#secLoc .loc-rec-topo{margin:12px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+#secLoc details.loc-subsecao,#secLoc details#locAvancado{padding:0;overflow:hidden}
+#secLoc details.loc-subsecao>summary,#secLoc details#locAvancado>summary{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;list-style:none}
+#secLoc details.loc-subsecao>summary::-webkit-details-marker,#secLoc details#locAvancado>summary::-webkit-details-marker{display:none}
+#secLoc details.loc-subsecao>summary h3,#secLoc details#locAvancado>summary>span:first-child{margin:0;color:#0c326f;font-size:15px;font-weight:700}
+#secLoc details.loc-subsecao>summary~*,#secLoc details#locAvancado>summary~*{margin-left:14px;margin-right:14px}
+#secLoc .loc-mostrar,#secLoc .loc-recolher{margin-left:auto;color:#155bcb;font-size:12px;font-weight:600}
+#secLoc details[open]>.loc-mostrar,#secLoc details[open]>summary>.loc-mostrar{display:none}
+#secLoc details:not([open])>.loc-recolher,#secLoc details:not([open])>summary>.loc-recolher{display:none}
+#secLoc details[open]>summary>.loc-recolher{display:inline}#secLoc details:not([open])>summary>.loc-mostrar{display:inline}
+@media(max-width:700px){#secLoc .loc-rec-topo{align-items:stretch;flex-direction:column}#secLoc .loc-rec-topo button{width:100%}}
 #secLoc .hl{overflow:auto;flex:1;margin-top:8px;display:flex;flex-direction:column;gap:8px}
 #secLoc .hc{border:1px solid #cccccc;border-radius:8px;padding:8px 10px;background:#f8f8f8}
 #secLoc .hc.on{outline:2px solid #168821}
@@ -195,6 +206,29 @@
       '<p class="cont" id="locUso"></p><p class="acoes"><button type="button" class="dan mini" id="locLimparHist">Limpar histórico</button></p>' +
     '</aside></div>';
   main.appendChild(sec);
+
+  /* Organização progressiva: somente Texto aberto; recursos de áudio no topo. */
+  const colunaLoc = sec.querySelector('.loc-grid > div');
+  const recursoLoc = sec.querySelector('#locRec');
+  if (recursoLoc) {
+    recursoLoc.classList.add('loc-rec-topo');
+    const nota = sec.querySelector('.note');
+    (nota || sec.querySelector('h2')).after(recursoLoc);
+  }
+  [...sec.querySelectorAll('.loc-grid > div > .loc-box:not(details)')].forEach((box, i) => {
+    const d = document.createElement('details'); d.className = 'loc-box loc-subsecao'; d.open = i === 0;
+    const h = box.querySelector(':scope > h3'); const sum = document.createElement('summary');
+    const titulo = document.createElement('h3'); titulo.textContent = h ? h.textContent : 'Seção';
+    const mostrar = document.createElement('span'); mostrar.className = 'loc-mostrar'; mostrar.textContent = 'mostrar';
+    const recolher = document.createElement('span'); recolher.className = 'loc-recolher'; recolher.textContent = 'recolher';
+    sum.append(titulo, mostrar, recolher); if (h) h.remove();
+    d.appendChild(sum); while (box.firstChild) d.appendChild(box.firstChild); box.replaceWith(d);
+  });
+  const avancadoLoc = sec.querySelector('#locAvancado');
+  if (avancadoLoc) {
+    avancadoLoc.open = false; const sum = avancadoLoc.querySelector(':scope > summary');
+    sum.innerHTML = '<span>Opções avançadas</span><span class="loc-mostrar">mostrar</span><span class="loc-recolher">recolher</span>';
+  }
   function mostrarAba(nome) {
     abas.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.aba === nome));
     [...main.children].forEach(el => { if (el.tagName === 'SECTION') el.hidden = nome === 'locucao' ? el !== sec : el === sec; });

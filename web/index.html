@@ -547,7 +547,7 @@ $('share').onclick = async () => {
   const fal = await embutirTudo(true); if (fal.length) log('Atenção: imagens não embutidas ficarão como referência externa: ' + fal.join(', '), 'wa');
   const d2 = pacote(), pw = $('pw').value;
   const n = await estimarTamanho();
-  if (!confirm('Tamanho a enviar: ' + tamanho(n) + ($('mode').value === 'pb' ? ' (PrivateBin, cifrado)' : ' (link autocontido)') + '.\n\nContinuar?')) { log('Envio cancelado.', 'wa'); return; }
+  log('Criando link criptografado (' + tamanho(n) + ')…');
   $('share').disabled = true;
   try {
     let item;
@@ -632,10 +632,19 @@ async function renderizarQRCodes(links) {
   const caixas = [...$('links').querySelectorAll('[data-q]')]; if (!caixas.length) return;
   try {
     const Q = await carregarQR();
-    caixas.forEach(c => { const i = +c.dataset.q; c.innerHTML = ''; new Q(c, { text: links[i].url, width: 88, height: 88, correctLevel: Q.CorrectLevel ? Q.CorrectLevel.M : 0 }); });
+    caixas.forEach(c => {
+      const i = +c.dataset.q, url = links[i] && links[i].url || ''; c.innerHTML = '';
+      try {
+        if (!url) throw new Error('URL vazia');
+        new Q(c, { text: url, width: 104, height: 104, correctLevel: Q.CorrectLevel.L, useSVG: true });
+      } catch (e) {
+        c.innerHTML = '<span class="qr-off" title="' + esc(e.message) + '">' + (url.length > 2800 ? 'Link longo demais para QR Code. Use PrivateBin.' : 'QR indisponível') + '</span>';
+        console.warn('QR Code:', e);
+      }
+    });
   } catch (e) {
     caixas.forEach(c => { c.innerHTML = '<span class="qr-off" title="' + esc(e.message) + '">QR indisponível</span>'; });
-    log('QR Code indisponível: ' + e.message + '.', 'wa');
+    log('Não foi possível carregar o gerador de QR Code: ' + e.message + '.', 'wa');
   }
 }
 function rotuloLink(l) { try { const u = new URL(l.trim(), location.href); return u.hash.startsWith('#cx=') ? 'Link autocontido' : 'PrivateBin ' + u.host + ' · ' + u.search.slice(1, 9); } catch { return 'Link'; } }
@@ -717,11 +726,11 @@ $('go').onclick = async () => {
     for (const f of files) {
       const nome = f.split('/').pop(), ext = nome.split('.').pop(), blob = new Blob([py.FS.readFile(f)], { type: tipos[ext] || 'application/octet-stream' });
       const u = URL.createObjectURL(blob); urls.push(u); ultimos.push({ nome, blob });
-      h += '<a class="btn' + (ext === 'zip' ? '' : ' sec') + '" href="' + u + '" download="' + nome + '">⬇ ' + nome + '</a>';
-      if (ext === 'html') h += '<a class="btn sec" href="#" data-u="' + u + '">Visualizar</a>';
+      h += '<a class="file-link download" href="' + u + '" download="' + nome + '" title="Baixar ' + nome + '">.' + ext.toUpperCase() + '</a>';
+      if (ext === 'html') h += '<a class="file-link view" href="#" data-u="' + u + '" title="Exibir ' + nome + ' na tela">Exibir ' + (/^Apresentacao_/.test(nome) ? 'apresentação' : 'treinamento') + '</a>';
     }
     py.runPython("import shutil; shutil.rmtree('/saida', ignore_errors=True)");
-    $('res').innerHTML = h;
+    $('res').innerHTML = '<div class="file-links">' + h + '</div>';
     $('res').querySelectorAll('[data-u]').forEach(a => a.onclick = e => { e.preventDefault(); $('prev').hidden = false; $('prev').src = a.dataset.u; });
     agendarAuto();
     if (window.Hist && !res.includes('ERRO')) Hist.registrar('gerado', 'Arquivos gerados: ' + pref);
@@ -790,5 +799,6 @@ statusImagens();
 <script src="locucao.js"></script>
 <script src="narracao.js"></script>
 <script src="ui-ajustes.js"></script>
+<script src="ux-feedback.js"></script>
 </body>
 </html>

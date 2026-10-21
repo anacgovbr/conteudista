@@ -1,5 +1,11 @@
 # Novidades do Conteudista
 
+## 1.30 — 21/10/2026
+- Arquivos agora aparecem como links tipográficos compactos: **⬇ .EXTENSÃO** para baixar e **▣ Exibir** para abrir na tela.
+- Feedback visual padronizado nos botões após ações concluídas, sem janelas de confirmação em operações não destrutivas.
+- Correção do QR Code com nível de correção apropriado e tratamento individual para links acima da capacidade física do QR.
+- Aba Locução reorganizada: carregamento de recursos no topo, seções recolhíveis e somente Texto expandido por padrão.
+
 ## 1.29 — 21/10/2026
 - Novos temas de apresentação PPTX **ANAC 20 anos — claro** e **ANAC 20 anos — escuro**, baseados nos dois modelos oficiais fornecidos.
 - Nos dois novos temas, o Guia HTML/DOCX continua usando o padrão **gov.br**; somente a apresentação PPTX recebe a identidade ANAC 20 anos.
