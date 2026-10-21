@@ -1,5 +1,8 @@
 # Novidades do Conteudista
 
+## 1.23 - 21/10/2026
+- Curso de exemplo: a apresentacao traz o texto de narracao de cada slide nas notas do apresentador, pronto para gerar o audio em Narracao dos slides.
+
 ## 1.22 — 21/10/2026
 - O painel **Narração dos slides** aparece somente com a aba **Apresentação (apresentacao.md)** selecionada.
 
