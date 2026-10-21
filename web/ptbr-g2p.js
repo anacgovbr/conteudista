@@ -28,8 +28,8 @@ function porExtenso(n) {
 }
 const LETRAS = { a: 'á', b: 'bê', c: 'cê', d: 'dê', e: 'é', f: 'efe', g: 'gê', h: 'agá', i: 'í', j: 'jota', k: 'cá', l: 'ele', m: 'eme', n: 'ene', o: 'ó', p: 'pê', q: 'quê', r: 'erre', s: 'esse', t: 'tê', u: 'ú', v: 'vê', w: 'dáblio', x: 'xis', y: 'ípsilon', z: 'zê' };
 const ABREV = { 'sr.': 'senhor', 'sra.': 'senhora', 'dr.': 'doutor', 'dra.': 'doutora', 'art.': 'artigo', 'n.º': 'número', 'nº': 'número', 'etc.': 'etcétera', 'ex.': 'exemplo', 'p.ex.': 'por exemplo', 'pág.': 'página', 'inc.': 'inciso', 'arts.': 'artigos', '§': 'parágrafo', '%': 'por cento' };
-const SIGLAS_PALAVRA = new Set(['anac', 'sei', 'mpr', 'cdpp', 'gtpl', 'sar', 'lai', 'lgpd', 'pdf', 'rbac', 'gft', 'esproc', 'astec']);  // lidas como palavra quando pronunciáveis
-const SOLETRAR = new Set(['sar', 'mpr', 'gtpl', 'cdpp', 'pdf', 'rbac', 'gft', 'lgpd']);  // siglas sem vogais suficientes: soletrar
+const SIGLAS_PALAVRA = new Set(['anac', 'sei', 'mpr', 'cdpp', 'gtpl', 'sar', 'lai', 'lgpd', 'pdf', 'rbac', 'gft', 'esproc', 'astec']);
+const SOLETRAR = new Set(['sar', 'mpr', 'gtpl', 'cdpp', 'pdf', 'rbac', 'gft', 'lgpd']);
 
 /* ---------------------------- Normalização do texto ---------------------------- */
 function normalizar(t) {
@@ -55,12 +55,10 @@ const ATONAS = new Set(['o', 'a', 'os', 'as', 'de', 'do', 'da', 'dos', 'das', 'e
 const FIXAS = { e: 'i', o: 'ʊ', os: 'ʊs', do: 'dʊ', dos: 'dʊs', no: 'nʊ', nos: 'nʊs', ao: 'aw', de: 'dʒɪ', que: 'kɪ', se: 'sɪ', me: 'mɪ', te: 'tʃɪ', para: 'pɐɾɐ', pra: 'pɾɐ', com: 'kõ', sem: 'sẽj', por: 'puɾ', um: 'ũ', uns: 'ũs', em: 'ẽj', mas: 'mas', aos: 'aws', 'à': 'a', 'às': 'as' };
 
 function silabaTonica(w) {
-  // retorna índice (na palavra) da vogal tônica
   const acento = w.search(/[áéíóúâêô]/);
   if (acento >= 0) return acento;
   const til = w.search(/[ãõ]/);
   if (til >= 0) return til;
-  // núcleos: grupos de vogais (ditongos decrescentes contam como um núcleo; tratamos "ia/io/ua" finais como hiato átono)
   const nucleos = []; let i = 0;
   while (i < w.length) {
     if (isV(w[i]) && !(w[i] === 'u' && (w[i - 1] === 'q' || w[i - 1] === 'g') && isV(w[i + 1]))) {
@@ -79,32 +77,26 @@ function silabaTonica(w) {
 function palavra(w) {
   if (FIXAS[w] !== undefined) return FIXAS[w];
   if (!/[a-zà-ü]/.test(w)) return '';
-  const ton = silabaTonica(w), out = [], N = w.length;  // out: {p, v(vogal?), t(tônica?)}
+  const ton = silabaTonica(w), out = [], N = w.length;
   const push = (p, v, t) => out.push({ p, v: !!v, t: !!t });
   const fimOuCons = j => j >= N || (!isV(w[j]) && w[j] !== 'h');
   let i = 0;
   while (i < N) {
     const c = w[i], n1 = w[i + 1], n2 = w[i + 2], prev = w[i - 1];
-    // ---- vogais ----
     if (isV(c)) {
       const tonica = i === ton;
-      // ditongos nasais e terminações especiais
       if (c === 'ã' && n1 === 'o') { push('ɐ̃', 1, tonica); push('w'); i += 2; continue; }
       if (c === 'ã' && n1 === 'e') { push('ɐ̃', 1, tonica); push('j'); i += 2; continue; }
       if (c === 'õ' && n1 === 'e') { push('õ', 1, tonica); push('j'); i += 2; continue; }
       if (c === 'a' && n1 === 'm' && i + 2 === N) { push('ɐ̃', 1, tonica); push('w'); i += 2; continue; }
-      if ('eé'.includes(c) && (n1 === 'm' && i + 2 === N || n1 === 'n' && n2 === 's' && i + 3 === N)) { push('ẽ', 1, tonica); push('j'); i += n1 === 'm' ? 2 : 2; if (w[i] === 's') { push('s'); i++; } continue; }
-      // nasal antes de m/n + consoante (ou fim)
+      if ('eé'.includes(c) && (n1 === 'm' && i + 2 === N || n1 === 'n' && n2 === 's' && i + 3 === N)) { push('ẽ', 1, tonica); push('j'); i += 2; if (w[i] === 's') { push('s'); i++; } continue; }
       if ((n1 === 'm' || n1 === 'n') && n2 !== 'h' && fimOuCons(i + 2)) {
         const nas = { a: 'ɐ̃', â: 'ɐ̃', á: 'ɐ̃', e: 'ẽ', ê: 'ẽ', é: 'ẽ', i: 'ĩ', í: 'ĩ', o: 'õ', ô: 'õ', ó: 'õ', u: 'ũ', ú: 'ũ' }[c] || c;
         push(nas, 1, tonica); i += 2; continue;
       }
-      // glides: i/u átonos depois de vogal
       if ('iu'.includes(c) && isV(prev) && !tonica && !(prev === 'u' && ('qg'.includes(w[i - 2])))) {
-        // "ui" em "muito": ditongo; "rainha", "saúde" já marcados por acento/nh
         if (!(n1 === 'n' && n2 === 'h')) { push(c === 'i' ? 'j' : 'w'); i++; continue; }
       }
-      // u mudo em que/qui/gue/gui
       if (c === 'u' && ('qg'.includes(prev)) && 'eéêiíy'.includes(n1 || '#')) { i++; continue; }
       if (c === 'ü') { push('w'); i++; continue; }
       let p;
@@ -125,11 +117,9 @@ function palavra(w) {
         case 'o': p = !tonica && final ? 'ʊ' : 'o'; break;
         default: p = c;
       }
-      if (c === 'o' && n1 === 'u' && !tonica) { push('o', 1, tonica); push('w'); i += 2; continue; }
-      if (c === 'o' && n1 === 'u' && tonica) { push('o', 1, true); push('w'); i += 2; continue; }
+      if (c === 'o' && n1 === 'u') { push('o', 1, tonica); push('w'); i += 2; continue; }
       push(p, 1, tonica); i++; continue;
     }
-    // ---- consoantes ----
     if (c === 'h') { i++; continue; }
     if (c === 'c' && n1 === 'h') { push('ʃ'); i += 2; continue; }
     if (c === 'l' && n1 === 'h') { push('ʎ'); i += 2; continue; }
@@ -145,11 +135,7 @@ function palavra(w) {
       case 'ç': push('s'); break;
       case 'g': push('eéêiíy'.includes(n1 || '#') ? 'ʒ' : 'g'); break;
       case 'j': push('ʒ'); break;
-      case 'r':
-        if (i === 0 || 'nls'.includes(prev)) push('x');
-        else if (i === N - 1) push('ɾ');
-        else push('ɾ');
-        break;
+      case 'r': push(i === 0 || 'nls'.includes(prev) ? 'x' : 'ɾ'); break;
       case 's':
         if (i > 0 && isV(prev) && isV(n1)) push('z');
         else if (i > 0 && i < N - 1 && 'bdgvmnlr'.includes(n1)) push('z');
@@ -172,11 +158,9 @@ function palavra(w) {
     }
     i++;
   }
-  // t/d + i → tʃ/dʒ
   for (let k = 0; k < out.length - 1; k++) {
     if ((out[k].p === 't' || out[k].p === 'd') && /^[iɪĩ]/.test(out[k + 1].p)) out[k].p = out[k].p === 't' ? 'tʃ' : 'dʒ';
   }
-  // marca de tonicidade antes do ataque da sílaba tônica
   if (!ATONAS.has(w)) {
     const iv = out.findIndex(x => x.v && x.t);
     if (iv >= 0) {

@@ -13,27 +13,27 @@
   /* ---------------------------- Estilos ---------------------------- */
   const css = `
 .tr-dim{position:fixed;inset:0;z-index:2000;pointer-events:none}
-.tr-hole{position:fixed;z-index:2001;border-radius:10px;box-shadow:0 0 0 9999px rgba(11,25,45,.62);outline:3px solid #19a974;transition:all .25s ease;pointer-events:none}
-.tr-pop{position:fixed;z-index:2002;width:min(380px,92vw);background:#fff;color:#1b2430;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.3);padding:16px 18px;font:14.5px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
-.tr-pop h4{margin:0 0 6px;color:#0b3d6e;font-size:16px}.tr-pop p{margin:0 0 10px}
-.tr-pop .tr-ft{display:flex;align-items:center;gap:6px}.tr-pop .tr-ft span{flex:1;color:#5a6676;font-size:12.5px}
-.tr-pop kbd{background:#f3f6fa;border:1px solid #c9d6e6;border-bottom-width:2px;border-radius:4px;padding:0 5px;font:12px Consolas,monospace;white-space:nowrap}.tr-pop code{background:#eaf1f8;padding:0 4px;border-radius:4px}
+.tr-hole{position:fixed;z-index:2001;border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.62);outline:3px solid #168821;transition:all .25s ease;pointer-events:none}
+.tr-pop{position:fixed;z-index:2002;width:min(380px,92vw);background:#fff;color:#333333;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,.3);padding:16px 18px;font:14.5px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
+.tr-pop h4{margin:0 0 6px;color:#0c326f;font-size:16px}.tr-pop p{margin:0 0 10px}
+.tr-pop .tr-ft{display:flex;align-items:center;gap:6px}.tr-pop .tr-ft span{flex:1;color:#636363;font-size:12.5px}
+.tr-pop kbd{background:#f8f8f8;border:1px solid #cccccc;border-bottom-width:2px;border-radius:4px;padding:0 5px;font:12px Consolas,monospace;white-space:nowrap}.tr-pop code{background:#dbe8fb;padding:0 4px;border-radius:4px}
 .tr-pop button{margin:0!important;padding:6px 12px!important;font-size:13px!important}
-.md-back{position:fixed;inset:0;z-index:1900;background:rgba(11,25,45,.55);display:flex;align-items:center;justify-content:center;padding:16px}
-.md-win{background:#fff;color:#1b2430;border-radius:12px;max-width:820px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,.35);font:14.5px/1.55 "Segoe UI",Roboto,Arial,sans-serif}
-.md-hd{display:flex;align-items:center;padding:12px 18px;border-bottom:1px solid #dfe5ee}.md-hd h3{margin:0;flex:1;color:#0b3d6e;font-size:17px}
+.md-back{position:fixed;inset:0;z-index:1900;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.md-win{background:#fff;color:#333333;border-radius:12px;max-width:820px;width:100%;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,.35);font:14.5px/1.55 "Segoe UI",Roboto,Arial,sans-serif}
+.md-hd{display:flex;align-items:center;padding:12px 18px;border-bottom:1px solid #cccccc}.md-hd h3{margin:0;flex:1;color:#0c326f;font-size:17px}
 .md-hd button{margin:0!important;padding:4px 10px!important}
 .md-bd{overflow:auto;padding:14px 20px}
-.md-bd h4{color:#0b3d6e;margin:16px 0 6px;font-size:15px}.md-bd h4:first-child{margin-top:0}
-.md-bd table{border-collapse:collapse;width:100%;font-size:13.5px}.md-bd th,.md-bd td{border:1px solid #dfe5ee;padding:6px 8px;text-align:left;vertical-align:top}.md-bd th{background:#eaf1f8;color:#0b3d6e}
-.md-bd kbd{display:inline-block;background:#f3f6fa;border:1px solid #c9d6e6;border-bottom-width:2px;border-radius:5px;padding:0 6px;font:12.5px Consolas,monospace;white-space:nowrap}
+.md-bd h4{color:#0c326f;margin:16px 0 6px;font-size:15px}.md-bd h4:first-child{margin-top:0}
+.md-bd table{border-collapse:collapse;width:100%;font-size:13.5px}.md-bd th,.md-bd td{border:1px solid #cccccc;padding:6px 8px;text-align:left;vertical-align:top}.md-bd th{background:#dbe8fb;color:#0c326f}
+.md-bd kbd{display:inline-block;background:#f8f8f8;border:1px solid #cccccc;border-bottom-width:2px;border-radius:5px;padding:0 6px;font:12.5px Consolas,monospace;white-space:nowrap}
 .md-bd ol,.md-bd ul{padding-left:22px;margin:4px 0}.md-bd li{margin:3px 0}
-.md-bd .dica{background:#e9f6f0;border-left:4px solid #1e7b4f;padding:8px 12px;border-radius:0 6px 6px 0;margin:8px 0}
-.md-bd input[type=search]{width:100%;padding:8px;border:1px solid #dfe5ee;border-radius:6px;margin-bottom:10px;font:inherit}
+.md-bd .dica{background:#e3f5e1;border-left:4px solid #168821;padding:8px 12px;border-radius:0 6px 6px 0;margin:8px 0}
+.md-bd input[type=search]{width:100%;padding:8px;border:1px solid #cccccc;border-radius:6px;margin-bottom:10px;font:inherit}
 .md-bd mark{background:#ffe08a;color:inherit;padding:0 1px;border-radius:2px}
-.md-bd .hs[hidden]{display:none}.md-bd .hz{color:#5a6676;font-style:italic;margin:8px 0}
+.md-bd .hs[hidden]{display:none}.md-bd .hz{color:#636363;font-style:italic;margin:8px 0}
 .md-tools{display:flex;gap:8px;align-items:center;margin-bottom:10px}.md-tools input{flex:1;margin:0!important}.md-tools button{margin:0!important;padding:7px 12px!important;white-space:nowrap}
-.kb-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:2100;background:#0b3d6e;color:#fff;padding:8px 14px;border-radius:8px;font:13.5px "Segoe UI",Arial,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;transition:opacity .2s}
+.kb-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:2100;background:#0c326f;color:#fff;padding:8px 14px;border-radius:8px;font:13.5px "Segoe UI",Arial,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;transition:opacity .2s}
 .kb-toast.on{opacity:1}`;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -147,7 +147,7 @@
 <li>O histórico guarda versões <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), <b>arquivos carregados</b>, conteúdos <b>abertos de links</b>, rascunhos, exemplo, versões <b>marcadas</b> (★) e os momentos de gerar ou compartilhar. Antes de carregar ou restaurar algo, o conteúdo atual também é guardado.</li>
 <li>Abra pelo botão <b>Histórico</b> na barra do editor (ao lado da tela cheia) ou <kbd>Alt+Shift+V</kbd>. A janela de comparação aparece sobre a página; feche com <b>Fechar</b> ou <kbd>Esc</kbd>.</li>
 <li>Escolha a <b>Versão A</b> (antes) e a <b>Versão B</b> (depois) — de qualquer sessão, arquivo ou link, ou “Atual” — e clique em <b>Comparar</b>. Use ⇄ para inverter.</li>
-<li>Leitura do resultado: linhas <span style="background:#fdecea">removidas</span> e <span style="background:#e8f5ec">incluídas</span>, com as palavras alteradas destacadas; imagens aparecem como miniaturas e as que mudaram são listadas em “Antes” e “Depois”.</li>
+<li>Leitura do resultado: linhas <span style="background:#fde0db">removidas</span> e <span style="background:#e8f5ec">incluídas</span>, com as palavras alteradas destacadas; imagens aparecem como miniaturas e as que mudaram são listadas em “Antes” e “Depois”.</li>
 <li>Opções: Guia, Apresentação ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
 <li><b>Restaurar A/B</b> coloca a versão nos editores; <b>Baixar A e B</b> salva os .md; <b>★ Marcar versão atual</b> cria um ponto nomeado (não é apagado automaticamente). O limite é de 120 versões.</li>
 </ul>

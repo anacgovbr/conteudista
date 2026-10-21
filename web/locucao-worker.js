@@ -94,7 +94,7 @@ const comTempo = (p, ms, msg) => Promise.race([p, new Promise((_, rej) => setTim
 async function espeakNG(texto) {
   if (!espeakOk) {  // valida uma vez: a voz pt-br precisa produzir vogal nasal em "pão"
     espeakOk = true;
-    try { const t = await espeakNG('pão'); if (!/\u0303|ɐ/.test(t)) throw new Error('voz pt-br ausente'); }
+    try { const t = await espeakRodar('pão'); if (!/\u0303|ɐ/.test(t)) throw new Error('voz pt-br ausente'); }
     catch (e) { espeakOk = false; throw e; }
   }
   return espeakRodar(texto);
@@ -139,7 +139,7 @@ async function fonemizar(texto) {
       break;
     } catch (e) { erros.push(NOMES_FON[f] + ': ' + (e && e.message || e)); if (fonModo === 'auto' && f === fonUsado) { fonUsado = null; return fonemizar(texto); } }
   }
-  if (!ps) throw new Error('Não foi possível converter o texto em fonemas pt-BR (' + erros.join('; ') + '). Escolha "Fonemizador interno" no painel Motor de voz.');
+  if (!ps) throw new Error('Não foi possível converter o texto em fonemas pt-BR (' + erros.join('; ') + '). Escolha "Interno pt-BR" no painel Motor de voz.');
   ps = ps.replace(/[\u0361^]/g, '').replace(/ʲ/g, 'j').replace(/\s+/g, ' ').trim();
   if (vocab) ps = [...ps].filter(c => vocab.has(c)).join('');
   return ps;

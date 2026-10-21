@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.13 — 21/10/2026
+- Visual alinhado ao **Padrão Digital de Governo (gov.br/ds)**: fonte Rawline, cores, botões, abas, foco, cabeçalho e rodapé.
+- Atalhos de acessibilidade “Ir para o conteúdo” e alto contraste.
+
 ## 1.12 — 21/10/2026
 - Removido o botão **Embutir imagens**: imagens citadas no texto (por nome ou URL) passam a ser convertidas automaticamente.
 

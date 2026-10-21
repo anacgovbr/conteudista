@@ -24,38 +24,38 @@
   /* ---------------------------- Estilos (Opção B: CSS nativo) ---------------------------- */
   const css = `
 .tts-loading-container{width:100%;background-color:rgba(51,65,85,.15);border-radius:9999px;height:10px;overflow:hidden;margin-bottom:16px;display:none}
-.tts-progress-bar{background:linear-gradient(90deg,#6366f1 0%,#10b981 100%);height:100%;width:0%;transition:width .3s ease-out}
-.tts-status-text{font-size:12px;color:#5a6676;display:block;margin-bottom:8px}
+.tts-progress-bar{background:linear-gradient(90deg,#1351b4 0%,#168821 100%);height:100%;width:0%;transition:width .3s ease-out}
+.tts-status-text{font-size:12px;color:#636363;display:block;margin-bottom:8px}
 #abasApp{display:flex;gap:4px;max-width:1500px;margin:14px auto 0;padding:0 20px}
-#abasApp button{margin:0;border-radius:8px 8px 0 0;padding:9px 18px;font-weight:600;background:#fff;color:#0a7cc1;border:1px solid #dfe5ee;border-bottom:0;cursor:pointer}
-#abasApp button.on{background:#0b3d6e;color:#fff;border-color:#0b3d6e}
-#abasApp .ch{display:inline-block;width:8px;height:8px;border-radius:50%;background:#c9d6e6;margin-left:8px;vertical-align:1px}
-#abasApp .ch.ok{background:#10b981}#abasApp .ch.ld{background:#f59e0b;animation:locPisca 1s infinite}
+#abasApp button{margin:0;border-radius:8px 8px 0 0;padding:9px 18px;font-weight:600;background:#fff;color:#1351b4;border:1px solid #cccccc;border-bottom:0;cursor:pointer}
+#abasApp button.on{background:#0c326f;color:#fff;border-color:#0c326f}
+#abasApp .ch{display:inline-block;width:8px;height:8px;border-radius:50%;background:#cccccc;margin-left:8px;vertical-align:1px}
+#abasApp .ch.ok{background:#168821}#abasApp .ch.ld{background:#ffcd07;animation:locPisca 1s infinite}
 @keyframes locPisca{50%{opacity:.3}}
 #secLoc .loc-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px}
-#secLoc .loc-box{border:1px solid #dfe5ee;border-radius:10px;padding:14px 16px;background:#fbfcfe;margin-bottom:14px}
-#secLoc .loc-box h3{margin:0 0 8px;color:#0b3d6e;font-size:15px}
+#secLoc .loc-box{border:1px solid #cccccc;border-radius:10px;padding:14px 16px;background:#f8f8f8;margin-bottom:14px}
+#secLoc .loc-box h3{margin:0 0 8px;color:#0c326f;font-size:15px}
 #secLoc .lin{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}#secLoc .lin>div{flex:1;min-width:150px}
-#secLoc label{font-weight:600;font-size:13px;color:#0b3d6e;display:block;margin-bottom:4px}
-#secLoc label.inl{display:inline-flex;gap:6px;align-items:center;font-weight:400;color:#1b2430}
-#secLoc select,#secLoc input[type=search]{width:100%;padding:7px;border:1px solid #dfe5ee;border-radius:6px;font:inherit;background:#fff}
-#secLoc textarea{width:100%;min-height:220px;padding:10px;border:1px solid #dfe5ee;border-radius:8px;font:14px/1.55 "Segoe UI",Roboto,Arial,sans-serif;resize:vertical}
+#secLoc label{font-weight:600;font-size:13px;color:#0c326f;display:block;margin-bottom:4px}
+#secLoc label.inl{display:inline-flex;gap:6px;align-items:center;font-weight:400;color:#333333}
+#secLoc select,#secLoc input[type=search]{width:100%;padding:7px;border:1px solid #cccccc;border-radius:6px;font:inherit;background:#fff}
+#secLoc textarea{width:100%;min-height:220px;padding:10px;border:1px solid #cccccc;border-radius:8px;font:14px/1.55 "Segoe UI",Roboto,Arial,sans-serif;resize:vertical}
 #secLoc input[type=range]{width:100%}
-#secLoc .cont{font-size:12.5px;color:#5a6676;margin:4px 0 0}
+#secLoc .cont{font-size:12.5px;color:#636363;margin:4px 0 0}
 #secLoc audio{width:100%;margin:8px 0}
 #secLoc .acoes button,#secLoc .acoes a{margin:4px 6px 4px 0}
-#secLoc .aviso{font-size:13px;padding:8px 10px;border-radius:0 6px 6px 0;margin:8px 0;background:#e9f6f0;border-left:4px solid #1e7b4f}
-#secLoc .aviso.wa{background:#fff4e0;border-left-color:#9a5b00}#secLoc .aviso.er{background:#fdecea;border-left-color:#b42318}
-#secLoc .loc-hist{border:1px solid #dfe5ee;border-radius:10px;padding:12px;background:#fff;max-height:880px;display:flex;flex-direction:column}
-#secLoc .loc-hist h3{margin:0 0 8px;color:#0b3d6e;font-size:15px}
+#secLoc .aviso{font-size:13px;padding:8px 10px;border-radius:0 6px 6px 0;margin:8px 0;background:#e3f5e1;border-left:4px solid #168821}
+#secLoc .aviso.wa{background:#fff5c2;border-left-color:#8a5c00}#secLoc .aviso.er{background:#fde0db;border-left-color:#e52207}
+#secLoc .loc-hist{border:1px solid #cccccc;border-radius:10px;padding:12px;background:#fff;max-height:880px;display:flex;flex-direction:column}
+#secLoc .loc-hist h3{margin:0 0 8px;color:#0c326f;font-size:15px}
 #secLoc .hl{overflow:auto;flex:1;margin-top:8px;display:flex;flex-direction:column;gap:8px}
-#secLoc .hc{border:1px solid #dfe5ee;border-radius:8px;padding:8px 10px;background:#fbfcfe}
-#secLoc .hc.on{outline:2px solid #10b981}
+#secLoc .hc{border:1px solid #cccccc;border-radius:8px;padding:8px 10px;background:#f8f8f8}
+#secLoc .hc.on{outline:2px solid #168821}
 #secLoc .hc p{margin:0 0 4px;font-size:13px;line-height:1.4;max-height:3.9em;overflow:hidden}
-#secLoc .hc small{display:block;color:#5a6676;font-size:11.5px}
+#secLoc .hc small{display:block;color:#636363;font-size:11.5px}
 #secLoc .hc .b{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
 #secLoc .hc .b button{margin:0;padding:3px 8px;font-size:12px;font-weight:600}
-#secLoc .vazio{color:#5a6676;font-size:13px;padding:10px}
+#secLoc .vazio{color:#636363;font-size:13px;padding:10px}
 @media(max-width:1000px){#secLoc .loc-grid{grid-template-columns:1fr}}`;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 

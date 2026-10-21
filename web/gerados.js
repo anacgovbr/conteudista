@@ -31,10 +31,10 @@
 
   /* ---------------------------- Interface ---------------------------- */
   const st = document.createElement('style');
-  st.textContent = `#gerBox{margin-top:16px;border:1px solid #dfe5ee;border-radius:10px;padding:12px 14px;background:#fbfcfe}
+  st.textContent = `#gerBox{margin-top:16px;border:1px solid #cccccc;border-radius:10px;padding:12px 14px;background:#f8f8f8}
 #gerBox h3{margin:0 0 6px}#gerBox .gtop{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:13.5px}
 #gerBox select{width:auto;padding:4px 6px}#gerBox table{margin-top:8px}#gerBox td{vertical-align:top;font-size:13px}
-#gerBox td .btn,#gerBox td button{padding:3px 8px;font-size:12px;margin:2px 3px 2px 0}#gerBox .uso{color:#5a6676;font-size:12.5px;margin:6px 0 0}`;
+#gerBox td .btn,#gerBox td button{padding:3px 8px;font-size:12px;margin:2px 3px 2px 0}#gerBox .uso{color:#636363;font-size:12.5px;margin:6px 0 0}`;
   document.head.appendChild(st);
   const box = document.createElement('div'); box.id = 'gerBox';
   box.innerHTML = '<h3>Arquivos gerados guardados neste navegador</h3>' +
