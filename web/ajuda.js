@@ -129,7 +129,8 @@
 <li><b>Imagens</b>: arraste para o editor (entram onde o cursor estiver), cole com <kbd>Ctrl+V</kbd> (print de tela ou imagem copiada) ou use o botão de imagem. Ficam em base64 dentro do texto e aparecem no editor como <code>(img:N)</code>.</li>
 <li><b>Imagens do texto</b> (painel abaixo do editor): miniaturas na ordem em que aparecem no texto, com dimensões, peso, descrição editável e botões <b>Inserir</b>, <b>Localizar</b> e <b>Remover</b>.</li>
 <li><b>Ordenar imagens</b>: arraste os cartões ou use <b>◀ ▶</b>; as imagens trocam de posição no texto (cada uma leva sua legenda). O menu <b>Ordenar…</b> inverte a ordem ou ordena por legenda, peso ou largura.</li>
-<li><b>Redimensionar</b>: ajuste largura/altura (proporção mantida), use 25/50/75% ou um limite (máx. 1600/1280/800/400 px), escolha o formato (JPEG para fotos, PNG para prints e transparência) e a qualidade. O novo peso aparece antes de aplicar. <b>Reduzir todas…</b> faz isso de uma vez. Tudo pode ser desfeito com <kbd>Ctrl+Z</kbd>.</li>
+<li><b>Editar imagem</b> (botão <b>Editar</b> no cartão): <b>Cortar</b> (arraste na imagem, ajuste pelas alças, proporções 1:1, 4:3, 16:9 etc. ou valores em px), <b>Girar</b> (90°, 180°, espelhar, ajuste fino de −45° a +45°) e <b>Tamanho e formato</b> (largura, 25/50/75%, limites, JPEG/PNG/WebP, qualidade). A prévia mostra o resultado e o novo peso antes de aplicar.</li>
+<li><b>Editar várias</b>: marque a caixa no canto dos cartões (ou <b>Selecionar todas</b>) e clique em <b>Editar selecionadas</b> para girar, espelhar, cortar centralizado numa proporção, limitar a largura e converter o formato de uma vez. <b>Reduzir todas…</b> só diminui as grandes. Tudo pode ser desfeito com <kbd>Ctrl+Z</kbd>.</li>
 <li>Se o texto já cita uma imagem pelo nome (ex.: <code>![Figura](fluxo.png)</code>), arraste o arquivo <code>fluxo.png</code>: ele é associado à referência e convertido para base64.</li>
 <li>Na apresentação, cada slide é separado por uma linha <code>---</code>. Use os botões <b>Slide</b>, <b>Capa</b>, <b>Destaque</b> e <b>Notas</b>.</li>
 </ul>
@@ -138,8 +139,17 @@
 <tr><td><b>Salvamento automático</b> (ligado por padrão)</td><td>Neste navegador, neste computador</td><td>Abra a página de novo: o último trabalho volta sozinho</td></tr>
 <tr><td><b>Salvar rascunho</b> (com nome)</td><td>Neste navegador</td><td>Lista de rascunhos → <b>Abrir</b></td></tr>
 <tr><td><b>Salvar em pasta…</b> / <b>Baixar .md</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas</td></tr>
-<tr><td><b>Link criptografado</b></td><td>No próprio link ou no PrivateBin (cifrado)</td><td>Painel <b>Abrir um link</b> → cole o link (e a senha)</td></tr></table>
+<tr><td><b>Link criptografado</b></td><td>No próprio link ou no PrivateBin (cifrado)</td><td>Painel <b>Abrir um link</b> → cole o link (e a senha)</td></tr>
+<tr><td><b>Histórico de versões</b></td><td>Neste navegador</td><td>Seção <b>Histórico e comparação</b> → escolha a versão → <b>Restaurar</b></td></tr></table>
 <div class="dica">Limpar os dados do navegador apaga os rascunhos locais. Para guardar por mais tempo, use <b>Salvar em pasta</b> ou <b>Baixar .md</b>.</div>
+<h4>Histórico e comparação (antes e depois)</h4>
+<ul>
+<li>O histórico guarda versões <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), <b>arquivos carregados</b>, conteúdos <b>abertos de links</b>, rascunhos, exemplo, versões <b>marcadas</b> (★) e os momentos de gerar ou compartilhar. Antes de carregar ou restaurar algo, o conteúdo atual também é guardado.</li>
+<li>Escolha a <b>Versão A</b> (antes) e a <b>Versão B</b> (depois) — de qualquer sessão, arquivo ou link, ou “Atual” — e clique em <b>Comparar</b>. Use ⇄ para inverter.</li>
+<li>Leitura do resultado: linhas <span style="background:#fdecea">removidas</span> e <span style="background:#e8f5ec">incluídas</span>, com as palavras alteradas destacadas; imagens aparecem como miniaturas e as que mudaram são listadas em “Antes” e “Depois”.</li>
+<li>Opções: Guia, Apresentação ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
+<li><b>Restaurar A/B</b> coloca a versão nos editores; <b>Baixar A e B</b> salva os .md; <b>★ Marcar versão atual</b> cria um ponto nomeado (não é apagado automaticamente). O limite é de 120 versões.</li>
+</ul>
 <h4>Compartilhar</h4>
 <ul>
 <li><b>Link autocontido</b>: o conteúdo vai cifrado dentro do link; não usa servidor. Links muito longos podem ser cortados por e-mail/Teams.</li>
@@ -211,6 +221,8 @@
     { g: 'Navegação', k: '1', d: 'Aba Guia (foca o editor)', f: () => focarEditor('g') },
     { g: 'Navegação', k: '2', d: 'Aba Apresentação (foca o editor)', f: () => focarEditor('s') },
     { g: 'Navegação', k: 'M', d: 'Alternar modo do editor (Editar → Dividido → Prévia)', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); if (!vis) return; const ordem = ['e', 's', 'p'], i = (ordem.indexOf(vis.dataset.m) + 1) % 3; const b = vis.querySelector('.mde-tb [data-m="' + ordem[i] + '"]'); if (b) b.click(); toast(['Somente editor', 'Editor + prévia', 'Somente prévia'][i]); } },
+    { g: 'Navegação', k: 'V', d: 'Histórico e comparação (antes e depois)', f: () => window.Hist && Hist.abrir() },
+    { g: 'Salvar e recuperar', k: 'B', d: 'Marcar a versão atual no histórico', f: () => clicar('hMarca') },
     { g: 'Navegação', k: 'F', d: 'Tela cheia do editor', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); const b = vis && [...vis.querySelectorAll('.mde-tb button')].pop(); if (b) b.click(); } },
     { g: 'Ajuda', k: 'T', d: 'Tutorial', f: iniciar },
     { g: 'Ajuda', k: 'R', d: 'Reiniciar o tutorial (do primeiro passo)', f: reiniciar },

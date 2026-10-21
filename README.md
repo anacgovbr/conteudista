@@ -19,6 +19,7 @@ Página única que converte os arquivos Markdown de um curso em:
 | Rascunhos locais | Salvamento automático **ligado por padrão** (recupera o último trabalho ao reabrir) e rascunhos com nome | IndexedDB do navegador, só nesta máquina |
 | Salvar em pasta | Grava os `.md` e os arquivos gerados numa pasta escolhida (Edge/Chrome) | Disco do usuário |
 | Link autocontido | Conteúdo comprimido e cifrado (AES-256-GCM) no próprio link; chave no `#` ou senha (PBKDF2 310.000 iterações) | Somente no link |
+| Histórico e comparação | Versões guardadas no navegador (edições da sessão a cada 3 min, arquivos carregados, links abertos, rascunhos, exemplo, versões marcadas ★, geração/compartilhamento; “antes de carregar/restaurar” automático; até 120). Diff “antes e depois” entre quaisquer duas versões ou o conteúdo atual: lado a lado ou unificado, só alterações ou texto completo, palavras destacadas, imagens como miniaturas e lista de imagens removidas/incluídas; restaurar, baixar A/B, excluir | IndexedDB do navegador, só nesta máquina |
 | Tamanho antes do envio | Estimativa do conteúdo e do envio cifrado, com alerta perto do limite de 10 MB e confirmação antes de enviar | — |
 | PrivateBin | Formato PrivateBin v2 (AES-256-GCM, PBKDF2-SHA256 100.000, chave base58 no `#`); **senha opcional** (chave ‖ senha, compatível com o site do PrivateBin); **imagens como anexo ZIP** (`.md` + `imagens/`), restauradas para base64 ao abrir aqui; expiração e leitura única | Servidor PrivateBin (somente conteúdo cifrado) |
 
@@ -28,6 +29,7 @@ Página única que converte os arquivos Markdown de um curso em:
 web/index.html           ← a página
 web/editor.js            ← editor Markdown leve (sem dependências)
 web/ajuda.js             ← tutorial guiado, ajuda e atalhos de teclado
+web/historico.js         ← histórico de versões e comparação (diff)
 web/exemplo/             ← curso de exemplo (fictício)
 tools/gerador.py         ← motor de conversão (o mesmo do agente "Gerador de Cursos ANAC")
 tools/requirements.txt
@@ -49,7 +51,7 @@ python tools/gerador.py guia.md apresentacao.md --prefixo Meu_Curso --rodape "SI
 
 ## Atalhos da aplicação
 
-`Alt+Shift` + tecla (no Mac, `Option+Shift`): **G** gerar · **E** exemplo · **D** baixar .md · **P** salvar em pasta · **S** salvar rascunho · **A** ligar/desligar autossalvamento · **L** criar link · **O** abrir link · **1/2** abas · **M** modo do editor · **F** tela cheia · **T** tutorial · **R** reiniciar tutorial · **H** ajuda · **K** lista de atalhos · **F1** ajuda.
+`Alt+Shift` + tecla (no Mac, `Option+Shift`): **G** gerar · **E** exemplo · **D** baixar .md · **P** salvar em pasta · **S** salvar rascunho · **A** ligar/desligar autossalvamento · **L** criar link · **O** abrir link · **B** marcar versão · **V** histórico e comparação · **1/2** abas · **M** modo do editor · **F** tela cheia · **T** tutorial · **R** reiniciar tutorial · **H** ajuda · **K** lista de atalhos · **F1** ajuda.
 
 ## Atalhos do editor (com o cursor no editor)
 

@@ -191,6 +191,21 @@
 .mde-dw .lin{display:flex;gap:8px;align-items:center}.mde-dw .lin>*{flex:1}
 .mde-dw .chips{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.mde-dw .chips button{margin:0!important;padding:3px 8px!important;font-size:12px!important;background:#eaf1f8!important;color:#0b3d6e!important;border:1px solid #c9d6e6!important;border-radius:12px!important;cursor:pointer}
 .mde-dw .res{margin-top:10px;padding:8px 10px;background:#f3f6fa;border-radius:6px;font-size:13px}.mde-dw .res b{color:#0b3d6e}
+.mde-dw.larga{width:min(1020px,100%)}.mde-dw .bd.ed{grid-template-columns:minmax(260px,460px) 1fr}
+.mde-dw .cz{position:relative;display:inline-block;max-width:100%;user-select:none;touch-action:none;background:repeating-conic-gradient(#f3f6fa 0 25%,#fff 0 50%) 50%/14px 14px;border:1px solid #dfe5ee;cursor:crosshair;line-height:0}
+.mde-dw .cz canvas{display:block;max-width:100%}
+.mde-dw .crop{position:absolute;border:2px solid #fff;outline:1px solid #0a7cc1;box-shadow:0 0 0 9999px rgba(11,25,45,.45);cursor:move}
+.mde-dw .crop i{position:absolute;width:12px;height:12px;background:#0a7cc1;border:2px solid #fff;border-radius:3px}
+.mde-dw .crop i[data-h=nw]{left:-7px;top:-7px;cursor:nwse-resize}.mde-dw .crop i[data-h=ne]{right:-7px;top:-7px;cursor:nesw-resize}.mde-dw .crop i[data-h=sw]{left:-7px;bottom:-7px;cursor:nesw-resize}.mde-dw .crop i[data-h=se]{right:-7px;bottom:-7px;cursor:nwse-resize}
+.mde-dw .crop i[data-h=n]{left:calc(50% - 6px);top:-7px;cursor:ns-resize}.mde-dw .crop i[data-h=s]{left:calc(50% - 6px);bottom:-7px;cursor:ns-resize}.mde-dw .crop i[data-h=w]{top:calc(50% - 6px);left:-7px;cursor:ew-resize}.mde-dw .crop i[data-h=e]{top:calc(50% - 6px);right:-7px;cursor:ew-resize}
+.mde-dw .rp{margin-top:8px;font-size:12px;color:#5a6676}.mde-dw .rp img{display:block;max-width:100%;max-height:140px;margin-top:4px;border:1px solid #dfe5ee;background:repeating-conic-gradient(#f3f6fa 0 25%,#fff 0 50%) 50%/12px 12px}
+.mde-dw .tabs2{display:flex;gap:4px;margin-bottom:6px}.mde-dw .tabs2 button{margin:0!important;padding:5px 10px!important;font-size:13px!important;background:#fff!important;color:#0a7cc1!important;border:1px solid #c9d6e6!important;border-radius:6px!important;cursor:pointer}
+.mde-dw .tabs2 button.on,.mde-dw .chips button.on{background:#0a7cc1!important;color:#fff!important;border-color:#0a7cc1!important}
+.mde-dw .dica{font-size:12.5px;color:#5a6676;margin:6px 0}
+.mde-dw .mini-th{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.mde-dw .mini-th img{height:56px;max-width:100px;object-fit:contain;border:1px solid #dfe5ee;border-radius:4px;background:#f3f6fa}
+.mde-gi .sel{position:absolute;top:2px;right:4px;background:rgba(255,255,255,.9);border-radius:4px;padding:0 2px;cursor:pointer}.mde-gi .sel input{width:auto;margin:3px 2px;transform:scale(1.15);accent-color:#0a7cc1;cursor:pointer}
+.mde-gi.on{outline:2px solid #0a7cc1;outline-offset:-1px}
+.mde-gb:disabled{opacity:.45;cursor:default}.mde-gb.sec2{background:#fff!important;color:#0a7cc1!important;border:1px solid #0a7cc1!important}
 .mde-dw .ft{display:flex;justify-content:flex-end;gap:8px;padding:10px 18px;border-top:1px solid #dfe5ee}
 .mde-dw .ft button{margin:0!important}
 @media(max-width:700px){.mde-dw .bd{grid-template-columns:1fr}}
@@ -224,7 +239,7 @@
     const st = document.createElement('div'); st.className = 'mde-st';
     body.append(ta, pv);
     const gal = document.createElement('details'); gal.className = 'mde-gal';
-    gal.innerHTML = '<summary>Imagens do texto <span class="gc">(0)</span><span class="gtools"><select class="gord" title="Reordenar as imagens no texto"><option value="">Ordenar…</option><option value="inv">Inverter a ordem</option><option value="alt">Por legenda (A → Z)</option><option value="tam">Por tamanho do arquivo (menor → maior)</option><option value="larg">Por largura (menor → maior)</option></select><button type="button" class="mde-gb gb2" title="Reduzir as imagens grandes de uma vez">Reduzir todas…</button><button type="button" class="mde-gb gb">+ Adicionar imagens</button></span></summary><div class="mde-gh">Arraste os cartões (ou use ◀ ▶) para mudar a ordem das imagens no texto. “Redimensionar” altera a imagem em si (pixels e peso do arquivo), o que também muda o tamanho no DOCX e no PPTX.</div><div class="mde-gl"></div>';
+    gal.innerHTML = '<summary>Imagens do texto <span class="gc">(0)</span><span class="gtools"><select class="gord" title="Reordenar as imagens no texto"><option value="">Ordenar…</option><option value="inv">Inverter a ordem</option><option value="alt">Por legenda (A → Z)</option><option value="tam">Por tamanho do arquivo (menor → maior)</option><option value="larg">Por largura (menor → maior)</option></select><button type="button" class="mde-gb sec2 gall" title="Selecionar/limpar todas">Selecionar todas</button><button type="button" class="mde-gb gbs" disabled title="Cortar, girar, redimensionar ou converter várias imagens de uma vez">Editar selecionadas (0)</button><button type="button" class="mde-gb gb2" title="Reduzir as imagens grandes de uma vez">Reduzir todas…</button><button type="button" class="mde-gb gb">+ Adicionar imagens</button></span></summary><div class="mde-gh">Arraste os cartões (ou use ◀ ▶) para mudar a ordem das imagens no texto. “Editar” corta, gira, espelha, redimensiona e converte a imagem (muda pixels e peso, inclusive no DOCX e PPTX). Marque várias caixas para editar em lote.</div><div class="mde-gl"></div>';
     box.append(tb, body, st, gal);
     real.hidden = true; real.after(box);
     const fileIn = document.createElement('input'); fileIn.type = 'file'; fileIn.accept = 'image/*'; fileIn.multiple = true; fileIn.hidden = true; box.append(fileIn);
@@ -333,50 +348,192 @@
       const tr = new Map(); mapa.forEach((d, n) => tr.set(n, addImg(d)));
       return substituirTexto(ta.value.replace(/(!\[[^\]]*\]\(img:)(\d+)\)/g, (m, a, n) => tr.has(+n) ? a + tr.get(+n) + ')' : m));
     }
-    function dialogo(titulo, corpo, aoMontar) {
+    function dialogo(titulo, corpo, aoMontar, classe) {
       const d = document.createElement('div'); d.className = 'mde-dlg';
-      d.innerHTML = '<div class="mde-dw" role="dialog" aria-modal="true"><h3>' + titulo + '</h3>' + corpo + '<div class="ft"><button type="button" class="sec" data-x>Cancelar</button><button type="button" data-ok>Aplicar</button></div></div>';
+      d.innerHTML = '<div class="mde-dw' + (classe ? ' ' + classe : '') + '" role="dialog" aria-modal="true"><h3>' + titulo + '</h3>' + corpo + '<div class="ft"><button type="button" class="sec" data-x>Cancelar</button><button type="button" data-ok>Aplicar</button></div></div>';
       document.body.appendChild(d);
-      const fechar = () => { d.remove(); document.removeEventListener('keydown', esc1, true); ta.focus(); };
+      const fechar = () => { if (d._aoFechar) d._aoFechar(); d.remove(); document.removeEventListener('keydown', esc1, true); ta.focus(); };
       const esc1 = e => { if (e.key === 'Escape') { e.stopPropagation(); e.preventDefault(); fechar(); } };
       document.addEventListener('keydown', esc1, true);
       d.addEventListener('click', e => { if (e.target === d) fechar(); });
       d.querySelector('[data-x]').onclick = fechar;
       aoMontar(d, fechar);
     }
-    async function dlgRedimensionar(n) {
+    /* ---------- edição de imagem: corte, rotação, espelhamento, tamanho e formato ---------- */
+    // op = { r: 0|90|180|270, a: graus finos, fh, fv, crop:{x,y,w,h} (no espaço já girado), w: largura final, mime, q, fundo }
+    function girar(img, op) {
+      const W = img.naturalWidth || img.width, H = img.naturalHeight || img.height, ang = ((op.r || 0) + (op.a || 0)) * Math.PI / 180;
+      const c = Math.abs(Math.cos(ang)), s = Math.abs(Math.sin(ang)), cw = Math.round(W * c + H * s), ch = Math.round(W * s + H * c);
+      const cv = document.createElement('canvas'); cv.width = Math.max(1, cw); cv.height = Math.max(1, ch); const x = cv.getContext('2d');
+      if (op.fundo) { x.fillStyle = op.fundo; x.fillRect(0, 0, cw, ch); }
+      x.imageSmoothingQuality = 'high'; x.translate(cw / 2, ch / 2); x.rotate(ang); x.scale(op.fh ? -1 : 1, op.fv ? -1 : 1); x.drawImage(img, -W / 2, -H / 2);
+      return cv;
+    }
+    function cortar(cv, cr) {
+      if (!cr) return cv;
+      const x0 = Math.max(0, Math.round(cr.x)), y0 = Math.max(0, Math.round(cr.y)), w = Math.max(1, Math.min(cv.width - x0, Math.round(cr.w))), h = Math.max(1, Math.min(cv.height - y0, Math.round(cr.h)));
+      if (x0 === 0 && y0 === 0 && w === cv.width && h === cv.height) return cv;
+      const o = document.createElement('canvas'); o.width = w; o.height = h; o.getContext('2d').drawImage(cv, x0, y0, w, h, 0, 0, w, h); return o;
+    }
+    function escalar(cv, w, h) {
+      if (w >= cv.width && h >= cv.height) return cv;
+      let c = cv;
+      while (c.width / 2 >= w && c.height / 2 >= h) { const d = document.createElement('canvas'); d.width = Math.round(c.width / 2); d.height = Math.round(c.height / 2); const x = d.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(c, 0, 0, d.width, d.height); c = d; }
+      const f = document.createElement('canvas'); f.width = w; f.height = h; const x = f.getContext('2d'); x.imageSmoothingQuality = 'high'; x.drawImage(c, 0, 0, w, h); return f;
+    }
+    function exportar(cv, mime, q) {
+      if (mime === 'image/jpeg') { const b = document.createElement('canvas'); b.width = cv.width; b.height = cv.height; const x = b.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, b.width, b.height); x.drawImage(cv, 0, 0); cv = b; }
+      let out = cv.toDataURL(mime, q); if (!out.startsWith('data:' + mime)) out = cv.toDataURL('image/png'); return out;
+    }
+    async function processar(dados, op) {
+      const img = await carregar(dados); let cv = girar(img, op); cv = cortar(cv, op.crop);
+      let w = Math.round(op.w || cv.width); if (op.maxW) w = Math.min(w, op.maxW); w = Math.max(8, Math.min(cv.width, w));
+      const h = Math.max(1, Math.round(w * cv.height / cv.width)); cv = escalar(cv, w, h);
+      return exportar(cv, op.mime, op.q);
+    }
+    function cortePorProporcao(W, H, prop) {  // retângulo centralizado na proporção pedida
+      if (!prop) return null; const r = prop[0] / prop[1]; let w = W, h = Math.round(W / r); if (h > H) { h = H; w = Math.round(H * r); }
+      return { x: Math.round((W - w) / 2), y: Math.round((H - h) / 2), w, h };
+    }
+    const PROPORCOES = [['livre', 'Livre', null], ['orig', 'Original', 'orig'], ['1:1', '1:1', [1, 1]], ['4:3', '4:3', [4, 3]], ['3:2', '3:2', [3, 2]], ['16:9', '16:9', [16, 9]], ['3:4', '3:4 (retrato)', [3, 4]], ['9:16', '9:16 (retrato)', [9, 16]]];
+    const FORMATOS = om => '<option value="manter">Manter (' + (/jpe?g|webp/.test(om) ? om.replace('image/', '').toUpperCase() : 'PNG') + ')</option><option value="image/jpeg">JPEG (fotos; menor)</option><option value="image/png">PNG (prints, desenhos, transparência)</option><option value="image/webp">WebP (menor; Office antigo pode não exibir)</option>';
+
+    async function dlgEditar(n) {
       const dados = imgs[n - 1]; if (!dados) return;
       const om = mimeDe(dados);
-      if (/svg/.test(om)) { alert('Imagens SVG são vetoriais e não precisam de redimensionamento.'); return; }
-      const img = await carregar(dados), W = img.naturalWidth, H = img.naturalHeight, orig = tamanhoB64(dados);
-      dialogo('Redimensionar imagem (img:' + n + ')',
-        '<div class="bd"><div><div class="pv"><img alt="" src="' + dados + '"></div><div class="res">Original: <b>' + W + '×' + H + '</b> · ' + fmtTam(orig) + ' · ' + om.replace('image/', '').toUpperCase() + '</div></div>' +
-        '<div><label>Largura × altura (px) — proporção mantida</label><div class="lin"><input type="number" data-w min="16" max="' + W + '" value="' + W + '"><span style="flex:0">×</span><input type="number" data-h min="16" max="' + H + '" value="' + H + '"></div>' +
-        '<div class="chips"><button type="button" data-p=".25">25%</button><button type="button" data-p=".5">50%</button><button type="button" data-p=".75">75%</button><button type="button" data-p="1">100%</button><button type="button" data-m="1600">máx. 1600</button><button type="button" data-m="1280">máx. 1280</button><button type="button" data-m="800">máx. 800</button><button type="button" data-m="400">máx. 400</button></div>' +
-        '<label>Formato</label><select data-f><option value="manter">Manter (' + (/jpe?g|webp/.test(om) ? om.replace('image/', '').toUpperCase() : 'PNG') + ')</option><option value="image/jpeg">JPEG (fotos; menor)</option><option value="image/png">PNG (desenhos, prints, transparência)</option><option value="image/webp">WebP (menor; nem todo Office antigo exibe)</option></select>' +
+      if (/svg/.test(om)) { alert('Imagens SVG são vetoriais: não é possível cortar ou girar aqui.'); return; }
+      const img = await carregar(dados), orig = tamanhoB64(dados);
+      const op = { r: 0, a: 0, fh: false, fv: false, crop: null, w: 0, mime: saidaMime(om, 'manter'), q: .85, fundo: '' };
+      let base = null, BW = 0, BH = 0, esc = 1, prop = null, resultado = null;
+      dialogo('Editar imagem (img:' + n + ')',
+        '<div class="bd ed"><div><div class="cz"><canvas></canvas><div class="crop" hidden><i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i><i data-h="n"></i><i data-h="s"></i><i data-h="w"></i><i data-h="e"></i></div></div>' +
+        '<div class="res">Original: <b>' + img.naturalWidth + '×' + img.naturalHeight + '</b> · ' + fmtTam(orig) + ' · ' + om.replace('image/', '').toUpperCase() + '</div>' +
+        '<div class="res" data-r>Resultado: calculando…</div><div class="rp"><span>Prévia do resultado</span><img alt="" data-pv></div></div>' +
+        '<div><div class="tabs2"><button type="button" class="on" data-t="c">Cortar</button><button type="button" data-t="g">Girar</button><button type="button" data-t="t">Tamanho e formato</button></div>' +
+        '<div data-p="c"><label>Proporção</label><div class="chips">' + PROPORCOES.map(p => '<button type="button" data-pr="' + p[0] + '">' + p[1] + '</button>').join('') + '</div>' +
+        '<label>Área (px): x, y, largura, altura</label><div class="lin"><input type="number" data-cx min="0"><input type="number" data-cy min="0"><input type="number" data-cw min="1"><input type="number" data-ch min="1"></div>' +
+        '<p class="dica">Arraste dentro da imagem para criar a área; mova pelo centro e ajuste pelas alças.</p><button type="button" class="mini sec" data-semcorte>Remover corte</button></div>' +
+        '<div data-p="g" hidden><label>Girar e espelhar</label><div class="chips"><button type="button" data-rot="-90">⟲ 90° esquerda</button><button type="button" data-rot="90">⟳ 90° direita</button><button type="button" data-rot="180">180°</button><button type="button" data-fl="h">⇋ Espelhar horizontal</button><button type="button" data-fl="v">⇵ Espelhar vertical</button></div>' +
+        '<label>Ajuste fino (endireitar): <span data-av>0</span>°</label><input type="range" data-ang min="-45" max="45" step="0.5" value="0" style="width:100%">' +
+        '<label>Fundo das áreas novas (ajuste fino)</label><select data-fundo><option value="">Transparente (PNG/WebP) ou branco (JPEG)</option><option value="#ffffff">Branco</option><option value="#000000">Preto</option></select>' +
+        '<p class="dica">Ao girar, o corte é reiniciado.</p></div>' +
+        '<div data-p="t" hidden><label>Largura final (px) — proporção mantida</label><div class="lin"><input type="number" data-w min="8"><span style="flex:0">×</span><input type="number" data-hh min="8"></div>' +
+        '<div class="chips"><button type="button" data-pc=".25">25%</button><button type="button" data-pc=".5">50%</button><button type="button" data-pc=".75">75%</button><button type="button" data-pc="1">100%</button><button type="button" data-mx="1600">máx. 1600</button><button type="button" data-mx="1280">máx. 1280</button><button type="button" data-mx="800">máx. 800</button><button type="button" data-mx="400">máx. 400</button></div>' +
+        '<label>Formato</label><select data-f>' + FORMATOS(om) + '</select>' +
         '<label>Qualidade (JPEG/WebP): <span data-qv>85</span>%</label><input type="range" data-q min="40" max="100" value="85" style="width:100%">' +
-        (/gif/.test(om) ? '<p style="color:#9a5b00;font-size:12.5px;margin:6px 0 0">GIF animado perde a animação ao redimensionar.</p>' : '') +
-        '<div class="res" data-r>Novo tamanho: calculando…</div></div></div>',
+        (/gif/.test(om) ? '<p class="dica" style="color:#9a5b00">GIF animado perde a animação.</p>' : '') + '</div>' +
+        '<div class="chips" style="margin-top:12px"><button type="button" data-reset>↺ Restaurar original</button></div></div></div>',
         (d, fechar) => {
-          const iw = d.querySelector('[data-w]'), ih = d.querySelector('[data-h]'), fs = d.querySelector('[data-f]'), qs = d.querySelector('[data-q]'), rs = d.querySelector('[data-r]'), pv = d.querySelector('.pv img');
-          let t, resultado = null;
-          const calc = () => { clearTimeout(t); t = setTimeout(async () => {
-            const w = Math.max(16, Math.min(W, +iw.value || W)), h = Math.max(16, Math.round(w * H / W)), m = saidaMime(om, fs.value);
-            resultado = await reamostrar(dados, w, h, m, qs.value / 100); pv.src = resultado;
-            const nt = tamanhoB64(resultado), dif = Math.round((1 - nt / orig) * 100);
-            rs.innerHTML = 'Novo: <b>' + w + '×' + h + '</b> · <b>' + fmtTam(nt) + '</b> · ' + mimeDe(resultado).replace('image/', '').toUpperCase() + ' (' + (dif >= 0 ? dif + '% menor' : (-dif) + '% maior') + ')';
-          }, 200); };
-          iw.oninput = () => { ih.value = Math.round((+iw.value || W) * H / W); calc(); };
-          ih.oninput = () => { iw.value = Math.round((+ih.value || H) * W / H); calc(); };
-          d.querySelectorAll('[data-p]').forEach(b => b.onclick = () => { iw.value = Math.round(W * b.dataset.p); iw.oninput(); });
-          d.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { iw.value = Math.min(W, +b.dataset.m); iw.oninput(); });
-          fs.onchange = calc; qs.oninput = () => { d.querySelector('[data-qv]').textContent = qs.value; calc(); };
-          d.querySelector('[data-ok]').onclick = async () => {
-            if (!resultado) return;
-            if (trocarImagens(new Map([[n, resultado]])) && opt.onInfo) opt.onInfo('Imagem redimensionada: ' + fmtTam(orig) + ' → ' + fmtTam(tamanhoB64(resultado)) + ' (Ctrl+Z desfaz).');
+          const cz = d.querySelector('.cz'), cv = cz.querySelector('canvas'), cr = cz.querySelector('.crop'), q = s => d.querySelector(s);
+          const [ix, iy, iw, ih] = ['[data-cx]', '[data-cy]', '[data-cw]', '[data-ch]'].map(q), fw = q('[data-w]'), fh = q('[data-hh]');
+          d.querySelectorAll('.tabs2 button').forEach(b => b.onclick = () => { d.querySelectorAll('.tabs2 button').forEach(x => x.classList.toggle('on', x === b)); d.querySelectorAll('[data-p]').forEach(p => p.hidden = p.dataset.p !== b.dataset.t); });
+          function desenharBase() {
+            base = girar(img, Object.assign({}, op, { fundo: op.fundo || (op.mime === 'image/jpeg' ? '#fff' : '') }));
+            BW = base.width; BH = base.height;
+            const maxW = Math.min(440, cz.clientWidth || 440), maxH = 320; esc = Math.min(1, maxW / BW, maxH / BH);
+            cv.width = Math.round(BW * esc); cv.height = Math.round(BH * esc); cv.getContext('2d').drawImage(base, 0, 0, cv.width, cv.height);
+          }
+          function mostrarCorte() {
+            const c = op.crop; cr.hidden = !c;
+            if (c) Object.assign(cr.style, { left: c.x * esc + 'px', top: c.y * esc + 'px', width: c.w * esc + 'px', height: c.h * esc + 'px' });
+            const v = c || { x: 0, y: 0, w: BW, h: BH }; ix.value = Math.round(v.x); iy.value = Math.round(v.y); iw.value = Math.round(v.w); ih.value = Math.round(v.h);
+            const lw = c ? c.w : BW, lh = c ? c.h : BH; fw.max = Math.round(lw); if (!op.w || op.w > lw) op.w = Math.round(lw); fw.value = op.w; fh.value = Math.round(op.w * lh / lw);
+          }
+          function limitar(c) {
+            c.w = Math.max(4, Math.min(BW, c.w)); c.h = Math.max(4, Math.min(BH, c.h));
+            if (prop) { const r = prop[0] / prop[1]; if (c.w / c.h > r) c.w = c.h * r; else c.h = c.w / r; }
+            c.x = Math.max(0, Math.min(BW - c.w, c.x)); c.y = Math.max(0, Math.min(BH - c.h, c.y)); return c;
+          }
+          let tR;
+          function atualizar() { mostrarCorte(); clearTimeout(tR); tR = setTimeout(async () => {
+            op.q = q('[data-q]').value / 100; op.mime = saidaMime(om, q('[data-f]').value);
+            resultado = await processar(dados, op); q('[data-pv]').src = resultado;
+            const im2 = await carregar(resultado), nt = tamanhoB64(resultado), dif = Math.round((1 - nt / orig) * 100);
+            q('[data-r]').innerHTML = 'Resultado: <b>' + im2.naturalWidth + '×' + im2.naturalHeight + '</b> · <b>' + fmtTam(nt) + '</b> · ' + mimeDe(resultado).replace('image/', '').toUpperCase() + ' (' + (dif >= 0 ? dif + '% menor' : (-dif) + '% maior') + ')';
+          }, 220); }
+          function reGirar() { op.crop = null; op.w = 0; desenharBase(); if (prop) op.crop = limitar(cortePorProporcao(BW, BH, prop)); atualizar(); }
+          // interação de corte (mouse/toque)
+          let arr = null;
+          const pos = e => { const r = cv.getBoundingClientRect(), p = e.touches ? e.touches[0] : e; return { x: Math.max(0, Math.min(BW, (p.clientX - r.left) / esc)), y: Math.max(0, Math.min(BH, (p.clientY - r.top) / esc)) }; };
+          const ini = e => { e.preventDefault(); const p = pos(e), h = e.target.dataset.h; arr = { p, h: h || (e.target === cr ? 'mv' : 'novo'), c0: Object.assign({}, op.crop || { x: p.x, y: p.y, w: 0, h: 0 }) }; if (arr.h === 'novo') arr.c0 = { x: p.x, y: p.y, w: 0, h: 0 }; };
+          const mov = e => {
+            if (!arr) return; e.preventDefault(); const p = pos(e), dx = p.x - arr.p.x, dy = p.y - arr.p.y, c = Object.assign({}, arr.c0), h = arr.h;
+            if (h === 'mv') { c.x += dx; c.y += dy; }
+            else if (h === 'novo') { c.x = Math.min(arr.p.x, p.x); c.y = Math.min(arr.p.y, p.y); c.w = Math.abs(dx); c.h = Math.abs(dy); if (prop) { const r = prop[0] / prop[1]; if (c.w / Math.max(c.h, 1) > r) c.h = c.w / r; else c.w = c.h * r; if (p.x < arr.p.x) c.x = arr.p.x - c.w; if (p.y < arr.p.y) c.y = arr.p.y - c.h; } }
+            else {
+              if (h.includes('w')) { c.x += dx; c.w -= dx; } if (h.includes('e')) c.w += dx; if (h.includes('n')) { c.y += dy; c.h -= dy; } if (h.includes('s')) c.h += dy;
+              if (prop) { const r = prop[0] / prop[1]; if (h === 'n' || h === 's') c.w = c.h * r; else c.h = c.w / r; if (h.includes('n')) c.y = arr.c0.y + arr.c0.h - c.h; if (h.includes('w')) c.x = arr.c0.x + arr.c0.w - c.w; }
+            }
+            if (c.w >= 4 && c.h >= 4) { op.crop = limitar(c); op.w = 0; mostrarCorte(); }
+          };
+          const fim = () => { if (arr) { arr = null; atualizar(); } };
+          cz.addEventListener('mousedown', ini); cz.addEventListener('touchstart', ini, { passive: false });
+          addEventListener('mousemove', mov); addEventListener('touchmove', mov, { passive: false }); addEventListener('mouseup', fim); addEventListener('touchend', fim);
+          d._aoFechar = () => { removeEventListener('mousemove', mov); removeEventListener('touchmove', mov); removeEventListener('mouseup', fim); removeEventListener('touchend', fim); };
+          [ix, iy, iw, ih].forEach(i => i.onchange = () => { op.crop = limitar({ x: +ix.value || 0, y: +iy.value || 0, w: +iw.value || BW, h: +ih.value || BH }); op.w = 0; atualizar(); });
+          d.querySelectorAll('[data-pr]').forEach(b => b.onclick = () => {
+            d.querySelectorAll('[data-pr]').forEach(x => x.classList.toggle('on', x === b));
+            const pr = PROPORCOES.find(x => x[0] === b.dataset.pr)[2]; prop = pr === 'orig' ? [BW, BH] : pr;
+            op.crop = prop ? limitar(cortePorProporcao(BW, BH, prop)) : op.crop; op.w = 0; atualizar();
+          });
+          q('[data-semcorte]').onclick = () => { op.crop = null; prop = null; op.w = 0; d.querySelectorAll('[data-pr]').forEach(x => x.classList.remove('on')); atualizar(); };
+          d.querySelectorAll('[data-rot]').forEach(b => b.onclick = () => { op.r = (op.r + +b.dataset.rot + 360) % 360; reGirar(); });
+          d.querySelectorAll('[data-fl]').forEach(b => b.onclick = () => { op[b.dataset.fl === 'h' ? 'fh' : 'fv'] ^= true; reGirar(); });
+          const sa = q('[data-ang]'); sa.oninput = () => { op.a = +sa.value; q('[data-av]').textContent = sa.value; reGirar(); };
+          q('[data-fundo]').onchange = e => { op.fundo = e.target.value; reGirar(); };
+          const larg = () => op.crop ? op.crop.w : BW, alt = () => op.crop ? op.crop.h : BH;
+          fw.oninput = () => { op.w = Math.max(8, Math.min(larg(), +fw.value || larg())); fh.value = Math.round(op.w * alt() / larg()); clearTimeout(tR); tR = setTimeout(atualizar, 300); };
+          fh.oninput = () => { op.w = Math.max(8, Math.min(larg(), Math.round((+fh.value || alt()) * larg() / alt()))); fw.value = op.w; clearTimeout(tR); tR = setTimeout(atualizar, 300); };
+          d.querySelectorAll('[data-pc]').forEach(b => b.onclick = () => { op.w = Math.round(larg() * b.dataset.pc); atualizar(); });
+          d.querySelectorAll('[data-mx]').forEach(b => b.onclick = () => { op.w = Math.min(larg(), +b.dataset.mx); atualizar(); });
+          q('[data-f]').onchange = () => { op.mime = saidaMime(om, q('[data-f]').value); if (!op.fundo) desenharBase(); atualizar(); };
+          q('[data-q]').oninput = () => { q('[data-qv]').textContent = q('[data-q]').value; atualizar(); };
+          q('[data-reset]').onclick = () => { Object.assign(op, { r: 0, a: 0, fh: false, fv: false, crop: null, w: 0, fundo: '' }); prop = null; sa.value = 0; q('[data-av]').textContent = '0'; q('[data-fundo]').value = ''; q('[data-f]').value = 'manter'; d.querySelectorAll('[data-pr]').forEach(x => x.classList.remove('on')); reGirar(); };
+          q('[data-ok]').onclick = async () => {
+            clearTimeout(tR); op.q = q('[data-q]').value / 100; op.mime = saidaMime(om, q('[data-f]').value);
+            resultado = await processar(dados, op);
+            if (trocarImagens(new Map([[n, resultado]])) && opt.onInfo) opt.onInfo('Imagem editada: ' + fmtTam(orig) + ' → ' + fmtTam(tamanhoB64(resultado)) + ' (Ctrl+Z desfaz).');
             fechar();
           };
-          calc(); iw.focus(); iw.select();
+          setTimeout(() => { desenharBase(); atualizar(); }, 0);
+        }, 'larga');
+    }
+
+    /* ---------- edição em lote (imagens selecionadas) ---------- */
+    async function dlgEditarVarias(ns) {
+      const l = ns.map(n => ({ n, dados: imgs[n - 1] })).filter(x => x.dados && !/svg/.test(mimeDe(x.dados)));
+      if (!l.length) { alert('Selecione imagens (não SVG) nos cartões.'); return; }
+      const total = l.reduce((s, x) => s + tamanhoB64(x.dados), 0);
+      dialogo('Editar ' + l.length + ' imagem(ns) selecionada(s)',
+        '<div class="bd" style="grid-template-columns:1fr"><div><div class="mini-th">' + l.map(x => '<img alt="" src="' + x.dados + '" title="img:' + x.n + '">').join('') + '</div>' +
+        '<p class="dica">' + l.length + ' imagem(ns), ' + fmtTam(total) + ' no total. As operações são aplicadas a cada imagem, nesta ordem: girar/espelhar → cortar → tamanho → formato.</p>' +
+        '<label>Girar e espelhar</label><div class="lin"><select data-r><option value="0">Sem rotação</option><option value="270">⟲ 90° esquerda</option><option value="90">⟳ 90° direita</option><option value="180">180°</option></select><select data-fl><option value="">Sem espelhamento</option><option value="h">Espelhar horizontal</option><option value="v">Espelhar vertical</option></select></div>' +
+        '<label>Corte centralizado na proporção</label><select data-pr>' + PROPORCOES.filter(p => p[0] !== 'orig').map(p => '<option value="' + p[0] + '">' + (p[0] === 'livre' ? 'Sem corte' : p[1]) + '</option>').join('') + '</select>' +
+        '<label>Largura máxima (px)</label><select data-m><option value="0">Manter</option><option>1920</option><option>1600</option><option selected>1280</option><option>1024</option><option>800</option><option>400</option></select>' +
+        '<label>Formato</label><select data-f>' + FORMATOS('image/png').replace('Manter (PNG)', 'Manter o formato de cada imagem') + '</select>' +
+        '<label>Qualidade (JPEG/WebP): <span data-qv>85</span>%</label><input type="range" data-q min="40" max="100" value="85" style="width:100%">' +
+        '<label style="font-weight:400"><input type="checkbox" data-so checked> Só substituir quando o resultado for menor (desmarque se girou ou cortou)</label>' +
+        '<div class="res" data-res>Clique em Aplicar para processar.</div></div></div>',
+        (d, fechar) => {
+          const q = s => d.querySelector(s); q('[data-q]').oninput = () => q('[data-qv]').textContent = q('[data-q]').value;
+          const marcaSo = () => { q('[data-so]').checked = q('[data-r]').value === '0' && !q('[data-fl]').value && q('[data-pr]').value === 'livre'; };
+          ['[data-r]', '[data-fl]', '[data-pr]'].forEach(s => q(s).addEventListener('change', marcaSo));
+          q('[data-ok]').onclick = async () => {
+            const r = +q('[data-r]').value, fl = q('[data-fl]').value, pr = (PROPORCOES.find(p => p[0] === q('[data-pr]').value) || [])[2], mx = +q('[data-m]').value, f = q('[data-f]').value, qq = q('[data-q]').value / 100, so = q('[data-so]').checked, rs = q('[data-res]');
+            const mapa = new Map(); let antes = 0, depois = 0, k = 0;
+            for (const x of l) {
+              rs.textContent = 'Processando ' + (++k) + ' de ' + l.length + '…';
+              const img = await carregar(x.dados), om = mimeDe(x.dados), opx = { r, a: 0, fh: fl === 'h', fv: fl === 'v', mime: saidaMime(om, f), q: qq };
+              const g = girar(img, opx); opx.crop = pr ? cortePorProporcao(g.width, g.height, pr) : null; if (mx) opx.maxW = mx;
+              const nd = await processar(x.dados, opx), t0 = tamanhoB64(x.dados), t1 = tamanhoB64(nd);
+              if (so && t1 >= t0) continue;
+              mapa.set(x.n, nd); antes += t0; depois += t1;
+            }
+            if (!mapa.size) { rs.textContent = 'Nenhuma imagem foi alterada (resultados não ficaram menores).'; return; }
+            trocarImagens(mapa); selecao.clear(); galAssin = ''; galeria();
+            if (opt.onInfo) opt.onInfo(mapa.size + ' imagem(ns) editada(s): ' + fmtTam(antes) + ' → ' + fmtTam(depois) + ' (Ctrl+Z desfaz).');
+            fechar();
+          };
         });
     }
     function dlgReduzirTodas() {
@@ -410,6 +567,8 @@
         });
     }
     gal.querySelector('.gb2').onclick = e => { e.preventDefault(); dlgReduzirTodas(); };
+    gal.querySelector('.gbs').onclick = e => { e.preventDefault(); dlgEditarVarias(imagensNoTexto().map(x => x.n).filter(n => selecao.has(n))); };
+    gal.querySelector('.gall').onclick = e => { e.preventDefault(); const vis = imagensNoTexto().map(x => x.n); if (selecao.size === vis.length) selecao.clear(); else vis.forEach(n => selecao.add(n)); galAssin = ''; galeria(); };
     function moverLinha(d) {
       const v = ta.value, [s, e] = lineRange(), bloco = v.slice(s, e), ss = ta.selectionStart - s, se = ta.selectionEnd - s;
       if (d < 0) { if (s === 0) return; const ps = v.lastIndexOf('\n', s - 2) + 1, ant = v.slice(ps, s - 1); ta.setSelectionRange(ps, e); ins(bloco + '\n' + ant); ta.setSelectionRange(ps + ss, ps + se); }
@@ -444,18 +603,25 @@
       return [...mapa.values()];  // ordem = primeira aparição no texto
     }
     let galAssin = '';
+    const selecao = new Set();
+    function atualizaSel() {
+      const vis = imagensNoTexto().map(x => x.n); [...selecao].forEach(n => { if (!vis.includes(n)) selecao.delete(n); });
+      const b = gal.querySelector('.gbs'); b.textContent = 'Editar selecionadas (' + selecao.size + ')'; b.disabled = !selecao.size;
+      gal.querySelector('.gall').textContent = selecao.size && selecao.size === vis.length ? 'Limpar seleção' : 'Selecionar todas';
+    }
     function galeria() {
       const l = imagensNoTexto(), assin = l.map(x => x.n + ':' + x.usos + ':' + x.alts.join('|')).join(',');
       gal.querySelector('.gc').textContent = '(' + l.length + ')';
       if (assin === galAssin) return; galAssin = assin;
       const gl = gal.querySelector('.mde-gl');
       if (!l.length) { gl.innerHTML = '<div class="mde-ge">Nenhuma imagem no texto. Arraste imagens para o editor, cole com Ctrl+V ou use “+ Adicionar imagens”. Elas são guardadas em base64 dentro do próprio Markdown.</div>'; return; }
-      gl.innerHTML = l.map((x, k) => '<div class="mde-gi" draggable="true" data-n="' + x.n + '"><span class="ord" title="Posição no texto">' + (k + 1) + '</span><div class="th" title="Ir para a imagem no texto"><img alt="" src="' + x.dados + '"></div>' +
+      gl.innerHTML = l.map((x, k) => '<div class="mde-gi" draggable="true" data-n="' + x.n + '"><span class="ord" title="Posição no texto">' + (k + 1) + '</span><label class="sel" title="Selecionar para editar em lote"><input type="checkbox" data-sel' + (selecao.has(x.n) ? ' checked' : '') + '></label><div class="th" title="Ir para a imagem no texto"><img alt="" src="' + x.dados + '"></div>' +
         '<div class="mt"><b>(img:' + x.n + ')</b> <span class="dim"></span> <span>' + fmtTam(tamanhoB64(x.dados)) + (x.usos > 1 ? ' · ' + x.usos + ' usos' : '') + '</span>' +
         '<input type="text" value="' + esc(x.alts[0]) + '" title="Descrição (texto alternativo / legenda)" placeholder="Descrição / legenda"></div>' +
         '<div class="ac"><button type="button" data-a="ins" title="Inserir de novo no cursor">Inserir</button><button type="button" data-a="ver" title="Localizar no texto">Localizar</button><button type="button" class="rm" data-a="rm" title="Remover do texto">Remover</button></div>' +
-        '<div class="ac a2"><button type="button" data-a="esq" title="Mover para antes"' + (k === 0 ? ' disabled' : '') + '>◀</button><button type="button" data-a="red" title="Redimensionar / comprimir">Redimensionar</button><button type="button" data-a="dir" title="Mover para depois"' + (k === l.length - 1 ? ' disabled' : '') + '>▶</button></div></div>').join('');
+        '<div class="ac a2"><button type="button" data-a="esq" title="Mover para antes"' + (k === 0 ? ' disabled' : '') + '>◀</button><button type="button" data-a="red" title="Cortar, girar, redimensionar, formato">Editar</button><button type="button" data-a="dir" title="Mover para depois"' + (k === l.length - 1 ? ' disabled' : '') + '>▶</button></div></div>').join('');
       const ordem = l.map(x => x.n);
+      setTimeout(atualizaSel, 0);
       gl.querySelectorAll('.mde-gi').forEach(card => {
         const n = +card.dataset.n, ref = '](img:' + n + ')';
         const localizar = () => { const i = ta.value.indexOf(ref); if (i < 0) return; const a = ta.value.lastIndexOf('![', i); ta.focus(); ta.setSelectionRange(a, i + ref.length); const lin = ta.value.slice(0, a).split('\n').length; ta.scrollTop = Math.max(0, (lin - 3) * parseFloat(getComputedStyle(ta).lineHeight || 20)); };
@@ -464,7 +630,9 @@
         const mover = d => { const o = ordem.slice(), i = o.indexOf(n), j = i + d; if (j < 0 || j >= o.length) return; [o[i], o[j]] = [o[j], o[i]]; reordenar(o); };
         card.querySelector('[data-a="esq"]').onclick = () => mover(-1);
         card.querySelector('[data-a="dir"]').onclick = () => mover(1);
-        card.querySelector('[data-a="red"]').onclick = () => dlgRedimensionar(n);
+        card.querySelector('[data-a="red"]').onclick = () => dlgEditar(n);
+        card.querySelector('[data-sel]').onchange = e => { e.target.checked ? selecao.add(n) : selecao.delete(n); card.classList.toggle('on', e.target.checked); atualizaSel(); };
+        card.classList.toggle('on', selecao.has(n));
         card.addEventListener('dragstart', e => { if (e.target.closest('input,button')) { e.preventDefault(); return; } e.dataTransfer.setData('text/x-mde-img', String(n)); e.dataTransfer.effectAllowed = 'move'; card.classList.add('arr'); });
         card.addEventListener('dragend', () => { card.classList.remove('arr'); gl.querySelectorAll('.mde-gi').forEach(c => c.classList.remove('alvo-e', 'alvo-d')); });
         card.addEventListener('dragover', e => { if (![...e.dataTransfer.types].includes('text/x-mde-img')) return; e.preventDefault(); e.stopPropagation(); const r = card.getBoundingClientRect(), dir = e.clientX > r.left + r.width / 2; card.classList.toggle('alvo-d', dir); card.classList.toggle('alvo-e', !dir); });

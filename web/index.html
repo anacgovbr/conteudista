@@ -311,7 +311,7 @@ let alvo = 'g';
 async function receberArquivos(files, t) {
   files = [...files];
   const ims = files.filter(MDEditor.ehImagem), md = files.find(f => !MDEditor.ehImagem(f) && (/\.(md|markdown|txt)$/i.test(f.name) || (f.type || '').startsWith('text/')));
-  if (md) { $(t).value = await md.text(); sugerirPrefixo(); log('Arquivo carregado: ' + md.name, 'ok'); refreshEditors(); }
+  if (md) { if (window.Hist) await Hist.registrar('antes', 'Antes de carregar ' + md.name); $(t).value = await md.text(); sugerirPrefixo(); log('Arquivo carregado: ' + md.name, 'ok'); refreshEditors(); }
   // 1) imagens citadas no texto por nome (ex.: ![x](figura.png)) → substituídas por base64
   const citadas = new Set(pendentes($('g').value + '\n' + $('s').value).map(nomeBase));
   const soltas = [];
@@ -326,6 +326,7 @@ async function receberArquivos(files, t) {
     log(n + ' imagem(ns) inserida(s) no texto da aba ' + (t === 'g' ? 'Guia' : 'Apresentação') + '. Veja “Imagens do texto” abaixo do editor.', 'ok');
   }
   statusImagens(); agendarAuto();
+  if (md && window.Hist) Hist.registrar('arquivo', 'Arquivo: ' + md.name + ' (' + (t === 'g' ? 'guia' : 'apresentação') + ')');
 }
 // Impede que o navegador abra a imagem (e saia da página) quando ela é solta fora das áreas de edição
 addEventListener('dragover', e => { if ([...(e.dataTransfer || {}).types || []].includes('Files')) e.preventDefault(); });
@@ -351,9 +352,11 @@ function sugerirPrefixo() {
 }
 $('ex').onclick = async () => {
   try {
+    if (window.Hist) await Hist.registrar('antes', 'Antes de carregar o exemplo');
     $('g').value = await (await fetch('exemplo/guia.md', { cache: 'no-store' })).text();
     $('s').value = await (await fetch('exemplo/apresentacao.md', { cache: 'no-store' })).text();
     $('pref').value = 'Exemplo'; statusImagens(); log('Exemplo carregado.', 'ok');
+    if (window.Hist) Hist.registrar('exemplo', 'Exemplo');
   } catch { log('Exemplo indisponível.', 'err'); }
 };
 function limparDownloads() { urls.forEach(u => URL.revokeObjectURL(u)); urls = []; ultimos = []; $('res').innerHTML = 'Nenhum arquivo gerado ainda.'; $('prev').hidden = true; $('prev').src = 'about:blank'; }
@@ -364,8 +367,8 @@ let dbp = null;
 function db() {
   if (dbp) return dbp;
   dbp = new Promise((ok, err) => {
-    const r = indexedDB.open('conteudista', 1);
-    r.onupgradeneeded = () => { r.result.createObjectStore('rascunhos', { keyPath: 'nome' }); r.result.createObjectStore('links', { keyPath: 'id', autoIncrement: true }); };
+    const r = indexedDB.open('conteudista', 2);
+    r.onupgradeneeded = () => { const d = r.result, n = [...d.objectStoreNames]; if (!n.includes('rascunhos')) d.createObjectStore('rascunhos', { keyPath: 'nome' }); if (!n.includes('links')) d.createObjectStore('links', { keyPath: 'id', autoIncrement: true }); if (!n.includes('versoes')) d.createObjectStore('versoes', { keyPath: 'id', autoIncrement: true }); };
     r.onsuccess = () => ok(r.result); r.onerror = () => err(r.error);
   });
   return dbp;
@@ -383,7 +386,7 @@ async function listarRascunhos() {
     '<td><button class="mini sec" data-a="ab" data-n="' + esc(r.nome) + '">Abrir</button><button class="mini dan" data-a="ex" data-n="' + esc(r.nome) + '">Excluir</button></td></tr>').join('') + '</table>';
   $('drafts').querySelectorAll('button').forEach(b => b.onclick = async () => {
     const n = b.dataset.n;
-    if (b.dataset.a === 'ab') { const r = (await dbAll('rascunhos')).find(x => x.nome === n); if (r) { aplicar(r); $('dname').value = n === 'Autossalvo' ? '' : n; log('Rascunho "' + n + '" aberto.', 'ok'); } }
+    if (b.dataset.a === 'ab') { const r = (await dbAll('rascunhos')).find(x => x.nome === n); if (r) { if (window.Hist) await Hist.registrar('antes', 'Antes de abrir o rascunho ' + n); aplicar(r); if (window.Hist) Hist.registrar('rascunho', 'Rascunho: ' + n); $('dname').value = n === 'Autossalvo' ? '' : n; log('Rascunho "' + n + '" aberto.', 'ok'); } }
     else if (confirm('Excluir o rascunho "' + n + '"?')) { await dbDel('rascunhos', n); listarRascunhos(); log('Rascunho excluído.', 'ok'); }
   });
 }
@@ -396,15 +399,15 @@ async function salvarRascunho(nome) {
 }
 $('dsave').onclick = async () => { const n = $('dname').value.trim() || ($('pref').value + ' ' + new Date().toLocaleString('pt-BR')); await salvarRascunho(n); log('Rascunho "' + n + '" salvo neste navegador.', 'ok'); };
 let tAuto = null;
-function agendarAuto() { if (!$('auto').checked) return; clearTimeout(tAuto); tAuto = setTimeout(() => salvarRascunho('Autossalvo'), 1500); }
+function agendarAuto() { if (window.Hist) Hist.sessao(); if (!$('auto').checked) return; clearTimeout(tAuto); tAuto = setTimeout(() => salvarRascunho('Autossalvo'), 1500); }
 $('auto').checked = localStorage.getItem('conteudista.auto') !== '0';  // padrão: ativado
 $('auto').onchange = () => { localStorage.setItem('conteudista.auto', $('auto').checked ? '1' : '0'); $('autost').textContent = $('auto').checked ? 'Ativado: as alterações são salvas neste navegador.' : 'Desativado.'; if ($('auto').checked) { agendarAuto(); log('Salvamento automático ativado (somente neste navegador).', 'ok'); } };
 $('autost').textContent = $('auto').checked ? 'Ativado: as alterações são salvas neste navegador.' : 'Desativado.';
 $('keep').checked = localStorage.getItem('conteudista.keep') === '1';
 $('keep').onchange = () => localStorage.setItem('conteudista.keep', $('keep').checked ? '1' : '0');
 $('dclear').onclick = async () => {
-  if (!confirm('Apagar todos os rascunhos, links lembrados e preferências deste navegador?')) return;
-  await dbClear('rascunhos'); await dbClear('links'); ['conteudista.keep', 'mde.modo', 'conteudista.tour'].forEach(k => localStorage.removeItem(k));
+  if (!confirm('Apagar todos os rascunhos, histórico de versões, links lembrados e preferências deste navegador?')) return;
+  await dbClear('rascunhos'); await dbClear('links'); await dbClear('versoes'); if (window.Hist) Hist.atualizar(); ['conteudista.keep', 'mde.modo', 'conteudista.tour'].forEach(k => localStorage.removeItem(k));
   localStorage.setItem('conteudista.auto', '0'); $('keep').checked = false; listarRascunhos(); listarLinks(); log('Dados locais apagados.', 'ok');
 };
 function baixar(nome, blob) { const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = nome; a.click(); setTimeout(() => URL.revokeObjectURL(u), 4000); }
@@ -539,6 +542,7 @@ $('share').onclick = async () => {
     }
     sessaoLinks.unshift(item);
     if ($('keep').checked) await dbPut('links', item);
+    if (window.Hist) Hist.registrar('compartilhado', 'Link criado: ' + item.tipo);
     listarLinks(); log('Link criptografado criado.' + (pw ? ' Envie a senha por outro canal.' : ''), 'ok');
     try { await navigator.clipboard.writeText(item.url); log('Link copiado para a área de transferência.', 'ok'); } catch {}
   } catch (e) { log('Erro: ' + e.message, 'err'); }
@@ -557,6 +561,7 @@ async function listarLinks() {
   $('links').querySelectorAll('[data-c]').forEach(b => b.onclick = async () => { try { await navigator.clipboard.writeText(l[+b.dataset.c].url); log('Link copiado.', 'ok'); } catch { prompt('Copie o link:', l[+b.dataset.c].url); } });
   $('links').querySelectorAll('[data-f]').forEach(b => b.onclick = async () => { await dbDel('links', +b.dataset.f); listarLinks(); });
 }
+function rotuloLink(l) { try { const u = new URL(l.trim(), location.href); return u.hash.startsWith('#cx=') ? 'Link autocontido' : 'PrivateBin ' + u.host + ' · ' + u.search.slice(1, 9); } catch { return 'Link'; } }
 async function abrirLink(link, pw) {
   const u = new URL(link.trim(), location.href), h = u.hash;
   if (h.startsWith('#cx=')) return abrirAutocontido(h.slice(4), pw);
@@ -564,7 +569,7 @@ async function abrirLink(link, pw) {
   throw new Error('Link não reconhecido.');
 }
 $('open').onclick = async () => {
-  try { const d = await abrirLink($('olink').value, $('opw').value); aplicar(d); log('Conteúdo carregado do link.', 'ok'); $('pg').scrollIntoView({ behavior: 'smooth' }); }
+  try { const d = await abrirLink($('olink').value, $('opw').value); if (window.Hist) await Hist.registrar('antes', 'Antes de abrir link'); aplicar(d); log('Conteúdo carregado do link.', 'ok'); if (window.Hist) Hist.registrar('link', rotuloLink($('olink').value)); $('pg').scrollIntoView({ behavior: 'smooth' }); }
   catch (e) { log('Erro: ' + e.message, 'err'); }
 };
 (async () => {
@@ -574,6 +579,7 @@ $('open').onclick = async () => {
   try {
     const pw = frag.startsWith('2.') ? prompt('Este conteúdo está protegido por senha. Digite a senha:') : '';
     aplicar(await abrirAutocontido(frag, pw)); log('Conteúdo recebido por link criptografado carregado nos editores.', 'ok');
+    setTimeout(() => { if (window.Hist) Hist.registrar('link', 'Link autocontido recebido'); }, 0);
   } catch (e) { log('Erro ao abrir o link: ' + e.message, 'err'); }
 })();
 
@@ -627,6 +633,7 @@ $('go').onclick = async () => {
     $('res').innerHTML = h;
     $('res').querySelectorAll('[data-u]').forEach(a => a.onclick = e => { e.preventDefault(); $('prev').hidden = false; $('prev').src = a.dataset.u; });
     agendarAuto();
+    if (window.Hist && !res.includes('ERRO')) Hist.registrar('gerado', 'Arquivos gerados: ' + pref);
   } catch (e) {
     log('Erro: ' + e.message, 'err');
     if (/pyodide|cdn|carregar/i.test(e.message)) log('Verifique se a rede permite acesso a cdn.jsdelivr.net.', 'err');
@@ -671,5 +678,6 @@ statusImagens();
   try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}
 })();
 </script>
+<script src="historico.js"></script>
 </body>
 </html>
