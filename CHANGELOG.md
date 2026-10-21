@@ -1,5 +1,8 @@
 # Novidades do Conteudista
 
+## 1.19.1 — 21/10/2026
+- Correção na publicação: chave do cache dos modelos sem vírgulas (erro “cannot contain commas”).
+
 ## 1.19 — 21/10/2026
 - Cabeçalho simplificado: apenas “Conteudista”.
 

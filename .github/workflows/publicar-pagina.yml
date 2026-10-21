@@ -70,11 +70,18 @@ jobs:
           touch site/.nojekyll
           ls -R site
 
+      - name: Chave do cache dos modelos
+        id: chave_modelos
+        env:
+          MODELOS_LOCAIS: ${{ vars.MODELOS_LOCAIS || 'piper-ptbr,piper-catalogo' }}
+        run: echo "perfis=$(echo "$MODELOS_LOCAIS" | tr -c 'A-Za-z0-9_.-' '_')" >> "$GITHUB_OUTPUT"
+
       - name: Cache dos modelos de voz
+        continue-on-error: true
         uses: actions/cache@v4
         with:
           path: .cache/modelos
-          key: modelos-${{ hashFiles('web/modelos.json') }}-${{ vars.MODELOS_LOCAIS || 'piper-ptbr,piper-catalogo' }}
+          key: modelos-${{ hashFiles('web/modelos.json') }}-${{ steps.chave_modelos.outputs.perfis }}
 
       - name: Hospedar modelos de voz no site (opcional)
         continue-on-error: true
