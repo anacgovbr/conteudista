@@ -90,7 +90,6 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
   <div id="imgst" class="note">Imagens: nenhuma referência encontrada.</div>
   <p>
     <button id="go">Gerar arquivos</button>
-    <button id="emb" class="sec">Embutir imagens (base64)</button>
     <button id="ex" class="sec">Carregar exemplo</button>
     <button id="clr" class="sec">Limpar tela</button>
     <input id="fmd" type="file" accept=".md,.txt,.markdown,image/*" multiple hidden>
@@ -285,7 +284,9 @@ async function embutirTudo(silencioso) {
   if (n) agendarAuto();
   return f;
 }
-$('emb').onclick = () => embutirTudo(false);
+// Imagens citadas por nome ou URL são embutidas automaticamente: ao soltar arquivos, ao colar texto, ao gerar e ao compartilhar.
+let tEmb = null;
+['g', 's'].forEach(id => $(id).addEventListener('input', () => { if (!pendentes($(id).value).some(x => /^https?:\/\//i.test(x))) return; clearTimeout(tEmb); tEmb = setTimeout(() => embutirTudo(true), 1500); }));
 
 /* Separa as imagens base64 em arquivos (para anexo) e restaura depois */
 const EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/webp': 'webp', 'image/svg+xml': 'svg', 'image/bmp': 'bmp' };

@@ -1,5 +1,8 @@
 # Novidades do Conteudista
 
+## 1.12 — 21/10/2026
+- Removido o botão **Embutir imagens**: imagens citadas no texto (por nome ou URL) passam a ser convertidas automaticamente.
+
 ## 1.11 — 21/10/2026
 - Botão **Histórico** adaptado ao celular: só ícone na barra, janela em tela cheia com cabeçalho fixo e exibição unificada.
 - Changelog dentro da aplicação (botão **Novidades**).
