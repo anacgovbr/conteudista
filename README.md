@@ -19,7 +19,7 @@ Página única que converte os arquivos Markdown de um curso em:
 | Rascunhos locais | Salvamento automático **ligado por padrão** (recupera o último trabalho ao reabrir) e rascunhos com nome | IndexedDB do navegador, só nesta máquina |
 | Salvar em pasta | Grava os `.md` e os arquivos gerados numa pasta escolhida (Edge/Chrome) | Disco do usuário |
 | Link autocontido | Conteúdo comprimido e cifrado (AES-256-GCM) no próprio link; chave no `#` ou senha (PBKDF2 310.000 iterações) | Somente no link |
-| Histórico e comparação | Versões guardadas no navegador (edições da sessão a cada 3 min, arquivos carregados, links abertos, rascunhos, exemplo, versões marcadas ★, geração/compartilhamento; “antes de carregar/restaurar” automático; até 120). Diff “antes e depois” entre quaisquer duas versões ou o conteúdo atual: lado a lado ou unificado, só alterações ou texto completo, palavras destacadas, imagens como miniaturas e lista de imagens removidas/incluídas; restaurar, baixar A/B, excluir | IndexedDB do navegador, só nesta máquina |
+| Histórico e comparação | Botão **Histórico** na barra do editor (antes da tela cheia) ou `Alt+Shift+V` abre a janela de comparação. Versões guardadas no navegador (edições da sessão a cada 3 min, arquivos carregados, links abertos, rascunhos, exemplo, versões marcadas ★, geração/compartilhamento; “antes de carregar/restaurar” automático; até 120). Diff “antes e depois” entre quaisquer duas versões ou o conteúdo atual: lado a lado ou unificado, só alterações ou texto completo, palavras destacadas, imagens como miniaturas e lista de imagens removidas/incluídas; restaurar, baixar A/B, excluir | IndexedDB do navegador, só nesta máquina |
 | Tamanho antes do envio | Estimativa do conteúdo e do envio cifrado, com alerta perto do limite de 10 MB e confirmação antes de enviar | — |
 | PrivateBin | Formato PrivateBin v2 (AES-256-GCM, PBKDF2-SHA256 100.000, chave base58 no `#`); **senha opcional** (chave ‖ senha, compatível com o site do PrivateBin); **imagens como anexo ZIP** (`.md` + `imagens/`), restauradas para base64 ao abrir aqui; expiração e leitura única | Servidor PrivateBin (somente conteúdo cifrado) |
 
@@ -30,6 +30,10 @@ web/index.html           ← a página
 web/editor.js            ← editor Markdown leve (sem dependências)
 web/ajuda.js             ← tutorial guiado, ajuda e atalhos de teclado
 web/historico.js         ← histórico de versões e comparação (diff)
+web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
+web/locucao.js           ← aba Locução (interface, histórico de áudio)
+web/locucao-worker.js    ← motor de voz Kokoro-82M (Web Worker)
+web/ptbr-g2p.js          ← fonemizador interno pt-BR (regras; usado quando o espeak-ng não oferece português)
 web/exemplo/             ← curso de exemplo (fictício)
 tools/gerador.py         ← motor de conversão (o mesmo do agente "Gerador de Cursos ANAC")
 tools/requirements.txt
@@ -65,7 +69,7 @@ Aba **Locução** (`Alt+Shift+3`): gera áudio a partir de texto com o modelo ab
 | Item | Como funciona |
 |---|---|
 | Motor | `web/locucao-worker.js` (Web Worker) com `kokoro-js@1.2.1`; WebGPU com fallback automático para WASM; teste de áudio após carregar; barra de progresso real do download |
-| Vozes pt-BR | `pf_dora` (feminina), `pm_alex` (masculina), `pm_santa`. O `kokoro-js` 1.2.1 só aceita vozes inglesas e só fonemiza inglês; para pt-BR o worker fonemiza com espeak-ng (`phonemizer`, idioma pt-br = `lang "p"` do Kokoro), carrega `voices/<voz>.bin` do repositório ONNX e chama o modelo diretamente |
+| Vozes pt-BR | `pf_dora` (feminina), `pm_alex` (masculina), `pm_santa`. O `kokoro-js` 1.2.1 só aceita vozes inglesas e só fonemiza inglês, e o pacote `phonemizer` 1.2.1 traz apenas inglês. Para pt-BR o worker tenta o espeak-ng completo em WebAssembly (voz pt-br) e, se indisponível, usa o **fonemizador interno** `ptbr-g2p.js` (regras ortográficas, números por extenso, siglas, tonicidade); depois carrega `voices/<voz>.bin` e chama o modelo diretamente. Seletor “Pronúncia em português” no painel Motor de voz |
 | Textos longos | Fragmentação por frases (≤ 250 caracteres em pt-BR), geração trecho a trecho, cancelamento |
 | Áudio | Costura PCM via Web Audio API com micro-fades (sem estalos) e pausa configurável; WAV PCM 16 bits, 24 kHz |
 | Histórico/cache | IndexedDB `KokoroTTS_DB` / `audio_history` (índice `text + voice + speed`); texto idêntico com a mesma voz, velocidade e pausa é servido do histórico; painel com Ouvir, Baixar, Usar texto, Excluir e busca |
@@ -75,4 +79,4 @@ Aba **Locução** (`Alt+Shift+3`): gera áudio a partir de texto com o modelo ab
 
 `web/gerados.js`: após cada **Gerar arquivos**, guarda os 6 arquivos + ZIP no IndexedDB `conteudista_arquivos` (últimos 10 por padrão), com download, visualização do HTML e exclusão.
 
-> Não use o `atualizar-conteudista.ps1` com um `conteudista-web.zip` anterior a esta versão: ele substitui todo o repositório e removeria a Locução.
+> Para atualizar o repositório use sempre o `conteudista-web.zip` mais recente (contém Curso, Histórico, Arquivos gerados e Locução) com o `atualizar-conteudista.ps1`.

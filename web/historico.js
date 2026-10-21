@@ -196,11 +196,16 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
 #secHist .dg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}#secHist .dg figure{margin:0;text-align:center;font-size:11.5px;color:#5a6676}
 #secHist .dg img{height:90px;max-width:160px;object-fit:contain;border-radius:4px;background:repeating-conic-gradient(#f3f6fa 0 25%,#fff 0 50%) 50%/12px 12px}
 #secHist .dg figure.rm img{outline:3px solid #f5b8b0}#secHist .dg figure.nv img{outline:3px solid #a8dfb8}#secHist .nd{color:#8a96a6}
-@media(max-width:900px){#secHist .dimg{grid-template-columns:1fr}}`;
+@media(max-width:900px){#secHist .dimg{grid-template-columns:1fr}}
+.hist-back{position:fixed;inset:0;z-index:1800;background:rgba(11,25,45,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 14px;overflow:auto}
+.hist-back[hidden]{display:none}
+.hist-back #secHist{width:min(1400px,100%);margin:0;box-shadow:0 10px 40px rgba(0,0,0,.35);position:relative}
+#secHist .hx{position:absolute;top:14px;right:16px;margin:0}
+.mde-tb button.hbtn{display:inline-flex;align-items:center;gap:4px}`;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secHist';
-  sec.innerHTML = '<h2>Histórico e comparação (antes e depois)</h2>' +
+  sec.innerHTML = '<button type="button" class="sec mini hx" id="hFechar" title="Fechar (Esc)">Fechar ✕</button><h2>Histórico e comparação (antes e depois)</h2>' +
     '<p class="note">Versões guardadas <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), arquivos carregados, conteúdos abertos de links, rascunhos, exemplo, versões marcadas e momentos de geração/compartilhamento. Escolha duas versões e compare.</p>' +
     '<div class="hrow"><div class="lg"><label for="hA">Versão A (antes)</label><select id="hA"></select></div>' +
     '<div style="min-width:auto"><button type="button" class="sec mini" id="hTroca" title="Trocar A e B">⇄</button></div>' +
@@ -211,7 +216,27 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     '<div style="min-width:auto"><button type="button" id="hGo">Comparar</button></div></div>' +
     '<div class="hrow"><button type="button" class="sec mini" id="hMarca">★ Marcar versão atual…</button><button type="button" class="sec mini" id="hResA">Restaurar A</button><button type="button" class="sec mini" id="hResB">Restaurar B</button><button type="button" class="sec mini" id="hBx">Baixar A e B (.md)</button><button type="button" class="dan mini" id="hDel">Excluir A</button><button type="button" class="dan mini" id="hLimpa">Limpar histórico</button></div>' +
     '<p class="hint" id="hInfo"></p><div id="hRes"></div>';
-  const ref = $('secShare'); ref.parentNode.insertBefore(sec, ref);
+  // Janela sobreposta: só aparece quando o botão "Histórico" (barra do editor) é clicado
+  const back = document.createElement('div'); back.className = 'hist-back'; back.hidden = true; back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true'); back.setAttribute('aria-label', 'Histórico e comparação');
+  back.appendChild(sec); document.body.appendChild(back);
+  function abrir(doc) {
+    if (doc) $('hDoc').value = doc;
+    back.hidden = false; document.body.style.overflow = 'hidden';
+    montarSelects().then(async () => { const l = await lista(); if ($('hA').value === 'atual' && l[0]) $('hA').value = String(l[0].id); $('hB').value = 'atual'; executar(); });
+    setTimeout(() => $('hA').focus(), 30);
+  }
+  function fecharHist() { back.hidden = true; document.body.style.overflow = ''; }
+  back.addEventListener('click', e => { if (e.target === back) fecharHist(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !back.hidden) { e.preventDefault(); e.stopPropagation(); fecharHist(); } }, true);
+  // Botão "Histórico" na barra de cada editor, logo antes do botão de tela cheia
+  const ICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/></svg>';
+  [['pg', 'g'], ['ps', 's']].forEach(([id, doc]) => {
+    const tb = document.querySelector('#' + id + ' .mde-tb'); if (!tb) return;
+    const fs = [...tb.querySelectorAll('button')].pop();
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'hbtn'; b.title = 'Histórico e comparação de versões (Alt+Shift+V)';
+    b.innerHTML = ICO + ' Histórico'; b.onclick = () => abrir(doc);
+    tb.insertBefore(b, fs);
+  });
 
   let tUI = null; function agendarUI() { clearTimeout(tUI); tUI = setTimeout(montarSelects, 250); }
   async function montarSelects() {
@@ -248,7 +273,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     const v = await obter(id); if (!v || v.atual) { log('Escolha uma versão guardada para restaurar.', 'wa'); return; }
     if (!confirm('Substituir o conteúdo dos editores pela versão:\n' + v.rotulo + ' (' + dataCurta(v.data) + ')?\n\nO conteúdo atual será guardado no histórico antes.')) return;
     await registrar('antes', 'Antes de restaurar');
-    aplicar(v); log('Versão restaurada: ' + v.rotulo + ' (' + dataCurta(v.data) + '). Ctrl+Z no editor também desfaz.', 'ok');
+    aplicar(v); fecharHist(); log('Versão restaurada: ' + v.rotulo + ' (' + dataCurta(v.data) + '). Ctrl+Z no editor também desfaz.', 'ok');
     await registrar('restaurado', 'Restaurada: ' + v.rotulo);
   }
   function baixarMd(v, sufixo) {
@@ -259,6 +284,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   }
 
   $('hGo').onclick = executar;
+  $('hFechar').onclick = fecharHist;
   ['hDoc', 'hModo', 'hCtx'].forEach(id => $(id).onchange = () => { if ($('hRes').innerHTML) executar(); });
   $('hTroca').onclick = () => { const a = $('hA').value; $('hA').value = $('hB').value; $('hB').value = a; if ($('hRes').innerHTML) executar(); };
   $('hMarca').onclick = async () => { const n = prompt('Nome desta versão (ex.: "Versão enviada para revisão"):', 'Versão de ' + new Date().toLocaleString('pt-BR')); if (n === null) return; const v = await registrar('marco', '★ ' + (n.trim() || 'Versão marcada')); if (v) { await montarSelects(); $('hA').value = String(v.id); log('Versão marcada no histórico.', 'ok'); } };
@@ -268,6 +294,6 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   $('hDel').onclick = async () => { const v = await obter($('hA').value); if (!v || v.atual) return; if (!confirm('Excluir do histórico a versão:\n' + v.rotulo + ' (' + dataCurta(v.data) + ')?')) return; await dbDel('versoes', v.id); invalidar(); await montarSelects(); $('hRes').innerHTML = ''; log('Versão excluída do histórico.', 'ok'); };
   $('hLimpa').onclick = async () => { if (!confirm('Apagar TODO o histórico de versões deste navegador?')) return; await dbClear('versoes'); invalidar(); await montarSelects(); $('hRes').innerHTML = ''; log('Histórico apagado.', 'ok'); };
 
-  window.Hist = { registrar, sessao, atualizar: () => { invalidar(); agendarUI(); }, abrir: () => { sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); $('hA').focus(); }, comparar: executar, _myers: myers };
+  window.Hist = { registrar, sessao, atualizar: () => { invalidar(); agendarUI(); }, abrir: () => abrir($('ps') && !$('ps').hidden ? 's' : 'g'), fechar: fecharHist, comparar: executar, _myers: myers };
   montarSelects();
 })();

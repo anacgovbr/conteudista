@@ -4,9 +4,9 @@
    - Modelo: onnx-community/Kokoro-82M-v1.0-ONNX, dtype "q8" (padrão) ou "fp32"
    - Dispositivo: WebGPU com fallback automático para WebAssembly (WASM)
    - pt-BR: o kokoro-js 1.2.1 só aceita vozes inglesas em generate() e só fonemiza inglês.
-     Para pf_dora / pm_alex / pm_santa este worker fonemiza com espeak-ng (pacote "phonemizer",
-     idioma pt-br, equivalente ao lang "p" do Kokoro), carrega o arquivo de voz do repositório
-     ONNX e chama o modelo diretamente (mesmo cálculo de estilo do kokoro-js).
+     Para pf_dora / pm_alex / pm_santa este worker fonemiza em pt-BR (espeak-ng WASM → phonemizer.js →
+     fonemizador interno por regras, ptbr-g2p.js), carrega o arquivo de voz do repositório ONNX e chama
+     o modelo diretamente (mesmo cálculo de estilo do kokoro-js).
    Mensagens recebidas: {tipo:'init', dtype, device} | {tipo:'gerar', id, trechos[], voice, speed} | {tipo:'cancelar', id}
    Mensagens enviadas:  progresso | fase | aviso | pronto | trecho (pcm transferível) | fim | erro
    ===================================================================================== */
@@ -81,17 +81,65 @@ async function init({ dtype = 'q8', device = 'auto' }) {
   post({ tipo: 'pronto', dtype: cfg.dtype, device: cfg.device, vozes: tts.voices ? Object.keys(tts.voices) : [] });
 }
 
-/* ---------------------------- Português (espeak-ng pt-br) ---------------------------- */
-async function fonemizar(texto) {
-  if (!fon) fon = await importar(PHONEMIZER_URLS);
-  const ph = fon.phonemize || (fon.default && fon.default.phonemize);
-  if (!ph) throw new Error('Fonemizador indisponível.');
-  const rodar = async (t, l) => { const r = await ph(t, l); return (Array.isArray(r) ? r.join(' ') : String(r || '')).trim(); };
-  if (!langPT) {
-    for (const l of ['pt-br', 'pt-BR', 'pt']) { try { if (await rodar('olá, mundo', l)) { langPT = l; break; } } catch { /* tenta o próximo */ } }
-    if (!langPT) throw new Error('O fonemizador (espeak-ng) não ofereceu português. As vozes pt-BR não podem ser usadas neste navegador.');
+/* ---------------------------- Português (fonemização pt-BR) ----------------------------
+   Ordem (modo "auto"): 1) espeak-ng completo em WebAssembly (pacote "espeak-ng", voz pt-br)
+   2) phonemizer.js, se a versão carregada tiver português  3) fonemizador interno por regras (ptbr-g2p.js).
+   O pacote "phonemizer" 1.2.1 traz apenas vozes em inglês — por isso não deve ser a única opção. */
+const ESPEAK_URLS = [
+  'https://cdn.jsdelivr.net/npm/espeak-ng@1.0.2/dist/espeak-ng.js',
+  'https://cdn.jsdelivr.net/npm/espeak-ng@1.0.2/+esm'
+];
+let fonModo = 'auto', fonUsado = null, espeakMod = null, espeakOk = false, g2p = null;
+const comTempo = (p, ms, msg) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(msg)), ms))]);
+async function espeakNG(texto) {
+  if (!espeakOk) {  // valida uma vez: a voz pt-br precisa produzir vogal nasal em "pão"
+    espeakOk = true;
+    try { const t = await espeakNG('pão'); if (!/\u0303|ɐ/.test(t)) throw new Error('voz pt-br ausente'); }
+    catch (e) { espeakOk = false; throw e; }
   }
-  let ps = await rodar(texto, langPT);
+  return espeakRodar(texto);
+}
+async function espeakRodar(texto) {
+  if (!espeakMod) {
+    let ultimo;
+    for (const u of ESPEAK_URLS) {
+      try { const m = await comTempo(import(u), 30000, 'tempo esgotado'); espeakMod = { fn: m.default || m.ESpeakNg || m, base: u.slice(0, u.lastIndexOf('/') + 1) }; break; } catch (e) { ultimo = e; }
+    }
+    if (!espeakMod || typeof espeakMod.fn !== 'function') { espeakMod = null; throw ultimo || new Error('espeak-ng indisponível'); }
+  }
+  const limpo = texto.replace(/["\n\r]+/g, ' ').trim();
+  const inst = await comTempo(espeakMod.fn({ arguments: ['--phonout', 'saida', '-q', '--ipa', '-v', 'pt-br', limpo], locateFile: f => espeakMod.base + f, print: () => {}, printErr: () => {} }), 60000, 'espeak-ng demorou demais');
+  const r = String(inst.FS.readFile('saida', { encoding: 'utf8' }) || '').replace(/\s+/g, ' ').trim();
+  if (!r) throw new Error('espeak-ng sem saída');
+  return r;
+}
+async function phonemizerJS(texto) {
+  if (!fon) fon = await importar(PHONEMIZER_URLS);
+  const ph = fon.phonemize || (fon.default && fon.default.phonemize), lv = fon.list_voices || (fon.default && fon.default.list_voices);
+  if (!ph) throw new Error('phonemizer indisponível');
+  if (!langPT) {
+    if (lv) { const v = await lv(); const tem = (v || []).some(x => (x.languages || []).some(l => /^pt/i.test(l.name)) || /^pt|\/pt/i.test(x.identifier || '')); if (!tem) throw new Error('phonemizer sem português'); }
+    for (const l of ['pt-br', 'pt-BR', 'pt']) { try { const r = await ph('olá, mundo', l); if (r && String(r).trim()) { langPT = l; break; } } catch { /* próximo */ } }
+    if (!langPT) throw new Error('phonemizer sem português');
+  }
+  const r = await ph(texto, langPT); return (Array.isArray(r) ? r.join(' ') : String(r || '')).trim();
+}
+async function interno(texto) {
+  if (!g2p) { const m = await import(new URL('ptbr-g2p.js', self.location.href).href); g2p = m.phonemizePTBR || m.default; }
+  return g2p(texto);
+}
+const NOMES_FON = { espeak: 'espeak-ng (WebAssembly)', phonemizer: 'phonemizer.js', interno: 'fonemizador interno pt-BR (regras)' };
+async function fonemizar(texto) {
+  const ordem = fonModo === 'auto' ? (fonUsado ? [fonUsado] : ['espeak', 'phonemizer', 'interno']) : [fonModo];
+  let ps = '', erros = [];
+  for (const f of ordem) {
+    try {
+      ps = f === 'espeak' ? await espeakNG(texto) : f === 'phonemizer' ? await phonemizerJS(texto) : await interno(texto);
+      if (fonUsado !== f) { fonUsado = f; post({ tipo: 'aviso', msg: 'Fonemização pt-BR: ' + NOMES_FON[f] + '.', fon: f }); }
+      break;
+    } catch (e) { erros.push(NOMES_FON[f] + ': ' + (e && e.message || e)); if (fonModo === 'auto' && f === fonUsado) { fonUsado = null; return fonemizar(texto); } }
+  }
+  if (!ps) throw new Error('Não foi possível converter o texto em fonemas pt-BR (' + erros.join('; ') + '). Escolha "Fonemizador interno" no painel Motor de voz.');
   ps = ps.replace(/[\u0361^]/g, '').replace(/ʲ/g, 'j').replace(/\s+/g, ' ').trim();
   if (vocab) ps = [...ps].filter(c => vocab.has(c)).join('');
   return ps;
@@ -138,7 +186,8 @@ async function gerarEN(texto, voice, speed) {
 self.onmessage = async e => {
   const m = e.data || {};
   try {
-    if (m.tipo === 'init') { await init(m); return; }
+    if (m.tipo === 'init') { if (m.fon) fonModo = m.fon; await init(m); return; }
+    if (m.tipo === 'fon') { fonModo = m.fon || 'auto'; fonUsado = null; return; }
     if (m.tipo === 'cancelar') { cancelado = m.id; return; }
     if (m.tipo === 'gerar') {
       if (!tts) throw new Error('O motor de voz não está inicializado.');

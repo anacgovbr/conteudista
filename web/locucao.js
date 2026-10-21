@@ -19,7 +19,7 @@
     ['Inglês (para textos em inglês)', [['af_heart', 'Heart — feminina (EUA)'], ['am_michael', 'Michael — masculina (EUA)'], ['bf_emma', 'Emma — feminina (Reino Unido)'], ['bm_george', 'George — masculina (Reino Unido)']]]
   ];
   const nomeVoz = v => { for (const [, l] of VOZES) for (const [id, n] of l) if (id === v) return n.split(' — ')[0] + ' (' + id + ')'; return v; };
-  const PREF = { preload: 'loc.preload', dtype: 'loc.dtype', device: 'loc.device', voz: 'loc.voz', vel: 'loc.vel', pausa: 'loc.pausa' };
+  const PREF = { fon: 'loc.fon', preload: 'loc.preload', dtype: 'loc.dtype', device: 'loc.device', voz: 'loc.voz', vel: 'loc.vel', pausa: 'loc.pausa' };
 
   /* ---------------------------- Estilos (Opção B: CSS nativo) ---------------------------- */
   const css = `
@@ -75,7 +75,9 @@
       '<div id="tts-loading-container" class="tts-loading-container"><div id="tts-progress-bar" class="tts-progress-bar"></div></div>' +
       '<span id="tts-status-text" class="tts-status-text">Motor de voz desligado.</span>' +
       '<div class="lin"><div><label for="locDtype">Precisão do modelo</label><select id="locDtype"><option value="q8">q8 — 8 bits (~86 MB, recomendado)</option><option value="fp32">fp32 — completo (~326 MB; use se o áudio sair mudo ou com ruído)</option></select></div>' +
-      '<div><label for="locDevice">Processamento</label><select id="locDevice"><option value="auto">Automático (WebGPU → WASM)</option><option value="wasm">Somente WASM (CPU)</option><option value="webgpu">Somente WebGPU (placa de vídeo)</option></select></div></div>' +
+      '<div><label for="locDevice">Processamento</label><select id="locDevice"><option value="auto">Automático (WebGPU → WASM)</option><option value="wasm">Somente WASM (CPU)</option><option value="webgpu">Somente WebGPU (placa de vídeo)</option></select></div>' +
+      '<div><label for="locFon">Pronúncia em português (fonemizador)</label><select id="locFon"><option value="auto">Automático (espeak-ng → interno)</option><option value="interno">Interno pt-BR (regras, sem download)</option><option value="espeak">espeak-ng completo (WebAssembly)</option></select></div></div>' +
+      '<p class="cont" id="locFonInfo">O Kokoro precisa do texto convertido em fonemas. O modo Automático tenta o espeak-ng e, se o navegador não o oferecer em português, usa o fonemizador interno.</p>' +
       '<p class="acoes"><button type="button" id="locAtivar">Ativar motor de voz</button><button type="button" class="sec" id="locRemModelo" title="Apaga do navegador os arquivos do modelo e das vozes">Remover modelo baixado</button></p>' +
       '<label class="inl"><input type="checkbox" id="locPreload"> Ativar o motor automaticamente ao abrir a página</label>' +
     '</div>' +
@@ -115,7 +117,7 @@
   /* ---------------------------- Preferências ---------------------------- */
   const pref = (k, d) => { const v = localStorage.getItem(PREF[k]); return v === null ? d : v; };
   $('locPreload').checked = pref('preload', '1') === '1';
-  $('locDtype').value = pref('dtype', 'q8'); $('locDevice').value = pref('device', 'auto');
+  $('locFon').value = pref('fon', 'auto'); $('locDtype').value = pref('dtype', 'q8'); $('locDevice').value = pref('device', 'auto');
   $('locVoz').value = pref('voz', 'pf_dora'); $('locVel').value = pref('vel', '1'); $('locPausa').value = pref('pausa', '300');
   const velTxt = () => { $('locVelV').textContent = (+$('locVel').value).toFixed(2).replace('.', ','); };
   velTxt();
@@ -125,6 +127,7 @@
   $('locPausa').onchange = () => localStorage.setItem(PREF.pausa, $('locPausa').value);
   const reinicio = () => { localStorage.setItem(PREF.dtype, $('locDtype').value); localStorage.setItem(PREF.device, $('locDevice').value); if (tts.pronto || tts.carregando) { encerrarMotor(); status('Configuração alterada. Clique em “Ativar motor de voz”.'); } };
   $('locDtype').onchange = reinicio; $('locDevice').onchange = reinicio;
+  $('locFon').onchange = () => { localStorage.setItem(PREF.fon, $('locFon').value); if (tts.worker) tts.worker.postMessage({ tipo: 'fon', fon: $('locFon').value }); $('locFonInfo').textContent = 'Fonemizador alterado. Os próximos áudios usarão a nova opção.'; };
 
   /* ---------------------------- 4.1 Inicialização (worker) ---------------------------- */
   let currentAudioUrl = null, geracao = null, idGer = 0, itemAtual = null;
@@ -158,7 +161,7 @@
         } else if (m.tipo === 'fase') {
           if (m.fase === 'carregando') status('Preparando o modelo (' + String(m.device).toUpperCase() + ', ' + $('locDtype').value + ')…');
           else if (m.fase === 'ready' || m.fase === 'compilando') status('Compilando modelo na GPU/CPU local…');
-        } else if (m.tipo === 'aviso') { status(m.msg); }
+        } else if (m.tipo === 'aviso' && !m.fon) { status(m.msg); }
         else if (m.tipo === 'pronto') {
           tts.ouvintes.delete(ouvir); tts.pronto = true; tts.info = m; container.style.display = 'none';
           status('✓ Motor de voz ativado localmente! (' + String(m.device).toUpperCase() + ', ' + m.dtype + ')');
@@ -171,7 +174,8 @@
         }
       };
       tts.ouvintes.add(ouvir);
-      tts.worker.postMessage({ tipo: 'init', dtype: $('locDtype').value, device: $('locDevice').value });
+      if (!tts.fonOuv) tts.fonOuv = tts.ouvintes.add(m => { if (m.tipo === 'aviso' && m.fon) { $('locFonInfo').textContent = m.msg + (m.fon === 'interno' ? ' (regras ortográficas; revise siglas e nomes próprios no texto se a pronúncia sair estranha)' : ''); logApp('Locução: ' + m.msg, 'ok'); } });
+      tts.worker.postMessage({ tipo: 'init', dtype: $('locDtype').value, device: $('locDevice').value, fon: $('locFon').value });
     });
     return tts.carregando;
   }
@@ -446,6 +450,7 @@
     '<li>Textos longos são divididos em trechos e emendados sem estalos. É possível cancelar.</li>' +
     '<li><b>3. Ouvir e baixar</b>: player e botão <b>Baixar .wav</b>.</li>' +
     '<li><b>Histórico local</b>: cada áudio fica guardado neste navegador. Gerar de novo o mesmo texto com a mesma voz, velocidade e pausa usa o histórico (“Carregado do histórico local”), sem processar. Cada item tem Ouvir, Baixar, Usar texto e Excluir.</li>' +
+    '<li><b>Pronúncia em português</b>: o modelo recebe o texto convertido em fonemas. O modo Automático usa o espeak-ng (WebAssembly) quando disponível e, se o navegador não oferecer português, o <b>fonemizador interno pt-BR</b> (regras, sem download). Siglas são soletradas ou lidas como palavra; números saem por extenso. Se uma palavra soar estranha, escreva-a como se fala.</li>' +
     '<li>Áudio mudo ou com ruído? Troque a precisão para <b>fp32</b> (download maior). Lento? Use “Somente WASM” ou textos menores. “Remover modelo baixado” libera espaço.</li></ul>';
   const KB = '<div class="kbG"><h4>Locução</h4><table class="kbT"><tr><td style="width:46%"><kbd>Alt + Shift + 3</kbd></td><td>Abrir a aba Locução</td></tr><tr><td><kbd>Alt + Shift + N</kbd></td><td>Gerar locução (na aba Locução)</td></tr><tr><td><kbd>Alt + Shift + 1 / 2</kbd></td><td>Voltar à aba Curso (Guia / Apresentação)</td></tr></table></div>';
   new MutationObserver(() => {
