@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.33 - 21/10/2026
+- **Arquivos gerados** separados por linha: **Guia** (.MD .HTML .DOCX), **Apresentacao** (.MD .HTML .PPTX) e **Todos** (.ZIP), com os links Exibir na linha correspondente. Vale tambem para os arquivos guardados no navegador.
+- Trocar entre as abas **Guia** e **Apresentacao** (e as demais abas e barras de navegacao) nao mostra mais confirmacao.
+
 ## 1.32 - 21/10/2026
 - Regra global de interface: toda secao e subsecao expansivel tem um unico controle **mostrar/recolher**, sempre alinhado a direita (corrige a duplicacao na aba Locucao e em Opcoes avancadas de voz).
 
