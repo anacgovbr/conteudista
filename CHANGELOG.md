@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.24 - 21/10/2026
+- Narracao dos slides: idioma, voz, velocidade e formato ficam em **Opcoes avancadas de voz** (recolhidas), com um resumo da voz escolhida.
+- Novo botao **Historico de audio** no painel: janela com busca, Ouvir, Baixar (MP3, OGG ou WAV), Usar esta voz e Excluir.
+
 ## 1.23 - 21/10/2026
 - Curso de exemplo: a apresentacao traz o texto de narracao de cada slide nas notas do apresentador, pronto para gerar o audio em Narracao dos slides.
 
