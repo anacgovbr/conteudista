@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.26 — 21/10/2026
+- **Como funciona** e **Salvar e compartilhar** (antes “Guardar e compartilhar”) mostram “recolher” quando abertas.
+- **Salvar na pasta…** (novo nome) e novo botão **Baixar .zip**, com os .md e os arquivos já gerados.
+- **Carregar exemplo** e **Limpar tela** ficam logo abaixo dos campos do curso; **Gerar arquivos** ganhou destaque e, no celular, ocupa toda a largura.
+
 ## 1.25 — 21/10/2026
 - Página mais leve: os **recursos de áudio** só são baixados ao clicar em **Carregar recursos de áudio** (aba Locução) ou ao ligar a **Narração dos slides**.
 - A seção **Gerar curso** começa expandida e pode ser recolhida.

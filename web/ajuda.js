@@ -60,7 +60,7 @@
     { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em 6 passos rápidos você verá como <b>escrever</b>, <b>gerar</b>, <b>salvar</b> e <b>recuperar</b> um curso. Tudo acontece no seu navegador; nada é enviado sem você pedir.' },
     { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o conteúdo', d: 'Use as abas <b>Guia</b> e <b>Apresentação</b>. Cole o texto gerado pelo agente de IA, arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link.' },
-    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe guia (HTML, DOCX, MD), apresentação (HTML, PPTX, MD) e um ZIP com tudo. Para testar agora, use <b>Carregar exemplo</b> ao lado.' },
+    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe guia (HTML, DOCX, MD), apresentação (HTML, PPTX, MD) e um ZIP com tudo. Para testar agora, use <b>Carregar exemplo</b>, logo abaixo dos campos do curso.' },
     { alvo: 'pLocal', t: '4. Seu trabalho é salvo sozinho', d: 'O <b>salvamento automático</b> já vem ligado: ao voltar à página, o último conteúdo é recuperado. Você também pode criar rascunhos com nome, salvar em uma pasta ou baixar os <code>.md</code>.' },
     { alvo: 'pLink', t: '5. Compartilhe com segurança (opcional)', d: 'Gere um <b>link criptografado</b> (autocontido ou PrivateBin), com senha se quiser. O tamanho aparece antes do envio.' },
     { alvo: 'pOpen', t: '6. Recupere de um link', d: 'Cole aqui um link recebido (e a senha, se houver) e clique em <b>Abrir link</b>: o conteúdo volta para os editores.' },
@@ -147,10 +147,10 @@
 <table><tr><th>Como</th><th>Onde fica</th><th>Como recuperar</th></tr>
 <tr><td><b>Salvamento automático</b> (ligado por padrão)</td><td>Neste navegador, neste computador</td><td>Abra a página de novo: o último trabalho volta sozinho</td></tr>
 <tr><td><b>Salvar rascunho</b> (com nome)</td><td>Neste navegador</td><td>Lista de rascunhos → <b>Abrir</b></td></tr>
-<tr><td><b>Salvar em pasta…</b> / <b>Baixar .md</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas</td></tr>
+<tr><td><b>Salvar na pasta…</b> / <b>Baixar .md</b> / <b>Baixar .zip</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas</td></tr>
 <tr><td><b>Link criptografado</b></td><td>No próprio link ou no PrivateBin (cifrado)</td><td>Painel <b>Abrir um link</b> → cole o link (e a senha)</td></tr>
 <tr><td><b>Histórico de versões</b></td><td>Neste navegador</td><td>Botão <b>Histórico</b> na barra do editor → escolha a versão → <b>Restaurar</b></td></tr></table>
-<div class="dica">Limpar os dados do navegador apaga os rascunhos locais. Para guardar por mais tempo, use <b>Salvar em pasta</b> ou <b>Baixar .md</b>.</div>
+<div class="dica">Limpar os dados do navegador apaga os rascunhos locais. Para guardar por mais tempo, use <b>Salvar na pasta</b>, <b>Baixar .md</b> ou <b>Baixar .zip</b>.</div>
 <h4>Histórico e comparação (antes e depois)</h4>
 <ul>
 <li>O histórico guarda versões <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), <b>arquivos carregados</b>, conteúdos <b>abertos de links</b>, rascunhos, exemplo, versões <b>marcadas</b> (★) e os momentos de gerar ou compartilhar. Antes de carregar ou restaurar algo, o conteúdo atual também é guardado.</li>
@@ -225,7 +225,7 @@
     { g: 'Arquivos', k: 'G', d: 'Gerar arquivos', f: () => clicar('go', 'Gerando arquivos…') },
     { g: 'Arquivos', k: 'E', d: 'Carregar exemplo', f: () => clicar('ex') },
     { g: 'Arquivos', k: 'D', d: 'Baixar os .md', f: () => clicar('mdl', 'Baixando .md…') },
-    { g: 'Arquivos', k: 'P', d: 'Salvar em pasta…', f: () => clicar('fsave') },
+    { g: 'Arquivos', k: 'P', d: 'Salvar na pasta…', f: () => clicar('fsave') },
     { g: 'Salvar e recuperar', k: 'S', d: 'Salvar rascunho', f: () => clicar('dsave') },
     { g: 'Salvar e recuperar', k: 'A', d: 'Ligar/desligar salvamento automático', f: () => { const c = $('auto'); c.checked = !c.checked; c.dispatchEvent(new Event('change')); toast('Salvamento automático ' + (c.checked ? 'ligado' : 'desligado')); } },
     { g: 'Salvar e recuperar', k: 'L', d: 'Criar link criptografado', f: () => clicar('share') },

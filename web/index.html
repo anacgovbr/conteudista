@@ -43,7 +43,12 @@ code{background:var(--th);padding:1px 5px;border-radius:4px}
 @media(max-width:900px){.grid,.grid3,.row{grid-template-columns:1fr}}
 details.sx>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;border-radius:6px}details.sx>summary::-webkit-details-marker{display:none}
 details.sx>summary h2,details.sx>summary h3{margin:0;flex:1}details.sx>summary::before{content:'▸';color:var(--acc);font-size:15px;transition:transform .15s}details.sx[open]>summary::before{transform:rotate(90deg)}
-details.sx>summary .sxh{font-size:13px;color:var(--acc);font-weight:600}details.sx[open]>summary .sxh{display:none}details.sx[open]>summary{margin-bottom:10px}
+details.sx>summary .sxh,details.sx>summary .sxr{font-size:13px;color:var(--acc);font-weight:600}details.sx[open]>summary .sxh,details.sx:not([open])>summary .sxr{display:none}
+.acoes-meta{margin:-2px 0 12px}.acoes-meta button{margin:0 8px 0 0}
+.acao-gerar{margin:16px 0 12px;text-align:center}
+body .acao-gerar #go{min-width:min(420px,100%);min-height:56px!important;line-height:56px!important;font-size:20px!important;padding:0 48px!important;box-shadow:0 3px 8px rgba(19,81,180,.35);letter-spacing:.2px}
+body .acao-gerar #go::before{content:"⚙ ";font-weight:400}
+@media(max-width:700px){body .acao-gerar #go{width:100%;min-width:0;padding:0 16px!important}.acoes-meta button{margin:0 6px 6px 0}}details.sx[open]>summary{margin-bottom:10px}
 details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details.sx#dxRes,details.sx#dxLinks{margin-top:14px}
 </style>
 <link rel="stylesheet" href="govbr.css">
@@ -65,12 +70,12 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
 <main id="conteudo" tabindex="-1">
 
 <section class="card">
-<details class="sx" id="dxComo"><summary><h2>Como funciona</h2><span class="sxh">mostrar</span></summary>
+<details class="sx" id="dxComo"><summary><h2>Como funciona</h2><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>
   <p class="box priv"><b>Privacidade:</b> a conversão roda inteiramente no seu navegador. Por padrão, <b>nada é enviado nem salvo</b>. Você decide se quer guardar o conteúdo <b>na sua máquina</b> (rascunhos no navegador ou em uma pasta) ou <b>compartilhar por link criptografado</b> — a chave fica só no link (e, se quiser, numa senha), nunca no servidor.</p>
   <ol>
     <li>Cole, arraste ou escreva o <b>guia</b> e a <b>apresentação</b> no editor (barra de ferramentas, atalhos e prévia ao lado). Imagens arrastadas, coladas (Ctrl+V) ou inseridas pelo botão de imagem são convertidas para <b>base64</b>.</li>
     <li>Clique em <b>Gerar arquivos</b> e baixe os 6 arquivos (ou o ZIP).</li>
-    <li>Opcional: salve na sua máquina ou crie um link criptografado (seção <b>Guardar e compartilhar</b>).</li>
+    <li>Opcional: salve na sua máquina ou crie um link criptografado (seção <b>Salvar e compartilhar</b>).</li>
   </ol>
   <p class="note">Atalhos do editor: <b>Ctrl+Z / Ctrl+Y</b> desfazer/refazer · <b>Ctrl+B</b> negrito · <b>Ctrl+I</b> itálico · <b>Ctrl+K</b> link · <b>Tab/Shift+Tab</b> recuo de listas · <b>Enter</b> continua listas e checklists · <b>Esc</b> sai da tela cheia. Lista completa: botão <b>⌨ Atalhos</b>. No editor, imagens aparecem como <code>(img:N)</code>; o texto completo em base64 é mantido e usado na geração.</p>
 </details>
@@ -84,6 +89,10 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
     <div><label for="bar">Barra superior do guia (HTML)</label><input id="bar" type="text" placeholder="Opcional (padrão: título do guia)"></div>
     <div><label for="tema">Layout dos arquivos gerados</label><select id="tema" title="Aplica-se ao guia (HTML/DOCX) e à apresentação (HTML/PPTX)"><option value="govbr">Padrão gov.br (padrão)</option><option value="classico">Clássico (layout original)</option></select></div>
   </div>
+  <p class="acoes-meta">
+    <button id="ex" class="sec mini">Carregar exemplo</button>
+    <button id="clr" class="sec mini">Limpar tela</button>
+  </p>
   <div class="tabs" id="abas">
     <button id="tg" type="button">Guia de treinamento (guia.md)</button>
     <button id="ts" type="button" class="off">Apresentação (apresentacao.md)</button>
@@ -97,10 +106,8 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
     <textarea id="s" spellcheck="false" placeholder="---&#10;title: Título&#10;---&#10;&#10;# Slide 1"></textarea>
   </div>
   <div id="imgst" class="note">Imagens: nenhuma referência encontrada.</div>
-  <p>
+  <p class="acao-gerar">
     <button id="go">Gerar arquivos</button>
-    <button id="ex" class="sec">Carregar exemplo</button>
-    <button id="clr" class="sec">Limpar tela</button>
     <input id="fmd" type="file" accept=".md,.txt,.markdown,image/*" multiple hidden>
   </p>
   <div id="log">Pronto. Nenhum conteúdo é armazenado sem sua autorização.</div>
@@ -111,7 +118,7 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
 </section>
 
 <section class="card" id="secShare">
-<details class="sx" id="dxShare"><summary><h2>Guardar e compartilhar</h2><span class="sxh">mostrar</span></summary>
+<details class="sx" id="dxShare"><summary><h2>Salvar e compartilhar</h2><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>
   <div class="grid3">
     <div class="panel" id="pLocal">
       <h3 style="margin-top:0">1. Na sua máquina</h3>
@@ -122,8 +129,9 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
       <input id="dname" type="text" placeholder="Ex.: Curso SAR v2">
       <p>
         <button id="dsave" class="mini">Salvar rascunho</button>
-        <button id="fsave" class="mini sec" title="Salva os .md (e os arquivos gerados) em uma pasta do computador">Salvar em pasta…</button>
+        <button id="fsave" class="mini sec" title="Salva os .md (e os arquivos gerados) em uma pasta do computador">Salvar na pasta…</button>
         <button id="mdl" class="mini sec">Baixar .md</button>
+        <button id="zdl" class="mini sec" title="Um único arquivo .zip com os .md e os arquivos já gerados">Baixar .zip</button>
       </p>
       <div id="drafts" class="note">Nenhum rascunho salvo.</div>
       <p><button id="dclear" class="mini dan">Apagar todos os dados locais</button></p>
@@ -425,6 +433,17 @@ $('dclear').onclick = async () => {
   localStorage.setItem('conteudista.auto', '0'); $('keep').checked = false; listarRascunhos(); listarLinks(); log('Dados locais apagados.', 'ok');
 };
 function baixar(nome, blob) { const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = nome; a.click(); setTimeout(() => URL.revokeObjectURL(u), 4000); }
+$('zdl').onclick = async () => {
+  const p = pacote(), x = (p.p || 'Curso').replace(/[^\w.-]+/g, '_');
+  if (!p.g.trim() && !p.s.trim()) { log('Nada para baixar.', 'wa'); return; }
+  const arqs = [];
+  if (p.g.trim()) arqs.push({ nome: 'Treinamento_' + x + '.md', dados: enc.encode(p.g) });
+  if (p.s.trim()) arqs.push({ nome: 'Apresentacao_' + x + '.md', dados: enc.encode(p.s) });
+  for (const f of ultimos) if (!/\.(md|zip)$/i.test(f.nome)) arqs.push({ nome: f.nome, dados: new Uint8Array(await f.blob.arrayBuffer()) });
+  const z = await zipCriar(arqs);
+  baixar('Curso_' + x + '.zip', new Blob([z], { type: 'application/zip' }));
+  log('ZIP baixado com ' + arqs.length + ' arquivo(s)' + (arqs.length > 2 ? '' : ' (gere os arquivos para incluir HTML, DOCX e PPTX)') + '.', 'ok');
+};
 $('mdl').onclick = () => {
   const p = pacote(), x = (p.p || 'Curso').replace(/[^\w.-]+/g, '_');
   baixar('Treinamento_' + x + '.md', new Blob([p.g], { type: 'text/markdown' }));

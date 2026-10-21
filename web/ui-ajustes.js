@@ -16,7 +16,7 @@ details.sx>summary{list-style:none;cursor:pointer;display:flex;align-items:cente
 details.sx>summary h2,details.sx>summary h3{margin:0;flex:1}details.sx>summary::before{content:'▸';color:var(--acc,#1351b4);font-size:15px;transition:transform .15s}details.sx[open]>summary::before{transform:rotate(90deg)}
 details.sx>summary .sxh{font-size:13px;color:var(--acc,#1351b4);font-weight:600}details.sx[open]>summary .sxh{display:none}details.sx[open]>summary{margin-bottom:10px}
 details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc,#1351b4)}
-#dxGerar>summary .sxr{font-size:13px;color:var(--acc,#1351b4);font-weight:600}#dxGerar:not([open])>summary .sxr{display:none}
+details.sx>summary .sxr{font-size:13px;color:var(--acc,#1351b4);font-weight:600}details.sx:not([open])>summary .sxr{display:none}
 #links td.url{font:inherit;font-size:13.5px;word-break:normal;max-width:320px}
 #links .lk{display:inline-flex;align-items:center;gap:6px;max-width:100%}
 #links .lk b{font-weight:600;color:var(--pri,#0c326f);white-space:nowrap}
