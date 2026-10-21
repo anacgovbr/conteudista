@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.16 — 21/10/2026
+- Gera arquivos mesmo com só o **guia** ou só a **apresentação** preenchidos (apenas do que foi preenchido).
+- Caixas **Informação**, **Dica** e **Atenção** com cores próprias (azul, verde e amarelo) no HTML, DOCX e PPTX, em qualquer layout e nos temas escuro e alto contraste do guia.
+
 ## 1.15 — 21/10/2026
 - Arquivos guardados no navegador: botões renomeados para **Treinamento** e **Apresentação** (antes “Guia” e “Slides”).
 

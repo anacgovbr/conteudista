@@ -613,7 +613,9 @@ async function prepararPython() {
 
 /* =========================== Geração =========================== */
 $('go').onclick = async () => {
-  if (!$('g').value.trim() || !$('s').value.trim()) { log('Preencha (ou arraste) o guia e a apresentação.', 'err'); return; }
+  if (!$('g').value.trim() && !$('s').value.trim()) { log('Preencha (ou arraste) o guia e/ou a apresentação.', 'err'); return; }
+  if (!$('g').value.trim()) log('Guia vazio: serão gerados apenas os arquivos da apresentação.', 'wa');
+  else if (!$('s').value.trim()) log('Apresentação vazia: serão gerados apenas os arquivos do treinamento.', 'wa');
   $('go').disabled = true;
   try {
     const fal = await embutirTudo(true);

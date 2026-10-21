@@ -118,7 +118,7 @@
 <ol>
 <li>Na aba <b>Guia</b>, cole ou arraste o <code>guia.md</code>; na aba <b>Apresentação</b>, o <code>apresentacao.md</code>.</li>
 <li>Preencha o <b>prefixo</b> (nome dos arquivos) e o <b>rodapé</b> e escolha o <b>Layout dos arquivos gerados</b>: <b>Padrão gov.br</b> (padrão: cores, fonte e destaques do Design System do Governo Federal) ou <b>Clássico</b> (layout original).</li>
-<li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>.</li>
+<li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Se só um dos dois estiver preenchido, são gerados apenas os arquivos dele.</li>
 </ol>
 <div class="dica">Na primeira geração o navegador carrega o motor Python (20 a 60 s). Depois é imediato.</div>
 <h4>Editor</h4>

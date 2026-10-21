@@ -206,9 +206,9 @@ def thex(h,T):return _cor(h,T)[1:].upper()
 def trgb(h,T):
     from docx.shared import RGBColor as _R
     return _R.from_string(thex(h,T))
-CSS_G=""":root{--bg:#f6f8fb;--pa:#fff;--ink:#1b2430;--pri:#0b3d6e;--acc:#0a7cc1;--line:#dfe5ee;--th:#eaf1f8;--ok:#1e7b4f;--wa:#9a5b00;--code:#f1f4f8}
-[data-theme=dark]{--bg:#0f1520;--pa:#162030;--ink:#e6edf5;--pri:#8cc4ff;--acc:#5fb3ff;--line:#2a3a50;--th:#1e2c40;--ok:#5fd39b;--wa:#ffc266;--code:#1c283a}
-[data-theme=contrast]{--bg:#000;--pa:#000;--ink:#fff;--pri:#ffd400;--acc:#00e5ff;--line:#fff;--th:#1a1a1a;--ok:#0f8;--wa:#ffd400;--code:#111}
+CSS_G=""":root{--qi:#0a7cc1;--qib:#eaf1f8;--qt:#1e7b4f;--qtb:#e9f6f0;--qw:#9a5b00;--qwb:#fff4e0;--bg:#f6f8fb;--pa:#fff;--ink:#1b2430;--pri:#0b3d6e;--acc:#0a7cc1;--line:#dfe5ee;--th:#eaf1f8;--ok:#1e7b4f;--wa:#9a5b00;--code:#f1f4f8}
+[data-theme=dark]{--qi:#5fb3ff;--qib:#16304d;--qt:#5fd39b;--qtb:#123326;--qw:#ffc266;--qwb:#3a2c10;--bg:#0f1520;--pa:#162030;--ink:#e6edf5;--pri:#8cc4ff;--acc:#5fb3ff;--line:#2a3a50;--th:#1e2c40;--ok:#5fd39b;--wa:#ffc266;--code:#1c283a}
+[data-theme=contrast]{--qi:#00e5ff;--qib:#001f2b;--qt:#00ff88;--qtb:#002614;--qw:#ffd400;--qwb:#2b2400;--bg:#000;--pa:#000;--ink:#fff;--pri:#ffd400;--acc:#00e5ff;--line:#fff;--th:#1a1a1a;--ok:#0f8;--wa:#ffd400;--code:#111}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",Roboto,Arial,sans-serif}
 header{position:sticky;top:0;z-index:9;background:#0b3d6e;color:#fff;display:flex;align-items:center;gap:12px;padding:10px 18px}header .t{font-weight:700;flex:1;font-size:15px}
 header button,header select{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;padding:6px 10px;font:inherit;font-size:13px;cursor:pointer}header option{color:#000}
@@ -219,7 +219,7 @@ h1{color:var(--pri);font-size:30px;line-height:1.25}h2{color:var(--pri);font-siz
 .tbl{overflow-x:auto;margin:14px 0}table{border-collapse:collapse;width:100%;font-size:14.5px}th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}th{background:var(--th);color:var(--pri)}
 code{background:var(--code);padding:1px 5px;border-radius:4px;font:.9em Consolas,monospace}pre.code{background:var(--code);padding:14px;border-radius:8px;overflow:auto}.mw{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin:14px 0;overflow-x:auto}pre.mermaid{margin:0;color:#333}
 figure{margin:16px 0;text-align:center}figure img{max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px}figcaption{color:#5a6676;font-size:13px;margin-top:4px}img.il{max-height:1.6em;vertical-align:middle}
-blockquote{margin:16px 0;padding:12px 16px;border-left:5px solid var(--acc);background:var(--th);border-radius:0 8px 8px 0}blockquote p{margin:4px 0}blockquote.tip{border-left-color:var(--ok)}blockquote.warning{border-left-color:var(--wa)}
+blockquote{margin:16px 0;padding:12px 16px;border-left:5px solid var(--acc);background:var(--th);border-radius:0 8px 8px 0}blockquote p{margin:4px 0}blockquote.info{border-left-color:var(--qi);background:var(--qib)}blockquote.tip{border-left-color:var(--qt);background:var(--qtb)}blockquote.warning{border-left-color:var(--qw);background:var(--qwb)}
 li.task{list-style:none;margin-left:-22px}li.task input{transform:scale(1.15);margin-right:6px;accent-color:var(--acc)}.hid h3~*{filter:blur(6px);user-select:none;pointer-events:none}
 .ab{margin:8px 0;background:var(--acc);color:#fff;border:0;border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}
 @media(max-width:900px){.wrap{grid-template-columns:1fr}nav{display:none}main{padding:12px}article{padding:20px}}
@@ -242,7 +242,7 @@ html,body{margin:0;height:100%;background:#0d1b2a;font-family:"Segoe UI",Roboto,
 .s h1{font-size:40px;color:var(--pri);margin:0 0 22px;padding-bottom:12px;border-bottom:3px solid var(--acc);line-height:1.15}.s h2{font-size:26px;color:var(--acc);margin:0 0 14px}
 .s p,.s li{font-size:23px;line-height:1.45;margin:6px 0}.s ul,.s ol{padding-left:34px;margin:4px 0}.s li li{font-size:20px}.s li::marker{color:var(--acc);font-weight:700}
 .s table{border-collapse:collapse;width:100%;font-size:19px;margin:4px 0 10px}.s th{background:var(--pri);color:#fff;text-align:left;padding:9px 12px}.s td{border-bottom:1px solid var(--line);padding:8px 12px;vertical-align:top}.s tr:nth-child(even) td{background:var(--soft)}
-.s a{color:var(--acc)}.s code{background:var(--soft);padding:1px 6px;border-radius:4px;color:var(--pri)}.s strong{color:var(--pri)}.s blockquote{margin:14px 0 0;padding:12px 18px;background:#e9f6f0;border-left:6px solid var(--ac2);border-radius:0 10px 10px 0}.s blockquote p{font-size:21px;margin:0}
+.s a{color:var(--acc)}.s code{background:var(--soft);padding:1px 6px;border-radius:4px;color:var(--pri)}.s strong{color:var(--pri)}.s blockquote{margin:14px 0 0;padding:12px 18px;background:#e9f6f0;border-left:6px solid var(--ac2);border-radius:0 10px 10px 0}.s blockquote p{font-size:21px;margin:0}.s blockquote.info{background:#eaf1f8;border-left-color:#0a7cc1}.s blockquote.tip{background:#e9f6f0;border-left-color:#1e7b4f}.s blockquote.warning{background:#fff4e0;border-left-color:#9a5b00}
 .s figure{margin:6px 0;text-align:center}.s figure img{max-width:100%;max-height:440px;object-fit:contain}.s figcaption{font-size:15px;color:var(--mu)}.s img.il{max-height:1.4em;vertical-align:middle}
 .s .mw{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.s pre.mermaid{margin:0}
 .s.title{background:linear-gradient(135deg,#0b3d6e,#0a5c9a 60%,#0a7cc1);color:#fff}.s.title:before{background:var(--ac2)}.s.title:after{color:#cfe3f5}.s.title .in{justify-content:center}
@@ -480,8 +480,8 @@ def slides_pptx(t,sl,path,foot,tema=None):
                     addruns(tf.paragraphs[0],r[ci] if ci<len(r) else '',ts,WH if ri==0 else INK,ri==0)
                     c.fill.solid();c.fill.fore_color.rgb=PRI if ri==0 else (SOFT if ri%2==0 else WH)
         elif k=='quote':
-            bg={'warning':C('FFF4E0')}.get(b[1],C('E9F6F0'))
-            rect(s,x,y,w,h-0.05,bg);rect(s,x,y,0.08,h-0.05,AC2 if b[1]!='warning' else C('9A5B00'))
+            bg,bd={'info':(C('EAF1F8'),C('0A7CC1')),'tip':(C('E9F6F0'),C('1E7B4F')),'warning':(C('FFF4E0'),C('9A5B00'))}.get(b[1],(C('E9F6F0'),AC2))
+            rect(s,x,y,w,h-0.05,bg);rect(s,x,y,0.08,h-0.05,bd)
             yy=y+0.1
             for q in b[2]:draw(s,q,yy,size-1,col,x+0.2,w-0.3);yy+=est(q,size-1)
         elif k=='img':
@@ -527,28 +527,39 @@ def slides_pptx(t,sl,path,foot,tema=None):
 # ============================== EXECUÇÃO ==============================
 def gerar(gm,sm,prefixo='Curso',rodape='',barra='',saida='.',tema=None):
     tema=tema if tema in TEMAS else TEMA_PADRAO
-    """Gera os 6 arquivos a partir do texto dos dois .md. Retorna (lista de caminhos, resumo)."""
+    """Gera os arquivos do que estiver preenchido: guia (MD/HTML/DOCX) e/ou apresentação (MD/HTML/PPTX)."""
+    gm=gm or '';sm=sm or ''
+    tem_g,tem_s=bool(gm.strip()),bool(sm.strip())
+    if not tem_g and not tem_s:raise ValueError('Nada para gerar: o guia e a apresentação estão vazios.')
     os.makedirs(saida,exist_ok=True)
-    gm_=re.sub(r'<!--.*?-->','',gm,flags=re.S);g=guia_html(gm_,barra,tema);t,sl=split_slides(sm)
     P=lambda e,n:os.path.join(saida,n+prefixo+e)
-    arqs=[P('.md','Treinamento_'),P('.html','Treinamento_'),P('.md','Apresentacao_'),P('.html','Apresentacao_')]
-    open(arqs[1],'w',encoding='utf-8').write(g);open(arqs[3],'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema))
-    open(arqs[0],'w',encoding='utf-8').write(gm);open(arqs[2],'w',encoding='utf-8').write(sm)
-    msg=''
-    try:guia_docx(gm_,P('.docx','Treinamento_'),rodape or title_of(gm_,''),tema);arqs.append(P('.docx','Treinamento_'));msg+=' | docx: ok'
-    except Exception as e:msg+=' | docx: ERRO %s'%e
-    try:slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape,tema);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
-    except Exception as e:msg+=' | pptx: ERRO %s'%e
+    arqs=[];msg='';g='';sl=[]
+    if tem_g:
+        gm_=re.sub(r'<!--.*?-->','',gm,flags=re.S);g=guia_html(gm_,barra,tema)
+        open(P('.md','Treinamento_'),'w',encoding='utf-8').write(gm);open(P('.html','Treinamento_'),'w',encoding='utf-8').write(g)
+        arqs+=[P('.md','Treinamento_'),P('.html','Treinamento_')]
+        try:guia_docx(gm_,P('.docx','Treinamento_'),rodape or title_of(gm_,''),tema);arqs.append(P('.docx','Treinamento_'));msg+=' | docx: ok'
+        except Exception as e:msg+=' | docx: ERRO %s'%e
+    else:msg+=' | guia: vazio (não gerado)'
+    if tem_s:
+        t,sl=split_slides(sm)
+        open(P('.md','Apresentacao_'),'w',encoding='utf-8').write(sm);open(P('.html','Apresentacao_'),'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema))
+        arqs+=[P('.md','Apresentacao_'),P('.html','Apresentacao_')]
+        try:slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape,tema);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
+        except Exception as e:msg+=' | pptx: ERRO %s'%e
+    else:msg+=' | apresentação: vazia (não gerada)'
     res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d | imagens: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'),len(IMG.findall(gm))+len(IMG.findall(sm)))+' | tema: '+tema
     return arqs,res
 if __name__=='__main__':
-    a=argparse.ArgumentParser();a.add_argument('guia');a.add_argument('apresentacao');a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.')
+    a=argparse.ArgumentParser();a.add_argument('guia',help="arquivo do guia ('-' para não gerar)");a.add_argument('apresentacao',nargs='?',default='-',help="arquivo da apresentação ('-' ou omitido para não gerar)");a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.')
     a.add_argument('--sem-embutir',action='store_true',help='não converter imagens para base64');a.add_argument('--tema',default=TEMA_PADRAO,choices=sorted(TEMAS),help='layout dos arquivos (padrão: %(default)s)');a=a.parse_args()
-    gm=open(a.guia,encoding='utf-8').read();sm=open(a.apresentacao,encoding='utf-8').read()
+    ler=lambda f:'' if f in('-','') else open(f,encoding='utf-8').read()
+    gm=ler(a.guia);sm=ler(a.apresentacao)
     if not a.sem_embutir:
-        gm,n1,f1=embed_images(gm,os.path.dirname(os.path.abspath(a.guia)));sm,n2,f2=embed_images(sm,os.path.dirname(os.path.abspath(a.apresentacao)))
+        gm,n1,f1=embed_images(gm,os.path.dirname(os.path.abspath(a.guia if a.guia!='-' else '.')));sm,n2,f2=embed_images(sm,os.path.dirname(os.path.abspath(a.apresentacao if a.apresentacao!='-' else '.')))
         if n1+n2:print('Imagens embutidas em base64: %d'%(n1+n2))
         for f in f1+f2:print('AVISO: imagem não encontrada/baixada: %s'%f)
-    _,res=gerar(gm,sm,a.prefixo,a.rodape,a.barra,a.saida,a.tema)
+    try:_,res=gerar(gm,sm,a.prefixo,a.rodape,a.barra,a.saida,a.tema)
+    except ValueError as e:print('ERRO: %s'%e);raise SystemExit(1)
     print(res)
     if 'ERRO' in res:raise SystemExit(1)

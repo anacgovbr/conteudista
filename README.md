@@ -59,6 +59,7 @@ tools/requirements.txt
 ```
 pip install -r tools/requirements.txt
 python tools/gerador.py guia.md apresentacao.md --prefixo Meu_Curso --rodape "SIGLA · ANAC" --saida saida
+# só um dos dois: use '-' no lugar do arquivo ausente (ex.: python tools/gerador.py - apresentacao.md ...)
 ```
 
 ## Atalhos da aplicação
