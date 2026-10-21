@@ -17,10 +17,6 @@ details.sx>summary h2,details.sx>summary h3{margin:0;flex:1}details.sx>summary::
 details.sx>summary .sxh{font-size:13px;color:var(--acc,#1351b4);font-weight:600}details.sx[open]>summary .sxh{display:none}details.sx[open]>summary{margin-bottom:10px}
 details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc,#1351b4)}
 details.sx>summary .sxr{font-size:13px;color:var(--acc,#1351b4);font-weight:600}details.sx:not([open])>summary .sxr{display:none}
-details>summary .sxh,details>summary .sxr{font-size:13px;color:var(--acc,#1351b4);font-weight:600;white-space:nowrap}details[open]>summary .sxh{display:none}details:not([open])>summary .sxr{display:none}
-details.mr>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer}details.mr>summary::-webkit-details-marker{display:none}
-details.mr:not(.mde-gal)>summary::before{content:'▸';color:var(--acc,#1351b4);font-size:14px;transition:transform .15s}details.mr:not(.mde-gal)[open]>summary::before{transform:rotate(90deg)}
-details.mr:not(.mde-gal)>summary .sxh,details.mr:not(.mde-gal)>summary .sxr{margin-left:auto}.mde-gal>summary .sxh,.mde-gal>summary .sxr{margin-left:4px;font-size:12px}
 #links td.url{font:inherit;font-size:13.5px;word-break:normal;max-width:320px}
 #links .lk{display:inline-flex;align-items:center;gap:6px;max-width:100%}
 #links .lk b{font-weight:600;color:var(--pri,#0c326f);white-space:nowrap}
@@ -54,21 +50,6 @@ details.mr:not(.mde-gal)>summary .sxh,details.mr:not(.mde-gal)>summary .sxr{marg
     card.appendChild(d);
   }
   recolhivel();
-
-  /* ---------------------------- Todas as seções expansíveis: "mostrar" / "recolher" ---------------------------- */
-  function rotular(raiz) {
-    (raiz || document).querySelectorAll('details').forEach(d => {
-      const s = d.querySelector(':scope > summary'); if (!s) return;
-      if (!d.classList.contains('sx')) d.classList.add('mr');
-      if (!s.querySelector(':scope > .sxh')) { const a = document.createElement('span'); a.className = 'sxh'; a.textContent = 'mostrar'; s.appendChild(a); }
-      if (!s.querySelector(':scope > .sxr')) { const b = document.createElement('span'); b.className = 'sxr'; b.textContent = 'recolher'; s.appendChild(b); }
-    });
-  }
-  rotular();
-  let tRot = null;
-  new MutationObserver(() => { clearTimeout(tRot); tRot = setTimeout(() => rotular(), 50); }).observe(document.body, { childList: true, subtree: true });
-  // Foco (atalhos, tutorial, Tab) dentro de qualquer seção recolhida: abre a seção
-  document.addEventListener('focusin', e => { const d = e.target.closest && e.target.closest('details:not([open])'); if (d && !e.target.matches('summary')) d.open = true; });
   // Qualquer ação que leve a um elemento dentro da seção recolhida (atalhos, tutorial, foco) a abre
   document.addEventListener('focusin', e => { const d = e.target.closest && e.target.closest('#dxGerar:not([open])'); if (d && !e.target.matches('summary')) d.open = true; });
   ['go', 'ex', 'tg', 'ts'].forEach(id => { const b = $(id); if (b) b.addEventListener('click', () => { const d = $('dxGerar'); if (d) d.open = true; }, true); });

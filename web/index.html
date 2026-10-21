@@ -111,7 +111,7 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
     <input id="fmd" type="file" accept=".md,.txt,.markdown,image/*" multiple hidden>
   </p>
   <div id="log">Pronto. Nenhum conteúdo é armazenado sem sua autorização.</div>
-  <details class="sx" id="dxRes"><summary><h3>Arquivos gerados</h3><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>
+  <details class="sx" id="dxRes"><summary><h3>Arquivos gerados</h3><span class="sxh">mostrar</span></summary>
   <div id="res" class="note">Nenhum arquivo gerado ainda.</div>
   <iframe id="prev" title="Pré-visualização" hidden></iframe>
   </details>
@@ -130,8 +130,8 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
       <p>
         <button id="dsave" class="mini">Salvar rascunho</button>
         <button id="fsave" class="mini sec" title="Salva os .md (e os arquivos gerados) em uma pasta do computador">Salvar na pasta…</button>
-        <button id="mdl" class="mini sec" title="Baixar os arquivos .md (guia e apresentação)" aria-label="Baixar os arquivos .md">⬇ .MD</button>
-        <button id="zdl" class="mini sec" title="Baixar um .zip com tudo: .md, HTML, DOCX e PPTX (gera os arquivos se necessário)" aria-label="Baixar o curso completo em .zip">⬇ .ZIP</button>
+        <button id="mdl" class="mini sec">Baixar .md</button>
+        <button id="zdl" class="mini sec" title="Um único arquivo .zip com os .md e os arquivos já gerados">Baixar .zip</button>
       </p>
       <div id="drafts" class="note">Nenhum rascunho salvo.</div>
       <p><button id="dclear" class="mini dan">Apagar todos os dados locais</button></p>
@@ -174,7 +174,7 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
       <p><button id="open" class="sec">Abrir link</button></p>
     </div>
   </div>
-  <details class="sx" id="dxLinks"><summary><h3>Links criados</h3><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>
+  <details class="sx" id="dxLinks"><summary><h3>Links criados</h3><span class="sxh">mostrar</span></summary>
   <div id="links" class="note">Nenhum link nesta sessão.</div>
   </details>
   <p class="box warn" style="margin-top:12px"><b>Atenção:</b> não compartilhe dados pessoais ou informações restritas por link, mesmo criptografado, sem autorização da sua chefia. Links longos (autocontidos) podem ser cortados por e-mail ou Teams — prefira o PrivateBin para conteúdos grandes. A instância pública privatebin.net aceita até cerca de 10 MB por envio.</p>
@@ -191,8 +191,7 @@ const $ = id => document.getElementById(id);
 const enc = new TextEncoder(), dec = new TextDecoder();
 const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const log = (m, c) => { const L = $('log'); L.innerHTML += '\n' + (c ? '<span class="' + c + '">' + esc(m) + '</span>' : esc(m)); L.scrollTop = L.scrollHeight; };
-let py = null, urls = [], ultimos = [], assinaturaGerada = '';
-const assinaturaAtual = () => [$('g').value.trim(), $('s').value.trim(), $('pref').value.trim(), $('rod').value, $('bar').value, $('tema').value].join('\u0001');
+let py = null, urls = [], ultimos = [];
 
 /* =========================== Editores =========================== */
 const ED = {
@@ -437,21 +436,13 @@ function baixar(nome, blob) { const u = URL.createObjectURL(blob); const a = doc
 $('zdl').onclick = async () => {
   const p = pacote(), x = (p.p || 'Curso').replace(/[^\w.-]+/g, '_');
   if (!p.g.trim() && !p.s.trim()) { log('Nada para baixar.', 'wa'); return; }
-  // ZIP sempre completo: gera (ou atualiza) os arquivos antes, se ainda não foram gerados para o conteúdo atual
-  const temGerados = ultimos.some(f => /\.(html|docx|pptx)$/i.test(f.nome));
-  if (!temGerados || assinaturaGerada !== assinaturaAtual()) {
-    log(temGerados ? 'O conteúdo mudou desde a última geração: gerando os arquivos de novo para o ZIP…' : 'Gerando os arquivos (HTML, DOCX e PPTX) para o ZIP…');
-    $('zdl').disabled = true;
-    try { await $('go').onclick(); } finally { $('zdl').disabled = false; }
-    if (!ultimos.some(f => /\.(html|docx|pptx)$/i.test(f.nome))) { log('Não foi possível gerar os arquivos; o ZIP terá só os .md.', 'wa'); }
-  }
   const arqs = [];
   if (p.g.trim()) arqs.push({ nome: 'Treinamento_' + x + '.md', dados: enc.encode(p.g) });
   if (p.s.trim()) arqs.push({ nome: 'Apresentacao_' + x + '.md', dados: enc.encode(p.s) });
   for (const f of ultimos) if (!/\.(md|zip)$/i.test(f.nome)) arqs.push({ nome: f.nome, dados: new Uint8Array(await f.blob.arrayBuffer()) });
   const z = await zipCriar(arqs);
   baixar('Curso_' + x + '.zip', new Blob([z], { type: 'application/zip' }));
-  log('ZIP baixado com ' + arqs.length + ' arquivo(s): ' + arqs.map(a => a.nome.split('.').pop().toUpperCase()).filter((v, i, l) => l.indexOf(v) === i).join(', ') + '.', 'ok');
+  log('ZIP baixado com ' + arqs.length + ' arquivo(s)' + (arqs.length > 2 ? '' : ' (gere os arquivos para incluir HTML, DOCX e PPTX)') + '.', 'ok');
 };
 $('mdl').onclick = () => {
   const p = pacote(), x = (p.p || 'Curso').replace(/[^\w.-]+/g, '_');
@@ -680,7 +671,6 @@ $('go').onclick = async () => {
     $('res').innerHTML = h;
     $('res').querySelectorAll('[data-u]').forEach(a => a.onclick = e => { e.preventDefault(); $('prev').hidden = false; $('prev').src = a.dataset.u; });
     agendarAuto();
-    if (!res.includes('ERRO')) assinaturaGerada = assinaturaAtual();
     if (window.Hist && !res.includes('ERRO')) Hist.registrar('gerado', 'Arquivos gerados: ' + pref);
   } catch (e) {
     log('Erro: ' + e.message, 'err');
