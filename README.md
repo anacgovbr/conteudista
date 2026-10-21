@@ -34,8 +34,6 @@ web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
 web/locucao.js           ← aba Locução
 web/locucao-worker.js    ← motor de voz Kokoro-82M (Web Worker)
 web/ptbr-g2p.js          ← fonemizador interno pt-BR
-web/audio-codec.js       ← conversão de áudio no navegador (MP3/OGG/WAV)
-web/narracao.js          ← narração dos slides
 web/changelog.js         ← botão Novidades (lê o CHANGELOG.md)
 web/govbr.css            ← tema do Padrão Digital de Governo (gov.br/ds)
 CHANGELOG.md             ← histórico de versões da aplicação
@@ -106,11 +104,11 @@ O GitHub Pages limita o site a ~1 GB. Para acrescentar outra voz do Piper, inclu
 
 ## Narração dos slides
 
-Na aba **Curso**, o painel **Narração dos slides** transforma as notas do apresentador (`<!-- notas: … -->`) em áudio embutido na apresentação:
+Na aba **Curso**, com a aba **Apresentação** selecionada, o painel **Narração dos slides** transforma as notas do apresentador (`<!-- notas: … -->`) em áudio embutido na apresentação:
 
 | Arquivo | Como funciona |
 |---|---|
 | HTML | Áudio por slide dentro do próprio arquivo; tela “Iniciar com narração”; botões **Narração** (M) e **Avanço automático** (A, desligado por padrão) |
 | PPTX | Áudio por slide com início automático (MP3, ou WAV se escolhido); com “Avançar os slides sozinho”, o slide avança ao fim do áudio — útil para **Exportar → Criar um vídeo** |
 
-Formato do áudio: **MP3** (padrão; `lamejs`, hospedável em `vendor/` pelo perfil de bibliotecas `lamejs`), **OGG/Opus** (WebCodecs) ou **WAV**. `<!-- narracao: texto -->` substitui a nota no áudio; `<!-- narracao: nao -->` deixa o slide sem som. Linha de comando: `python tools/gerador.py - apresentacao.md --audios pasta --avancar` (arquivos `1.mp3`, `2.ogg`, `3.wav`… pelo número do slide).
+Formato do áudio: **MP3** (padrão; `lamejs`), **OGG/Opus** (WebCodecs) ou **WAV**. `<!-- narracao: texto -->` substitui a nota no áudio; `<!-- narracao: nao -->` deixa o slide sem som. Linha de comando: `python tools/gerador.py - apresentacao.md --audios pasta --avancar` (arquivos `1.mp3`, `2.ogg`, `3.wav`… pelo número do slide).

@@ -12,7 +12,6 @@
   const base = (document.currentScript && document.currentScript.src) || location.href;
   const pausa = () => new Promise(r => setTimeout(r, 0));
 
-  /* ---------------------------- utilidades ---------------------------- */
   async function paraBuffer(x) {
     if (x && typeof x.getChannelData === 'function') return x;
     const Ctx = global.AudioContext || global.webkitAudioContext, ctx = new Ctx();
@@ -41,7 +40,6 @@
     return new Blob([ab], { type: 'audio/wav' });
   }
 
-  /* ---------------------------- MP3 (lamejs) ---------------------------- */
   let lameP = null;
   function carregarScript(url) {
     return new Promise((ok, falha) => { const s = document.createElement('script'); s.src = url; s.onload = () => ok(); s.onerror = () => { s.remove(); falha(new Error('falha ao carregar ' + url)); }; document.head.appendChild(s); });
@@ -74,7 +72,6 @@
     return new Blob(partes, { type: 'audio/mpeg' });
   }
 
-  /* ---------------------------- OGG / Opus (WebCodecs + Ogg) ---------------------------- */
   const CRC = (() => { const t = new Uint32Array(256); for (let i = 0; i < 256; i++) { let r = i << 24; for (let k = 0; k < 8; k++) r = r & 0x80000000 ? (r << 1) ^ 0x04c11db7 : r << 1; t[i] = r >>> 0; } return t; })();
   function crc(u8) { let c = 0; for (let i = 0; i < u8.length; i++) c = ((c << 8) ^ CRC[((c >>> 24) ^ u8[i]) & 255]) >>> 0; return c >>> 0; }
   function pagina(pacote, granule, serie, seq, flags) {
@@ -97,7 +94,7 @@
     let erro = null;
     const enc = new AudioEncoder({ output: (ch) => { const d = new Uint8Array(ch.byteLength); ch.copyTo(d); pacotes.push({ d, dur: ch.duration }); }, error: e => { erro = e; } });
     enc.configure({ codec: 'opus', sampleRate: 48000, numberOfChannels: 1, bitrate: 32000 });
-    const QUADRO = 48000;  // 1 s por AudioData
+    const QUADRO = 48000;
     for (let i = 0; i < p48.length; i += QUADRO) {
       const n = Math.min(QUADRO, p48.length - i), dados = p48.slice(i, i + n);
       const ad = new AudioData({ format: 'f32-planar', sampleRate: 48000, numberOfFrames: n, numberOfChannels: 1, timestamp: Math.round(i * 1e6 / 48000), data: dados });
@@ -123,7 +120,6 @@
     return new Blob(saida, { type: 'audio/ogg' });
   }
 
-  /* ---------------------------- API ---------------------------- */
   const EXT = { mp3: ['mp3', 'audio/mpeg'], ogg: ['ogg', 'audio/ogg'], wav: ['wav', 'audio/wav'] };
   async function codificar(entrada, formato) {
     formato = EXT[formato] ? formato : 'mp3';

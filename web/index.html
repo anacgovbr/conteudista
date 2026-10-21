@@ -695,12 +695,10 @@ listarLinks().catch(() => {});
 function abrirSecao(el) { for (let d = el && el.closest ? el.closest('details') : null; d; d = d.parentElement && d.parentElement.closest('details')) d.open = true; }
 window.abrirSecao = abrirSecao;
 ['dxComo', 'dxRes', 'dxShare', 'dxLinks'].forEach(id => { const d = $(id); if (d) d.open = false; });
-// abre ao gerar arquivos ou criar links (depois da carga inicial, para não abrir com links antigos lembrados)
 setTimeout(() => {
   new MutationObserver(() => { if ($('res').querySelector('a[download]')) abrirSecao($('res')); }).observe($('res'), { childList: true, subtree: true });
   new MutationObserver(() => { if ($('links').querySelector('table')) abrirSecao($('links')); }).observe($('links'), { childList: true, subtree: true });
 }, 1500);
-// qualquer ação que leve a um elemento recolhido (foco, link interno, atalhos) abre a seção
 document.addEventListener('focusin', e => { if (e.target.closest && e.target.closest('details.sx:not([open])') && !e.target.matches('summary')) abrirSecao(e.target); });
 addEventListener('hashchange', () => { const a = location.hash && document.querySelector(location.hash); if (a) abrirSecao(a); });
 $('tema').value = localStorage.getItem('conteudista.tema') || 'govbr';

@@ -1,14 +1,17 @@
 # Novidades do Conteudista
 
+## 1.22 — 21/10/2026
+- O painel **Narração dos slides** aparece somente com a aba **Apresentação (apresentacao.md)** selecionada.
+
 ## 1.21 — 21/10/2026
 - Tela mais limpa: **Como funciona**, **Arquivos gerados**, **Guardar e compartilhar** e **Links criados** começam recolhidas e abrem ao clicar, ao gerar arquivos, ao criar links ou ao usar atalhos e o tutorial.
 
 ## 1.20.1 — 21/10/2026
-- Correção do erro “Entry not found” ao preparar a voz Faber: se um repositório de vozes não tiver o arquivo, outro espelho é usado automaticamente; se nenhum tiver, a mensagem indica o arquivo que faltou.
+- Correção do erro “Entry not found” ao preparar a voz Faber: se um repositório de vozes não tiver o arquivo, outro espelho é usado automaticamente.
 
 ## 1.20 — 21/10/2026
 - **Narração dos slides**: as notas do apresentador viram áudio dentro da apresentação HTML (botões Narração e Avanço automático) e do PPTX (início automático; avanço opcional para exportar vídeo).
-- **Locução mais simples**: só Idioma, Voz (Recomendadas/Outras), Velocidade e Pausa; troca automática para uma voz alternativa se a escolhida não puder ser usada; detalhes técnicos em “Opções avançadas” (recolhidas).
+- **Locução mais simples**: só Idioma, Voz (Recomendadas/Outras), Velocidade e Pausa; troca automática para uma voz alternativa; detalhes técnicos em “Opções avançadas” (recolhidas).
 - Download e narração em **MP3** (padrão), **OGG** ou **WAV**.
 
 ## 1.19.2 — 21/10/2026

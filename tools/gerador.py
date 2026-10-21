@@ -303,7 +303,7 @@ def notas_para_narracao(md):
         if re.sub(r'<!--.*?-->','',p,flags=re.S).strip():out.append(n)
     return out
 def _narr(narr):
-    """Normaliza a configuração de narração: {'html':{idx:caminho},'pptx':{idx:caminho},'avancar':bool}."""
+    """Normaliza a configuração de narração: {'html':{idx:caminho},'pptx':{idx:caminho},'avancar':bool,'duracoes':{idx:s}}."""
     if not narr:return {'html':{},'pptx':{},'avancar':False,'duracoes':{}}
     if isinstance(narr,str):
         import json as _j;narr=_j.loads(narr) if narr.strip() else {}
@@ -637,8 +637,7 @@ def _pptx_audio(s,cam,W,avancar,dur=None):
     ns='xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"'
     novos=[]
     dur=dur or (_wav_dur(dados) if ext=='.wav' else _mp3_dur(dados) if ext=='.mp3' else None)
-    if avancar:
-        if dur:novos.append(parse_xml('<p:transition %s advTm="%d"/>'%(ns,int(dur*1000)+800)))
+    if avancar and dur:novos.append(parse_xml('<p:transition %s advTm="%d"/>'%(ns,int(dur*1000)+800)))
     novos.append(parse_xml(('<p:timing %s><p:tnLst><p:par><p:cTn id="1" dur="indefinite" restart="never" nodeType="tmRoot"><p:childTnLst>'
       '<p:par><p:cTn id="2" fill="hold"><p:stCondLst><p:cond delay="indefinite"/><p:cond evt="onBegin" delay="0"><p:tn val="2"/></p:cond></p:stCondLst><p:childTnLst>'
       '<p:par><p:cTn id="3" fill="hold"><p:stCondLst><p:cond delay="0"/></p:stCondLst><p:childTnLst>'

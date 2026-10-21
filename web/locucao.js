@@ -79,12 +79,10 @@
     const x = catalogo().lista.find(y => y.v === v), n = x ? x.nome.split(' — ')[0] : cap(ehPiper(v) ? String(v).slice(6).split('-')[1] : String(v).split('_')[1] || v);
     return n + ' · ' + nomeIdioma(idiomaDaVoz(v));
   }
-  /** Voz alternativa do mesmo idioma em outro motor (substituição automática). */
   function alternativaPara(v) {
     const outro = vozesDoIdioma(idiomaDaVoz(v)).filter(x => ehPiper(x.v) !== ehPiper(v));
     return (outro.find(x => x.rec) || outro[0] || {}).v || null;
   }
-  /** Preenche um par de selects (idioma, voz) — usado aqui e no painel de narração dos slides. */
   function preencherVozes(selIdioma, selVoz, voz) {
     voz = voz || VOZ_PADRAO;
     const lang = idiomaDaVoz(voz), ls = idiomas();
@@ -418,11 +416,6 @@
 
 
   /* ---------------------------- Síntese (núcleo, sem interface) ---------------------------- */
-  /**
-   * Gera (ou recupera do histórico) o áudio de um texto.
-   * op: { onProg(pct, i, n), onAviso(texto), semCache }
-   * Retorna { blob (WAV), duracao, voz (usada), doHistorico, id }
-   */
   async function sintetizar(texto, voz, vel, pausaMs, op) {
     op = op || {}; vel = +vel > 0 ? +vel : 1; pausaMs = +pausaMs >= 0 ? +pausaMs : 300;
     if (!String(texto || '').trim()) return null;

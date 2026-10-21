@@ -1,6 +1,7 @@
 /* =====================================================================================
    Conteudista — Narração dos slides (notas do apresentador → áudio no HTML e no PPTX)
-   - Painel "Narração dos slides" na aba Curso (desligado por padrão)
+   - Painel "Narração dos slides" na aba Curso, visível SOMENTE com a aba "Apresentação" selecionada
+     (desligado por padrão)
    - Ao gerar os arquivos: lê as notas de cada slide (gerador.notas_para_narracao), gera o áudio com a voz
      escolhida (reaproveita o histórico da Locução), converte (MP3 padrão, OGG ou WAV) e entrega ao gerador
    - HTML: áudio embutido por slide; PPTX: áudio embutido com início automático (MP3, ou WAV se escolhido)
@@ -19,7 +20,7 @@
   const pref = (k, d) => { const v = localStorage.getItem(PREF[k]); return v === null ? d : v; };
 
   const st = document.createElement('style');
-  st.textContent = `#narrBox{margin:10px 0 12px}#narrBox .lin{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:8px}#narrBox .lin>div{flex:1;min-width:160px}
+  st.textContent = `#narrBox{margin:10px 0 12px}#narrBox[hidden]{display:none!important}#narrBox .lin{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:8px}#narrBox .lin>div{flex:1;min-width:160px}
 #narrBox label.tit{font-weight:600;color:var(--pri,#0c326f)}#narrBox input[type=range]{width:100%}#narrBox .note{margin:6px 0 0}
 #narrBox .tts-loading-container{display:none;width:100%;height:8px;border-radius:9999px;background:rgba(51,65,85,.15);overflow:hidden;margin-top:8px}#narrBox .tts-progress-bar{height:100%;width:0;background:#1351b4;transition:width .3s}`;
   document.head.appendChild(st);
@@ -36,11 +37,16 @@
   const alvo = go.closest('p') || go;
   alvo.parentNode.insertBefore(box, alvo);
 
+  /* Visível apenas com a aba "Apresentação (apresentacao.md)" selecionada */
+  const ps = $('ps');
+  const sincronizarAba = () => { box.hidden = !ps || ps.hidden; };
+  sincronizarAba();
+  if (ps) new MutationObserver(sincronizarAba).observe(ps, { attributes: true, attributeFilter: ['hidden'] });
+
   $('narrOn').checked = pref('on', '0') === '1';
   $('narrAuto').checked = pref('auto', '0') === '1';
   $('narrVel').value = pref('vel', '1'); $('narrFmt').value = pref('fmt', 'mp3');
-  const montar = () => L().preencherVozes($('narrIdioma'), $('narrVoz'), pref('voz', L().VOZ_PADRAO));
-  montar();
+  L().preencherVozes($('narrIdioma'), $('narrVoz'), pref('voz', L().VOZ_PADRAO));
   document.addEventListener('locucao:vozes', () => { const v = $('narrVoz').value; L().preencherVozes($('narrIdioma'), $('narrVoz'), v); });
   L().ligarSelects($('narrIdioma'), $('narrVoz'), () => { localStorage.setItem(PREF.voz, $('narrVoz').value); info(); });
   const velTxt = () => { $('narrVelV').textContent = (+$('narrVel').value).toFixed(2).replace('.', ','); };
@@ -51,7 +57,6 @@
   $('narrVel').oninput = () => { velTxt(); localStorage.setItem(PREF.vel, $('narrVel').value); info(); };
   $('narrFmt').onchange = () => { localStorage.setItem(PREF.fmt, $('narrFmt').value); info(); };
 
-  /* Estimativa a partir do texto da apresentação (mesmas regras do gerador) */
   function notasAprox(md) {
     return L().slidesDe(md || '').map(p => {
       let n = ''; let m = p.match(/<!--\s*notas:\s*([\s\S]*?)-->/); if (m) n = m[1].trim();
