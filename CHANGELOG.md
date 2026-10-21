@@ -1,5 +1,19 @@
 # Novidades do Conteudista
 
+## 1.19 — 21/10/2026
+- Cabeçalho simplificado: apenas “Conteudista”.
+
+## 1.18 — 21/10/2026
+- Locução: escolha por **Motor → Idioma → Voz**. Piper com todos os idiomas do seu catálogo; Kokoro-82M v1.0 com inglês (EUA/Reino Unido), espanhol, francês, hindi, italiano e português (lang_code a, b, e, f, h, i, p).
+- Kokoro corrigido: fonemas pelo espeak-ng com o mesmo pós-processamento do Kokoro original e precisão **fp32** como padrão (q8 só para inglês).
+- **Velocidade no Piper** (ajuste no modelo ou, se não for possível, por processamento do áudio sem mudar o tom).
+- **Hospedagem local dos modelos** no próprio site (perfis em `web/modelos.json`, variável `MODELOS_LOCAIS`).
+
+## 1.17 — 21/10/2026
+- Locução: novo motor **Piper** como padrão para português (voz **Faber**), com pronúncia pelo espeak-ng pt-br.
+- **Kokoro mantido** para inglês e para as vozes pt-BR experimentais; o motor é escolhido pela voz.
+- Plano de migração em `MIGRACAO-LOCUCAO.md`.
+
 ## 1.16 — 21/10/2026
 - Gera arquivos mesmo com só o **guia** ou só a **apresentação** preenchidos (apenas do que foi preenchido).
 - Caixas **Informação**, **Dica** e **Atenção** com cores próprias (azul, verde e amarelo) no HTML, DOCX e PPTX, em qualquer layout e nos temas escuro e alto contraste do guia.

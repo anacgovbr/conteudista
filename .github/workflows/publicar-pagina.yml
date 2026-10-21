@@ -7,6 +7,7 @@ on:
       - "web/**"
       - "tools/**"
       - "CHANGELOG.md"
+      - "MIGRACAO-LOCUCAO.md"
       - ".github/workflows/publicar-pagina.yml"
   workflow_dispatch:
 
@@ -47,6 +48,9 @@ jobs:
           node --check web/locucao.js
           node --check web/gerados.js
           cp web/locucao-worker.js /tmp/locucao-worker.mjs && node --check /tmp/locucao-worker.mjs
+          cp web/locucao-piper-worker.js /tmp/locucao-piper-worker.mjs && node --check /tmp/locucao-piper-worker.mjs
+          cp web/locucao-local.js /tmp/locucao-local.mjs && node --check /tmp/locucao-local.mjs
+          python -c "import json;json.load(open('web/modelos.json',encoding='utf-8'))"
           node --check web/ajuda.js
           node --check web/historico.js
           node --check web/changelog.js
@@ -65,6 +69,21 @@ jobs:
           python -c "import os,json;json.dump(sorted(f for f in os.listdir('site/wheels') if f.endswith('.whl')),open('site/wheels/wheels.json','w'))"
           touch site/.nojekyll
           ls -R site
+
+      - name: Cache dos modelos de voz
+        uses: actions/cache@v4
+        with:
+          path: .cache/modelos
+          key: modelos-${{ hashFiles('web/modelos.json') }}-${{ vars.MODELOS_LOCAIS || 'piper-ptbr,piper-catalogo' }}
+
+      - name: Hospedar modelos de voz no site (opcional)
+        continue-on-error: true
+        env:
+          MODELOS_LOCAIS: ${{ vars.MODELOS_LOCAIS || 'piper-ptbr,piper-catalogo' }}
+          BIBLIOTECAS_LOCAIS: ${{ vars.BIBLIOTECAS_LOCAIS || 'piper,kokoro,espeak' }}
+        run: |
+          python tools/hospedar_modelos.py --config web/modelos.json --saida site --cache .cache/modelos --perfis "$MODELOS_LOCAIS" --bibliotecas "$BIBLIOTECAS_LOCAIS"
+          du -sh site || true
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
