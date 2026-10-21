@@ -156,7 +156,7 @@
     if (!vis.length) { $('ahLista').innerHTML = '<div class="ah-vazio">' + (l.length ? 'Nada encontrado.' : 'Nenhum áudio gerado ainda. Os áudios da Locução e da narração dos slides aparecem aqui.') + '</div>'; return; }
     $('ahLista').innerHTML = vis.map(x => '<div class="ah-it' + (x.id === ahAtual ? ' on' : '') + '" data-id="' + x.id + '"><p title="' + esc((x.text || '').slice(0, 600)) + '">' + esc((x.text || '').slice(0, 260)) + ((x.text || '').length > 260 ? '…' : '') + '</p>' +
       '<small>' + esc(nome(x.voice)) + ' · ' + String(x.speed).replace('.', ',') + '× · ' + fmtDur(x.duracao || 0) + ' · ' + new Date(x.createdAt).toLocaleString('pt-BR') + '</small>' +
-      '<div class="b"><button type="button" data-a="ouvir">▶ Ouvir</button><button type="button" class="sec" data-a="baixar">Baixar</button>' +
+      '<div class="b"><button type="button" data-a="ouvir">▶ Ouvir</button><button type="button" class="file-link download" data-a="baixar">.ÁUDIO</button>' +
       '<button type="button" class="sec" data-a="usar" title="Usar esta voz e velocidade na narração dos slides">Usar esta voz</button><button type="button" class="dan" data-a="excluir">Excluir</button></div></div>').join('');
   }
   function abrirHistorico() {

@@ -135,7 +135,7 @@
 #secLoc .loc-hist{border:1px solid #cccccc;border-radius:10px;padding:12px;background:#fff;max-height:880px;display:flex;flex-direction:column}
 #secLoc .loc-hist h3{margin:0 0 8px;color:#0c326f;font-size:15px}
 #secLoc .loc-rec-topo{margin:12px 0 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-#secLoc details.loc-subsecao,#secLoc details#locAvancado{padding:0;overflow:hidden}
+#secLoc details.loc-subsecao,#secLoc details#locAvancado{padding:0;overflow:hidden}#secLoc details.loc-hist{display:block;max-height:none}
 #secLoc details.loc-subsecao>summary,#secLoc details#locAvancado>summary{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;list-style:none}
 #secLoc details.loc-subsecao>summary::-webkit-details-marker,#secLoc details#locAvancado>summary::-webkit-details-marker{display:none}
 #secLoc details.loc-subsecao>summary h3,#secLoc details#locAvancado>summary>span:first-child{margin:0;color:#0c326f;font-size:15px;font-weight:700}
@@ -187,7 +187,7 @@
     '<div class="loc-box"><h3>3. Ouvir e baixar</h3>' +
       '<div id="locAviso"></div><audio id="locAudio" controls preload="none"></audio>' +
       '<div class="lin"><div style="flex:0 1 220px"><label for="locFmt">Formato do arquivo</label><select id="locFmt"><option value="mp3">MP3 (padrão)</option><option value="ogg">OGG (menor)</option><option value="wav">WAV (sem compressão)</option></select></div>' +
-      '<div style="flex:0"><button type="button" class="sec" id="locBaixar" disabled>Baixar</button></div></div>' +
+      '<div style="flex:0"><button type="button" class="file-link download" id="locBaixar" disabled>.ÁUDIO</button></div></div>' +
       '<p class="cont" id="locInfo">Nenhum áudio ainda.</p>' +
     '</div>' +
     '<details class="loc-box" id="locAvancado"><summary>Opções avançadas</summary>' +
@@ -212,8 +212,7 @@
   const recursoLoc = sec.querySelector('#locRec');
   if (recursoLoc) {
     recursoLoc.classList.add('loc-rec-topo');
-    const nota = sec.querySelector('.note');
-    (nota || sec.querySelector('h2')).after(recursoLoc);
+    sec.querySelector('h2').after(recursoLoc);
   }
   [...sec.querySelectorAll('.loc-grid > div > .loc-box:not(details)')].forEach((box, i) => {
     const d = document.createElement('details'); d.className = 'loc-box loc-subsecao'; d.open = i === 0;
@@ -227,7 +226,14 @@
   const avancadoLoc = sec.querySelector('#locAvancado');
   if (avancadoLoc) {
     avancadoLoc.open = false; const sum = avancadoLoc.querySelector(':scope > summary');
-    sum.innerHTML = '<span>Opções avançadas</span><span class="loc-mostrar">mostrar</span><span class="loc-recolher">recolher</span>';
+    sum.innerHTML = '<span class="summary-title">Opções avançadas</span><span class="loc-mostrar">mostrar</span><span class="loc-recolher">recolher</span>';
+  }
+  const histLoc = sec.querySelector('.loc-hist');
+  if (histLoc) {
+    const d = document.createElement('details'); d.className = 'loc-hist loc-subsecao'; d.id = 'locHistorico'; d.open = false;
+    const h = histLoc.querySelector(':scope > h3'); const sum = document.createElement('summary');
+    sum.innerHTML = '<h3>' + (h ? h.innerHTML : 'Histórico') + '</h3><span class="loc-mostrar">mostrar</span><span class="loc-recolher">recolher</span>';
+    if (h) h.remove(); d.appendChild(sum); while (histLoc.firstChild) d.appendChild(histLoc.firstChild); histLoc.replaceWith(d);
   }
   function mostrarAba(nome) {
     abas.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.aba === nome));
@@ -639,7 +645,7 @@
     if (!vis.length) { $('locHist').innerHTML = '<div class="vazio">' + (l.length ? 'Nada encontrado.' : 'Nenhum áudio gerado ainda. Os áudios gerados aparecem aqui e podem ser ouvidos e baixados de novo sem processamento.') + '</div>'; return; }
     $('locHist').innerHTML = vis.map(x => '<div class="hc' + (x.id === itemAtual ? ' on' : '') + '" data-id="' + x.id + '"><p title="' + esc(x.text.slice(0, 600)) + '">' + esc(x.text.slice(0, 220)) + (x.text.length > 220 ? '…' : '') + '</p>' +
       '<small>' + esc(nomeVoz(x.voice)) + ' · ' + String(x.speed).replace('.', ',') + '× · ' + fmtDur(x.duracao || 0) + '</small><small>' + new Date(x.createdAt).toLocaleString('pt-BR') + '</small>' +
-      '<div class="b"><button type="button" data-a="ouvir">▶ Ouvir</button><button type="button" class="sec" data-a="baixar">Baixar</button><button type="button" class="sec" data-a="texto" title="Copiar o texto e a voz para o editor">Usar texto</button><button type="button" class="dan" data-a="excluir">Excluir</button></div></div>').join('');
+      '<div class="b"><button type="button" data-a="ouvir">▶ Ouvir</button><button type="button" class="file-link download" data-a="baixar">.ÁUDIO</button><button type="button" class="sec" data-a="texto" title="Copiar o texto e a voz para o editor">Usar texto</button><button type="button" class="dan" data-a="excluir">Excluir</button></div></div>').join('');
   }
   function carregarHistorico() { clearTimeout(tLista); tLista = setTimeout(() => { loadHistoryList(); usoArmazenamento(); }, 60); }
   $('locBusca').oninput = carregarHistorico;

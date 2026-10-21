@@ -95,7 +95,7 @@
       return '<tr><td>' + new Date(p.data).toLocaleString('pt-BR') + '<br><small>' + fmt(p.tam) + '</small></td><td><b>' + esc(p.prefixo) + '</b>' + (p.resumo ? '<br><small>' + esc(p.resumo) + '</small>' : '') + '</td><td>' +
         (zip ? '<a class="file-link download" href="' + urlDe(p.id + '/' + zip.nome, zip.blob) + '" download="' + esc(zip.nome) + '">.ZIP</a>' : '') +
         outros.map(f => '<a class="file-link download" href="' + urlDe(p.id + '/' + f.nome, f.blob) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + '</a>').join('') +
-        outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="file-link view" data-ver="' + p.id + '/' + esc(f.nome) + '">Exibir ' + (/^Apresentacao_/.test(f.nome) ? 'apresentação' : 'treinamento') + '</button>').join('') +
+        outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<a href="#" class="file-link view" data-ver="' + p.id + '/' + esc(f.nome) + '">Exibir ' + (/^Apresentacao_/.test(f.nome) ? 'apresentação' : 'treinamento') + '</a>').join('') +
         '</td><td><button type="button" class="dan" data-del="' + p.id + '">Excluir</button></td></tr>';
     }).join('') + '</table>';
     uso(l.reduce((a, p) => a + p.tam, 0));

@@ -335,14 +335,31 @@ bn.onclick=function(){narr(!on)};ba.onclick=function(){auto=!auto;marca();if(aut
 addEventListener('keydown',function(e){if(e.key=='m'||e.key=='M')narr(!on);else if(e.key=='a'||e.key=='A'){ba.click()}});
 var ini=D.getElementById('ini');D.getElementById('ini1').onclick=function(){ini.remove();narr(true)};D.getElementById('ini0').onclick=function(){ini.remove();narr(false)};
 S.forEach(function(x,k){if(A[k]){var m=D.createElement('span');m.className='tem-som';m.title='Este slide tem narração';m.textContent='🔊';x.appendChild(m)}});marca()})();"""
+def _anac_html_css(tema,n):
+    if not str(tema or '').startswith('anac20-'):return ''
+    pasta=os.path.join(os.path.dirname(os.path.abspath(__file__)),'temas',tema)
+    def data(nome):
+        cam=os.path.join(pasta,nome)
+        return 'data:image/png;base64,'+base64.b64encode(open(cam,'rb').read()).decode('ascii') if os.path.isfile(cam) else ''
+    imgs=[data('capa.png'),data('conteudo-a.png'),data('conteudo-b.png'),data('encerramento.png')]
+    escuro=tema=='anac20-escuro'; tinta='#ffffff' if escuro else '#193f52'; mut='#dce8ee' if escuro else '#526d7c'
+    regras=['.s{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:%s!important}'%tinta,
+      '.s h1,.s h2,.s h3,.s p,.s li{color:%s!important}.s .in{position:relative;z-index:1}.s:not(.title) .in{padding-top:1.2vh}'%tinta,
+      '.s table{background:rgba(255,255,255,.94);color:#193f52}.s table *{color:#193f52!important}.s .nt{color:%s!important}'%mut]
+    for i in range(n):
+        fundo=imgs[0] if i==0 else imgs[3] if i==n-1 and 'title' else imgs[1 if i%2 else 2]
+        if fundo:regras.append('.s:nth-child(%d){background-image:url("%s")!important}'%(i+1,fundo))
+    if escuro:regras.append('.s.title .in{margin-left:37%;width:58%}.s.title h1{color:#fff!important}')
+    else:regras.append('.s.title .in{margin-left:37%;width:58%}.s.title h1{color:#193f52!important}')
+    return '\n'.join(regras)
 def slides_html(t,sl,foot,tema=None,audios=None,avancar=False):
-    # Os novos modelos foram solicitados para PPTX; o HTML mantém o padrão gov.br.
-    T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema)
+    T=tema_de(tema)
     o=''.join('<section class="s %s"><div class="in">%s</div><aside class="nt">%s</aside></section>'%(c,html_of(b),E(n)) for c,b,n in sl)
-    if audios:return _slides_html_narrado(t,sl,foot,T,o,audios,avancar)
-    return ('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title><style>%s</style></head><body>'
+    extra=_anac_html_css(tema,len(sl));css=tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+extra
+    if audios:return _slides_html_narrado(t,sl,foot,T,o,audios,avancar).replace('</style>','%s</style>'%extra,1)
+    return ('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme" content="%s"><title>%s</title><style>%s</style></head><body>'
     '<div id="st">%s</div><div id="bar"></div><div id="hud"><button id="p">◀</button><span id="c"></span><button id="n">▶</button><button id="b1">Notas (N)</button><button id="b2">Tela cheia (F)</button></div><script>%s</script>%s</body></html>'
-    )%(E(t),tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s']),o,JS_S,MER)
+    )%(E(tema or TEMA_PADRAO),E(t),css,o,JS_S,MER)
 def _slides_html_narrado(t,sl,foot,T,o,audios,avancar):
     aud=''
     for k,cam in sorted(audios.items()):
@@ -677,6 +694,17 @@ def _pptx_audio(s,cam,W,avancar,dur=None):
         if ext_:ext_[0].addprevious(el)
         else:sld.append(el)
 # ============================== EXECUÇÃO ==============================
+def markdown_com_tema(md,tema):
+    """Insere ou atualiza `theme` no frontmatter YAML sem alterar o restante do Markdown."""
+    md=md or '';tema=tema if tema in TEMAS else TEMA_PADRAO
+    if md.startswith('---\n'):
+        fim=md.find('\n---',4)
+        if fim!=-1:
+            cab=md[4:fim]
+            if re.search(r'(?m)^theme\s*:',cab):cab=re.sub(r'(?m)^theme\s*:.*$','theme: '+tema,cab)
+            else:cab=cab.rstrip()+'\ntheme: '+tema
+            return '---\n'+cab+'\n---'+md[fim+4:]
+    return '---\ntheme: '+tema+'\n---\n\n'+md.lstrip()
 def gerar(gm,sm,prefixo='Curso',rodape='',barra='',saida='.',tema=None,narracao=None):
     tema=tema if tema in TEMAS else TEMA_PADRAO
     """Gera os arquivos do que estiver preenchido: guia (MD/HTML/DOCX) e/ou apresentação (MD/HTML/PPTX)."""
@@ -694,7 +722,7 @@ def gerar(gm,sm,prefixo='Curso',rodape='',barra='',saida='.',tema=None,narracao=
         except Exception as e:msg+=' | docx: ERRO %s'%e
     else:msg+=' | guia: vazio (não gerado)'
     if tem_s:
-        t,sl=split_slides(sm);nr=_narr(narracao)
+        sm=markdown_com_tema(sm,tema);t,sl=split_slides(sm);nr=_narr(narracao)
         open(P('.md','Apresentacao_'),'w',encoding='utf-8').write(sm);open(P('.html','Apresentacao_'),'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema,nr['html'],nr['avancar']))
         arqs+=[P('.md','Apresentacao_'),P('.html','Apresentacao_')]
         try:slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape,tema,nr['pptx'],nr['avancar'],nr['duracoes']);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'

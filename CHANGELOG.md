@@ -1,5 +1,12 @@
 # Novidades do Conteudista
 
+## 1.31 — 21/10/2026
+- Regra global de alinhamento à direita para **mostrar/recolher** em toda a aplicação.
+- Temas ANAC 20 anos claro/escuro aplicados tanto ao PPTX quanto ao HTML da apresentação.
+- Tema selecionado registrado automaticamente como `theme` no frontmatter YAML da apresentação Markdown.
+- Locução reorganizada com recursos de áudio no topo e todas as subseções recolhíveis; somente Texto inicia expandida.
+- Downloads e visualizações convertidos em links tipográficos compactos, com atualização obrigatória dos scripts para evitar cache da versão anterior.
+
 ## 1.30 — 21/10/2026
 - Arquivos agora aparecem como links tipográficos compactos: **⬇ .EXTENSÃO** para baixar e **▣ Exibir** para abrir na tela.
 - Feedback visual padronizado nos botões após ações concluídas, sem janelas de confirmação em operações não destrutivas.
