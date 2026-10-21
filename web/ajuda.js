@@ -147,10 +147,10 @@
 <table><tr><th>Como</th><th>Onde fica</th><th>Como recuperar</th></tr>
 <tr><td><b>Salvamento automático</b> (ligado por padrão)</td><td>Neste navegador, neste computador</td><td>Abra a página de novo: o último trabalho volta sozinho</td></tr>
 <tr><td><b>Salvar rascunho</b> (com nome)</td><td>Neste navegador</td><td>Lista de rascunhos → <b>Abrir</b></td></tr>
-<tr><td><b>Salvar na pasta…</b> / <b>Baixar .md</b> / <b>Baixar .zip</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas</td></tr>
+<tr><td><b>Salvar na pasta…</b> / <b>⬇ .MD</b> / <b>⬇ .ZIP</b> (curso completo)</td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas</td></tr>
 <tr><td><b>Link criptografado</b></td><td>No próprio link ou no PrivateBin (cifrado)</td><td>Painel <b>Abrir um link</b> → cole o link (e a senha)</td></tr>
 <tr><td><b>Histórico de versões</b></td><td>Neste navegador</td><td>Botão <b>Histórico</b> na barra do editor → escolha a versão → <b>Restaurar</b></td></tr></table>
-<div class="dica">Limpar os dados do navegador apaga os rascunhos locais. Para guardar por mais tempo, use <b>Salvar na pasta</b>, <b>Baixar .md</b> ou <b>Baixar .zip</b>.</div>
+<div class="dica">Limpar os dados do navegador apaga os rascunhos locais. Para guardar por mais tempo, use <b>Salvar na pasta</b>, <b>⬇ .MD</b> ou <b>⬇ .ZIP</b>.</div>
 <h4>Histórico e comparação (antes e depois)</h4>
 <ul>
 <li>O histórico guarda versões <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), <b>arquivos carregados</b>, conteúdos <b>abertos de links</b>, rascunhos, exemplo, versões <b>marcadas</b> (★) e os momentos de gerar ou compartilhar. Antes de carregar ou restaurar algo, o conteúdo atual também é guardado.</li>

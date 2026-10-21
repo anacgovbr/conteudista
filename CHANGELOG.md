@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.27 — 21/10/2026
+- **⬇ .ZIP** baixa sempre o curso completo (.md, HTML, DOCX e PPTX), gerando ou atualizando os arquivos antes, se preciso. Botões com ícone: **⬇ .MD** e **⬇ .ZIP**.
+- Todas as seções expansíveis mostram **mostrar** / **recolher**.
+- Locução: **Carregar recursos de áudio** fica no topo, com andamento e resultado; só **1. Texto** começa aberta — Voz, Ouvir e baixar, Opções avançadas e Histórico começam recolhidas e abrem quando necessário.
+
 ## 1.26 — 21/10/2026
 - **Como funciona** e **Salvar e compartilhar** (antes “Guardar e compartilhar”) mostram “recolher” quando abertas.
 - **Salvar na pasta…** (novo nome) e novo botão **Baixar .zip**, com os .md e os arquivos já gerados.
