@@ -1,5 +1,8 @@
 # Novidades do Conteudista
 
+## 1.32 - 21/10/2026
+- Regra global de interface: toda secao e subsecao expansivel tem um unico controle **mostrar/recolher**, sempre alinhado a direita (corrige a duplicacao na aba Locucao e em Opcoes avancadas de voz).
+
 ## 1.31 — 21/10/2026
 - Regra global de alinhamento à direita para **mostrar/recolher** em toda a aplicação.
 - Temas ANAC 20 anos claro/escuro aplicados tanto ao PPTX quanto ao HTML da apresentação.
