@@ -59,6 +59,8 @@ jobs:
           node --check web/audio-codec.js
           node --check web/narracao.js
           node --check web/ui-ajustes.js
+          node --check web/metadados.js
+          node --check web/dicas.js
           node --check web/abrir.js
           cp web/ptbr-g2p.js /tmp/ptbr-g2p.mjs && node --check /tmp/ptbr-g2p.mjs
           node -e "import('/tmp/ptbr-g2p.mjs').then(m=>{const r=m.phonemizePTBR('Olá, mundo. A gestão de processos.');console.log(r);if(!/ˈ/.test(r))process.exit(1)})"

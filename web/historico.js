@@ -225,7 +225,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secHist';
-  sec.innerHTML = '<div class="htop"><h2>Histórico e comparação</h2><button type="button" class="sec mini hx" id="hFechar" title="Fechar (Esc)">Fechar ✕</button></div>' +
+  sec.innerHTML = '<div class="htop"><h2>Vers\u00f5es do texto</h2><button type="button" class="sec mini hx" id="hFechar" title="Fechar (Esc)">Fechar ✕</button></div>' +
     '<p class="note">Versões guardadas <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), arquivos carregados, conteúdos abertos de links, rascunhos, exemplo, versões marcadas e momentos de geração/compartilhamento. Escolha duas versões e compare.</p>' +
     '<div class="hrow"><div class="lg"><label for="hA">Versão A (antes)</label><select id="hA"></select></div>' +
     '<div class="hrow troca" style="min-width:auto;margin:0"><button type="button" class="sec mini" id="hTroca" title="Trocar A e B">⇄</button></div>' +
@@ -237,7 +237,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     '<div class="hrow acts"><button type="button" class="sec mini" id="hMarca">★ Marcar versão</button><button type="button" class="sec mini" id="hResA">Restaurar A</button><button type="button" class="sec mini" id="hResB">Restaurar B</button><button type="button" class="file-link download" id="hBx" title="Baixar as versões A e B">.MD A/B</button><button type="button" class="dan mini" id="hDel">Excluir A</button><button type="button" class="dan mini" id="hLimpa">Limpar histórico</button></div>' +
     '<p class="hint" id="hInfo"></p><div id="hRes"></div>';
   // Janela sobreposta: só aparece quando o botão "Histórico" (barra do editor) é clicado
-  const back = document.createElement('div'); back.className = 'hist-back'; back.hidden = true; back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true'); back.setAttribute('aria-label', 'Histórico e comparação');
+  const back = document.createElement('div'); back.className = 'hist-back'; back.hidden = true; back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true'); back.setAttribute('aria-label', 'Versões do texto');
   back.appendChild(sec); document.body.appendChild(back);
   function abrir(doc) {
     if (doc) $('hDoc').value = doc;
@@ -250,12 +250,12 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   back.addEventListener('click', e => { if (e.target === back) fecharHist(); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && !back.hidden) { e.preventDefault(); e.stopPropagation(); fecharHist(); } }, true);
   // Botão "Histórico" na barra de cada editor, logo antes do botão de tela cheia
-  const ICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/></svg>';
+  const ICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/><path d="M5.5 9h3M5.5 13h3M15.5 9h3M15.5 13h3"/></svg>';
   [['pg', 'g'], ['ps', 's']].forEach(([id, doc]) => {
     const tb = document.querySelector('#' + id + ' .mde-tb'); if (!tb) return;
     const fs = [...tb.querySelectorAll('button')].pop();
-    const b = document.createElement('button'); b.type = 'button'; b.className = 'hbtn'; b.title = 'Histórico e comparação de versões (Alt+Shift+V)';
-    b.innerHTML = ICO + '<span class="ht"> Histórico</span>'; b.setAttribute('aria-label', 'Histórico e comparação'); b.onclick = () => abrir(doc);
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'hbtn'; b.title = 'Versões do texto: comparar e restaurar (Alt+Shift+V)';
+    b.innerHTML = ICO + '<span class="ht"> Versões</span>'; b.setAttribute('aria-label', 'Versões do texto'); b.onclick = () => abrir(doc);
     tb.insertBefore(b, fs);
   });
 

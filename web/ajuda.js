@@ -59,7 +59,7 @@
   const PASSOS = [
     { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em 6 passos rápidos você verá como <b>escrever</b>, <b>gerar</b>, <b>salvar</b> e <b>recuperar</b> um curso. Tudo acontece no seu navegador; nada é enviado sem você pedir.' },
     { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o conteúdo', d: 'Use as abas <b>Treinamento</b> e <b>Apresentação</b>. Cole o texto gerado pelo agente de IA, arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
-    { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link.' },
+    { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. O botão <b>Versões</b> compara e restaura o texto.' },
     { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe treinamento (HTML, DOCX, MD), apresentação (HTML, PPTX, MD) e um ZIP com tudo. Os botões <b>Exibir treinamento</b>, <b>Exibir apresentação</b> e <b>.ZIP</b> aparecem em <b>Arquivos gerados</b>, só para o que foi gerado. Para testar agora, use <b>Carregar exemplo</b>, logo abaixo dos campos do curso.' },
     { alvo: 'pLocal', t: '4. Seu trabalho é salvo sozinho', d: 'O <b>salvamento automático</b> já vem ligado: ao voltar à página, o último conteúdo é recuperado. Você também pode criar rascunhos com nome, salvar em uma pasta ou baixar os <code>.md</code>.' },
     { alvo: 'pLink', t: '5. Compartilhe com segurança (opcional)', d: 'Gere um <b>link criptografado</b> (autocontido ou PrivateBin), com senha se quiser. O tamanho aparece antes do envio.' },
@@ -118,7 +118,7 @@
 <h4>Gerar um curso em 3 passos</h4>
 <ol>
 <li>Na aba <b>Treinamento</b>, cole ou arraste o <code>treinamento.md</code>; na aba <b>Apresentação</b>, o <code>apresentacao.md</code>.</li>
-<li>Preencha o <b>prefixo</b> (nome dos arquivos) e o <b>rodapé</b> e escolha o <b>Layout dos arquivos gerados</b>: <b>Padrão gov.br</b> (padrão: cores, fonte e destaques do Design System do Governo Federal) ou <b>Clássico</b> (layout original).</li>
+<li>Informe o <b>Nome do curso</b> (usado nos nomes dos arquivos) e escolha o <b>Layout dos arquivos gerados</b>: <b>Padrão gov.br</b> (padrão: cores, fonte e destaques do Design System do Governo Federal) ou <b>Clássico</b> (layout original). Em <b>Mais opções</b> há o <b>rodapé</b> (opcional), que aparece nos slides e no DOCX.</li>
 <li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Os pacotes anteriores e os rascunhos ficam no botão <b>Histórico</b>, ao lado do título <b>Arquivos gerados</b>. Se só um dos dois estiver preenchido, são gerados apenas os arquivos dele.</li>
 </ol>
 <div class="dica">Na primeira geração o navegador carrega o motor Python (20 a 60 s). Depois é imediato.</div>
@@ -149,12 +149,12 @@
 <tr><td><b>Salvar rascunho</b> (com nome)</td><td>Neste navegador</td><td>Botão <b>Abrir</b> → aba <b>Rascunhos</b></td></tr>
 <tr><td><b>Salvar pasta</b> / <b>.MD</b> / <b>.ZIP</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas</td></tr>
 <tr><td><b>Link criptografado</b></td><td>No próprio link ou no PrivateBin (cifrado)</td><td>Botão <b>Abrir</b> → aba <b>Links</b> → cole o link (e a senha)</td></tr>
-<tr><td><b>Histórico de versões</b></td><td>Neste navegador</td><td>Botão <b>Histórico</b> na barra do editor → escolha a versão → <b>Restaurar</b></td></tr></table>
+<tr><td><b>Versões do texto</b></td><td>Neste navegador</td><td>Botão <b>Versões</b> na barra do editor → escolha a versão → <b>Restaurar</b></td></tr></table>
 <div class="dica">Limpar os dados do navegador apaga os rascunhos locais. Para guardar por mais tempo, use <b>Salvar na pasta</b>, <b>Baixar .md</b> ou <b>Baixar .zip</b>.</div>
-<h4>Histórico e comparação (antes e depois)</h4>
+<h4>Versões do texto (comparar antes e depois)</h4>
 <ul>
-<li>O histórico guarda versões <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), <b>arquivos carregados</b>, conteúdos <b>abertos de links</b>, rascunhos, exemplo, versões <b>marcadas</b> (★) e os momentos de gerar ou compartilhar. Antes de carregar ou restaurar algo, o conteúdo atual também é guardado.</li>
-<li>Abra pelo botão <b>Histórico</b> na barra do editor (ao lado da tela cheia) ou <kbd>Alt+Shift+V</kbd>. A janela de comparação aparece sobre a página; feche com <b>Fechar</b> ou <kbd>Esc</kbd>.</li>
+<li>As versões do texto ficam <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), <b>arquivos carregados</b>, conteúdos <b>abertos de links</b>, rascunhos, exemplo, versões <b>marcadas</b> (★) e os momentos de gerar ou compartilhar. Antes de carregar ou restaurar algo, o conteúdo atual também é guardado.</li>
+<li>Abra pelo botão <b>Versões</b> na barra do editor (ao lado da tela cheia) ou <kbd>Alt+Shift+V</kbd>. A janela de comparação aparece sobre a página; feche com <b>Fechar</b> ou <kbd>Esc</kbd>.</li>
 <li>Escolha a <b>Versão A</b> (antes) e a <b>Versão B</b> (depois) — de qualquer sessão, arquivo ou link, ou “Atual” — e clique em <b>Comparar</b>. Use ⇄ para inverter.</li>
 <li>Leitura do resultado: linhas <span style="background:#fde0db">removidas</span> e <span style="background:#e8f5ec">incluídas</span>, com as palavras alteradas destacadas; imagens aparecem como miniaturas e as que mudaram são listadas em “Antes” e “Depois”.</li>
 <li>Opções: Treinamento, Apresentação ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
@@ -233,8 +233,8 @@
     { g: 'Navegação', k: '1', d: 'Aba Treinamento (foca o editor)', f: () => focarEditor('g') },
     { g: 'Navegação', k: '2', d: 'Aba Apresentação (foca o editor)', f: () => focarEditor('s') },
     { g: 'Navegação', k: 'M', d: 'Alternar modo do editor (Editar → Dividido → Prévia)', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); if (!vis) return; const ordem = ['e', 's', 'p'], i = (ordem.indexOf(vis.dataset.m) + 1) % 3; const b = vis.querySelector('.mde-tb [data-m="' + ordem[i] + '"]'); if (b) b.click(); toast(['Somente editor', 'Editor + prévia', 'Somente prévia'][i]); } },
-    { g: 'Navegação', k: 'V', d: 'Histórico e comparação (antes e depois)', f: () => window.Hist && Hist.abrir() },
-    { g: 'Salvar e recuperar', k: 'B', d: 'Marcar a versão atual no histórico', f: () => clicar('hMarca') },
+    { g: 'Navegação', k: 'V', d: 'Versões do texto (comparar antes e depois)', f: () => window.Hist && Hist.abrir() },
+    { g: 'Salvar e recuperar', k: 'B', d: 'Marcar a versão atual', f: () => clicar('hMarca') },
     { g: 'Navegação', k: 'F', d: 'Tela cheia do editor', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); const b = vis && [...vis.querySelectorAll('.mde-tb button')].pop(); if (b) b.click(); } },
     { g: 'Ajuda', k: 'T', d: 'Tutorial', f: iniciar },
     { g: 'Ajuda', k: 'R', d: 'Reiniciar o tutorial (do primeiro passo)', f: reiniciar },

@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.42 - 22/10/2026
+- **Metadados do curso**: a Barra superior do treinamento saiu da tela (o título do treinamento faz esse papel). O **Prefixo** passou a se chamar **Nome do curso**, com texto auxiliar e normalização ao sair do campo. O **Rodapé (opcional)** foi para **Mais opções**, recolhido, e fica lembrado neste navegador.
+- **Versões do texto**: o antigo "Histórico e comparação" do editor agora se chama Versões (ícone + texto no desktop, só ícone no celular, com ícone próprio). "Histórico" fica reservado a arquivos gerados e áudios.
+- **Dicas nos botões da barra do editor**: aparecem ao passar o mouse ou ao focar pelo teclado e fecham com Esc.
+
 ## 1.41 - 22/10/2026
 - **Botão Abrir** (antes de Carregar exemplo): uma única janela com as abas **Arquivos**, **Rascunhos** e **Links**, com contador, que lembra a última aba usada. A aba Links traz URL e senha no topo e a lista "Links criados"; as três listas têm o mesmo formato de linha.
 - **Excluir tudo** no rodapé da janela, só na aba aberta, com confirmação acessível (alertdialog, foco em Cancelar, Esc cancela, sem tempo limite, resultado anunciado a leitores de tela).
