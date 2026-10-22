@@ -4,7 +4,7 @@
    - Modos: Editar | Dividido | Prévia; tela cheia; rolagem sincronizada
    - Imagens base64 recolhidas como (img:N) no editor; o texto real continua completo
    - Prévia compatível com o gerador (callouts, checklists, tabelas, Mermaid, slides)
-   Uso: const ed = MDEditor.create(textareaReal, { tipo: 'guia' | 'slides', onFiles })
+   Uso: const ed = MDEditor.create(textareaReal, { tipo: 'treinamento' | 'slides', onFiles })
    ===================================================================================== */
 (function (global) {
   'use strict';
@@ -224,7 +224,7 @@
   /* ---------------------------- Editor ---------------------------- */
   function create(real, opt) {
     opt = opt || {}; injectCSS();
-    const tipo = opt.tipo || 'guia', imgs = [], idx = new Map();
+    const tipo = opt.tipo || 'treinamento', imgs = [], idx = new Map();
     const collapse = t => t.replace(DATA_IMG, m => { const d = m.slice(1, -1).replace(/\s+/g, ''); if (!idx.has(d)) { imgs.push(d); idx.set(d, imgs.length); } return '(img:' + idx.get(d) + ')'; });
     const expand = t => t.replace(/\(img:(\d+)\)/g, (m, n) => imgs[n - 1] ? '(' + imgs[n - 1] + ')' : m);
     const addImg = d => { if (!idx.has(d)) { imgs.push(d); idx.set(d, imgs.length); } return idx.get(d); };

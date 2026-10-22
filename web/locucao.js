@@ -161,7 +161,7 @@
   /* ---------------------------- Estrutura: abas + seção ---------------------------- */
   const main = document.querySelector('main');
   const abas = document.createElement('nav'); abas.id = 'abasApp'; abas.setAttribute('aria-label', 'Áreas da aplicação');
-  abas.innerHTML = '<button type="button" data-aba="curso" class="on" title="Guia, apresentação e arquivos">Curso</button>' +
+  abas.innerHTML = '<button type="button" data-aba="curso" class="on" title="Treinamento, apresentação e arquivos">Curso</button>' +
     '<button type="button" data-aba="locucao" title="Texto em fala (Alt+Shift+3)">Locução <span class="ch" id="locChip" title="Recursos de áudio não carregados"></span></button>';
   main.parentNode.insertBefore(abas, main);
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secLoc'; sec.hidden = true;
@@ -169,7 +169,7 @@
     '<p class="note">Transforme texto em fala. O áudio é gerado <b>no seu computador</b>; o texto não é enviado a nenhum servidor.</p>' +
     '<div class="loc-grid"><div>' +
     '<div class="loc-box"><h3>1. Texto</h3>' +
-      '<div class="lin"><div><label for="locFonte">Trazer texto do curso</label><select id="locFonte"><option value="notas">Notas do apresentador (todos os slides)</option><option value="slides">Texto dos slides</option><option value="guia">Guia de treinamento</option></select></div>' +
+      '<div class="lin"><div><label for="locFonte">Trazer texto do curso</label><select id="locFonte"><option value="notas">Notas do apresentador (todos os slides)</option><option value="slides">Texto dos slides</option><option value="treinamento">Treinamento</option></select></div>' +
       '<div class="loc-btn-cell"><button type="button" class="sec" id="locImportar">Importar</button></div></div>' +
       '<label for="locTexto" style="margin-top:10px">Texto a ser narrado</label>' +
       '<textarea id="locTexto" spellcheck="true" lang="pt-BR" placeholder="Digite, cole ou importe o texto. Frases bem pontuadas soam mais naturais."></textarea>' +
@@ -628,13 +628,13 @@
   function slidesDe(md) { return md.replace(/^---\n[\s\S]*?\n---\n/, '').split(/\n---\s*\n/).map(p => p.trim()).filter(Boolean); }
   function textoDoCurso(fonte) {
     const g = ($('g') && $('g').value) || '', s = ($('s') && $('s').value) || '';
-    if (fonte === 'guia') return limparMd(g);
+    if (fonte === 'treinamento') return limparMd(g);
     if (fonte === 'slides') return slidesDe(s).map(limparMd).filter(Boolean).join('\n\n');
     return slidesDe(s).map(p => { const m = p.match(/<!--\s*notas:\s*([\s\S]*?)-->/); return m ? limparMd(m[1]) : ''; }).filter(Boolean).join('\n\n');
   }
   $('locImportar').onclick = () => {
     const f = $('locFonte').value, t = textoDoCurso(f);
-    if (!t) { $('locAviso').innerHTML = '<div class="aviso wa">Nada para importar: ' + (f === 'notas' ? 'a apresentação não tem notas do apresentador' : f === 'slides' ? 'a apresentação está vazia' : 'o guia está vazio') + ' na aba Curso.</div>'; return; }
+    if (!t) { $('locAviso').innerHTML = '<div class="aviso wa">Nada para importar: ' + (f === 'notas' ? 'a apresentação não tem notas do apresentador' : f === 'slides' ? 'a apresentação está vazia' : 'o treinamento está vazio') + ' na aba Curso.</div>'; return; }
     if ($('locTexto').value.trim() && !confirm('Substituir o texto atual pelo conteúdo importado?')) return;
     $('locTexto').value = t; contar(); $('locAviso').innerHTML = '<div class="aviso">Texto importado. Revise antes de gerar.</div>';
   };
@@ -706,13 +706,13 @@
   const AJUDA = '<h4>Locução (texto em fala)</h4><ul>' +
     '<li>Aba <b>Locução</b> (<kbd>Alt+Shift+3</kbd>): transforma texto em fala <b>no seu navegador</b>. O texto não sai do computador.</li>' +
     '<li>Para deixar a página leve, os <b>recursos de áudio</b> (vozes) só são baixados quando você clica em <b>Carregar áudio</b> (aba Locução) ou liga a <b>Narração dos slides</b>. Na primeira vez pode levar alguns minutos; depois ficam guardados no navegador.</li>' +
-    '<li><b>1. Texto</b>: digite, cole ou <b>importe</b> do curso (notas do apresentador, texto dos slides ou guia).</li>' +
+    '<li><b>1. Texto</b>: digite, cole ou <b>importe</b> do curso (notas do apresentador, texto dos slides ou treinamento).</li>' +
     '<li><b>2. Voz</b>: escolha o <b>idioma</b>, a <b>voz</b> (as <b>Recomendadas</b> aparecem primeiro), a <b>velocidade</b> e a <b>pausa entre frases</b>. <kbd>Alt+Shift+N</kbd> gera.</li>' +
     '<li>Se uma voz não puder ser usada no momento, outra voz do mesmo idioma é usada automaticamente.</li>' +
     '<li><b>3. Ouvir e baixar</b>: escolha o formato do arquivo — <b>MP3</b> (padrão), <b>OGG</b> (menor) ou <b>WAV</b> (sem compressão).</li>' +
     '<li><b>Histórico</b>: cada áudio fica guardado neste navegador e pode ser ouvido e baixado sem carregar os recursos de áudio.</li>' +
     '<li><b>Opções avançadas</b> (recolhidas): preparar a voz, remover vozes baixadas, carregar os recursos automaticamente e ajustes técnicos. Em <b>Processamento</b>, o modo Automático usa <b>WASM</b>, mais compatível. WebGPU é experimental e só é usado quando escolhido.</li></ul>';
-  const KB = '<div class="kbG"><h4>Locução</h4><table class="kbT"><tr><td style="width:46%"><kbd>Alt + Shift + 3</kbd></td><td>Abrir a aba Locução</td></tr><tr><td><kbd>Alt + Shift + N</kbd></td><td>Gerar locução (na aba Locução)</td></tr><tr><td><kbd>Alt + Shift + 1 / 2</kbd></td><td>Voltar à aba Curso (Guia / Apresentação)</td></tr></table></div>';
+  const KB = '<div class="kbG"><h4>Locução</h4><table class="kbT"><tr><td style="width:46%"><kbd>Alt + Shift + 3</kbd></td><td>Abrir a aba Locução</td></tr><tr><td><kbd>Alt + Shift + N</kbd></td><td>Gerar locução (na aba Locução)</td></tr><tr><td><kbd>Alt + Shift + 1 / 2</kbd></td><td>Voltar à aba Curso (Treinamento / Apresentação)</td></tr></table></div>';
   new MutationObserver(() => {
     const c = document.getElementById('hlpC');
     if (c && !c.querySelector('[data-loc]')) { const d = document.createElement('div'); d.className = 'hs'; d.dataset.loc = '1'; d.innerHTML = AJUDA; c.appendChild(d); }

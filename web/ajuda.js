@@ -60,7 +60,7 @@
     { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em 6 passos rápidos você verá como <b>escrever</b>, <b>gerar</b>, <b>salvar</b> e <b>recuperar</b> um curso. Tudo acontece no seu navegador; nada é enviado sem você pedir.' },
     { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o conteúdo', d: 'Use as abas <b>Treinamento</b> e <b>Apresentação</b>. Cole o texto gerado pelo agente de IA, arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link.' },
-    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe guia (HTML, DOCX, MD), apresentação (HTML, PPTX, MD) e um ZIP com tudo. Os botões <b>Exibir treinamento</b>, <b>Exibir apresentação</b> e <b>.ZIP</b> aparecem em <b>Arquivos gerados</b>, só para o que foi gerado. Para testar agora, use <b>Carregar exemplo</b>, logo abaixo dos campos do curso.' },
+    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe treinamento (HTML, DOCX, MD), apresentação (HTML, PPTX, MD) e um ZIP com tudo. Os botões <b>Exibir treinamento</b>, <b>Exibir apresentação</b> e <b>.ZIP</b> aparecem em <b>Arquivos gerados</b>, só para o que foi gerado. Para testar agora, use <b>Carregar exemplo</b>, logo abaixo dos campos do curso.' },
     { alvo: 'pLocal', t: '4. Seu trabalho é salvo sozinho', d: 'O <b>salvamento automático</b> já vem ligado: ao voltar à página, o último conteúdo é recuperado. Você também pode criar rascunhos com nome, salvar em uma pasta ou baixar os <code>.md</code>.' },
     { alvo: 'pLink', t: '5. Compartilhe com segurança (opcional)', d: 'Gere um <b>link criptografado</b> (autocontido ou PrivateBin), com senha se quiser. O tamanho aparece antes do envio.' },
     { alvo: 'pOpen', t: '6. Recupere de um link', d: 'Cole aqui um link recebido (e a senha, se houver) e clique em <b>Abrir link</b>: o conteúdo volta para os editores.' },
@@ -114,10 +114,10 @@
   /* ---------------------------- Ajuda ---------------------------- */
   const AJUDA = `
 <h4>O que é</h4>
-<p>O Conteudista transforma dois arquivos Markdown — <b>guia</b> e <b>apresentação</b> — em um curso completo: <b>guia</b> (HTML, DOCX, MD) e <b>apresentação</b> (HTML, PPTX, MD). A conversão roda <b>no seu navegador</b>; o site não guarda nenhum curso.</p>
+<p>O Conteudista transforma dois arquivos Markdown — <b>treinamento</b> e <b>apresentação</b> — em um curso completo: <b>treinamento</b> (HTML, DOCX, MD) e <b>apresentação</b> (HTML, PPTX, MD). A conversão roda <b>no seu navegador</b>; o site não guarda nenhum curso.</p>
 <h4>Gerar um curso em 3 passos</h4>
 <ol>
-<li>Na aba <b>Treinamento</b>, cole ou arraste o <code>guia.md</code>; na aba <b>Apresentação</b>, o <code>apresentacao.md</code>.</li>
+<li>Na aba <b>Treinamento</b>, cole ou arraste o <code>treinamento.md</code>; na aba <b>Apresentação</b>, o <code>apresentacao.md</code>.</li>
 <li>Preencha o <b>prefixo</b> (nome dos arquivos) e o <b>rodapé</b> e escolha o <b>Layout dos arquivos gerados</b>: <b>Padrão gov.br</b> (padrão: cores, fonte e destaques do Design System do Governo Federal) ou <b>Clássico</b> (layout original).</li>
 <li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Se só um dos dois estiver preenchido, são gerados apenas os arquivos dele.</li>
 </ol>
@@ -157,7 +157,7 @@
 <li>Abra pelo botão <b>Histórico</b> na barra do editor (ao lado da tela cheia) ou <kbd>Alt+Shift+V</kbd>. A janela de comparação aparece sobre a página; feche com <b>Fechar</b> ou <kbd>Esc</kbd>.</li>
 <li>Escolha a <b>Versão A</b> (antes) e a <b>Versão B</b> (depois) — de qualquer sessão, arquivo ou link, ou “Atual” — e clique em <b>Comparar</b>. Use ⇄ para inverter.</li>
 <li>Leitura do resultado: linhas <span style="background:#fde0db">removidas</span> e <span style="background:#e8f5ec">incluídas</span>, com as palavras alteradas destacadas; imagens aparecem como miniaturas e as que mudaram são listadas em “Antes” e “Depois”.</li>
-<li>Opções: Guia, Apresentação ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
+<li>Opções: Treinamento, Apresentação ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
 <li><b>Restaurar A/B</b> coloca a versão nos editores; <b>.MD A/B</b> salva os .md; <b>★ Marcar versão</b> cria um ponto nomeado (não é apagado automaticamente). O limite é de 120 versões.</li>
 </ul>
 <h4>Compartilhar</h4>

@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.37 - 22/10/2026
+- Em toda a aplicação, "Guia" passou a se chamar **Treinamento**: abas, botões, tutorial, ajuda, Histórico, Locução, mensagens e o curso de exemplo (`treinamento.md`).
+- O histórico de novidades e o README também foram atualizados para o novo nome.
+
 ## 1.36 - 22/10/2026
 - Botões 100% no padrão do Design System gov.br, definidos em um único arquivo (`ds-botoes.css`): rótulo em uma linha, altura fixa e cantos proporcionais. As regras antigas de botão foram removidas do `govbr.css` e dos scripts.
 - Rótulos de botão com no máximo duas palavras (ex.: Carregar áudio, Salvar pasta, Apagar dados); tutorial e ajuda atualizados. As abas agora se chamam Treinamento e Apresentação.
@@ -14,8 +18,8 @@
 - Atualizador: identifica a execução por ID textual e commit, sem converter listas JSON em Int64; preserva commits e alterações locais.
 
 ## 1.33 - 21/10/2026
-- **Arquivos gerados** separados por linha: **Guia** (.MD .HTML .DOCX), **Apresentacao** (.MD .HTML .PPTX) e **Todos** (.ZIP), com os links Exibir na linha correspondente. Vale tambem para os arquivos guardados no navegador.
-- Trocar entre as abas **Guia** e **Apresentacao** (e as demais abas e barras de navegacao) nao mostra mais confirmacao.
+- **Arquivos gerados** separados por linha: **Treinamento** (.MD .HTML .DOCX), **Apresentacao** (.MD .HTML .PPTX) e **Todos** (.ZIP), com os links Exibir na linha correspondente. Vale tambem para os arquivos guardados no navegador.
+- Trocar entre as abas **Treinamento** e **Apresentacao** (e as demais abas e barras de navegacao) nao mostra mais confirmacao.
 
 ## 1.32 - 21/10/2026
 - Regra global de interface: toda secao e subsecao expansivel tem um unico controle **mostrar/recolher**, sempre alinhado a direita (corrige a duplicacao na aba Locucao e em Opcoes avancadas de voz).
@@ -35,7 +39,7 @@
 
 ## 1.29 — 21/10/2026
 - Novos temas de apresentação PPTX **ANAC 20 anos — claro** e **ANAC 20 anos — escuro**, baseados nos dois modelos oficiais fornecidos.
-- Nos dois novos temas, o Guia HTML/DOCX continua usando o padrão **gov.br**; somente a apresentação PPTX recebe a identidade ANAC 20 anos.
+- Nos dois novos temas, o Treinamento HTML/DOCX continua usando o padrão **gov.br**; somente a apresentação PPTX recebe a identidade ANAC 20 anos.
 
 ## 1.28 — 21/10/2026
 - **Links criados**: cada link agora é clicável e exibe um **QR Code** do endereço completo, facilitando a abertura no celular.
@@ -97,14 +101,14 @@
 - Plano de migração em `MIGRACAO-LOCUCAO.md`.
 
 ## 1.16 — 21/10/2026
-- Gera arquivos mesmo com só o **guia** ou só a **apresentação** preenchidos (apenas do que foi preenchido).
-- Caixas **Informação**, **Dica** e **Atenção** com cores próprias (azul, verde e amarelo) no HTML, DOCX e PPTX, em qualquer layout e nos temas escuro e alto contraste do guia.
+- Gera arquivos mesmo com só o **treinamento** ou só a **apresentação** preenchidos (apenas do que foi preenchido).
+- Caixas **Informação**, **Dica** e **Atenção** com cores próprias (azul, verde e amarelo) no HTML, DOCX e PPTX, em qualquer layout e nos temas escuro e alto contraste do treinamento.
 
 ## 1.15 — 21/10/2026
-- Arquivos guardados no navegador: botões renomeados para **Treinamento** e **Apresentação** (antes “Guia” e “Slides”).
+- Arquivos guardados no navegador: botões renomeados para **Treinamento** e **Apresentação** (antes “Treinamento” e “Slides”).
 
 ## 1.14 — 21/10/2026
-- Arquivos gerados (guia HTML/DOCX e apresentação HTML/PPTX) com **layout gov.br** por padrão.
+- Arquivos gerados (treinamento HTML/DOCX e apresentação HTML/PPTX) com **layout gov.br** por padrão.
 - Novo campo **Layout dos arquivos gerados**: gov.br ou Clássico (layout original, mantido sem alterações).
 
 ## 1.13 — 21/10/2026
@@ -155,4 +159,4 @@
 - Rascunhos locais, links criptografados e imagens em base64.
 
 ## 1.0 — 20/10/2026
-- Página única: Markdown → guia (HTML/DOCX) e apresentação (HTML/PPTX) no navegador.
+- Página única: Markdown → treinamento (HTML/DOCX) e apresentação (HTML/PPTX) no navegador.

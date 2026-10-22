@@ -2,7 +2,7 @@
 
 Página única que converte os arquivos Markdown de um curso em:
 
-| Guia de treinamento | Apresentação |
+| Treinamento | Apresentação |
 |---|---|
 | `Treinamento_<PREFIXO>.md` · `.html` · `.docx` | `Apresentacao_<PREFIXO>.md` · `.html` · `.pptx` |
 
@@ -14,7 +14,7 @@ Página única que converte os arquivos Markdown de um curso em:
 |---|---|---|
 | Editor Markdown | Barra de ferramentas, **desfazer/refazer** próprio (Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z e botões; cobre botões, arquivos e rascunhos), atalhos (Ctrl+B/I/E/K, Ctrl+Shift+1/2/3 títulos, Ctrl+Shift+7/8/9 listas, Alt+↑/↓ mover linha, Ctrl+Shift+D duplicar), modos Editar/Dividido/Prévia, tela cheia, prévia fiel ao gerador (inclusive slides) | Só na memória do navegador |
 | Tutorial, Ajuda e Atalhos | Tutorial guiado na primeira visita (ou botão ▶ Tutorial), com **reinício** (↺ no tutorial, botão na Ajuda ou `Alt+Shift+R`); Ajuda **com busca** e destaque dos termos (botão ou F1); atalhos `Alt+Shift+tecla` com janela de consulta (botão ⌨ Atalhos ou `Alt+Shift+K`) | — |
-| Gerar curso | `guia.md` + `apresentacao.md` → 6 arquivos + ZIP, no layout **gov.br** (padrão) ou **Clássico** | Só na memória do navegador |
+| Gerar curso | `treinamento.md` + `apresentacao.md` → 6 arquivos + ZIP, no layout **gov.br** (padrão) ou **Clássico** | Só na memória do navegador |
 | Imagens em base64 | Arraste, cole (Ctrl+V) ou insira pelo botão de imagem; no editor aparecem como `(img:N)` | No próprio texto `.md` |
 | Rascunhos locais | Salvamento automático **ligado por padrão** (recupera o último trabalho ao reabrir) e rascunhos com nome | IndexedDB do navegador, só nesta máquina |
 | Salvar na pasta / Baixar .zip | Grava os `.md` e os arquivos gerados numa pasta escolhida (Edge/Chrome) | Disco do usuário |
@@ -58,7 +58,7 @@ tools/requirements.txt
 
 ```
 pip install -r tools/requirements.txt
-python tools/gerador.py guia.md apresentacao.md --prefixo Meu_Curso --rodape "SIGLA · ANAC" --saida saida
+python tools/gerador.py treinamento.md apresentacao.md --prefixo Meu_Curso --rodape "SIGLA · ANAC" --saida saida
 # só um dos dois: use '-' no lugar do arquivo ausente (ex.: python tools/gerador.py - apresentacao.md ...)
 ```
 
@@ -83,7 +83,7 @@ Aba **Locução** (`Alt+Shift+3`): gera áudio a partir de texto no navegador co
 | Textos longos | Fragmentação por frases (≤ 250 caracteres em pt-BR), geração trecho a trecho, cancelamento |
 | Áudio | Costura PCM via Web Audio API com micro-fades (sem estalos) e pausa configurável; WAV PCM 16 bits, 24 kHz |
 | Histórico/cache | IndexedDB `KokoroTTS_DB` / `audio_history` (índice `text + voice + speed`); texto idêntico com a mesma voz, velocidade e pausa é servido do histórico; painel com Ouvir, Baixar, Usar texto, Excluir e busca |
-| Integração | Importa notas do apresentador, texto dos slides ou o guia (sem Markdown); ajuda e atalhos (`Alt+Shift+3`, `Alt+Shift+N`) |
+| Integração | Importa notas do apresentador, texto dos slides ou o treinamento (sem Markdown); ajuda e atalhos (`Alt+Shift+3`, `Alt+Shift+N`) |
 
 ## Arquivos gerados guardados no navegador
 

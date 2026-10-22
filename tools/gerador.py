@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# GERADOR PADRÃO DE CURSO v3.5 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX) — Guia (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
+# GERADOR PADRÃO DE CURSO v3.5 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX) — Treinamento (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
 # Requisitos: Python 3 + python-docx + python-pptx (+ Pillow). HTML usa só biblioteca padrão.
-# Uso: python gerador.py guia.md apresentacao.md --prefixo NOME --rodape "TEXTO" [--barra "TEXTO"] [--saida pasta] [--sem-embutir] [--tema govbr|classico] [--audios pasta] [--avancar]
+# Uso: python gerador.py treinamento.md apresentacao.md --prefixo NOME --rodape "TEXTO" [--barra "TEXTO"] [--saida pasta] [--sem-embutir] [--tema govbr|classico] [--audios pasta] [--avancar]
 # Imagens ![alt](caminho|URL) sao convertidas para data:URI base64 (texto puro) nos .md de saida.
 # Saída: Treinamento_<prefixo>.md/.html/.docx  e  Apresentacao_<prefixo>.md/.html/.pptx
 import re,html,argparse,os,base64,io,mimetypes
@@ -266,15 +266,15 @@ D.getElementById('p').onclick=function(){g(i-1)};D.getElementById('n').onclick=f
 var x0=null;addEventListener('touchstart',function(e){x0=e.touches[0].clientX});addEventListener('touchend',function(e){if(x0===null)return;var d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>50)g(i+(d<0?1:-1));x0=null})})();"""
 def title_of(md,d):
     m=re.search(r'^#\s+(.+)$',md,re.M);return plain(m.group(1)).strip() if m else d
-def guia_html(md,bar,tema=None):
-    # Os temas ANAC 20 anos alteram somente a apresentação; o guia permanece no padrão gov.br.
+def treinamento_html(md,bar,tema=None):
+    # Os temas ANAC 20 anos alteram somente a apresentação; o treinamento permanece no padrão gov.br.
     T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema)
     toc=[];b=html_of(blocks(md),toc)
     hs=list(re.finditer(r'<h2 id="[^"]+">(.*?)</h2>',b))
     for k,m in enumerate(hs):
         if 'gabarito' in m.group(1).lower():
             e=hs[k+1].start() if k+1<len(hs) else len(b);b=b[:m.start()]+'<section id="gab" class="hid">'+b[m.start():e]+'</section>'+b[e:];break
-    t=title_of(md,'Guia');tc=''.join('<li class="lv%d"><a href="#%s">%s</a></li>'%(v,s,E(x)) for v,s,x in toc)
+    t=title_of(md,'Treinamento');tc=''.join('<li class="lv%d"><a href="#%s">%s</a></li>'%(v,s,E(x)) for v,s,x in toc)
     return ('<!DOCTYPE html><html lang="pt-BR" data-theme="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title><style>%s</style></head><body>'
     '<header><span class="t">%s</span><span id="pg" style="font-size:13px"></span><select id="th" aria-label="Tema"><option value="light">Tema claro</option><option value="dark">Tema escuro</option><option value="contrast">Alto contraste</option></select>'
     '<button id="rs">Limpar checklists</button><button onclick="print()">Imprimir / PDF</button></header><div class="wrap"><nav aria-label="Sumário"><ul>%s</ul></nav><main><article>%s</article></main></div><script>%s</script>%s</body></html>'
@@ -372,7 +372,7 @@ def _slides_html_narrado(t,sl,foot,T,o,audios,avancar):
     '<div id="ini" role="dialog" aria-label="Iniciar apresentação"><button id="ini1">▶ Iniciar com narração</button><a id="ini0" role="button" tabindex="0">Iniciar sem som</a></div>%s<script>%s</script><script>%s</script>%s</body></html>'
     )%(E(t),tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+CSS_NARR,o,aud,js,JS_NARR.replace('__AUTO__','true' if avancar else 'false'),MER)
 # ============================== DOCX ==============================
-def guia_docx(md,path,foot,tema=None):
+def treinamento_docx(md,path,foot,tema=None):
     # Os temas ANAC 20 anos alteram somente a apresentação; o DOCX permanece no padrão gov.br.
     T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema);C=lambda h:trgb(h,T);H=lambda h:thex(h,T);FONTE=T['docx_font']
     from docx import Document
@@ -707,20 +707,20 @@ def markdown_com_tema(md,tema):
     return '---\ntheme: '+tema+'\n---\n\n'+md.lstrip()
 def gerar(gm,sm,prefixo='Curso',rodape='',barra='',saida='.',tema=None,narracao=None):
     tema=tema if tema in TEMAS else TEMA_PADRAO
-    """Gera os arquivos do que estiver preenchido: guia (MD/HTML/DOCX) e/ou apresentação (MD/HTML/PPTX)."""
+    """Gera os arquivos do que estiver preenchido: treinamento (MD/HTML/DOCX) e/ou apresentação (MD/HTML/PPTX)."""
     gm=gm or '';sm=sm or ''
     tem_g,tem_s=bool(gm.strip()),bool(sm.strip())
-    if not tem_g and not tem_s:raise ValueError('Nada para gerar: o guia e a apresentação estão vazios.')
+    if not tem_g and not tem_s:raise ValueError('Nada para gerar: o treinamento e a apresentação estão vazios.')
     os.makedirs(saida,exist_ok=True)
     P=lambda e,n:os.path.join(saida,n+prefixo+e)
     arqs=[];msg='';g='';sl=[]
     if tem_g:
-        gm_=re.sub(r'<!--.*?-->','',gm,flags=re.S);g=guia_html(gm_,barra,tema)
+        gm_=re.sub(r'<!--.*?-->','',gm,flags=re.S);g=treinamento_html(gm_,barra,tema)
         open(P('.md','Treinamento_'),'w',encoding='utf-8').write(gm);open(P('.html','Treinamento_'),'w',encoding='utf-8').write(g)
         arqs+=[P('.md','Treinamento_'),P('.html','Treinamento_')]
-        try:guia_docx(gm_,P('.docx','Treinamento_'),rodape or title_of(gm_,''),tema);arqs.append(P('.docx','Treinamento_'));msg+=' | docx: ok'
+        try:treinamento_docx(gm_,P('.docx','Treinamento_'),rodape or title_of(gm_,''),tema);arqs.append(P('.docx','Treinamento_'));msg+=' | docx: ok'
         except Exception as e:msg+=' | docx: ERRO %s'%e
-    else:msg+=' | guia: vazio (não gerado)'
+    else:msg+=' | treinamento: vazio (não gerado)'
     if tem_s:
         sm=markdown_com_tema(sm,tema);t,sl=split_slides(sm);nr=_narr(narracao)
         open(P('.md','Apresentacao_'),'w',encoding='utf-8').write(sm);open(P('.html','Apresentacao_'),'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema,nr['html'],nr['avancar']))
@@ -732,12 +732,12 @@ def gerar(gm,sm,prefixo='Curso',rodape='',barra='',saida='.',tema=None,narracao=
     res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d | imagens: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'),len(IMG.findall(gm))+len(IMG.findall(sm)))+' | tema: '+tema
     return arqs,res
 if __name__=='__main__':
-    a=argparse.ArgumentParser();a.add_argument('guia',help="arquivo do guia ('-' para não gerar)");a.add_argument('apresentacao',nargs='?',default='-',help="arquivo da apresentação ('-' ou omitido para não gerar)");a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.')
+    a=argparse.ArgumentParser();a.add_argument('treinamento',help="arquivo do treinamento ('-' para não gerar)");a.add_argument('apresentacao',nargs='?',default='-',help="arquivo da apresentação ('-' ou omitido para não gerar)");a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.')
     a.add_argument('--sem-embutir',action='store_true',help='não converter imagens para base64');a.add_argument('--tema',default=TEMA_PADRAO,choices=sorted(TEMAS),help='layout dos arquivos (padrão: %(default)s)');a.add_argument('--audios',default='',help='pasta com a narração por slide: 1.mp3, 2.ogg, 3.wav… (número do slide)');a.add_argument('--avancar',action='store_true',help='avançar os slides ao fim da narração');a=a.parse_args()
     ler=lambda f:'' if f in('-','') else open(f,encoding='utf-8').read()
-    gm=ler(a.guia);sm=ler(a.apresentacao)
+    gm=ler(a.treinamento);sm=ler(a.apresentacao)
     if not a.sem_embutir:
-        gm,n1,f1=embed_images(gm,os.path.dirname(os.path.abspath(a.guia if a.guia!='-' else '.')));sm,n2,f2=embed_images(sm,os.path.dirname(os.path.abspath(a.apresentacao if a.apresentacao!='-' else '.')))
+        gm,n1,f1=embed_images(gm,os.path.dirname(os.path.abspath(a.treinamento if a.treinamento!='-' else '.')));sm,n2,f2=embed_images(sm,os.path.dirname(os.path.abspath(a.apresentacao if a.apresentacao!='-' else '.')))
         if n1+n2:print('Imagens embutidas em base64: %d'%(n1+n2))
         for f in f1+f2:print('AVISO: imagem não encontrada/baixada: %s'%f)
     narr=None

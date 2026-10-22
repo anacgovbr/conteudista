@@ -3,14 +3,14 @@
 
    1. LISTAS DE ARQUIVOS (em "Arquivos gerados" e em "Arquivos gerados guardados neste navegador")
       Cada tipo de arquivo ocupa a sua própria linha:
-          Guia:         .MD  .HTML  .DOCX   Exibir treinamento
+          Treinamento:         .MD  .HTML  .DOCX   Exibir treinamento
           Apresentação: .MD  .HTML  .PPTX   Exibir apresentação
           Todos:        .ZIP
       Os próprios elementos (links e "Exibir") são MOVIDOS, não copiados, portanto os eventos
       originais continuam funcionando. A reorganização é idempotente e refeita sempre que a
       lista for redesenhada.
 
-   2. ABAS "Guia de treinamento (guia.md)" / "Apresentação (apresentacao.md)"
+   2. ABAS "Treinamento (treinamento.md)" / "Apresentação (apresentacao.md)"
       Trocar de aba é navegação: não mostra "✓" nem mensagem de confirmação. A mesma regra vale
       para as abas Curso/Locução, a barra de ferramentas do editor e os botões do cabeçalho
       que abrem janelas.
@@ -31,7 +31,7 @@
 
   /* ---------------------------- 1. Agrupamento ---------------------------- */
   const ORDEM = { md: 1, html: 2, docx: 3, pptx: 3, zip: 9 };
-  const GRUPOS = [['guia', 'Guia:'], ['apres', 'Apresenta\u00e7\u00e3o:'], ['todos', 'Todos:']];
+  const GRUPOS = [['treinamento', 'Treinamento:'], ['apres', 'Apresenta\u00e7\u00e3o:'], ['todos', 'Todos:']];
 
   function extensao(el) {
     const nome = (el.getAttribute('download') || '').toLowerCase();
@@ -43,16 +43,16 @@
     if (nome) {
       if (/\.zip$/.test(nome)) return 'todos';
       if (/^apresentacao_/.test(nome) || /\.pptx$/.test(nome)) return 'apres';
-      if (/^treinamento_/.test(nome) || /\.docx$/.test(nome)) return 'guia';
+      if (/^treinamento_/.test(nome) || /\.docx$/.test(nome)) return 'treinamento';
       return 'todos';
     }
     // "Exibir treinamento" / "Exibir apresenta\u00e7\u00e3o" (sem atributo download)
-    return /apresenta/i.test(el.textContent || '') ? 'apres' : 'guia';
+    return /apresenta/i.test(el.textContent || '') ? 'apres' : 'treinamento';
   }
   function agrupar(host) {
     const itens = [...host.children].filter(el => el.matches('a.file-link, button.file-link, .btn-arq'));
     if (!itens.some(el => el.matches('a[download]'))) return;           // s\u00f3 listas de arquivos gerados
-    const grupos = { guia: [], apres: [], todos: [] };
+    const grupos = { treinamento: [], apres: [], todos: [] };
     itens.forEach((el, i) => grupos[grupoDe(el)].push({ el, ord: el.matches('a[download]') ? (ORDEM[extensao(el)] || 8) : 50, i }));
     const wrap = document.createElement('div'); wrap.className = 'file-grupos';
     GRUPOS.forEach(([k, rotulo]) => {

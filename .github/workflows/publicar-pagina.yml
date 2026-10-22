@@ -39,8 +39,8 @@ jobs:
 
       - name: Testar o gerador com o curso de exemplo
         run: |
-          python tools/gerador.py web/exemplo/guia.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste --tema govbr
-          python tools/gerador.py web/exemplo/guia.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste2 --tema classico
+          python tools/gerador.py web/exemplo/treinamento.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste --tema govbr
+          python tools/gerador.py web/exemplo/treinamento.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste2 --tema classico
           mkdir -p /tmp/aud && python -c "import wave,struct,math;w=wave.open('/tmp/aud/1.wav','wb');w.setnchannels(1);w.setsampwidth(2);w.setframerate(22050);w.writeframes(b''.join(struct.pack('<h',int(8000*math.sin(i/10))) for i in range(22050)))"
           python tools/gerador.py - web/exemplo/apresentacao.md --prefixo Narr --saida /tmp/teste3 --audios /tmp/aud --avancar
 
