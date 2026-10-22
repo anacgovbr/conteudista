@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.34 - 21/10/2026
+- Locução: botão de carregar recursos oculto após ativação, inclusive com o CSS dos botões; confirmação genérica removida desta ação assíncrona.
+- Atualizador: identifica a execução por ID textual e commit, sem converter listas JSON em Int64; preserva commits e alterações locais.
+
 ## 1.33 - 21/10/2026
 - **Arquivos gerados** separados por linha: **Guia** (.MD .HTML .DOCX), **Apresentacao** (.MD .HTML .PPTX) e **Todos** (.ZIP), com os links Exibir na linha correspondente. Vale tambem para os arquivos guardados no navegador.
 - Trocar entre as abas **Guia** e **Apresentacao** (e as demais abas e barras de navegacao) nao mostra mais confirmacao.

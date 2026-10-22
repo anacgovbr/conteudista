@@ -129,6 +129,7 @@
 #secLoc audio{width:100%;margin:8px 0}
 #secLoc .acoes button,#secLoc .acoes a{margin:4px 6px 4px 0}
 #secLoc .rec{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:0 0 10px;padding:8px 10px;border-radius:8px;background:#edf5ff;border:1px solid #adcdff}
+#secLoc #locCarregar[hidden]{display:none!important}
 #secLoc .rec.ok{background:#e3f5e1;border-color:#9ad09f}#secLoc .rec button{margin:0}#secLoc .rec span{font-size:13px;color:#333;flex:1;min-width:200px}
 #secLoc .aviso{font-size:13px;padding:8px 10px;border-radius:0 6px 6px 0;margin:8px 0;background:#e3f5e1;border-left:4px solid #168821}
 #secLoc .aviso.wa{background:#fff5c2;border-left-color:#8a5c00}#secLoc .aviso.er{background:#fde0db;border-left-color:#e52207}
