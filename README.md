@@ -31,7 +31,7 @@ web/editor.js            ← editor Markdown leve (sem dependências)
 web/ajuda.js             ← tutorial guiado, ajuda e atalhos de teclado
 web/historico.js         ← histórico de versões e comparação (diff)
 web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
-web/metadados.js         ← Nome do curso, Rodapé em "Mais opções" (a Barra superior foi retirada)
+web/metadados.js         ← Nome do curso, Rodapé (opcional) sempre visível (a Barra superior foi retirada)
 web/dicas.js             ← dicas (tooltip) acessíveis dos botões da barra do editor
 web/janelas.js           ← Importar, Salvar, Compartilhar e Histórico de arquivos (janelas e barra de ações)
 web/colar.js             ← Importar > Colar: subabas Treinamento, Apresentação e Link
@@ -50,7 +50,7 @@ tools/requirements.txt
 
 ## Manutenção
 
-- Layout dos arquivos gerados: dicionário `TEMAS` em `tools/gerador.py` (`govbr` = padrão, `classico` = original). Para um tema novo (ex.: ANAC), copie o bloco `govbr`, ajuste cores e fontes e acrescente a opção no campo **Layout dos arquivos gerados** do `web/index.html`. Linha de comando: `--tema govbr|classico`.
+- Layout dos arquivos gerados: dicionário `TEMAS` em `tools/gerador.py` (`govbr` = padrão, `classico` = original). Para um tema novo (ex.: ANAC), copie o bloco `govbr`, ajuste cores e fontes e acrescente a opção no campo **Layout (tema)** do `web/index.html`. Linha de comando: `--tema govbr|classico`.
 
 - **Regra global de interface (botões):** a confirmação de ação concluída é só visual (botão verde com tick por ~2,6 s). Nunca insira texto na tela; use `UXFeedback.confirmar(botao, mensagem)` em `web/ux-feedback.js`, que envia a mensagem a leitores de tela por uma região oculta.
 - A cada mudança, acrescente uma entrada curta no topo do `CHANGELOG.md` e atualize `VERSAO` em `web/changelog.js`.

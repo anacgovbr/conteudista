@@ -118,7 +118,7 @@
 <h4>Gerar um curso em 3 passos</h4>
 <ol>
 <li>Na aba <b>Treinamento</b>, cole ou arraste o <code>treinamento.md</code>; na aba <b>Apresentação</b>, o <code>apresentacao.md</code>.</li>
-<li>Informe o <b>Nome do curso</b> (usado nos nomes dos arquivos) e escolha o <b>Layout dos arquivos gerados</b>: <b>Padrão gov.br</b> (padrão: cores, fonte e destaques do Design System do Governo Federal) ou <b>Clássico</b> (layout original). Em <b>Mais opções</b> há o <b>rodapé</b> (opcional), que aparece nos slides e no DOCX.</li>
+<li>Informe o <b>Nome do curso</b> (usado nos nomes dos arquivos) e escolha o <b>Layout (tema)</b>: <b>Padrão gov.br</b> (padrão: cores, fonte e destaques do Design System do Governo Federal) ou <b>Clássico</b> (layout original). O <b>rodapé</b> (opcional) fica entre o nome e o layout e aparece nos slides e no DOCX.</li>
 <li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Os pacotes anteriores e os rascunhos ficam no botão <b>Histórico</b>, ao lado do título <b>Arquivos gerados</b>. Se só um dos dois estiver preenchido, são gerados apenas os arquivos dele.</li>
 </ol>
 <div class="dica">Na primeira geração o navegador carrega o motor Python (20 a 60 s). Depois é imediato.</div>

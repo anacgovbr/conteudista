@@ -27,11 +27,7 @@
   st.id = 'meta-css';
   st.textContent = `
 .meta-aux{display:block;margin:4px 0 0;color:var(--mu,#636363);font-size:12.5px;font-weight:400;line-height:1.35}
-#dxMais{margin:4px 0 12px}
-#dxMais .mais-val{font-weight:400;color:var(--mu,#636363);font-size:14px}
-#dxMais .mais-corpo.row{margin:0 0 4px}
-#dxMais .mais-corpo>div{max-width:560px}
-html.contraste #dxMais .mais-val,html.contraste .meta-aux{color:#fff!important}
+html.contraste .meta-aux{color:#fff!important}
 `;
   document.head.appendChild(st);
 
@@ -60,22 +56,15 @@ html.contraste #dxMais .mais-val,html.contraste .meta-aux{color:#fff!important}
     atualizarNome();
   });
 
-  /* 3. Rodape em "Mais opcoes" (recolhido) */
+  /* 3. Rodape (opcional) sempre visivel, entre Nome do curso e Layout */
   const cr = celula(rod), lr = cr ? cr.querySelector('label') : null;
   if (lr) lr.textContent = 'Rodap\u00e9 (opcional)';
   const auxR = document.createElement('small');
   auxR.className = 'meta-aux'; auxR.id = 'rodAux'; auxR.textContent = 'Aparece nos slides e no DOCX.';
   rod.after(auxR); rod.setAttribute('aria-describedby', 'rodAux');
-  const det = document.createElement('details');
-  det.className = 'sx'; det.id = 'dxMais'; det.open = false;
-  det.innerHTML = '<summary><h3>Mais op\u00e7\u00f5es <small class="mais-val"></small></h3></summary><div class="mais-corpo row"></div>';
-  row.insertAdjacentElement('afterend', det);
-  if (cr) det.querySelector('.mais-corpo').appendChild(cr);
-  const mv = det.querySelector('.mais-val');
-  const resumo = () => {
-    const v = rod.value.trim();
-    mv.textContent = v ? '\u00b7 Rodap\u00e9: ' + (v.length > 40 ? v.slice(0, 40) + '\u2026' : v) : '';
-  };
+  // Rodape sempre visivel: fica entre "Nome do curso" e "Layout" (no celular, abaixo de "Nome do curso")
+  if (cr && cn) cn.insertAdjacentElement('afterend', cr);
+  const resumo = () => { /* sem resumo: o campo esta sempre visivel */ };
   rod.addEventListener('input', () => { lembrar(rod.value.trim()); resumo(); });
 
   function restaurarRodape() {

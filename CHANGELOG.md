@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.46 - 22/10/2026
+- **Rodapé (opcional)** sempre visível, entre **Nome do curso** e **Layout** (no celular, abaixo de Nome do curso). O bloco recolhido "Mais opções" deixou de existir.
+- O rótulo "Layout dos arquivos gerados" passou a ser **Layout (tema)**.
+
 ## 1.45 - 22/10/2026
 - **Importar → Colar** com subabas **Treinamento**, **Apresentação** e **Link**: cada texto tem a sua caixa Markdown, com ✓ quando preenchida. **Importar** envia o que estiver preenchido (um ou os dois textos) e o texto atual vai para Versões antes de ser substituído.
 - Colar um link numa das caixas de texto move o endereço para a subaba Link. Os links (colados ou salvos) agora são abertos direto pela página, sem depender dos campos antigos de "Abrir um link".
