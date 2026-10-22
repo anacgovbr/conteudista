@@ -1,5 +1,11 @@
 # Novidades do Conteudista
 
+## 1.43 - 22/10/2026
+- **Importar** (antes "Abrir"): uma janela com três abas por origem — **Salvos** (rascunhos e links), **Computador** (clique ou arraste .md, .txt, .zip e imagens; destino detectado e editável) e **Colar** (texto ou link, com reconhecimento automático). A versão atual do texto vai para Versões antes de ser substituída.
+- **Salvar e compartilhar** simplificado: a seção saiu da página. A barra de ações tem **Importar, Salvar (menu: Rascunho, Pasta, .MD, .ZIP), Compartilhar, Carregar exemplo e Limpar tela**, todos com o mesmo tamanho, e a chave **Salvar automático**. Compartilhar abre uma janela com destino, senha e tamanho.
+- **Arquivos gerados** voltaram para junto de "Gerar arquivos": o botão **Histórico** ao lado do título abre o Histórico de arquivos. Regra de nomes: Versões = texto; Histórico = arquivos gerados.
+- **Excluir tudo** (Salvos e Histórico) e **Apagar dados** com confirmação acessível (alertdialog, foco em Cancelar, Esc cancela, sem tempo limite, resultado anunciado a leitores de tela).
+
 ## 1.42 - 22/10/2026
 - **Metadados do curso**: a Barra superior do treinamento saiu da tela (o título do treinamento faz esse papel). O **Prefixo** passou a se chamar **Nome do curso**, com texto auxiliar e normalização ao sair do campo. O **Rodapé (opcional)** foi para **Mais opções**, recolhido, e fica lembrado neste navegador.
 - **Versões do texto**: o antigo "Histórico e comparação" do editor agora se chama Versões (ícone + texto no desktop, só ícone no celular, com ícone próprio). "Histórico" fica reservado a arquivos gerados e áudios.

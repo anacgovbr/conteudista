@@ -33,7 +33,7 @@ web/historico.js         ← histórico de versões e comparação (diff)
 web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
 web/metadados.js         ← Nome do curso, Rodapé em "Mais opções" (a Barra superior foi retirada)
 web/dicas.js             ← dicas (tooltip) acessíveis dos botões da barra do editor
-web/abrir.js             ← botão Abrir: arquivos gerados, rascunhos e links em uma janela
+web/janelas.js           ← Importar, Salvar, Compartilhar e Histórico de arquivos (janelas e barra de ações)
 web/locucao.js           ← aba Locução
 web/locucao-worker.js    ← motor de voz Kokoro-82M (Web Worker)
 web/ptbr-g2p.js          ← fonemizador interno pt-BR
