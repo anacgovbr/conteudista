@@ -37,13 +37,66 @@
 #gerBox td .file-link{margin:2px 12px 2px 0}#gerBox .uso{color:#636363;font-size:12.5px;margin:6px 0 0}`;
   document.head.appendChild(st);
   const box = document.createElement('div'); box.id = 'gerBox';
-  box.innerHTML = '<h3>Arquivos gerados guardados neste navegador</h3>' +
+  box.innerHTML = '' +
     '<div class="gtop"><label class="inl"><input type="checkbox" id="gerAtivo"> Guardar automaticamente cada geração</label>' +
     '<label class="inl">Manter os últimos <select id="gerLim"><option>5</option><option selected>10</option><option>20</option><option>50</option></select> pacotes</label>' +
     '<button type="button" class="dan mini" id="gerLimpar">Apagar todos</button></div>' +
     '<div id="gerLista" class="note">Nenhum pacote guardado.</div><p class="uso" id="gerUso"></p>';
   const prev = $('prev');
-  (prev || res).insertAdjacentElement('afterend', box);
+  /* Historico de arquivos: o painel sai da pagina e abre em uma janela (mesmo padrao do Historico do editor) */
+  const icoHist = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/></svg>';
+  const stJanela = document.createElement('style');
+  stJanela.textContent = `
+.ger-back{position:fixed;inset:0;z-index:1800;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 14px;overflow:auto}
+.ger-back[hidden]{display:none}
+.ger-win{background:#fff;color:var(--ink,#333);border-radius:8px;width:min(1000px,100%);box-shadow:0 10px 40px rgba(0,0,0,.35);padding:0 20px 18px;position:relative}
+.ger-top{display:flex;align-items:center;gap:10px;padding:14px 0 10px;border-bottom:1px solid var(--line,#ccc);margin-bottom:10px;position:sticky;top:0;background:#fff;z-index:2}
+.ger-top h2{flex:1;margin:0;font-size:19px}.ger-top button{margin:0}
+.ger-win>.note{margin:0 0 10px}
+.ger-win #gerBox{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important}
+.ger-tit{display:flex;align-items:center;gap:10px}
+.ger-tb.mde-tb{display:inline-flex!important;padding:0!important;background:transparent!important;border:0!important;flex:0 0 auto}
+@media(max-width:700px){.ger-back{padding:0;align-items:stretch}.ger-win{border-radius:0;width:100%;min-height:100%;padding:0 14px 18px}.ger-top h2{font-size:16px}}`;
+  document.head.appendChild(stJanela);
+  const gerBack = document.createElement('div');
+  gerBack.className = 'ger-back'; gerBack.id = 'gerBack'; gerBack.hidden = true;
+  gerBack.setAttribute('role', 'dialog'); gerBack.setAttribute('aria-modal', 'true'); gerBack.setAttribute('aria-label', 'Hist\u00f3rico de arquivos gerados');
+  const gerWin = document.createElement('div'); gerWin.className = 'ger-win';
+  gerWin.innerHTML = '<div class="ger-top"><h2>Hist\u00f3rico de arquivos gerados</h2><button type="button" class="sec mini" id="gerFechar" title="Fechar (Esc)">Fechar \u2715</button></div>' +
+    '<p class="note">Guardados somente neste navegador. Os mais antigos s\u00e3o apagados conforme o limite escolhido abaixo.</p>';
+  gerWin.appendChild(box); gerBack.appendChild(gerWin); document.body.appendChild(gerBack);
+  let gerFoco = null;
+  function abrirGer() {
+    gerFoco = document.activeElement;
+    gerBack.hidden = false; gerBack.scrollTop = 0; document.body.style.overflow = 'hidden';
+    listar();
+    setTimeout(() => { const f = $('gerFechar'); if (f) f.focus(); }, 30);
+  }
+  function fecharGer(semFoco) {
+    if (gerBack.hidden) return;
+    gerBack.hidden = true; document.body.style.overflow = '';
+    if (!semFoco && gerFoco && gerFoco.focus) gerFoco.focus();
+  }
+  $('gerFechar').onclick = () => fecharGer();
+  gerBack.addEventListener('click', e => { if (e.target === gerBack) fecharGer(); });
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !gerBack.hidden) { e.preventDefault(); e.stopPropagation(); fecharGer(); } }, true);
+  // Botao "Historico" ao lado do titulo de "Arquivos gerados" (mesmo visual do botao da barra do editor)
+  (function () {
+    const dx = $('dxRes'), sum = dx && dx.querySelector(':scope > summary'), tit = sum && sum.querySelector(':scope > h3');
+    if (!sum || !tit || $('gerHistBtn')) return;
+    const grp = document.createElement('div'); grp.className = 'summary-title ger-tit';
+    const tb = document.createElement('span'); tb.className = 'mde-tb ger-tb';
+    const b = document.createElement('button'); b.type = 'button'; b.id = 'gerHistBtn'; b.className = 'hbtn';
+    b.title = 'Hist\u00f3rico de arquivos gerados'; b.setAttribute('aria-label', 'Hist\u00f3rico de arquivos gerados');
+    b.innerHTML = icoHist + '<span class="ht"> Hist\u00f3rico</span>';
+    tb.appendChild(b); sum.insertBefore(grp, tit); grp.append(tit, tb);
+    b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); abrirGer(); });
+    const rotulo = () => {
+      const n = Math.max(0, $('gerLista').querySelectorAll('tr').length - 1);
+      b.title = 'Hist\u00f3rico de arquivos gerados' + (n ? ' (' + n + (n > 1 ? ' pacotes' : ' pacote') + ')' : '');
+    };
+    new MutationObserver(rotulo).observe($('gerLista'), { childList: true, subtree: true });
+  })();
   $('gerAtivo').checked = localStorage.getItem(ATIVO) !== '0';
   $('gerLim').value = localStorage.getItem(LIM) || '10';
   $('gerAtivo').onchange = () => localStorage.setItem(ATIVO, $('gerAtivo').checked ? '1' : '0');
@@ -106,7 +159,7 @@
     $('gerUso').textContent = t.trim();
   }
   $('gerLista').addEventListener('click', async e => {
-    const v = e.target.closest('[data-ver]'), d = e.target.closest('[data-del]');
+    const v = e.target.closest('[data-ver]'), d = e.target.closest('[data-del]'); if (v) fecharGer(true);
     if (v) {
       e.preventDefault();
       if (prev) {
@@ -127,5 +180,5 @@
   if (logEl) new MutationObserver(() => { if (/Dados locais apagados/.test(logEl.lastChild && logEl.lastChild.textContent || '')) tx('readwrite', s => s.clear()).then(listar).catch(() => {}); }).observe(logEl, { childList: true });
 
   listar();
-  window.Gerados = { listar, capturar };
+  window.Gerados = { listar, capturar, abrir: abrirGer, fechar: fecharGer };
 })();

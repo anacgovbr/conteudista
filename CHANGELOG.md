@@ -1,5 +1,8 @@
 # Novidades do Conteudista
 
+## 1.38 - 22/10/2026
+- **Arquivos gerados**: os pacotes guardados no navegador agora ficam em uma janela, **Histórico de arquivos gerados**, aberta pelo botão **Histórico** ao lado do título (mesmo padrão do botão do editor). A página fica mais limpa e o histórico está sempre à mão, mesmo antes de gerar.
+
 ## 1.37 - 22/10/2026
 - Em toda a aplicação, "Guia" passou a se chamar **Treinamento**: abas, botões, tutorial, ajuda, Histórico, Locução, mensagens e o curso de exemplo (`treinamento.md`).
 - O histórico de novidades e o README também foram atualizados para o novo nome.
