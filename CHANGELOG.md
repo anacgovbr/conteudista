@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.41 - 22/10/2026
+- **Botão Abrir** (antes de Carregar exemplo): uma única janela com as abas **Arquivos**, **Rascunhos** e **Links**, com contador, que lembra a última aba usada. A aba Links traz URL e senha no topo e a lista "Links criados"; as três listas têm o mesmo formato de linha.
+- **Excluir tudo** no rodapé da janela, só na aba aberta, com confirmação acessível (alertdialog, foco em Cancelar, Esc cancela, sem tempo limite, resultado anunciado a leitores de tela).
+- Saíram da página o painel "Abrir um link", a seção "Links criados", a tabela de rascunhos e o painel de arquivos guardados. O atalho Alt+Shift+O abre a janela.
+
 ## 1.40 - 22/10/2026
 - **Regra global de feedback em botões**: a confirmação de ação concluída agora é apenas visual (botão verde com tick por alguns segundos). A mensagem "Ação concluída." deixou de aparecer na tela e a largura do botão não muda mais. Vale para Carregar exemplo, Limpar tela, Importar e demais botões.
 - O botão **Copiar** de "Links criados" e a mensagem "Texto importado" da Locução seguem a mesma regra; leitores de tela continuam recebendo o aviso por uma região oculta.

@@ -63,7 +63,7 @@
     { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe treinamento (HTML, DOCX, MD), apresentação (HTML, PPTX, MD) e um ZIP com tudo. Os botões <b>Exibir treinamento</b>, <b>Exibir apresentação</b> e <b>.ZIP</b> aparecem em <b>Arquivos gerados</b>, só para o que foi gerado. Para testar agora, use <b>Carregar exemplo</b>, logo abaixo dos campos do curso.' },
     { alvo: 'pLocal', t: '4. Seu trabalho é salvo sozinho', d: 'O <b>salvamento automático</b> já vem ligado: ao voltar à página, o último conteúdo é recuperado. Você também pode criar rascunhos com nome, salvar em uma pasta ou baixar os <code>.md</code>.' },
     { alvo: 'pLink', t: '5. Compartilhe com segurança (opcional)', d: 'Gere um <b>link criptografado</b> (autocontido ou PrivateBin), com senha se quiser. O tamanho aparece antes do envio.' },
-    { alvo: 'pOpen', t: '6. Recupere de um link', d: 'Cole aqui um link recebido (e a senha, se houver) e clique em <b>Abrir link</b>: o conteúdo volta para os editores.' },
+    { alvo: 'btnAbrir', t: '6. Recupere o que guardou', d: 'Clique em <b>Abrir</b> para ver seus <b>arquivos</b>, <b>rascunhos</b> e <b>links</b>. Na aba <b>Links</b>, cole um link recebido (e a senha, se houver): o conteúdo volta para os editores.' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
@@ -146,9 +146,9 @@
 <h4>Salvar e recuperar</h4>
 <table><tr><th>Como</th><th>Onde fica</th><th>Como recuperar</th></tr>
 <tr><td><b>Salvamento automático</b> (ligado por padrão)</td><td>Neste navegador, neste computador</td><td>Abra a página de novo: o último trabalho volta sozinho</td></tr>
-<tr><td><b>Salvar rascunho</b> (com nome)</td><td>Neste navegador</td><td>Lista de rascunhos → <b>Abrir</b></td></tr>
+<tr><td><b>Salvar rascunho</b> (com nome)</td><td>Neste navegador</td><td>Botão <b>Abrir</b> → aba <b>Rascunhos</b></td></tr>
 <tr><td><b>Salvar pasta</b> / <b>.MD</b> / <b>.ZIP</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas</td></tr>
-<tr><td><b>Link criptografado</b></td><td>No próprio link ou no PrivateBin (cifrado)</td><td>Painel <b>Abrir um link</b> → cole o link (e a senha)</td></tr>
+<tr><td><b>Link criptografado</b></td><td>No próprio link ou no PrivateBin (cifrado)</td><td>Botão <b>Abrir</b> → aba <b>Links</b> → cole o link (e a senha)</td></tr>
 <tr><td><b>Histórico de versões</b></td><td>Neste navegador</td><td>Botão <b>Histórico</b> na barra do editor → escolha a versão → <b>Restaurar</b></td></tr></table>
 <div class="dica">Limpar os dados do navegador apaga os rascunhos locais. Para guardar por mais tempo, use <b>Salvar na pasta</b>, <b>Baixar .md</b> ou <b>Baixar .zip</b>.</div>
 <h4>Histórico e comparação (antes e depois)</h4>
@@ -229,7 +229,7 @@
     { g: 'Salvar e recuperar', k: 'S', d: 'Salvar rascunho', f: () => clicar('dsave') },
     { g: 'Salvar e recuperar', k: 'A', d: 'Ligar/desligar salvamento automático', f: () => { const c = $('auto'); c.checked = !c.checked; c.dispatchEvent(new Event('change')); toast('Salvamento automático ' + (c.checked ? 'ligado' : 'desligado')); } },
     { g: 'Salvar e recuperar', k: 'L', d: 'Criar link criptografado', f: () => clicar('share') },
-    { g: 'Salvar e recuperar', k: 'O', d: 'Ir para “Abrir um link”', f: () => { const i = $('olink'); abrir(i); i.scrollIntoView({ block: 'center', behavior: 'smooth' }); i.focus(); } },
+    { g: 'Salvar e recuperar', k: 'O', d: 'Abrir arquivos, rascunhos e links', f: () => { if (window.AbrirJanela) AbrirJanela.abrir(); } },
     { g: 'Navegação', k: '1', d: 'Aba Treinamento (foca o editor)', f: () => focarEditor('g') },
     { g: 'Navegação', k: '2', d: 'Aba Apresentação (foca o editor)', f: () => focarEditor('s') },
     { g: 'Navegação', k: 'M', d: 'Alternar modo do editor (Editar → Dividido → Prévia)', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); if (!vis) return; const ordem = ['e', 's', 'p'], i = (ordem.indexOf(vis.dataset.m) + 1) % 3; const b = vis.querySelector('.mde-tb [data-m="' + ordem[i] + '"]'); if (b) b.click(); toast(['Somente editor', 'Editor + prévia', 'Somente prévia'][i]); } },
