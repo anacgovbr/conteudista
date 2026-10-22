@@ -748,3 +748,11 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   window.Compartilhar = { abrir: () => cmp.abrir(), fechar: () => cmp.fechar() };
   window.AbrirJanela = { abrir: k => importar.abrir(k), fechar: () => importar.fechar() };
 })();
+
+/* Secao "Arquivos gerados": o botao Historico do cabecalho abre a janela "Historico de arquivos" */
+(function () {
+  'use strict';
+  const b = document.getElementById('btnHistorico');
+  if (!b) return;
+  b.addEventListener('click', () => { if (window.HistoricoArquivos) window.HistoricoArquivos.abrir(); });
+})();

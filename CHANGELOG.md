@@ -1,5 +1,8 @@
 # Novidades do Conteudista
 
+## 1.47 - 22/10/2026
+- **Arquivos gerados** deixou de ser uma subseção recolhível de "Gerar curso" e virou uma **seção própria**, logo depois dela, sempre visível. O botão **Histórico** fica no cabeçalho da seção. A página segue a ordem do trabalho: Como funciona → Gerar curso → Arquivos gerados.
+
 ## 1.46 - 22/10/2026
 - **Rodapé (opcional)** sempre visível, entre **Nome do curso** e **Layout** (no celular, abaixo de Nome do curso). O bloco recolhido "Mais opções" deixou de existir.
 - O rótulo "Layout dos arquivos gerados" passou a ser **Layout (tema)**.
