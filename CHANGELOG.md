@@ -1,5 +1,8 @@
 # Novidades do Conteudista
 
+## 1.35 - 21/10/2026
+- Botões no padrão do Design System gov.br: rótulo sempre em uma linha, altura fixa (32, 40 ou 48 px) e cantos proporcionais à altura. Ao redimensionar a janela, o botão não vira mais uma "bola".
+- Grupos de botões (cabeçalho, galeria de imagens e Histórico) quebram de linha como um todo, em vez de espremer os rótulos.
 ## 1.34 - 21/10/2026
 - Locução: botão de carregar recursos oculto após ativação, inclusive com o CSS dos botões; confirmação genérica removida desta ação assíncrona.
 - Atualizador: identifica a execução por ID textual e commit, sem converter listas JSON em Int64; preserva commits e alterações locais.
