@@ -12,14 +12,14 @@
   const SESS = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), INI = new Date();
   const MAX_VERSOES = 120, INTERVALO_SESSAO = 3 * 60 * 1000;
   const ORIGENS = {
-    sessao: 'Edição (automático)', marco: 'Versão marcada', arquivo: 'Arquivo carregado', link: 'Link aberto',
+    sessao: 'Edição (automático)', marco: 'Versão salva', arquivo: 'Arquivo carregado', link: 'Link aberto',
     rascunho: 'Rascunho aberto', exemplo: 'Exemplo', antes: 'Antes de carregar', gerado: 'Arquivos gerados',
     compartilhado: 'Link criado', restaurado: 'Versão restaurada'
   };
   const GRUPOS = [
     ['sess', 'Esta sessão (desde ' + INI.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + ')'],
-    ['arquivo', 'Arquivos carregados'], ['link', 'Arquivos carregados de links'], ['marco', 'Versões marcadas'],
-    ['outros', 'Rascunhos e exemplos'], ['antigas', 'Sessões anteriores']
+    ['arquivo', 'Arquivos carregados'], ['link', 'Arquivos carregados de links'], ['marco', 'Versões salvas'],
+    ['outros', 'Exemplo e rascunhos antigos'], ['antigas', 'Sessões anteriores']
   ];
   const grupoDe = v => v.origem === 'arquivo' ? 'arquivo' : v.origem === 'link' ? 'link' : v.origem === 'marco' ? 'marco'
     : (v.origem === 'rascunho' || v.origem === 'exemplo') ? 'outros' : v.sess === SESS ? 'sess' : 'antigas';
@@ -226,7 +226,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
 
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secHist';
   sec.innerHTML = '<div class="htop"><h2>Vers\u00f5es do texto</h2><button type="button" class="sec mini hx" id="hFechar" title="Fechar (Esc)">Fechar ✕</button></div>' +
-    '<p class="note">Versões guardadas <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), arquivos carregados, conteúdos abertos de links, rascunhos, exemplo, versões marcadas e momentos de geração/compartilhamento. Escolha duas versões e compare.</p>' +
+    '<p class="note">Versões guardadas <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), arquivos carregados, conteúdos abertos de links, exemplo, versões salvas e momentos de geração/compartilhamento. Escolha duas versões e compare.</p>' +
     '<div class="hrow"><div class="lg"><label for="hA">Versão A (antes)</label><select id="hA"></select></div>' +
     '<div class="hrow troca" style="min-width:auto;margin:0"><button type="button" class="sec mini" id="hTroca" title="Trocar A e B">⇄</button></div>' +
     '<div class="lg"><label for="hB">Versão B (depois)</label><select id="hB"></select></div></div>' +
@@ -234,7 +234,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     '<div><label for="hModo">Exibição</label><select id="hModo"><option value="l">Lado a lado</option><option value="u">Unificada</option></select></div>' +
     '<div><label for="hCtx">Mostrar</label><select id="hCtx"><option value="3">Só alterações (± 3 linhas)</option><option value="10">Alterações (± 10 linhas)</option><option value="-1">Texto completo</option></select></div>' +
     '<div class="go" style="min-width:auto"><button type="button" id="hGo">Comparar</button></div></div>' +
-    '<div class="hrow acts"><button type="button" class="sec mini" id="hMarca">★ Marcar versão</button><button type="button" class="sec mini" id="hResA">Restaurar A</button><button type="button" class="sec mini" id="hResB">Restaurar B</button><button type="button" class="file-link download" id="hBx" title="Baixar as versões A e B">.MD A/B</button><button type="button" class="dan mini" id="hDel">Excluir A</button><button type="button" class="dan mini" id="hLimpa">Limpar histórico</button></div>' +
+    '<div class="hrow acts"><button type="button" class="sec mini" id="hMarca">★ Salvar versão</button><button type="button" class="sec mini" id="hResA">Restaurar A</button><button type="button" class="sec mini" id="hResB">Restaurar B</button><button type="button" class="file-link download" id="hBx" title="Baixar as versões A e B">.MD A/B</button><button type="button" class="dan mini" id="hDel">Excluir A</button><button type="button" class="dan mini" id="hLimpa">Limpar histórico</button></div>' +
     '<p class="hint" id="hInfo"></p><div id="hRes"></div>';
   // Janela sobreposta: só aparece quando o botão "Histórico" (barra do editor) é clicado
   const back = document.createElement('div'); back.className = 'hist-back'; back.hidden = true; back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true'); back.setAttribute('aria-label', 'Versões do texto');
@@ -270,7 +270,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     selA.value = existe(selA, va) ? va : (l[0] ? String(l[0].id) : 'atual');
     selB.value = existe(selB, vb) ? vb : 'atual';
     const nArq = l.filter(v => v.origem === 'arquivo').length, nLink = l.filter(v => v.origem === 'link').length;
-    $('hInfo').textContent = l.length + ' versão(ões) guardada(s) neste navegador · ' + nArq + ' de arquivos · ' + nLink + ' de links · limite ' + MAX_VERSOES + ' (as marcadas não são apagadas automaticamente).';
+    $('hInfo').textContent = l.length + ' versão(ões) guardada(s) neste navegador · ' + nArq + ' de arquivos · ' + nLink + ' de links · limite ' + MAX_VERSOES + ' (as salvas não são apagadas automaticamente).';
   }
   async function obter(id) {
     if (id === 'atual') { const d = pacote(); return { rotulo: 'Atual (editores)', data: Date.now(), g: d.g, s: d.s, p: d.p, r: d.r, b: d.b, atual: true }; }
@@ -308,7 +308,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   $('hFechar').onclick = fecharHist;
   ['hDoc', 'hModo', 'hCtx'].forEach(id => $(id).onchange = () => { if ($('hRes').innerHTML) executar(); });
   $('hTroca').onclick = () => { const a = $('hA').value; $('hA').value = $('hB').value; $('hB').value = a; if ($('hRes').innerHTML) executar(); };
-  $('hMarca').onclick = async () => { const n = prompt('Nome desta versão (ex.: "Versão enviada para revisão"):', 'Versão de ' + new Date().toLocaleString('pt-BR')); if (n === null) return; const v = await registrar('marco', '★ ' + (n.trim() || 'Versão marcada')); if (v) { await montarSelects(); $('hA').value = String(v.id); log('Versão marcada no histórico.', 'ok'); } };
+  $('hMarca').onclick = async () => { const n = prompt('Nome desta versão (ex.: "Versão enviada para revisão"):', 'Versão de ' + new Date().toLocaleString('pt-BR')); if (n === null) return; const v = await registrar('marco', '★ ' + (n.trim() || 'Versão marcada')); if (v) { await montarSelects(); $('hA').value = String(v.id); log('Versão salva.', 'ok'); } };
   $('hResA').onclick = () => restaurar($('hA').value);
   $('hResB').onclick = () => restaurar($('hB').value);
   $('hBx').onclick = async () => { const A = await obter($('hA').value), B = await obter($('hB').value); if (A) baixarMd(A, 'A'); if (B) setTimeout(() => baixarMd(B, 'B'), 900); };

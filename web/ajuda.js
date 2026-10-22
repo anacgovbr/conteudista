@@ -59,11 +59,11 @@
   const PASSOS = [
     { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em 6 passos rápidos você verá como <b>escrever</b>, <b>gerar</b>, <b>salvar</b> e <b>recuperar</b> um curso. Tudo acontece no seu navegador; nada é enviado sem você pedir.' },
     { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o conteúdo', d: 'Use as abas <b>Treinamento</b> e <b>Apresentação</b>. Cole o texto gerado pelo agente de IA, arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
-    { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. O botão <b>Versões</b> compara e restaura o texto.' },
+    { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. O botão <b>Versões</b> guarda, compara e restaura o texto.' },
     { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe treinamento (HTML, DOCX, MD), apresentação (HTML, PPTX, MD) e um ZIP com tudo. Os botões <b>Exibir treinamento</b>, <b>Exibir apresentação</b> e <b>.ZIP</b> aparecem em <b>Arquivos gerados</b>, só para o que foi gerado. Para testar agora, use <b>Carregar exemplo</b>, logo abaixo dos campos do curso.' },
-    { alvo: 'btnSalvar', t: '4. Guarde seu trabalho', d: 'O <b>salvamento automático</b> (chave à direita da barra) recupera o último conteúdo ao voltar à página. Use <b>Salvar</b> para guardar um rascunho, escolher uma pasta ou baixar os <code>.md</code> e o <code>.zip</code>.' },
+    { alvo: 'btnSalvar', t: '4. Guarde seu trabalho', d: 'O <b>salvamento automático</b> (chave à direita da barra) recupera o último conteúdo ao voltar à página. Use <b>Salvar</b> para guardar uma <b>versão</b> (para voltar a ela depois), escolher uma pasta ou baixar os <code>.md</code> e o <code>.zip</code>.' },
     { alvo: 'btnCompartilhar', t: '5. Compartilhe com segurança (opcional)', d: 'Em <b>Compartilhar</b>, gere um <b>link criptografado</b> (direto ou PrivateBin), com senha se quiser. O tamanho aparece antes do envio.' },
-    { alvo: 'btnImportar', t: '6. Importe e recupere', d: 'Em <b>Importar</b>, abra o que você guardou, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um texto ou link (e a senha, se houver).' },
+    { alvo: 'btnImportar', t: '6. Importe e recupere', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um texto ou link (e a senha, se houver).' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
@@ -146,11 +146,11 @@
 <h4>Salvar e recuperar</h4>
 <table><tr><th>Como</th><th>Onde fica</th><th>Como recuperar</th></tr>
 <tr><td><b>Salvamento automático</b> (ligado por padrão)</td><td>Neste navegador, neste computador</td><td>Abra a página de novo: o último trabalho volta sozinho</td></tr>
-<tr><td><b>Salvar rascunho</b> (com nome)</td><td>Neste navegador</td><td>Botão <b>Importar</b> → aba <b>Salvos</b></td></tr>
+<tr><td><b>Salvar versão</b> (menu <b>Salvar</b>)</td><td>Neste navegador</td><td>Botão <b>Importar</b> → aba <b>Salvos</b></td></tr>
 <tr><td><b>Salvar pasta</b> / <b>.MD</b> / <b>.ZIP</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas</td></tr>
 <tr><td><b>Link criptografado</b></td><td>No próprio link ou no PrivateBin (cifrado)</td><td>Botão <b>Importar</b> → aba <b>Colar</b> → cole o link (e a senha)</td></tr>
 <tr><td><b>Versões do texto</b></td><td>Neste navegador</td><td>Botão <b>Versões</b> na barra do editor → escolha a versão → <b>Restaurar</b></td></tr></table>
-<div class="dica">Limpar os dados do navegador apaga os rascunhos locais. Para guardar por mais tempo, use <b>Salvar na pasta</b>, <b>Baixar .md</b> ou <b>Baixar .zip</b>.</div>
+<div class="dica">Limpar os dados do navegador apaga as versões salvas. Para guardar por mais tempo, use <b>Salvar na pasta</b>, <b>Baixar .md</b> ou <b>Baixar .zip</b>.</div>
 <h4>Versões do texto (comparar antes e depois)</h4>
 <ul>
 <li>As versões do texto ficam <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), <b>arquivos carregados</b>, conteúdos <b>abertos de links</b>, rascunhos, exemplo, versões <b>marcadas</b> (★) e os momentos de gerar ou compartilhar. Antes de carregar ou restaurar algo, o conteúdo atual também é guardado.</li>
@@ -158,7 +158,7 @@
 <li>Escolha a <b>Versão A</b> (antes) e a <b>Versão B</b> (depois) — de qualquer sessão, arquivo ou link, ou “Atual” — e clique em <b>Comparar</b>. Use ⇄ para inverter.</li>
 <li>Leitura do resultado: linhas <span style="background:#fde0db">removidas</span> e <span style="background:#e8f5ec">incluídas</span>, com as palavras alteradas destacadas; imagens aparecem como miniaturas e as que mudaram são listadas em “Antes” e “Depois”.</li>
 <li>Opções: Treinamento, Apresentação ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
-<li><b>Restaurar A/B</b> coloca a versão nos editores; <b>.MD A/B</b> salva os .md; <b>★ Marcar versão</b> cria um ponto nomeado (não é apagado automaticamente). O limite é de 120 versões.</li>
+<li><b>Restaurar A/B</b> coloca a versão nos editores; <b>.MD A/B</b> salva os .md; <b>★ Salvar versão</b> cria um ponto nomeado (não é apagado automaticamente). O limite é de 120 versões.</li>
 </ul>
 <h4>Compartilhar</h4>
 <ul>
@@ -226,7 +226,7 @@
     { g: 'Arquivos', k: 'E', d: 'Carregar exemplo', f: () => clicar('ex') },
     { g: 'Arquivos', k: 'D', d: 'Baixar os .md', f: () => clicar('mdl', 'Baixando .md…') },
     { g: 'Arquivos', k: 'P', d: 'Salvar pasta', f: () => clicar('fsave') },
-    { g: 'Salvar e recuperar', k: 'S', d: 'Salvar rascunho', f: () => clicar('dsave') },
+    { g: 'Salvar e recuperar', k: 'S', d: 'Salvar versão', f: () => { if (window.SalvarVersao) SalvarVersao.salvar(); } },
     { g: 'Salvar e recuperar', k: 'A', d: 'Ligar/desligar salvamento automático', f: () => { const c = $('auto'); c.checked = !c.checked; c.dispatchEvent(new Event('change')); toast('Salvamento automático ' + (c.checked ? 'ligado' : 'desligado')); } },
     { g: 'Salvar e recuperar', k: 'L', d: 'Criar link criptografado', f: () => clicar('share') },
     { g: 'Salvar e recuperar', k: 'O', d: 'Importar', f: () => { if (window.Importar) Importar.abrir(); } },
@@ -234,7 +234,7 @@
     { g: 'Navegação', k: '2', d: 'Aba Apresentação (foca o editor)', f: () => focarEditor('s') },
     { g: 'Navegação', k: 'M', d: 'Alternar modo do editor (Editar → Dividido → Prévia)', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); if (!vis) return; const ordem = ['e', 's', 'p'], i = (ordem.indexOf(vis.dataset.m) + 1) % 3; const b = vis.querySelector('.mde-tb [data-m="' + ordem[i] + '"]'); if (b) b.click(); toast(['Somente editor', 'Editor + prévia', 'Somente prévia'][i]); } },
     { g: 'Navegação', k: 'V', d: 'Versões do texto (comparar antes e depois)', f: () => window.Hist && Hist.abrir() },
-    { g: 'Salvar e recuperar', k: 'B', d: 'Marcar a versão atual', f: () => clicar('hMarca') },
+    
     { g: 'Navegação', k: 'F', d: 'Tela cheia do editor', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); const b = vis && [...vis.querySelectorAll('.mde-tb button')].pop(); if (b) b.click(); } },
     { g: 'Ajuda', k: 'T', d: 'Tutorial', f: iniciar },
     { g: 'Ajuda', k: 'R', d: 'Reiniciar o tutorial (do primeiro passo)', f: reiniciar },

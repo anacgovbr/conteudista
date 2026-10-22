@@ -27,7 +27,7 @@
     sav: '<path d="M4 6h16M4 12h16M4 18h10"/>',
     pc: '<rect x="3" y="4" width="18" height="12" rx="1"/><path d="M8 20h8M12 16v4"/>',
     cl: '<rect x="6" y="4" width="12" height="17" rx="1"/><path d="M9 4h6v3H9z"/>',
-    rasc: '<path d="M4 20h4L19 9l-4-4L4 16z"/>',
+    rasc: '<rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/><path d="M5.5 9h3M5.5 13h3M15.5 9h3M15.5 13h3"/>',
     lnk: '<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
     up: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
     chev: '<path d="M6 9l6 6 6-6"/>',
@@ -353,7 +353,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
 
   /* --- aba Salvos --- */
   const pSav = importar.pane('sav');
-  const gR = document.createElement('section'); gR.className = 'jn-g jn-rasc'; gR.innerHTML = '<h3 class="jn-sub">Rascunhos</h3>';
+  const gR = document.createElement('section'); gR.className = 'jn-g jn-rasc'; gR.innerHTML = '<h3 class="jn-sub">Vers\u00f5es salvas</h3>';
   const gL = document.createElement('section'); gL.className = 'jn-g jn-lnk'; gL.innerHTML = '<h3 class="jn-sub">Links</h3>';
   const mais = document.createElement('details'); mais.className = 'jn-mais';
   mais.innerHTML = '<summary><h3>Mais op\u00e7\u00f5es</h3></summary><div class="jn-mais-c"><button type="button" class="dan mini" id="jnApagar">Apagar dados</button></div>';
@@ -543,7 +543,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   importar.bt.appendChild(bExc);
   async function limparSalvos() {
     if (typeof dbClear !== 'function') throw new Error('armazenamento indispon\u00edvel');
-    await dbClear('rascunhos');
+    if (window.Versoes && Versoes.excluirSalvas) await Versoes.excluirSalvas(); else await dbClear('rascunhos');
     try { if (typeof sessaoLinks !== 'undefined') sessaoLinks.length = 0; } catch (e) { /* sem lista da sessao */ }
     await dbClear('links');
     if (typeof listarRascunhos === 'function') await listarRascunhos();
@@ -551,15 +551,15 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     await aguardar(() => !contar($('drafts')) && !contar($('links')));
   }
   function pedirExcluirSalvos() {
-    const nr = contar($('drafts')), nl = contar($('links'));
-    if (!nr && !nl) return;
+    const nv = contar($('drafts')), nl = contar($('links'));
+    if (!nv && !nl) return;
     const partes = [];
-    if (nr) partes.push(nr + (nr === 1 ? ' rascunho' : ' rascunhos'));
+    if (nv) partes.push(nv + (nv === 1 ? ' vers\u00e3o salva' : ' vers\u00f5es salvas'));
     if (nl) partes.push(nl + (nl === 1 ? ' link' : ' links'));
     let d = 'Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.';
-    if (nr) d = 'Inclui o rascunho do salvamento autom\u00e1tico. ' + d;
+    if (nv) d = 'As vers\u00f5es autom\u00e1ticas e o \u00faltimo estado do salvamento autom\u00e1tico n\u00e3o s\u00e3o afetados. ' + d;
     if (nl) d += ' Links j\u00e1 criados no PrivateBin continuam acess\u00edveis at\u00e9 expirar.';
-    importar.pedir({ gatilho: bExc, titulo: 'Excluir ' + partes.join(' e ') + '?', descricao: d, rotulo: 'Excluir', resultado: 'Rascunhos e links exclu\u00eddos.', aoConfirmar: limparSalvos });
+    importar.pedir({ gatilho: bExc, titulo: 'Excluir ' + partes.join(' e ') + '?', descricao: d, rotulo: 'Excluir', resultado: 'Vers\u00f5es salvas e links exclu\u00eddos.', aoConfirmar: limparSalvos });
   }
   async function apagarDados() {
     if (!$('dclear')) throw new Error('fun\u00e7\u00e3o indispon\u00edvel');
@@ -568,7 +568,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     const a = $('auto'); if (a && a.checked) { a.checked = false; a.dispatchEvent(new Event('change', { bubbles: true })); }
   }
   function pedirApagarDados(g) {
-    importar.pedir({ gatilho: g, titulo: 'Apagar todos os dados deste navegador?', descricao: 'Remove rascunhos, vers\u00f5es do texto, links lembrados e prefer\u00eancias. Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.', rotulo: 'Apagar', resultado: 'Dados apagados.', aoConfirmar: apagarDados });
+    importar.pedir({ gatilho: g, titulo: 'Apagar todos os dados deste navegador?', descricao: 'Remove as vers\u00f5es do texto (salvas e autom\u00e1ticas), os links lembrados e as prefer\u00eancias. Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.', rotulo: 'Apagar', resultado: 'Dados apagados.', aoConfirmar: apagarDados });
   }
 
   /* ============================== Janela HISTORICO DE ARQUIVOS ============================== */
@@ -649,7 +649,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   bSalvar.setAttribute('aria-haspopup', 'menu'); bSalvar.setAttribute('aria-expanded', 'false'); bSalvar.setAttribute('aria-controls', 'jnMenuSalvar');
   const menu = document.createElement('div'); menu.className = 'jn-mn'; menu.id = 'jnMenuSalvar'; menu.setAttribute('role', 'menu'); menu.setAttribute('aria-label', 'Salvar'); menu.hidden = true;
   const ITENS = [
-    ['rasc', 'Rascunho', 'Neste navegador', 'dsave', 'Rascunho salvo.'],
+    ['rasc', 'Vers\u00e3o', 'Neste navegador', 'dsave', 'Vers\u00e3o salva.'],
     ['pc', 'Pasta', 'No computador', 'fsave', 'Salvo na pasta.'],
     ['arq', '.MD', 'Texto em Markdown', 'mdl', '.MD baixado.'],
     ['arq', '.ZIP', 'Todos os arquivos', 'zdl', '.ZIP baixado.']
@@ -752,7 +752,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   ['drafts', 'links', 'gerLista'].forEach(i => { const el = $(i); if (el) new MutationObserver(agendar).observe(el, { childList: true, subtree: true }); });
   atualizar();
 
-  window.Importar = { abrir: k => importar.abrir(k), fechar: () => importar.fechar() };
+  window.Importar = { abrir: k => importar.abrir(k), fechar: () => importar.fechar(), pedir: o => importar.pedir(o), msg: (t, i) => importar.msg(t, i) };
   window.HistoricoArquivos = { abrir: () => hist.abrir(), fechar: () => hist.fechar() };
   window.Compartilhar = { abrir: () => cmp.abrir(), fechar: () => cmp.fechar() };
   window.AbrirJanela = { abrir: k => importar.abrir(k), fechar: () => importar.fechar() };

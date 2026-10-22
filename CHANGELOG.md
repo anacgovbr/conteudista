@@ -1,5 +1,11 @@
 # Novidades do Conteudista
 
+## 1.44 - 22/10/2026
+- **Rascunhos e Versões unificados**: salvar agora cria uma **versão salva** (menu Salvar → Versão, Alt+Shift+S), guardada junto das demais versões e nunca apagada automaticamente. "Rascunho" deixou de existir como conceito; os atalhos S e B viraram um só (S).
+- **Migração automática**: os rascunhos com nome viram versões salvas (mesma data e conteúdo), uma única vez e sem duplicar. As cópias antigas ficam guardadas, somente leitura, até a próxima versão. O salvamento automático continua recuperando o último trabalho ao reabrir a página.
+- **Importar → Salvos** lista as versões salvas e os links. Abrir uma versão guarda antes o texto atual em Versões ("Antes de abrir..."), então dá para voltar atrás. Excluir (uma linha ou tudo) usa a confirmação acessível.
+- Tutorial, Ajuda e README atualizados; na janela Versões do texto, as marcadas passam a se chamar "Versões salvas" e o botão "Marcar versão" virou "Salvar versão".
+
 ## 1.43 - 22/10/2026
 - **Importar** (antes "Abrir"): uma janela com três abas por origem — **Salvos** (rascunhos e links), **Computador** (clique ou arraste .md, .txt, .zip e imagens; destino detectado e editável) e **Colar** (texto ou link, com reconhecimento automático). A versão atual do texto vai para Versões antes de ser substituída.
 - **Salvar e compartilhar** simplificado: a seção saiu da página. A barra de ações tem **Importar, Salvar (menu: Rascunho, Pasta, .MD, .ZIP), Compartilhar, Carregar exemplo e Limpar tela**, todos com o mesmo tamanho, e a chave **Salvar automático**. Compartilhar abre uma janela com destino, senha e tamanho.
