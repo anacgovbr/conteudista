@@ -43,7 +43,7 @@
     '<button type="button" class="dan mini" id="gerLimpar">Apagar todos</button></div>' +
     '<div id="gerLista" class="note">Nenhum pacote guardado.</div><p class="uso" id="gerUso"></p>';
   const prev = $('prev');
-  /* Historico de arquivos: o painel sai da pagina e abre em uma janela (mesmo padrao do Historico do editor) */
+  /* Historico de arquivos e rascunhos: a lista sai da pagina e abre em uma janela (mesmo padrao do Historico do editor) */
   const icoHist = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/></svg>';
   const stJanela = document.createElement('style');
   stJanela.textContent = `
@@ -53,21 +53,46 @@
 .ger-top{display:flex;align-items:center;gap:10px;padding:14px 0 10px;border-bottom:1px solid var(--line,#ccc);margin-bottom:10px;position:sticky;top:0;background:#fff;z-index:2}
 .ger-top h2{flex:1;margin:0;font-size:19px}.ger-top button{margin:0}
 .ger-win>.note{margin:0 0 10px}
+.ger-win details.ger-sec{border:1px solid var(--line,#ccc);border-radius:8px;padding:10px 14px;margin:0 0 12px;background:#fff}
+.ger-win details.ger-sec>summary h3{margin:0;font-size:16px}
 .ger-win #gerBox{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important}
+.ger-win table{margin-top:8px}.ger-win td{vertical-align:top;font-size:13px}
+.ger-win #drafts{margin:0}
 .ger-tit{display:flex;align-items:center;gap:10px}
 .ger-tb.mde-tb{display:inline-flex!important;padding:0!important;background:transparent!important;border:0!important;flex:0 0 auto}
+.ger-ph{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0}.ger-ph .note{margin:0}
 @media(max-width:700px){.ger-back{padding:0;align-items:stretch}.ger-win{border-radius:0;width:100%;min-height:100%;padding:0 14px 18px}.ger-top h2{font-size:16px}}`;
   document.head.appendChild(stJanela);
   const gerBack = document.createElement('div');
   gerBack.className = 'ger-back'; gerBack.id = 'gerBack'; gerBack.hidden = true;
-  gerBack.setAttribute('role', 'dialog'); gerBack.setAttribute('aria-modal', 'true'); gerBack.setAttribute('aria-label', 'Hist\u00f3rico de arquivos gerados');
+  gerBack.setAttribute('role', 'dialog'); gerBack.setAttribute('aria-modal', 'true'); gerBack.setAttribute('aria-label', 'Arquivos e rascunhos');
   const gerWin = document.createElement('div'); gerWin.className = 'ger-win';
-  gerWin.innerHTML = '<div class="ger-top"><h2>Hist\u00f3rico de arquivos gerados</h2><button type="button" class="sec mini" id="gerFechar" title="Fechar (Esc)">Fechar \u2715</button></div>' +
-    '<p class="note">Guardados somente neste navegador. Os mais antigos s\u00e3o apagados conforme o limite escolhido abaixo.</p>';
-  gerWin.appendChild(box); gerBack.appendChild(gerWin); document.body.appendChild(gerBack);
+  gerWin.innerHTML = '<div class="ger-top"><h2>Arquivos e rascunhos</h2><button type="button" class="sec mini" id="gerFechar" title="Fechar (Esc)">Fechar \u2715</button></div>' +
+    '<p class="note">Guardados somente neste navegador. Os pacotes mais antigos s\u00e3o apagados conforme o limite escolhido em Arquivos gerados.</p>' +
+    '<details class="sx ger-sec" id="gerSecArq" open><summary><h3 id="gerTArq">Arquivos gerados</h3></summary><div id="gerSbArq"></div></details>' +
+    '<details class="sx ger-sec" id="gerSecRasc"><summary><h3 id="gerTRasc">Rascunhos</h3></summary><div id="gerSbRasc"></div></details>';
+  gerBack.appendChild(gerWin); document.body.appendChild(gerBack);
+  gerWin.querySelector('#gerSbArq').appendChild(box);
+  const drafts = $('drafts');
+  let rascN = null;
+  if (drafts) {
+    // A tabela de rascunhos sai do painel "1. Na sua maquina" e vai para a janela (secao recolhida)
+    const ph = document.createElement('div'); ph.className = 'ger-ph';
+    ph.innerHTML = '<span class="note" id="gerRascN">Nenhum rascunho salvo.</span><span class="mde-tb ger-tb"><button type="button" class="hbtn" id="gerHistBtn2" title="Hist\u00f3rico: abrir os rascunhos" aria-label="Hist\u00f3rico de rascunhos">' + icoHist + '<span class="ht"> Hist\u00f3rico</span></button></span>';
+    drafts.parentNode.insertBefore(ph, drafts);
+    gerWin.querySelector('#gerSbRasc').appendChild(drafts);
+    rascN = ph.querySelector('#gerRascN');
+    ph.querySelector('#gerHistBtn2').addEventListener('click', e => { e.preventDefault(); abrirGer('rascunhos'); });
+    // "Abrir" um rascunho fecha a janela para mostrar o editor
+    drafts.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-a="ab"]')) setTimeout(() => fecharGer(true), 60); });
+  }
+  const secArq = gerWin.querySelector('#gerSecArq'), secRasc = gerWin.querySelector('#gerSecRasc');
+  // Rascunhos so sao (re)carregados quando a secao e aberta
+  secRasc.addEventListener('toggle', () => { if (secRasc.open && typeof window.listarRascunhos === 'function') { try { Promise.resolve(window.listarRascunhos()).catch(() => {}); } catch (err) { /* sem lista */ } } });
   let gerFoco = null;
-  function abrirGer() {
+  function abrirGer(sec) {
     gerFoco = document.activeElement;
+    if (sec === 'rascunhos') secRasc.open = true; else if (sec === 'arquivos') secArq.open = true;
     gerBack.hidden = false; gerBack.scrollTop = 0; document.body.style.overflow = 'hidden';
     listar();
     setTimeout(() => { const f = $('gerFechar'); if (f) f.focus(); }, 30);
@@ -81,22 +106,32 @@
   gerBack.addEventListener('click', e => { if (e.target === gerBack) fecharGer(); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && !gerBack.hidden) { e.preventDefault(); e.stopPropagation(); fecharGer(); } }, true);
   // Botao "Historico" ao lado do titulo de "Arquivos gerados" (mesmo visual do botao da barra do editor)
+  let btnHist = null;
   (function () {
     const dx = $('dxRes'), sum = dx && dx.querySelector(':scope > summary'), tit = sum && sum.querySelector(':scope > h3');
     if (!sum || !tit || $('gerHistBtn')) return;
     const grp = document.createElement('div'); grp.className = 'summary-title ger-tit';
     const tb = document.createElement('span'); tb.className = 'mde-tb ger-tb';
     const b = document.createElement('button'); b.type = 'button'; b.id = 'gerHistBtn'; b.className = 'hbtn';
-    b.title = 'Hist\u00f3rico de arquivos gerados'; b.setAttribute('aria-label', 'Hist\u00f3rico de arquivos gerados');
+    b.title = 'Hist\u00f3rico: arquivos gerados e rascunhos'; b.setAttribute('aria-label', 'Hist\u00f3rico de arquivos gerados e rascunhos');
     b.innerHTML = icoHist + '<span class="ht"> Hist\u00f3rico</span>';
     tb.appendChild(b); sum.insertBefore(grp, tit); grp.append(tit, tb);
     b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); abrirGer(); });
-    const rotulo = () => {
-      const n = Math.max(0, $('gerLista').querySelectorAll('tr').length - 1);
-      b.title = 'Hist\u00f3rico de arquivos gerados' + (n ? ' (' + n + (n > 1 ? ' pacotes' : ' pacote') + ')' : '');
-    };
-    new MutationObserver(rotulo).observe($('gerLista'), { childList: true, subtree: true });
+    btnHist = b;
   })();
+  // Contagens nos titulos das secoes, na linha do painel e no tooltip do botao
+  const contarLinhas = el => el ? Math.max(0, el.querySelectorAll('tr').length - 1) : 0;
+  function atualizarContagens() {
+    const na = contarLinhas($('gerLista')), nr = contarLinhas(drafts);
+    $('gerTArq').textContent = 'Arquivos gerados' + (na ? ' (' + na + ')' : '');
+    $('gerTRasc').textContent = 'Rascunhos' + (nr ? ' (' + nr + ')' : '');
+    if (rascN) rascN.textContent = nr ? nr + (nr > 1 ? ' rascunhos salvos.' : ' rascunho salvo.') : 'Nenhum rascunho salvo.';
+    if (btnHist) btnHist.title = 'Hist\u00f3rico: ' + na + (na === 1 ? ' pacote' : ' pacotes') + ' e ' + nr + (nr === 1 ? ' rascunho' : ' rascunhos');
+  }
+  new MutationObserver(atualizarContagens).observe($('gerLista'), { childList: true, subtree: true });
+  if (drafts) new MutationObserver(atualizarContagens).observe(drafts, { childList: true, subtree: true });
+  setTimeout(atualizarContagens, 600);
+  /* fim: historico de arquivos e rascunhos */
   $('gerAtivo').checked = localStorage.getItem(ATIVO) !== '0';
   $('gerLim').value = localStorage.getItem(LIM) || '10';
   $('gerAtivo').onchange = () => localStorage.setItem(ATIVO, $('gerAtivo').checked ? '1' : '0');

@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.39 - 22/10/2026
+- **Histórico unificado**: a janela aberta pelo botão **Histórico** (ao lado de "Arquivos gerados") agora reúne os **arquivos gerados** e os **rascunhos**, no mesmo formato de tabela. Rascunhos começam recolhidos e a lista só é recarregada quando a seção é aberta.
+- No painel "Na sua máquina", a tabela de rascunhos deu lugar a uma linha discreta ("N rascunhos salvos") com o botão Histórico. Abrir um rascunho fecha a janela.
+- Acompanhamento da publicação nos scripts de atualização sem repetição de blocos e com acentos corretos.
+
 ## 1.38 - 22/10/2026
 - **Arquivos gerados**: os pacotes guardados no navegador agora ficam em uma janela, **Histórico de arquivos gerados**, aberta pelo botão **Histórico** ao lado do título (mesmo padrão do botão do editor). A página fica mais limpa e o histórico está sempre à mão, mesmo antes de gerar.
 
