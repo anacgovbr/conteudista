@@ -205,7 +205,6 @@
 .mde-dw .mini-th{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}.mde-dw .mini-th img{height:56px;max-width:100px;object-fit:contain;border:1px solid #cccccc;border-radius:4px;background:#f8f8f8}
 .mde-gi .sel{position:absolute;top:2px;right:4px;background:rgba(255,255,255,.9);border-radius:4px;padding:0 2px;cursor:pointer}.mde-gi .sel input{width:auto;margin:3px 2px;transform:scale(1.15);accent-color:#1351b4;cursor:pointer}
 .mde-gi.on{outline:2px solid #1351b4;outline-offset:-1px}
-.mde-gb:disabled{opacity:.45;cursor:default}.mde-gb.sec2{background:#fff!important;color:#1351b4!important;border:1px solid #1351b4!important}
 .mde-dw .ft{display:flex;justify-content:flex-end;gap:8px;padding:10px 18px;border-top:1px solid #cccccc}
 .mde-dw .ft button{margin:0!important}
 @media(max-width:700px){.mde-dw .bd{grid-template-columns:1fr}}
@@ -219,7 +218,6 @@
 .mde-gi .ac button.rm{background:#fff!important;color:#e52207!important;border-color:#e8b4ae!important}
 .mde-gi.nu{opacity:.6}.mde-gi.nu .mt::after{content:' · não usada';color:#8a5c00}
 .mde-ge{padding:4px 12px 10px;color:#636363;font:13px "Segoe UI",Arial,sans-serif}
-.mde-gb{background:#1351b4!important;color:#fff!important;border:0!important;border-radius:5px;padding:3px 10px!important;margin:0!important;font:600 12px "Segoe UI",Arial,sans-serif!important;cursor:pointer}
 @media(max-width:900px){.mde-body{flex-direction:column;height:auto;resize:none}.mde-ta{min-height:300px}.mde-pv{border-left:0;border-top:1px solid #cccccc;min-height:300px}}`;
   function injectCSS() { if (document.getElementById('mde-css')) return; const s = document.createElement('style'); s.id = 'mde-css'; s.textContent = CSS; document.head.appendChild(s); }
 
@@ -409,7 +407,7 @@
         '<div class="bd ed"><div><div class="cz"><canvas></canvas><div class="crop" hidden><i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i><i data-h="n"></i><i data-h="s"></i><i data-h="w"></i><i data-h="e"></i></div></div>' +
         '<div class="res">Original: <b>' + img.naturalWidth + '×' + img.naturalHeight + '</b> · ' + fmtTam(orig) + ' · ' + om.replace('image/', '').toUpperCase() + '</div>' +
         '<div class="res" data-r>Resultado: calculando…</div><div class="rp"><span>Prévia do resultado</span><img alt="" data-pv></div></div>' +
-        '<div><div class="tabs2"><button type="button" class="on" data-t="c">Cortar</button><button type="button" data-t="g">Girar</button><button type="button" data-t="t">Tamanho e formato</button></div>' +
+        '<div><div class="tabs2"><button type="button" class="on" data-t="c">Cortar</button><button type="button" data-t="g">Girar</button><button type="button" data-t="t">Tamanho</button></div>' +
         '<div data-p="c"><label>Proporção</label><div class="chips">' + PROPORCOES.map(p => '<button type="button" data-pr="' + p[0] + '">' + p[1] + '</button>').join('') + '</div>' +
         '<label>Área (px): x, y, largura, altura</label><div class="lin"><input type="number" data-cx min="0"><input type="number" data-cy min="0"><input type="number" data-cw min="1"><input type="number" data-ch min="1"></div>' +
         '<p class="dica">Arraste dentro da imagem para criar a área; mova pelo centro e ajuste pelas alças.</p><button type="button" class="mini sec" data-semcorte>Remover corte</button></div>' +

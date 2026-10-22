@@ -210,13 +210,13 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   .hist-back #secHist{width:100%;min-height:100%;border-radius:0;border:0;padding:0 14px 20px}
   #secHist .htop{position:sticky;top:0;z-index:3;background:#fff;margin:0 -14px 8px;padding:10px 14px;border-bottom:1px solid #cccccc}
   #secHist .htop h2{font-size:16px;line-height:1.25}
-  #secHist .htop .hx{min-height:38px;padding:6px 12px}
+  
   #secHist>.note{font-size:12.5px;margin:4px 0 8px}
   #secHist .hrow{gap:8px}#secHist .hrow>div,#secHist .hrow>div.lg{min-width:0;flex:1 1 100%}
   #secHist .hrow.op>div{flex:1 1 calc(50% - 8px)}
-  #secHist .hrow.op>div.go{flex:1 1 100%}#secHist .hrow.op>div.go button{width:100%;min-height:42px}
+  #secHist .hrow.op>div.go{flex:1 1 100%}#secHist .hrow.op>div.go button{width:100%}
   #secHist .hrow.troca{justify-content:center;margin:2px 0}
-  #secHist .hrow.acts{display:grid;grid-template-columns:1fr 1fr;gap:6px}#secHist .hrow.acts button{width:100%;min-height:38px}
+  #secHist .hrow.acts{display:flex;flex-wrap:wrap;gap:8px}
   #secHist .dfst{font-size:12.5px;gap:6px 12px}
   #secHist .dfwrap{max-height:none}
   table.df{font-size:11.5px}table.df col.n,table.df td.n{width:30px}table.df td{padding:1px 4px}
@@ -234,7 +234,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     '<div><label for="hModo">Exibição</label><select id="hModo"><option value="l">Lado a lado</option><option value="u">Unificada</option></select></div>' +
     '<div><label for="hCtx">Mostrar</label><select id="hCtx"><option value="3">Só alterações (± 3 linhas)</option><option value="10">Alterações (± 10 linhas)</option><option value="-1">Texto completo</option></select></div>' +
     '<div class="go" style="min-width:auto"><button type="button" id="hGo">Comparar</button></div></div>' +
-    '<div class="hrow acts"><button type="button" class="sec mini" id="hMarca">★ Marcar versão atual…</button><button type="button" class="sec mini" id="hResA">Restaurar A</button><button type="button" class="sec mini" id="hResB">Restaurar B</button><button type="button" class="file-link download" id="hBx" title="Baixar as versões A e B">.MD A e B</button><button type="button" class="dan mini" id="hDel">Excluir A</button><button type="button" class="dan mini" id="hLimpa">Limpar histórico</button></div>' +
+    '<div class="hrow acts"><button type="button" class="sec mini" id="hMarca">★ Marcar versão</button><button type="button" class="sec mini" id="hResA">Restaurar A</button><button type="button" class="sec mini" id="hResB">Restaurar B</button><button type="button" class="file-link download" id="hBx" title="Baixar as versões A e B">.MD A/B</button><button type="button" class="dan mini" id="hDel">Excluir A</button><button type="button" class="dan mini" id="hLimpa">Limpar histórico</button></div>' +
     '<p class="hint" id="hInfo"></p><div id="hRes"></div>';
   // Janela sobreposta: só aparece quando o botão "Histórico" (barra do editor) é clicado
   const back = document.createElement('div'); back.className = 'hist-back'; back.hidden = true; back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true'); back.setAttribute('aria-label', 'Histórico e comparação');

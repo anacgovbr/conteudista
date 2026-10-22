@@ -34,7 +34,7 @@
   st.textContent = `#gerBox{margin-top:16px;border:1px solid #cccccc;border-radius:10px;padding:12px 14px;background:#f8f8f8}
 #gerBox h3{margin:0 0 6px}#gerBox .gtop{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:13.5px}
 #gerBox select{width:auto;padding:4px 6px}#gerBox table{margin-top:8px}#gerBox td{vertical-align:top;font-size:13px}
-#gerBox td .file-link{margin:2px 12px 2px 0}#gerBox td button{padding:3px 8px;font-size:12px;margin:2px 3px 2px 0}#gerBox .uso{color:#636363;font-size:12.5px;margin:6px 0 0}`;
+#gerBox td .file-link{margin:2px 12px 2px 0}#gerBox .uso{color:#636363;font-size:12.5px;margin:6px 0 0}`;
   document.head.appendChild(st);
   const box = document.createElement('div'); box.id = 'gerBox';
   box.innerHTML = '<h3>Arquivos gerados guardados neste navegador</h3>' +
@@ -93,9 +93,9 @@
     $('gerLista').innerHTML = '<table><tr><th>Gerado em</th><th>Curso</th><th>Arquivos</th><th></th></tr>' + l.map(p => {
       const zip = p.arquivos.find(f => /\.zip$/i.test(f.nome)), outros = p.arquivos.filter(f => f !== zip);
       return '<tr><td>' + new Date(p.data).toLocaleString('pt-BR') + '<br><small>' + fmt(p.tam) + '</small></td><td><b>' + esc(p.prefixo) + '</b>' + (p.resumo ? '<br><small>' + esc(p.resumo) + '</small>' : '') + '</td><td>' +
-        (zip ? '<a class="file-link download" href="' + urlDe(p.id + '/' + zip.nome, zip.blob) + '" download="' + esc(zip.nome) + '">.ZIP</a>' : '') +
+        (zip ? '<a class="btn btn-arq download" href="' + urlDe(p.id + '/' + zip.nome, zip.blob) + '" download="' + esc(zip.nome) + '">.ZIP</a>' : '') +
         outros.map(f => '<a class="file-link download" href="' + urlDe(p.id + '/' + f.nome, f.blob) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + '</a>').join('') +
-        outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<a href="#" class="file-link view" data-ver="' + p.id + '/' + esc(f.nome) + '">Exibir ' + (/^Apresentacao_/.test(f.nome) ? 'apresentação' : 'treinamento') + '</a>').join('') +
+        outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="btn btn-arq btn-exibir" data-ver="' + p.id + '/' + esc(f.nome) + '">Exibir ' + (/^Apresentacao_/.test(f.nome) ? 'apresentação' : 'treinamento') + '</button>').join('') +
         '</td><td><button type="button" class="dan" data-del="' + p.id + '">Excluir</button></td></tr>';
     }).join('') + '</table>';
     uso(l.reduce((a, p) => a + p.tam, 0));

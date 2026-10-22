@@ -47,7 +47,7 @@
 .ah-lista{display:flex;flex-direction:column;gap:8px}
 .ah-it{border:1px solid var(--line,#ccc);border-radius:8px;padding:8px 10px;background:#f8f8f8}.ah-it.on{outline:2px solid #168821}
 .ah-it p{margin:0 0 4px;font-size:13.5px;line-height:1.4;max-height:4.2em;overflow:hidden}.ah-it small{display:block;color:var(--mu,#636363);font-size:12px}
-.ah-it .b{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.ah-it .b button{margin:0;min-height:32px!important;line-height:32px!important;padding:0 12px!important;font-size:13px!important}
+.ah-it .b{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.ah-it .b button{margin:0}
 .ah-vazio{color:var(--mu,#636363);font-size:14px;padding:12px}
 @media(max-width:700px){.ah-back{padding:0;align-items:stretch}.ah-win{border-radius:0;width:100%;min-height:100%;padding:0 14px 18px}.ah-top h2{font-size:16px}}`;
   document.head.appendChild(st);
@@ -56,7 +56,7 @@
   const box = document.createElement('div'); box.id = 'narrBox'; box.className = 'panel';
   box.innerHTML = '<label class="inl tit"><input type="checkbox" id="narrOn"> Narração dos slides — gerar áudio a partir das notas do apresentador</label>' +
     '<div id="narrOp" hidden>' +
-      '<div class="nres"><span id="narrResumo"></span><span id="narrSt" class="note" style="margin:0"></span><button type="button" class="sec mini" id="narrHist" title="Áudios já gerados neste navegador (Locução e narração)">' + ICO + ' Histórico de áudio</button></div>' +
+      '<div class="nres"><span id="narrResumo"></span><span id="narrSt" class="note" style="margin:0"></span><button type="button" class="sec mini" id="narrHist" title="Áudios já gerados neste navegador (Locução e narração)">' + ICO + ' Áudios gerados</button></div>' +
       '<details class="nav" id="narrAv"><summary>Opções avançadas de voz</summary>' +
         '<div class="lin"><div><label for="narrIdioma">Idioma</label><select id="narrIdioma"></select></div><div><label for="narrVoz">Voz</label><select id="narrVoz"></select></div>' +
         '<div><label for="narrVel">Velocidade: <span id="narrVelV">1,00</span>×</label><input type="range" id="narrVel" min="0.5" max="2" step="0.05" value="1"></div>' +
@@ -138,7 +138,7 @@
     '<label for="ahFmt" class="inl">Baixar em</label><select id="ahFmt"><option value="mp3">MP3</option><option value="ogg">OGG</option><option value="wav">WAV</option></select></div>' +
     '<audio id="ahAudio" controls preload="none"></audio><p class="ah-info" id="ahInfo"></p>' +
     '<div class="ah-lista" id="ahLista"></div>' +
-    '<p style="margin-top:12px"><button type="button" class="dan mini" id="ahLimpar">Limpar histórico de áudio</button></p></div>';
+    '<p style="margin-top:12px"><button type="button" class="dan mini" id="ahLimpar">Limpar histórico</button></p></div>';
   document.body.appendChild(back);
   let ahUrl = null, ahAtual = null, ahFoco = null;
   async function tx(modo, fn) {
@@ -157,7 +157,7 @@
     $('ahLista').innerHTML = vis.map(x => '<div class="ah-it' + (x.id === ahAtual ? ' on' : '') + '" data-id="' + x.id + '"><p title="' + esc((x.text || '').slice(0, 600)) + '">' + esc((x.text || '').slice(0, 260)) + ((x.text || '').length > 260 ? '…' : '') + '</p>' +
       '<small>' + esc(nome(x.voice)) + ' · ' + String(x.speed).replace('.', ',') + '× · ' + fmtDur(x.duracao || 0) + ' · ' + new Date(x.createdAt).toLocaleString('pt-BR') + '</small>' +
       '<div class="b"><button type="button" data-a="ouvir">▶ Ouvir</button><button type="button" class="file-link download" data-a="baixar">.ÁUDIO</button>' +
-      '<button type="button" class="sec" data-a="usar" title="Usar esta voz e velocidade na narração dos slides">Usar esta voz</button><button type="button" class="dan" data-a="excluir">Excluir</button></div></div>').join('');
+      '<button type="button" class="sec" data-a="usar" title="Usar esta voz e velocidade na narração dos slides">Usar voz</button><button type="button" class="dan" data-a="excluir">Excluir</button></div></div>').join('');
   }
   function abrirHistorico() {
     ahFoco = document.activeElement;

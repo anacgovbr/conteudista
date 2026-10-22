@@ -22,7 +22,7 @@ function confirmar(b,msg){
 }
 // Feedback padrão. Ações longas concluem quando ficam habilitadas novamente; as demais confirmam após o evento.
 document.addEventListener('click',e=>{
- const b=e.target.closest('button:not(.dan),a.btn:not(.dan)');if(!b||b.matches('[data-c],summary *,#tg,#ts,#abasApp *,[data-aba],.tabs *,.mde-tb *,.hb *,[role=tab],#share,#go,#locCarregar,#locGerar,#narrHist,[download],.file-link'))return;
+ const b=e.target.closest('button:not(.dan),a.btn:not(.dan)');if(!b||b.matches('[data-c],summary *,#tg,#ts,#abasApp *,[data-aba],.tabs *,.mde-tb *,.hb *,[role=tab],#share,#go,#locCarregar,#locGerar,#narrHist,[download],.file-link,.btn-exibir'))return;
  setTimeout(()=>confirmar(b),80);
 },true);
 function aoConcluir(id,msg){const b=document.getElementById(id);if(!b)return;let esteve=false;new MutationObserver(()=>{if(b.disabled)esteve=true;else if(esteve){esteve=false;confirmar(b,msg)}}).observe(b,{attributes:true,attributeFilter:['disabled']})}

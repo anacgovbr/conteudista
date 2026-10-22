@@ -40,21 +40,9 @@ body > header h1 small{color:var(--gray-60);font-weight:400;opacity:1}
 body > header .gb-sign{display:inline-flex;align-items:center;gap:8px;margin-right:12px;padding-right:12px;border-right:1px solid var(--gray-20);font-weight:800;font-size:16px;color:var(--interactive);letter-spacing:-.3px;white-space:nowrap}
 body > header .gb-sign b{color:var(--gray-80);font-weight:600}
 body > header #ver{color:var(--gray-60);opacity:1}
-body > header .hb button{background:transparent!important;border:0!important;color:var(--interactive)!important;border-radius:100em!important;min-height:40px;padding:0 16px!important;font-weight:600;font-size:14.4px}
-body > header .hb button:hover{background:rgba(var(--interactive-rgb),.16)!important}
 #btnNews .pt{border-color:#fff!important}
 
-/* ---------- Botões (br-button) ---------- */
-body :is(button,.btn):not(.mde-tb *):not(.mde-gi *):not(.mde-dw .chips *):not(.mde-dw .tabs2 *):not(#hud *):not(.mde-gal summary *):not(.hb *):not(.tabs *):not(#abasApp *){
-  font-family:var(--font-family-base);border-radius:100em!important;min-height:40px;padding:0 24px;font-weight:600;font-size:16.8px;line-height:40px;
-  background:var(--interactive);color:#fff;border:0}
-body :is(button,.btn).mini:not(.mde-tb *):not(.mde-gi *){min-height:32px;line-height:32px;padding:0 16px;font-size:14.4px}
-body :is(button,.btn):not(:disabled):hover{background-image:linear-gradient(rgba(255,255,255,.12),rgba(255,255,255,.12))}
-body :is(button,.btn).sec:not(.mde-tb *){background:#fff!important;color:var(--interactive)!important;border:1px solid var(--interactive)!important}
-body :is(button,.btn).sec:not(:disabled):hover{background:rgba(var(--interactive-rgb),.16)!important}
-body :is(button,.btn).dan{background:#fff!important;color:var(--red-vivid-50)!important;border:1px solid var(--red-vivid-50)!important}
-body button:disabled{opacity:.45;cursor:not-allowed}
-.mde-gb{border-radius:100em!important}
+/* ---------- Botoes (br-button): ver ds-botoes.css ---------- */
 
 /* ---------- Superfícies (br-card) ---------- */
 body .card{border:0;border-radius:var(--surface-rounder-sm);box-shadow:var(--surface-shadow-sm);background:#fff}
@@ -111,5 +99,4 @@ html.contraste body :is(#abasApp button.on,.tabs button:not(.off)){border-bottom
   body > header{padding:10px 12px!important}body > header h1 small{display:none}
   body > header .gb-sign{border-right:0;margin-right:4px;padding-right:0}
   body > header .hb{width:100%;justify-content:space-between}
-  body > header .hb button{padding:0 8px!important;font-size:13px;min-height:36px}
 }

@@ -1,5 +1,11 @@
 # Novidades do Conteudista
 
+## 1.36 - 22/10/2026
+- Botões 100% no padrão do Design System gov.br, definidos em um único arquivo (`ds-botoes.css`): rótulo em uma linha, altura fixa e cantos proporcionais. As regras antigas de botão foram removidas do `govbr.css` e dos scripts.
+- Rótulos de botão com no máximo duas palavras (ex.: Carregar áudio, Salvar pasta, Apagar dados); tutorial e ajuda atualizados. As abas agora se chamam Treinamento e Apresentação.
+- **Arquivos gerados**: Exibir treinamento, Exibir apresentação e .ZIP agora são botões, exibidos só depois de gerar e só para o que foi gerado (também nos arquivos guardados no navegador).
+- Carregar exemplo, Limpar tela e Importar no mesmo padrão de botão.
+
 ## 1.35 - 21/10/2026
 - Botões no padrão do Design System gov.br: rótulo sempre em uma linha, altura fixa (32, 40 ou 48 px) e cantos proporcionais à altura. Ao redimensionar a janela, o botão não vira mais uma "bola".
 - Grupos de botões (cabeçalho, galeria de imagens e Histórico) quebram de linha como um todo, em vez de espremer os rótulos.

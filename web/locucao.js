@@ -152,7 +152,7 @@
 #secLoc .hc p{margin:0 0 4px;font-size:13px;line-height:1.4;max-height:3.9em;overflow:hidden}
 #secLoc .hc small{display:block;color:#636363;font-size:11.5px}
 #secLoc .hc .b{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
-#secLoc .hc .b button{margin:0;padding:3px 8px;font-size:12px;font-weight:600}
+#secLoc .hc .b button{margin:0}
 #secLoc .vazio{color:#636363;font-size:13px;padding:10px}
 #secLoc .tec{font-size:12px;color:#636363;margin:4px 0}
 @media(max-width:1000px){#secLoc .loc-grid{grid-template-columns:1fr}}`;
@@ -170,13 +170,13 @@
     '<div class="loc-grid"><div>' +
     '<div class="loc-box"><h3>1. Texto</h3>' +
       '<div class="lin"><div><label for="locFonte">Trazer texto do curso</label><select id="locFonte"><option value="notas">Notas do apresentador (todos os slides)</option><option value="slides">Texto dos slides</option><option value="guia">Guia de treinamento</option></select></div>' +
-      '<div style="flex:0"><button type="button" class="sec" id="locImportar">Importar</button></div></div>' +
+      '<div class="loc-btn-cell"><button type="button" class="sec" id="locImportar">Importar</button></div></div>' +
       '<label for="locTexto" style="margin-top:10px">Texto a ser narrado</label>' +
       '<textarea id="locTexto" spellcheck="true" lang="pt-BR" placeholder="Digite, cole ou importe o texto. Frases bem pontuadas soam mais naturais."></textarea>' +
       '<p class="cont" id="locCont">0 caracteres</p>' +
     '</div>' +
     '<div class="loc-box"><h3>2. Voz</h3>' +
-      '<div class="rec" id="locRec"><span id="locRecInfo">Os recursos de áudio (vozes) são carregados só quando você precisar. Na primeira vez o download pode levar alguns minutos.</span><button type="button" id="locCarregar">Carregar recursos de áudio</button></div>' +
+      '<div class="rec" id="locRec"><span id="locRecInfo">Os recursos de áudio (vozes) são carregados só quando você precisar. Na primeira vez o download pode levar alguns minutos.</span><button type="button" id="locCarregar">Carregar áudio</button></div>' +
       '<div class="lin"><div><label for="locIdioma">Idioma</label><select id="locIdioma"></select></div>' +
       '<div><label for="locVoz">Voz</label><select id="locVoz"></select></div></div>' +
       '<div class="lin" style="margin-top:8px">' +
@@ -197,7 +197,7 @@
       '<div><label for="locDevice">Processamento</label><select id="locDevice"><option value="auto">Automático (WASM, recomendado)</option><option value="wasm">Somente processador (WASM)</option><option value="webgpu">Placa de vídeo (WebGPU, experimental)</option></select></div>' +
       '<div><label for="locFon">Pronúncia (vozes Kokoro)</label><select id="locFon"><option value="auto">Automática</option><option value="espeak">Somente espeak-ng</option><option value="interno">Regras internas (português)</option></select></div></div>' +
       '<p class="tec" id="locFonInfo"></p>' +
-      '<p class="acoes"><button type="button" class="sec" id="locAtivar">Preparar a voz agora</button><button type="button" class="sec" id="locRemModelo">Remover vozes baixadas</button></p>' +
+      '<p class="acoes"><button type="button" class="sec" id="locAtivar">Preparar voz</button><button type="button" class="sec" id="locRemModelo">Remover vozes</button></p>' +
       '<label class="inl"><input type="checkbox" id="locPreload"> Carregar os recursos de áudio automaticamente ao abrir a página</label>' +
     '</details>' +
     '</div>' +
@@ -296,7 +296,7 @@
     const mo = motorDe($('locVoz').value);
     chip(mo.pronto ? 'ok' : mo.carregando ? 'ld' : '');
     $('locAtivar').disabled = !!mo.pronto || !!mo.carregando;
-    $('locAtivar').textContent = mo.pronto ? '✓ Voz pronta' : 'Preparar a voz agora';
+    $('locAtivar').textContent = mo.pronto ? '✓ Voz pronta' : 'Preparar voz';
     const p = pip.info, k = tts.info;
     tec(!recursos ? 'Recursos de áudio não carregados.' : 'Motores: Piper ' + (pip.pronto ? 'ativo' + (p ? ' (' + p.voz + ', ' + p.sr + ' Hz, velocidade ' + (p.nativo ? 'no modelo' : 'por processamento do áudio') + (p.biblioteca ? ', biblioteca ' + (p.biblioteca === 'local' ? 'do site' : 'do CDN') : '') + ')' : '') : pip.falhou ? 'indisponível' : 'desligado') +
       ' · Kokoro ' + (tts.pronto ? 'ativo' + (k ? ' (' + String(k.device).toUpperCase() + ', ' + k.dtype + ')' : '') : tts.falhou ? 'indisponível' : 'desligado') + '. Voz atual: ' + $('locVoz').value + '.');
@@ -579,7 +579,7 @@
     } finally { ocupado(false); setTimeout(() => progresso(null), 800); }
   }
   $('locGerar').onclick = async () => {
-    if (!recursos) { $('locAviso').innerHTML = '<div class="aviso wa">Clique em <b>Carregar recursos de áudio</b> primeiro.</div>'; $('locCarregar').focus(); return; }
+    if (!recursos) { $('locAviso').innerHTML = '<div class="aviso wa">Clique em <b>Carregar áudio</b> primeiro.</div>'; $('locCarregar').focus(); return; }
     const t = $('locTexto').value;
     if (!t.trim()) { $('locAviso').innerHTML = '<div class="aviso wa">Digite ou importe um texto primeiro.</div>'; $('locTexto').focus(); return; }
     try { await generateSpeechAdvanced(t, $('locVoz').value, +$('locVel').value || 1, +$('locPausa').value); $('locAudio').play().catch(() => {}); } catch { /* exibido na tela */ }
@@ -705,7 +705,7 @@
   }, true);
   const AJUDA = '<h4>Locução (texto em fala)</h4><ul>' +
     '<li>Aba <b>Locução</b> (<kbd>Alt+Shift+3</kbd>): transforma texto em fala <b>no seu navegador</b>. O texto não sai do computador.</li>' +
-    '<li>Para deixar a página leve, os <b>recursos de áudio</b> (vozes) só são baixados quando você clica em <b>Carregar recursos de áudio</b> (aba Locução) ou liga a <b>Narração dos slides</b>. Na primeira vez pode levar alguns minutos; depois ficam guardados no navegador.</li>' +
+    '<li>Para deixar a página leve, os <b>recursos de áudio</b> (vozes) só são baixados quando você clica em <b>Carregar áudio</b> (aba Locução) ou liga a <b>Narração dos slides</b>. Na primeira vez pode levar alguns minutos; depois ficam guardados no navegador.</li>' +
     '<li><b>1. Texto</b>: digite, cole ou <b>importe</b> do curso (notas do apresentador, texto dos slides ou guia).</li>' +
     '<li><b>2. Voz</b>: escolha o <b>idioma</b>, a <b>voz</b> (as <b>Recomendadas</b> aparecem primeiro), a <b>velocidade</b> e a <b>pausa entre frases</b>. <kbd>Alt+Shift+N</kbd> gera.</li>' +
     '<li>Se uma voz não puder ser usada no momento, outra voz do mesmo idioma é usada automaticamente.</li>' +

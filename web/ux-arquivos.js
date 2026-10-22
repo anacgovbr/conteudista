@@ -50,7 +50,7 @@
     return /apresenta/i.test(el.textContent || '') ? 'apres' : 'guia';
   }
   function agrupar(host) {
-    const itens = [...host.children].filter(el => el.matches('a.file-link, button.file-link'));
+    const itens = [...host.children].filter(el => el.matches('a.file-link, button.file-link, .btn-arq'));
     if (!itens.some(el => el.matches('a[download]'))) return;           // s\u00f3 listas de arquivos gerados
     const grupos = { guia: [], apres: [], todos: [] };
     itens.forEach((el, i) => grupos[grupoDe(el)].push({ el, ord: el.matches('a[download]') ? (ORDEM[extensao(el)] || 8) : 50, i }));
@@ -100,5 +100,10 @@
     }
   }).observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true });
 
+  // Botao .ZIP: confirmacao visual discreta, como nos demais botoes de acao
+  document.addEventListener('click', e => {
+    const b = e.target.closest && e.target.closest('a.btn-arq[download]');
+    if (b && window.UXFeedback) setTimeout(() => window.UXFeedback.confirmar(b, 'Download iniciado.'), 60);
+  }, true);
   window.UXArquivos = { processar };
 })();
