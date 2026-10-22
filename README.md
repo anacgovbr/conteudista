@@ -47,6 +47,7 @@ tools/requirements.txt
 
 - Layout dos arquivos gerados: dicionário `TEMAS` em `tools/gerador.py` (`govbr` = padrão, `classico` = original). Para um tema novo (ex.: ANAC), copie o bloco `govbr`, ajuste cores e fontes e acrescente a opção no campo **Layout dos arquivos gerados** do `web/index.html`. Linha de comando: `--tema govbr|classico`.
 
+- **Regra global de interface (botões):** a confirmação de ação concluída é só visual (botão verde com tick por ~2,6 s). Nunca insira texto na tela; use `UXFeedback.confirmar(botao, mensagem)` em `web/ux-feedback.js`, que envia a mensagem a leitores de tela por uma região oculta.
 - A cada mudança, acrescente uma entrada curta no topo do `CHANGELOG.md` e atualize `VERSAO` em `web/changelog.js`.
 - O visual segue o Padrão Digital de Governo (https://www.gov.br/ds/). Ajuste cores e componentes em `web/govbr.css`.
 

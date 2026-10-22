@@ -636,7 +636,7 @@
     const f = $('locFonte').value, t = textoDoCurso(f);
     if (!t) { $('locAviso').innerHTML = '<div class="aviso wa">Nada para importar: ' + (f === 'notas' ? 'a apresentação não tem notas do apresentador' : f === 'slides' ? 'a apresentação está vazia' : 'o treinamento está vazio') + ' na aba Curso.</div>'; return; }
     if ($('locTexto').value.trim() && !confirm('Substituir o texto atual pelo conteúdo importado?')) return;
-    $('locTexto').value = t; contar(); $('locAviso').innerHTML = '<div class="aviso">Texto importado. Revise antes de gerar.</div>';
+    $('locTexto').value = t; contar(); $('locAviso').innerHTML = ''; if (window.UXFeedback) UXFeedback.anunciar('Texto importado. Revise antes de gerar.');
   };
 
   /* ---------------------------- Histórico ---------------------------- */

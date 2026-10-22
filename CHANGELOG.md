@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.40 - 22/10/2026
+- **Regra global de feedback em botões**: a confirmação de ação concluída agora é apenas visual (botão verde com tick por alguns segundos). A mensagem "Ação concluída." deixou de aparecer na tela e a largura do botão não muda mais. Vale para Carregar exemplo, Limpar tela, Importar e demais botões.
+- O botão **Copiar** de "Links criados" e a mensagem "Texto importado" da Locução seguem a mesma regra; leitores de tela continuam recebendo o aviso por uma região oculta.
+
 ## 1.39 - 22/10/2026
 - **Histórico unificado**: a janela aberta pelo botão **Histórico** (ao lado de "Arquivos gerados") agora reúne os **arquivos gerados** e os **rascunhos**, no mesmo formato de tabela. Rascunhos começam recolhidos e a lista só é recarregada quando a seção é aberta.
 - No painel "Na sua máquina", a tabela de rascunhos deu lugar a uma linha discreta ("N rascunhos salvos") com o botão Histórico. Abrir um rascunho fecha a janela.
