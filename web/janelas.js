@@ -526,17 +526,8 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   }
   function abrirDoLink(b) {
     const url = b.dataset.url || '';
-    if (b.dataset.senha) {
-      $('jnTexto').value = url; atualizarColar(); importar.ativar('cl', false);
-      importar.msg('Este link tem senha. Informe a senha e clique em Importar.', true);
-      setTimeout(() => { const s = $('jnSenha'); if (s) s.focus(); }, 30);
-      return;
-    }
-    const o = $('olink'), p = $('opw'), bo = $('open'); if (!o || !bo) return;
-    o.value = url; if (p) p.value = '';
-    importar.msg('');
-    observarLog({ ok: /Conte\u00fado carregado do link/, erro: /Erro:/, aoOk: () => importar.fechar(true), aoErro: t => importar.msg(t, false) });
-    bo.click();
+    if (window.ColarImportar) window.ColarImportar.linkSalvo(url, !!b.dataset.senha);
+    else importar.msg('Abertura de links indispon\u00edvel nesta p\u00e1gina.', false);
   }
   const bExc = document.createElement('button');
   bExc.type = 'button'; bExc.className = 'dan mini'; bExc.id = 'jnExcluir'; bExc.textContent = 'Excluir tudo';
@@ -752,7 +743,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   ['drafts', 'links', 'gerLista'].forEach(i => { const el = $(i); if (el) new MutationObserver(agendar).observe(el, { childList: true, subtree: true }); });
   atualizar();
 
-  window.Importar = { abrir: k => importar.abrir(k), fechar: () => importar.fechar(), pedir: o => importar.pedir(o), msg: (t, i) => importar.msg(t, i) };
+  window.Importar = { abrir: k => importar.abrir(k), fechar: s => importar.fechar(s), ativar: (k, f) => importar.ativar(k, f), pedir: o => importar.pedir(o), msg: (t, i) => importar.msg(t, i) };
   window.HistoricoArquivos = { abrir: () => hist.abrir(), fechar: () => hist.fechar() };
   window.Compartilhar = { abrir: () => cmp.abrir(), fechar: () => cmp.fechar() };
   window.AbrirJanela = { abrir: k => importar.abrir(k), fechar: () => importar.fechar() };

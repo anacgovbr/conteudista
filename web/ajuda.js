@@ -63,7 +63,7 @@
     { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe treinamento (HTML, DOCX, MD), apresentação (HTML, PPTX, MD) e um ZIP com tudo. Os botões <b>Exibir treinamento</b>, <b>Exibir apresentação</b> e <b>.ZIP</b> aparecem em <b>Arquivos gerados</b>, só para o que foi gerado. Para testar agora, use <b>Carregar exemplo</b>, logo abaixo dos campos do curso.' },
     { alvo: 'btnSalvar', t: '4. Guarde seu trabalho', d: 'O <b>salvamento automático</b> (chave à direita da barra) recupera o último conteúdo ao voltar à página. Use <b>Salvar</b> para guardar uma <b>versão</b> (para voltar a ela depois), escolher uma pasta ou baixar os <code>.md</code> e o <code>.zip</code>.' },
     { alvo: 'btnCompartilhar', t: '5. Compartilhe com segurança (opcional)', d: 'Em <b>Compartilhar</b>, gere um <b>link criptografado</b> (direto ou PrivateBin), com senha se quiser. O tamanho aparece antes do envio.' },
-    { alvo: 'btnImportar', t: '6. Importe e recupere', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um texto ou link (e a senha, se houver).' },
+    { alvo: 'btnImportar', t: '6. Importe e recupere', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole o texto do treinamento e o da apresentação, cada um na sua aba, ou um link (e a senha, se houver).' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
@@ -148,7 +148,7 @@
 <tr><td><b>Salvamento automático</b> (ligado por padrão)</td><td>Neste navegador, neste computador</td><td>Abra a página de novo: o último trabalho volta sozinho</td></tr>
 <tr><td><b>Salvar versão</b> (menu <b>Salvar</b>)</td><td>Neste navegador</td><td>Botão <b>Importar</b> → aba <b>Salvos</b></td></tr>
 <tr><td><b>Salvar pasta</b> / <b>.MD</b> / <b>.ZIP</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas</td></tr>
-<tr><td><b>Link criptografado</b></td><td>No próprio link ou no PrivateBin (cifrado)</td><td>Botão <b>Importar</b> → aba <b>Colar</b> → cole o link (e a senha)</td></tr>
+<tr><td><b>Link criptografado</b></td><td>No próprio link ou no PrivateBin (cifrado)</td><td>Botão <b>Importar</b> → aba <b>Colar</b> → subaba <b>Link</b> → cole o link (e a senha)</td></tr>
 <tr><td><b>Versões do texto</b></td><td>Neste navegador</td><td>Botão <b>Versões</b> na barra do editor → escolha a versão → <b>Restaurar</b></td></tr></table>
 <div class="dica">Limpar os dados do navegador apaga as versões salvas. Para guardar por mais tempo, use <b>Salvar na pasta</b>, <b>Baixar .md</b> ou <b>Baixar .zip</b>.</div>
 <h4>Versões do texto (comparar antes e depois)</h4>

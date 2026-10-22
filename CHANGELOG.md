@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.45 - 22/10/2026
+- **Importar → Colar** com subabas **Treinamento**, **Apresentação** e **Link**: cada texto tem a sua caixa Markdown, com ✓ quando preenchida. **Importar** envia o que estiver preenchido (um ou os dois textos) e o texto atual vai para Versões antes de ser substituído.
+- Colar um link numa das caixas de texto move o endereço para a subaba Link. Os links (colados ou salvos) agora são abertos direto pela página, sem depender dos campos antigos de "Abrir um link".
+
 ## 1.44 - 22/10/2026
 - **Rascunhos e Versões unificados**: salvar agora cria uma **versão salva** (menu Salvar → Versão, Alt+Shift+S), guardada junto das demais versões e nunca apagada automaticamente. "Rascunho" deixou de existir como conceito; os atalhos S e B viraram um só (S).
 - **Migração automática**: os rascunhos com nome viram versões salvas (mesma data e conteúdo), uma única vez e sem duplicar. As cópias antigas ficam guardadas, somente leitura, até a próxima versão. O salvamento automático continua recuperando o último trabalho ao reabrir a página.

@@ -34,6 +34,7 @@ web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
 web/metadados.js         ← Nome do curso, Rodapé em "Mais opções" (a Barra superior foi retirada)
 web/dicas.js             ← dicas (tooltip) acessíveis dos botões da barra do editor
 web/janelas.js           ← Importar, Salvar, Compartilhar e Histórico de arquivos (janelas e barra de ações)
+web/colar.js             ← Importar > Colar: subabas Treinamento, Apresentação e Link
 web/versoes.js           ← rascunhos e versões unificados (salvar, abrir, excluir e migração dos dados antigos)
 web/locucao.js           ← aba Locução
 web/locucao-worker.js    ← motor de voz Kokoro-82M (Web Worker)
