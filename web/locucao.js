@@ -114,7 +114,7 @@
 #abasApp .ch{display:inline-block;width:8px;height:8px;border-radius:50%;background:#cccccc;margin-left:8px;vertical-align:1px}
 #abasApp .ch.ok{background:#168821}#abasApp .ch.ld{background:#ffcd07;animation:locPisca 1s infinite}
 @keyframes locPisca{50%{opacity:.3}}
-#secLoc .loc-grid{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px}
+#secLoc .loc-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
 #secLoc .loc-box{border:1px solid #cccccc;border-radius:10px;padding:14px 16px;background:#f8f8f8;margin-bottom:14px}
 #secLoc .loc-box h3{margin:0 0 8px;color:#0c326f;font-size:15px}
 #secLoc details.loc-box>summary{cursor:pointer;font-weight:600;color:#0c326f}
@@ -235,6 +235,10 @@
     const h = histLoc.querySelector(':scope > h3'); const sum = document.createElement('summary');
     sum.innerHTML = '<h3>' + (h ? h.innerHTML : 'Histórico') + '</h3><span class="loc-mostrar">mostrar</span><span class="loc-recolher">recolher</span>';
     if (h) h.remove(); d.appendChild(sum); while (histLoc.firstChild) d.appendChild(histLoc.firstChild); histLoc.replaceWith(d);
+  // Historico por ultimo, fora da grade, em qualquer largura de tela.
+  sec.appendChild(d);
+  d.open = false;
+  d.style.marginTop = '20px';
   }
   function mostrarAba(nome) {
     abas.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.aba === nome));
