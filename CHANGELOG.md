@@ -1,5 +1,11 @@
 # Novidades do Conteudista
 
+## 1.61 - 23/10/2026
+- **Corrigido: os fluxos Mermaid não apareciam na apresentação em HTML.** Esse HTML mostra um slide por vez, e o Mermaid não consegue desenhar dentro de um elemento oculto; por isso os fluxos de todos os slides, exceto o primeiro a ser exibido, saíam vazios. Agora, ao **Gerar arquivos**, cada fluxo da apresentação é desenhado na própria página e embutido no HTML como imagem, sem depender da rede nem de qual slide está visível. O `.md` continua com o código do fluxo e o PPTX, com a tabela De, Condição e Para.
+- Se o componente Mermaid não estiver acessível ao gerar, ou se um fluxo tiver erro de sintaxe, a página avisa e esse fluxo continua sendo desenhado no navegador de quem abrir a apresentação, agora com todos os slides mensuráveis, o que corrige também esse caminho.
+- Cada imagem de fluxo traz como texto alternativo as etapas, na ordem. O gerador passa à versão 3.8, com o parâmetro opcional `fluxos`.
+- A nota da seção 10.2 da apostila de exemplo e o README passam a dizer que só a apostila em HTML depende do endereço do CDN.
+
 ## 1.60 - 23/10/2026
 - **Ajuda e Tutorial passam a apresentar o conteúdo de exemplo e o prompt padrão para IA.** Duas seções novas na Ajuda, **Conteúdo de exemplo** e **Produzir os textos com uma IA**, explicam o que o botão **Carregar exemplo** traz (apostila de 16 seções, apresentação de 34 slides com notas para narração e o prompt padrão) e como usar o prompt, com as duas formas de entrega: dois blocos de texto ou um ZIP. Os passos 1 e 3 do Tutorial citam o exemplo e o prompt, e a tabela de problemas comuns ganhou duas linhas sobre o texto devolvido pela IA e a leitura da narração.
 - O parâmetro de cache dos scripts da página passa a 1.60, para que a Ajuda nova chegue a quem já abriu o site.

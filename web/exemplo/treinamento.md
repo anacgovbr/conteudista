@@ -401,7 +401,7 @@ flowchart LR
 
 > [!warning] Não use parênteses, aspas nem dois-pontos dentro do texto dos nós, e não escreva a palavra `end` em minúsculas: o desenho deixa de ser gerado. O código completo do fluxo vai dentro de um bloco com a linguagem `mermaid`.
 
-> [!info] No HTML, o desenho é feito no navegador de quem lê e usa um componente carregado de `cdn.jsdelivr.net`. Sem acesso a esse endereço, o leitor vê o código do fluxo no lugar do desenho.
+> [!info] Na apostila em HTML, o desenho é feito no navegador de quem lê e usa um componente carregado de `cdn.jsdelivr.net`; sem acesso a esse endereço, o leitor vê o código do fluxo no lugar do desenho. Na apresentação em HTML, o fluxo é convertido em imagem ao gerar os arquivos e, assim, não depende da rede para aparecer.
 
 ### 10.3 Imagens
 

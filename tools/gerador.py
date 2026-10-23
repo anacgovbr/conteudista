@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# GERADOR PADRÃO DE CONTEÚDO v3.7 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX) — Apostila (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
+# GERADOR PADRÃO DE CONTEÚDO v3.8 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX) — Apostila (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
 # Requisitos: Python 3 + python-docx + python-pptx (+ Pillow). HTML usa só biblioteca padrão.
 # Uso: python gerador.py apostila.md apresentacao.md --prefixo NOME --rodape "TEXTO" [--barra "TEXTO"] [--saida pasta] [--sem-embutir] [--tema govbr|classico] [--audios pasta] [--avancar]
 # Imagens ![alt](caminho|URL) sao convertidas para data:URI base64 (texto puro) nos .md de saida.
@@ -260,7 +260,7 @@ html,body{margin:0;height:100%;background:#0d1b2a;font-family:"Segoe UI",Roboto,
 .s table{border-collapse:collapse;width:100%;font-size:19px;margin:4px 0 10px}.s th{background:var(--pri);color:#fff;text-align:left;padding:9px 12px}.s td{border-bottom:1px solid var(--line);padding:8px 12px;vertical-align:top}.s tr:nth-child(even) td{background:var(--soft)}
 .s a{color:var(--acc)}.s code{background:var(--soft);padding:1px 6px;border-radius:4px;color:var(--pri)}.s strong{color:var(--pri)}.s blockquote{margin:14px 0 0;padding:12px 18px;background:#e9f6f0;border-left:6px solid var(--ac2);border-radius:0 10px 10px 0}.s blockquote p{font-size:21px;margin:0}.s blockquote.info{background:#eaf1f8;border-left-color:#0a7cc1}.s blockquote.tip{background:#e9f6f0;border-left-color:#1e7b4f}.s blockquote.warning{background:#fff4e0;border-left-color:#9a5b00}
 .s figure{margin:6px 0;text-align:center}.s figure img{max-width:100%;max-height:440px;object-fit:contain}.s figcaption{font-size:15px;color:var(--mu)}.s img.il{max-height:1.4em;vertical-align:middle}
-.s .mw{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.s pre.mermaid{margin:0}
+.s .mw{border:1px solid var(--line);border-radius:10px;padding:8px;text-align:center}.s pre.mermaid{margin:0}.s .mw.fx{padding:6px}.s .mw img.fxi{display:block;margin:0 auto;max-width:100%;max-height:520px;width:auto;height:auto}body.mm .s:not(.on){display:block;visibility:hidden}
 .s.title{background:linear-gradient(135deg,#0b3d6e,#0a5c9a 60%,#0a7cc1);color:#fff}.s.title:before{background:var(--ac2)}.s.title:after{color:#cfe3f5}.s.title .in{justify-content:center}
 .s.title h1{color:#fff;font-size:58px;border-bottom:4px solid var(--ac2);display:inline-block}.s.title h2{color:#d6ecff;font-size:32px}.s.title p{color:#e8f2fb;font-size:22px}.s.title strong{color:#fff}
 .s.highlight{background:linear-gradient(#fff,#f2f7fc)}.nt{display:none}.sn .s.on .nt{display:block;position:absolute;left:60px;right:60px;bottom:44px;background:#fff8d6;border:1px solid #e6cf6a;border-radius:8px;padding:10px 14px;font-size:16px}
@@ -364,14 +364,43 @@ def _anac_html_css(tema,n):
     if escuro:regras.append('.s.title .in{margin-left:37%;width:58%}.s.title h1{color:#fff!important}')
     else:regras.append('.s.title .in{margin-left:37%;width:58%}.s.title h1{color:#193f52!important}')
     return '\n'.join(regras)
-def slides_html(t,sl,foot,tema=None,audios=None,avancar=False):
+MER_S='<script type="module">try{const m=(await import("https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs")).default;m.initialize({startOnLoad:false});document.body.classList.add("mm");try{await m.run({querySelector:"pre.mermaid:not([data-processed])",suppressErrors:true})}finally{document.body.classList.remove("mm")}}catch(e){document.body.classList.remove("mm");console.warn("Mermaid offline",e)}</script>'
+def _mer_s(o):
+    """Mermaid dos slides: so e carregado se algum fluxo ficou como codigo (sem imagem). Desenha com todos os slides mensuraveis (classe mm no CSS): o Mermaid nao desenha dentro de elemento oculto."""
+    return MER_S if 'class="mermaid"' in o else ''
+def _fluxos_dict(f):
+    """Aceita o dicionario {codigo do fluxo: imagem em data URI} ou o mesmo em JSON (texto)."""
+    if isinstance(f,str):
+        try:
+            import json;f=json.loads(f)
+        except Exception:return {}
+    return {str(k).strip():v for k,v in f.items() if isinstance(v,str) and v.startswith('data:image/')} if isinstance(f,dict) else {}
+def _fluxo_alt(cod):
+    """Texto alternativo do fluxo: as etapas na ordem em que aparecem."""
+    try:
+        vistos=[]
+        for r in mermaid_edges(cod)[1:]:
+            for x in (r[0],r[2]):
+                if x and x not in vistos:vistos.append(x)
+        return ('Fluxo: '+'; '.join(vistos))[:700] if vistos else 'Fluxo'
+    except Exception:return 'Fluxo'
+def _fluxos_img(o,fluxos):
+    """Troca cada fluxo Mermaid do HTML dos slides pela imagem pre-renderizada do mesmo codigo, quando ela existe."""
+    if not fluxos:return o
+    def rep(m):
+        cod=html.unescape(m.group(1)).strip();img=fluxos.get(cod)
+        if not img:return m.group(0)
+        return '<div class="mw fx"><img class="fxi" alt="%s" src="%s"></div>'%(E(_fluxo_alt(cod)),img)
+    return re.sub(r'<div class="mw"><pre class="mermaid">(.*?)</pre></div>',rep,o,flags=re.S)
+def slides_html(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
     T=tema_de(tema)
     o=''.join('<section class="s %s"><div class="in">%s</div><aside class="nt">%s</aside></section>'%(c,html_of(b),E(n)) for c,b,n in sl)
+    o=_fluxos_img(o,fluxos)
     extra=_anac_html_css(tema,len(sl));css=tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+extra
     if audios:return _slides_html_narrado(t,sl,foot,T,o,audios,avancar).replace('</style>','%s</style>'%extra,1)
     return ('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme" content="%s"><title>%s</title><style>%s</style></head><body>'
     '<div id="st">%s</div><div id="bar"></div><div id="hud"><button id="p">◀</button><span id="c"></span><button id="n">▶</button><button id="b1">Notas (N)</button><button id="b2">Tela cheia (F)</button></div><script>%s</script>%s</body></html>'
-    )%(E(tema or TEMA_PADRAO),E(t),css,o,JS_S,MER)
+    )%(E(tema or TEMA_PADRAO),E(t),css,o,JS_S,_mer_s(o))
 def _slides_html_narrado(t,sl,foot,T,o,audios,avancar):
     aud=''
     for k,cam in sorted(audios.items()):
@@ -382,7 +411,7 @@ def _slides_html_narrado(t,sl,foot,T,o,audios,avancar):
     return ('<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title><style>%s</style></head><body>'
     '<div id="st">%s</div><div id="bar"></div><div id="hud"><button id="p">◀</button><span id="c"></span><button id="n">▶</button><button id="bn" aria-pressed="false">🔇 Narração (M)</button><button id="ba" aria-pressed="false">⏭ Avanço automático (A)</button><button id="b1">Notas (N)</button><button id="b2">Tela cheia (F)</button></div>'
     '<div id="ini" role="dialog" aria-label="Iniciar apresentação"><button id="ini1">▶ Iniciar com narração</button><a id="ini0" role="button" tabindex="0">Iniciar sem som</a></div>%s<script>%s</script><script>%s</script>%s</body></html>'
-    )%(E(t),tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+CSS_NARR,o,aud,js,JS_NARR.replace('__AUTO__','true' if avancar else 'false'),MER)
+    )%(E(t),tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+CSS_NARR,o,aud,js,JS_NARR.replace('__AUTO__','true' if avancar else 'false'),_mer_s(o))
 # ============================== DOCX ==============================
 def treinamento_docx(md,path,foot,tema=None):
     # Os temas ANAC 20 anos alteram somente a apresentação; o DOCX permanece no padrão gov.br.
@@ -729,7 +758,7 @@ def markdown_com_tema(md,tema):
             else:cab=cab.rstrip()+'\ntheme: '+tema
             return '---\n'+cab+'\n---'+md[fim+4:]
     return '---\ntheme: '+tema+'\n---\n\n'+md.lstrip()
-def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narracao=None):
+def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narracao=None,fluxos=None):
     tema=tema if tema in TEMAS else TEMA_PADRAO
     """Gera os arquivos do que estiver preenchido: apostila (MD/HTML/DOCX) e/ou apresentação (MD/HTML/PPTX)."""
     gm=gm or '';sm=sm or ''
@@ -747,7 +776,7 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
     else:msg+=' | apostila: vazia (não gerada)'
     if tem_s:
         sm=markdown_com_tema(sm,tema);t,sl=split_slides(sm);nr=_narr(narracao)
-        open(P('.md','Apresentacao_'),'w',encoding='utf-8').write(sm);open(P('.html','Apresentacao_'),'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema,nr['html'],nr['avancar']))
+        open(P('.md','Apresentacao_'),'w',encoding='utf-8').write(sm);open(P('.html','Apresentacao_'),'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema,nr['html'],nr['avancar'],_fluxos_dict(fluxos)))
         arqs+=[P('.md','Apresentacao_'),P('.html','Apresentacao_')]
         try:slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape,tema,nr['pptx'],nr['avancar'],nr['duracoes']);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
         except Exception as e:msg+=' | pptx: ERRO %s'%e

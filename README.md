@@ -59,6 +59,7 @@ tools/requirements.txt
 - Alterou o visual dos arquivos gerados? Edite `tools/gerador.py`; o workflow testa e republica.
 - Mantenha a mesma versão do `gerador.py` na PARTE 6 do `Pacote_Gerador_Cursos.txt` do agente.
 - A versão 3.7 do gerador (1.56) preserva comentários HTML dentro de código, na apostila e na prévia; não trata exemplos de imagem escritos em código como imagens pendentes; e reinicia a numeração de cada lista numerada no DOCX.
+- A versão 3.8 do gerador (1.61) acrescenta o parâmetro opcional `fluxos` (imagens dos fluxos Mermaid, por código, para o HTML dos slides) e passa a desenhar no navegador, com todos os slides mensuráveis, os fluxos que ficam como código.
 - A página precisa de acesso a `cdn.jsdelivr.net` (motor Python e desenho dos fluxos Mermaid). O PrivateBin exige que a instância aceite chamadas de outros sites (CORS); se não aceitar, use o link autocontido.
 
 ## Execução local (opcional, com Python 3)
@@ -88,7 +89,7 @@ Manutenção do exemplo:
 - O prompt padrão está em um único bloco de código. Qualquer mudança na sintaxe aceita pelo gerador deve ser refletida nas seções 5 e 6 do prompt e na tabela da seção 10 da apostila.
 - As notas dos slides são escritas para serem ouvidas: texto corrido, sem símbolos, parênteses nem endereços.
 - O workflow de publicação gera o exemplo com os temas `govbr` e `classico` como teste.
-- No HTML, os fluxos Mermaid dependem de `cdn.jsdelivr.net`.
+- Na apostila em HTML, os fluxos Mermaid são desenhados no navegador de quem lê e dependem de `cdn.jsdelivr.net`. Na apresentação em HTML, cada fluxo é convertido em imagem ao gerar os arquivos (`prepararFluxos`, em `web/index.html`; o gerador recebe o parâmetro `fluxos`); sem a imagem, o HTML desenha o fluxo no navegador com todos os slides mensuráveis (classe `mm`). O `.md` e o PPTX não mudam.
 
 ## Atalhos do editor (com o cursor no editor)
 
