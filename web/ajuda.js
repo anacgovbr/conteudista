@@ -209,6 +209,7 @@
 <li><b>Importar › Colar › Link</b>: cole o endereço (e a senha, se houver) e clique em <b>Importar</b>. O texto atual vai para <b>Versões</b> antes de ser substituído.</li>
 <li>Ou abra o link direto no navegador: o conteúdo carrega sozinho.</li>
 <li>Os links criados neste navegador ficam em <b>Importar › Salvos</b>, com o tipo e a validade.</li>
+<li>Para limpar, use <b>Excluir versões salvas</b> ou <b>Excluir links</b>, logo abaixo do título de cada grupo, ou <b>Excluir tudo</b>, no rodapé da janela. Cada item também tem o seu <b>Excluir</b>. Toda exclusão pede confirmação e não pode ser desfeita.</li>
 </ul>
 <h4>Cuidados com o link</h4>
 <ul>

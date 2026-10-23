@@ -45,10 +45,10 @@ details.sx[open]>summary{margin-bottom:10px}
 details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details.sx#dxLinks{margin-top:14px}
 .sec-cab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}.sec-cab h2{flex:1 1 auto;margin:0}#btnHistorico{margin:0}#btnHistorico svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:6px}#secRes #res{margin:0}#secRes .sec-cab{margin:0}#secRes .sec-cab h2{flex:0 1 auto}
 </style>
-<link rel="stylesheet" href="govbr.css?v=1.53">
-<link rel="stylesheet" href="ds-botoes.css?v=1.53">
-<script src="editor.js?v=1.53"></script>
-<script src="ajuda.js?v=1.53" defer></script>
+<link rel="stylesheet" href="govbr.css?v=1.54">
+<link rel="stylesheet" href="ds-botoes.css?v=1.54">
+<script src="editor.js?v=1.54"></script>
+<script src="ajuda.js?v=1.54" defer></script>
 </head>
 <body>
 <a class="br-skiplink" href="#conteudo">Ir para o conteúdo</a>
@@ -597,32 +597,56 @@ $('share').onclick = async () => {
   } catch (e) { log('Erro: ' + e.message, 'err'); }
   finally { $('share').disabled = false; }
 };
+/* Detalhes legiveis do link: tipo, validade e opcoes, sem os parenteses do texto gravado */
+function detalhesLink(x) {
+  const t = String(x.tipo || ''), direto = /^(Autocontido|Link direto)/.test(t), det = [];
+  const m = /\((.*)\)\s*$/.exec(t), partes = !direto && m ? m[1].split(', ') : [];
+  if (direto && /senha/.test(t)) det.push('com senha');
+  partes.forEach((p, k) => {
+    if (k === 0) { if (!x.expira) det.push('validade ' + p); return; }
+    det.push(p === 'senha' ? 'com senha' : p.replace(/(\d+) imagem\(ns\)/, (s, n) => n + (n === '1' ? ' imagem' : ' imagens')));
+  });
+  const val = x.expira ? 'expira em ' + new Date(x.expira).toLocaleDateString('pt-BR') : direto ? 'não expira' : '';
+  return [direto ? 'Link direto' : 'PrivateBin', val].concat(det).filter(Boolean).join(' · ');
+}
 async function listarLinks() {
   let l = sessaoLinks.slice();
   if ($('keep').checked) { const g = await dbAll('links'); g.forEach(x => { if (!l.some(y => y.url === x.url)) l.push(x); }); }
   l.sort((a, b) => b.data - a.data);
-  if (!l.length) { $('links').innerHTML = 'Nenhum link nesta sessão.'; return; }
-  $('links').innerHTML = '<table><tr><th>Conteúdo</th><th>Tipo</th><th>Link e QR Code</th><th></th></tr>' + l.map((x, i) => {
-    const cur = linkCurto(x.url);
+  if (!l.length) { $('links').innerHTML = '<p class="sv-vazio">Nenhum link criado. Use <b>Salvar › Link</b> para criar um.</p>'; return; }
+  const icoLink = '<svg viewBox="0 0 24 24" focusable="false"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>';
+  $('links').innerHTML = '<ul class="sv-lista">' + l.map((x, i) => {
+    const cur = linkCurto(x.url), rot = esc(x.nome || 'conteúdo');
     const busca = [x.nome, x.tipo, x.expira ? 'expira em ' + BuscaMeta.data(x.expira) : /^(Autocontido|Link direto)/.test(x.tipo) ? 'não expira nao expira sem validade' : '', BuscaMeta.data(x.data), BuscaMeta.tema(x.tema), x.rodape, BuscaMeta.tam(x.tam), cur.tipo, cur.host, 'link'].filter(Boolean).join(' ');
-    return '<tr data-busca="' + esc(busca) + '"><td>' + esc(x.nome || '') + '<br><small>' + new Date(x.data).toLocaleString('pt-BR') + '</small></td><td>' + esc(x.tipo) + (x.expira ? '<br><small>expira em ' + new Date(x.expira).toLocaleDateString('pt-BR') + '</small>' : /^(Autocontido|Link direto)/.test(x.tipo) ? '<br><small>não expira</small>' : '') + '</td>' +
-    '<td class="url"><div class="url-wrap"><a class="url-link" href="' + esc(x.url) + '" target="_blank" rel="noopener" title="Abrir o link em uma nova aba"><b>' + esc(cur.tipo) + '</b><code>' + esc(cur.id) + '</code><small>' + esc(cur.host) + '</small></a>' +
-    '<div class="url-qr" data-q="' + i + '" title="QR Code do link completo" aria-label="QR Code do link"></div></div></td>' +
-    '<td class="link-acoes"><button class="mini" data-c="' + i + '">Copiar</button>' + (x.del ? '<a class="btn mini dan" href="' + esc(x.del) + '" target="_blank" rel="noopener" title="Apaga o conteúdo no servidor (PrivateBin)">Apagar link</a>' : '') +
-    (x.id ? '<button class="mini sec" data-f="' + x.id + '">Esquecer</button>' : '') + '</td></tr>';
-  }).join('') + '</table>';
+    return '<li class="sv-item sv-link" data-busca="' + esc(busca) + '"><span class="sv-ico" aria-hidden="true">' + icoLink + '</span>' +
+    '<div class="sv-corpo"><p class="sv-tit">' + esc(x.nome || 'Link') + '</p><p class="sv-meta">' + esc(detalhesLink(x)) + '</p>' +
+    '<p class="sv-meta">' + new Date(x.data).toLocaleString('pt-BR') + ' · <a href="' + esc(x.url) + '" target="_blank" rel="noopener" title="Abrir o link em uma nova aba"><code>' + esc(cur.id) + '</code></a> ' + esc(cur.host) + '</p></div>' +
+    '<div class="sv-acoes"><button type="button" class="mini jn-abrir" data-url="' + esc(x.url) + '"' + (/senha/.test(x.tipo) ? ' data-senha="1"' : '') + ' aria-label="Abrir ' + rot + '">Abrir</button>' +
+    '<button type="button" class="mini sec" data-c="' + i + '" aria-label="Copiar o link de ' + rot + '">Copiar</button>' +
+    '<button type="button" class="mini sv-ter jn-qr" aria-expanded="false" aria-controls="svq' + i + '">QR code</button>' +
+    '<button type="button" class="mini sv-ter sv-dan" data-f="' + i + '" aria-label="Excluir o link de ' + rot + '">Excluir</button>' +
+    (x.del ? '<a class="btn mini sv-ter sv-dan" href="' + esc(x.del) + '" target="_blank" rel="noopener" title="Apaga o conteúdo cifrado no servidor PrivateBin; o link deixa de funcionar" aria-label="Apagar no servidor o link de ' + rot + '">Apagar no servidor</a>' : '') + '</div>' +
+    '<div class="sv-qr" id="svq' + i + '" hidden><div class="sv-qrbox" data-q="' + i + '" role="img" aria-label="QR Code do link"></div><p class="sv-qrtx">Aponte a câmera do celular para abrir este link.</p></div></li>';
+  }).join('') + '</ul>';
   $('links').querySelectorAll('[data-c]').forEach(b => b.onclick = async () => {
     const i = +b.dataset.c;
     try {
       await navigator.clipboard.writeText(l[i].url);
       if (window.UXFeedback) UXFeedback.confirmar(b, 'URL copiada.');
-      
       log('URL copiada para a área de transferência. Cole no navegador ou onde desejar guardar com Ctrl+V.', 'ok');
-      
     } catch { prompt('Copie o link e cole onde desejar guardar:', l[i].url); }
   });
   renderizarQRCodes(l);
-  $('links').querySelectorAll('[data-f]').forEach(b => b.onclick = async () => { await dbDel('links', +b.dataset.f); listarLinks(); });
+  $('links').querySelectorAll('[data-f]').forEach(b => b.onclick = () => {
+    const x = l[+b.dataset.f];
+    const excluir = async () => {
+      for (const y of await dbAll('links')) if (y.url === x.url) await dbDel('links', y.id);
+      const k = sessaoLinks.findIndex(y => y.url === x.url); if (k >= 0) sessaoLinks.splice(k, 1);
+      await listarLinks();
+    };
+    if (window.Importar && Importar.pedir) Importar.pedir({ gatilho: b, titulo: 'Excluir o link de “' + (x.nome || 'conteúdo') + '”?', descricao: 'O link deixa de aparecer nesta lista. Se você não o guardou em outro lugar, não será possível recuperá-lo. Links criados no PrivateBin continuam acessíveis até expirar.', rotulo: 'Excluir', resultado: 'Link excluído.', aoConfirmar: excluir });
+    else excluir();
+  });
 }
 function linkCurto(link) {
   try {
@@ -836,20 +860,20 @@ statusImagens();
   try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}
 })();
 </script>
-<script src="historico.js?v=1.53"></script>
-<script src="changelog.js?v=1.53"></script>
-<script src="gerados.js?v=1.53"></script>
-<script src="audio-codec.js?v=1.53"></script>
-<script src="locucao.js?v=1.53"></script>
-<script src="narracao.js?v=1.53"></script>
-<script src="ui-ajustes.js?v=1.53"></script>
-<script src="ux-feedback.js?v=1.53"></script>
-<script src="ux-expansiveis.js?v=1.53"></script>
-<script src="ux-arquivos.js?v=1.53"></script>
-<script src="metadados.js?v=1.53"></script>
-<script src="dicas.js?v=1.53"></script>
-<script src="janelas.js?v=1.53"></script>
-<script src="versoes.js?v=1.53"></script>
-<script src="colar.js?v=1.53"></script>
+<script src="historico.js?v=1.54"></script>
+<script src="changelog.js?v=1.54"></script>
+<script src="gerados.js?v=1.54"></script>
+<script src="audio-codec.js?v=1.54"></script>
+<script src="locucao.js?v=1.54"></script>
+<script src="narracao.js?v=1.54"></script>
+<script src="ui-ajustes.js?v=1.54"></script>
+<script src="ux-feedback.js?v=1.54"></script>
+<script src="ux-expansiveis.js?v=1.54"></script>
+<script src="ux-arquivos.js?v=1.54"></script>
+<script src="metadados.js?v=1.54"></script>
+<script src="dicas.js?v=1.54"></script>
+<script src="janelas.js?v=1.54"></script>
+<script src="versoes.js?v=1.54"></script>
+<script src="colar.js?v=1.54"></script>
 </body>
 </html>

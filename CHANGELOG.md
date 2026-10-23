@@ -1,5 +1,11 @@
 # Novidades do Conteudista
 
+## 1.54 - 23/10/2026
+- **Importar › Salvos reorganizado.** Cada grupo (Versões salvas e Links) tem o título com a contagem, uma linha de explicação e, logo abaixo, o texto **Excluir versões salvas** ou **Excluir links**, que apaga só aquele grupo. **Excluir tudo** continua no rodapé da janela. Toda exclusão, inclusive a de um item, pede confirmação.
+- **Todos os itens seguem o mesmo desenho**: ícone, nome, detalhes e uma única linha de ações alinhada ao texto, com **Abrir** como ação principal. O QR Code agora abre sob demanda em **QR code**. O tipo do link mostra a validade e os detalhes sem parênteses, e **Apagar link** passou a se chamar **Apagar no servidor**, para não se confundir com **Excluir**.
+- **Removido o bloco "Mais opções › Apagar dados".** As versões automáticas do texto continuam gerenciáveis em **Versões › Limpar histórico**.
+- Corrigida a barra de abas das janelas, que encolhia em telas baixas e cortava os rótulos com uma rolagem própria. Excluir um link recém-criado, que ainda não tinha identificador no armazenamento, agora funciona.
+
 ## 1.53 - 23/10/2026
 - **Arquivos gerados** agora também pode ser **recolhida e mostrada**, como as demais seções: o controle **recolher/mostrar** fica à direita do título. A seção continua começando aberta, abre sozinha quando os arquivos são gerados e quando um arquivo é exibido pelo Histórico.
 - O botão **Histórico** fica no cabeçalho, ao lado do título, e continua acessível com a seção recolhida; clicar nele (ou usar Enter) abre a janela sem alternar a seção.

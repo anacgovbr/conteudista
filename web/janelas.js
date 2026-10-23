@@ -7,7 +7,7 @@
    - Compartilhar: janela com destino, senha, lembrar links e tamanho.
    - Os blocos que ja existem (rascunhos, links, pacotes guardados, campos do link) sao MOVIDOS para
      as janelas; os ids e os manipuladores continuam os mesmos.
-   - Excluir tudo e Apagar dados usam confirmacao acessivel: role="alertdialog" com titulo e descricao,
+   - Excluir tudo, Excluir versoes salvas, Excluir links e a exclusao de cada item usam confirmacao acessivel: role="alertdialog" com titulo e descricao,
      foco inicial em Cancelar, Esc cancela, sem limite de tempo, foco devolvido e resultado anunciado
      por regiao aria-live.
    - Teclado: Esc fecha; setas, Home e End trocam de aba; Tab nao sai da janela; menu Salvar com setas,
@@ -35,7 +35,7 @@
   };
   const svg = k => '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + ICON[k] + '</svg>';
   const uri = k => 'url("data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#1351b4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ICON[k] + '</svg>') + '")';
-  const contar = el => el ? new Set([...el.querySelectorAll('td')].map(td => td.parentElement)).size : 0;
+  const contar = el => el ? new Set([...el.querySelectorAll('td, li[data-busca]')].map(x => x.tagName === 'TD' ? x.parentElement : x)).size : 0;
   const aguardar = (fn, ms) => new Promise(ok => { const t0 = Date.now(); (function p() { if (fn() || Date.now() - t0 > (ms || 3000)) return ok(); setTimeout(p, 100); })(); });
   const semConfirmar = fn => { const o = window.confirm; window.confirm = () => true; try { fn(); } finally { window.confirm = o; } };
   const feedback = (el, m) => { try { if (window.UXFeedback && UXFeedback.confirmar && el) UXFeedback.confirmar(el, m); } catch (e) { /* sem feedback */ } };
@@ -51,9 +51,11 @@
 .jn-top{display:flex;align-items:center;gap:10px;padding:12px 18px;border-bottom:1px solid var(--jn-line)}
 .jn-top h2{flex:1;margin:0;font-size:19px;color:var(--jn-pri)}
 .jn-win button{margin:0}
-.jn-tabs{display:flex;padding:0 12px;border-bottom:1px solid var(--jn-line);overflow-x:auto}
-.jn-back .jn-tab{display:inline-flex;align-items:center;gap:7px;height:46px!important;min-height:46px!important;max-height:none!important;padding:0 16px!important;margin:0 0 -1px!important;background:transparent!important;background-image:none!important;color:var(--jn-mut)!important;border:0!important;border-bottom:3px solid transparent!important;border-radius:0!important;box-shadow:none!important;font-size:15px!important;font-weight:500!important;line-height:1!important;white-space:nowrap}
+.jn-tabs{display:flex;padding:0 12px;border-bottom:1px solid var(--jn-line);overflow-x:auto;overflow-y:hidden}
+.jn-win>.jn-top,.jn-win>.jn-tabs,.jn-win>.jn-msg,.jn-win>.jn-foot{flex:0 0 auto}
+.jn-back .jn-tab{display:inline-flex;align-items:center;gap:7px;height:46px!important;min-height:46px!important;max-height:none!important;padding:0 16px!important;margin:0!important;background:transparent!important;background-image:none!important;color:var(--jn-mut)!important;border:0!important;border-bottom:3px solid transparent!important;border-radius:0!important;box-shadow:none!important;font-size:15px!important;font-weight:500!important;line-height:1!important;white-space:nowrap}
 .jn-back .jn-tab:hover{background:rgba(19,81,180,.08)!important}
+.jn-back .jn-tab:focus-visible{outline-offset:-4px!important}
 .jn-back .jn-tab[aria-selected="true"]{color:var(--jn-acc)!important;border-bottom-color:var(--jn-acc)!important;font-weight:600!important}
 .jn-tab svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .jn-ct{background:#dbe8fb;color:#0c326f;border-radius:10px;padding:0 7px;font-size:12px;font-weight:700;line-height:18px}
@@ -84,9 +86,6 @@
 .jn-pane textarea{width:100%;min-height:130px;padding:8px 10px;border:1px solid #888888;border-radius:4px;font:13px/1.45 Consolas,"Cascadia Mono",monospace;resize:vertical}
 .jn-pane select,.jn-pane input[type=password],.jn-pane input[type=text],.jn-pane input[type=url]{width:100%;max-width:420px}
 .jn-acoes{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
-.jn-mais{margin:14px 0 0;border:1px solid var(--jn-line);border-radius:8px;padding:8px 12px}
-.jn-mais>summary h3{margin:0;font-size:15px}
-.jn-mais .jn-mais-c{padding:10px 0 4px}
 .jn-dz{display:flex;align-items:center;justify-content:center;gap:8px;min-height:96px;border:2px dashed var(--jn-acc);border-radius:6px;color:var(--jn-acc);font-weight:600;cursor:pointer;background:#edf5ff;text-align:center;padding:10px}
 .jn-dz.sobre{border-color:#168821;background:#e3f5e1;color:#0f5e17}
 .jn-dz svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
@@ -107,24 +106,48 @@
 .jn-pane tr:has(> th){display:none}
 .jn-pane tr::before{content:"";flex:0 0 22px;width:22px;height:22px;background-repeat:no-repeat;background-position:center;background-size:contain}
 .jn-arq tr::before{background-image:${uri('arq')}}
-.jn-rasc tr::before{background-image:${uri('rasc')}}
-.jn-lnk tr::before{background-image:${uri('lnk')}}
 .jn-back .jn-pane td{display:block;width:auto;max-width:none;margin:0;border:0!important;padding:0!important;font-size:13px;vertical-align:baseline}
 .jn-back .jn-pane td::before{content:none!important}
 .jn-pane td button,.jn-pane td .btn{margin:2px 4px 2px 0}
-.jn-rasc td:nth-child(1){flex:1 1 180px;min-width:0}
-.jn-rasc td:nth-child(2){color:var(--jn-mut)}
 .jn-arq td:nth-child(1){order:1;flex:1 1 180px;min-width:0}
 
 .jn-arq td:nth-child(3){order:2}
 .jn-back .jn-arq td:nth-child(2){order:3;flex:1 1 100%;padding-left:34px!important}
-.jn-lnk td:nth-child(1){order:1;flex:1 1 170px;min-width:0}
-.jn-lnk td:nth-child(2){order:2;color:var(--jn-mut)}
-.jn-lnk td:nth-child(4){order:3}
-.jn-back .jn-lnk td:nth-child(3){order:4;flex:1 1 100%;padding-left:34px!important}
-.jn-back #links .url-wrap{min-width:0}
-.jn-lnk tr:not(.jn-qr-on) .url-qr{display:none}
-.jn-pane .jn-qr[aria-pressed="true"]{background:#dbe8fb!important}
+/* Salvos: grupos e itens (padrao List/Item e Button terciario do Design System gov.br) */
+.sv-grupo{margin:0 0 26px}
+.sv-grupo:last-child{margin-bottom:6px}
+.sv-cab{display:flex;align-items:center;gap:8px}
+.jn-win .sv-cab h3{display:flex;align-items:center;gap:8px;margin:0;font-size:17px;font-weight:700;color:#333333}
+.sv-desc{margin:2px 0 0;font-size:13.5px;color:var(--jn-mut)}
+.jn-back .sv-ter{display:inline-flex!important;align-items:center;justify-content:center;height:32px!important;min-height:32px!important;max-height:32px!important;margin:0!important;padding:0 2px!important;border:0!important;border-radius:4px!important;background:transparent!important;background-image:none!important;box-shadow:none!important;color:#1351b4!important;font-size:14.4px!important;font-weight:600!important;line-height:1!important;text-decoration:none!important;white-space:nowrap}
+.jn-back .sv-ter:hover:not(:disabled){text-decoration:underline!important}
+.jn-back .sv-ter[aria-expanded="true"]{background:#dbe8fb!important;box-shadow:0 0 0 4px #dbe8fb!important}
+.jn-back .sv-ter.sv-dan{color:#e52207!important}
+.jn-back .sv-ter.sv-dan:hover:not(:disabled){text-decoration:underline!important}
+.jn-back .sv-grupo>.sv-ter{margin-left:-2px!important}
+.sv-lista{list-style:none;margin:8px 0 0;padding:0;border-top:1px solid var(--jn-line)}
+.sv-item{display:grid;grid-template-columns:28px minmax(0,1fr);grid-template-areas:"ico corpo" ". acoes" ". qr";column-gap:12px;row-gap:8px;align-items:start;margin:0;padding:14px 0;border-bottom:1px solid var(--jn-line)}
+.sv-ico{grid-area:ico;display:inline-flex;padding-top:1px;color:#1351b4}
+.sv-ico svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sv-corpo{grid-area:corpo;min-width:0}
+.sv-corpo p{margin:0}
+.sv-tit{font-size:15px;font-weight:600;line-height:1.35;color:#333333;overflow-wrap:anywhere}
+.sv-meta{margin-top:2px!important;font-size:13px;line-height:1.45;color:var(--jn-mut);overflow-wrap:anywhere}
+.sv-meta a{color:#1351b4}
+.sv-meta code{padding:0 5px;border-radius:3px;background:#dbe8fb;color:#0c326f;font-size:12px}
+.sv-acoes{grid-area:acoes;display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.jn-back .sv-acoes .mini{margin:0!important}
+.sv-qr{grid-area:qr;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:12px;border:1px solid var(--jn-line);border-radius:8px;background:#f8f8f8}
+.sv-qr[hidden]{display:none}
+.sv-qrbox{display:grid;place-items:center;width:114px;height:114px;padding:3px;border:1px solid #dddddd;border-radius:4px;background:#ffffff}
+.sv-qrbox svg,.sv-qrbox img,.sv-qrbox canvas{display:block;width:104px!important;height:104px!important}
+.sv-qrbox .qr-off{font-size:11px;text-align:center;color:#636363}
+.sv-qrtx{max-width:260px;margin:0;font-size:13px;color:var(--jn-mut)}
+.sv-vazio{margin:10px 0 0;font-size:14px;color:var(--jn-mut)}
+html.contraste .sv-tit,html.contraste .jn-win .sv-cab h3{color:#fff!important}
+html.contraste .sv-meta,html.contraste .sv-desc,html.contraste .sv-vazio,html.contraste .sv-qrtx{color:#fff!important}
+html.contraste .jn-back .sv-ter,html.contraste .sv-meta a,html.contraste .sv-ico{color:#ff0!important}
+html.contraste .sv-qr{background:#000;border-color:#fff}
 .jn-win #gerBox{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important}
 .jn-win #gerBox>h3{display:none}
 .jn-win #gerLimpar{display:none}
@@ -167,7 +190,7 @@
 .jn-back .jn-bi-b:hover{background:rgba(19,81,180,.16)!important}
 .jn-bi-c svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .jn-busca .jn-hint{margin:4px 0 0}
-.jn-bs{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:6px 0 0;min-height:20px;font-size:13px;color:#636363}
+.jn-bs{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:4px 0 0;min-height:0;font-size:13px;color:#636363}
 .jn-bs .jn-bs-t{color:#333333}
 .jn-back .jn-bs .jn-bs-l{margin:0}
 html.contraste .jn-bi-ic,html.contraste .jn-back .jn-bi-b{color:#ff0!important}
@@ -369,9 +392,10 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     aoClique: e => {
       const t = e.target.closest ? e.target.closest('button,a') : null; if (!t) return;
       if (t.id === 'jnExcluir') pedirExcluirSalvos();
-      else if (t.id === 'jnApagar') pedirApagarDados(t);
+      else if (t.id === 'jnExcVer') pedirExcluirVersoes(t);
+      else if (t.id === 'jnExcLnk') pedirExcluirLinks(t);
       else if (t.classList.contains('jn-abrir')) abrirDoLink(t);
-      else if (t.classList.contains('jn-qr')) { const tr = t.closest('tr'), on = tr.classList.toggle('jn-qr-on'); t.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+      else if (t.classList.contains('jn-qr')) { const p = $(t.getAttribute('aria-controls')); if (p) { p.hidden = !p.hidden; t.setAttribute('aria-expanded', p.hidden ? 'false' : 'true'); } }
       else if (t.matches('[data-a="ab"]')) importar.fechar(true);   // Abrir um rascunho leva ao editor
       else if (t.id === 'jnColar') colarDaArea();
       else if (t.id === 'jnColOk') colarImportar();
@@ -382,11 +406,12 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
 
   /* --- aba Salvos --- */
   const pSav = importar.pane('sav');
-  const gR = document.createElement('section'); gR.className = 'jn-g jn-rasc'; gR.innerHTML = '<h3 class="jn-sub">Vers\u00f5es salvas</h3>';
-  const gL = document.createElement('section'); gL.className = 'jn-g jn-lnk'; gL.innerHTML = '<h3 class="jn-sub">Links</h3><p class="jn-hint">Sem o link (e a senha, se houver) o conte\u00fado n\u00e3o pode ser recuperado.</p>';
-  const mais = document.createElement('details'); mais.className = 'jn-mais';
-  mais.innerHTML = '<summary><h3>Mais op\u00e7\u00f5es</h3></summary><div class="jn-mais-c"><button type="button" class="dan mini" id="jnApagar">Apagar dados</button></div>';
-  pSav.append(gR, gL, mais);
+  const gR = document.createElement('section'); gR.className = 'jn-g jn-rasc sv-grupo'; gR.setAttribute('aria-labelledby', 'svTitV');
+  gR.innerHTML = '<div class="sv-cab"><h3 id="svTitV">Vers\u00f5es salvas <span class="jn-ct"></span></h3></div><p class="sv-desc">C\u00f3pias do texto guardadas neste navegador.</p><button type="button" class="sv-ter sv-dan" id="jnExcVer" hidden>Excluir vers\u00f5es salvas</button>';
+  const gL = document.createElement('section'); gL.className = 'jn-g jn-lnk sv-grupo'; gL.setAttribute('aria-labelledby', 'svTitL');
+  gL.innerHTML = '<div class="sv-cab"><h3 id="svTitL">Links <span class="jn-ct"></span></h3></div><p class="sv-desc">Sem o link (e a senha, se houver) o conte\u00fado n\u00e3o pode ser recuperado.</p><button type="button" class="sv-ter sv-dan" id="jnExcLnk" hidden>Excluir links</button>';
+  pSav.append(gR, gL);
+  const nVer = gR.querySelector('.jn-ct'), nLnk = gL.querySelector('.jn-ct'), excVer = gR.querySelector('#jnExcVer'), excLnk = gL.querySelector('#jnExcLnk');
 
   /* --- aba Computador --- */
   const pPc = importar.pane('pc');
@@ -539,20 +564,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     const ed = $(t === 'g' ? 'pg' : 'ps'); if (ed && ed.scrollIntoView) ed.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  /* Salvos: linhas dos links (Abrir e QR), Excluir tudo e Apagar dados */
-  function decorarLinks() {
-    const box = $('links'); if (!box) return;
-    box.querySelectorAll('tr').forEach(tr => {
-      const td = tr.querySelector('td.link-acoes'); if (!td || td.querySelector('.jn-abrir')) return;
-      const a = tr.querySelector('a.url-link'), tipo = ((tr.children[1] && tr.children[1].textContent) || '').toLowerCase();
-      const b = document.createElement('button'); b.type = 'button'; b.className = 'mini sec jn-abrir'; b.textContent = 'Abrir';
-      b.dataset.url = a ? a.getAttribute('href') : ''; b.dataset.senha = /senha/.test(tipo) ? '1' : '';
-      const q = document.createElement('button'); q.type = 'button'; q.className = 'mini sec jn-qr'; q.textContent = 'QR';
-      q.setAttribute('aria-pressed', 'false'); q.title = 'Mostrar ou ocultar o QR Code';
-      td.insertBefore(q, td.firstChild); td.insertBefore(b, td.firstChild);
-      const f = td.querySelector('[data-f]'); if (f) { f.textContent = 'Excluir'; f.classList.remove('sec'); f.classList.add('dan'); }
-    });
-  }
+  /* Salvos: abrir um link salvo, excluir por grupo e excluir tudo */
   function abrirDoLink(b) {
     const url = b.dataset.url || '';
     if (window.ColarImportar) window.ColarImportar.linkSalvo(url, !!b.dataset.senha);
@@ -561,6 +573,27 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   const bExc = document.createElement('button');
   bExc.type = 'button'; bExc.className = 'dan mini'; bExc.id = 'jnExcluir'; bExc.textContent = 'Excluir tudo';
   importar.bt.appendChild(bExc);
+  async function limparVersoes() {
+    if (typeof dbClear !== 'function') throw new Error('armazenamento indispon\u00edvel');
+    if (window.Versoes && Versoes.excluirSalvas) await Versoes.excluirSalvas(); else await dbClear('rascunhos');
+    if (typeof listarRascunhos === 'function') await listarRascunhos();
+    await aguardar(() => !contar($('drafts')));
+  }
+  async function limparLinks() {
+    if (typeof dbClear !== 'function') throw new Error('armazenamento indispon\u00edvel');
+    try { if (typeof sessaoLinks !== 'undefined') sessaoLinks.length = 0; } catch (e) { /* sem lista da sessao */ }
+    await dbClear('links');
+    if (typeof listarLinks === 'function') await listarLinks();
+    await aguardar(() => !contar($('links')));
+  }
+  function pedirExcluirVersoes(g) {
+    const n = contar($('drafts')); if (!n) return;
+    importar.pedir({ gatilho: g, titulo: 'Excluir ' + n + (n === 1 ? ' vers\u00e3o salva?' : ' vers\u00f5es salvas?'), descricao: 'As vers\u00f5es autom\u00e1ticas do texto e o \u00faltimo estado do salvamento autom\u00e1tico n\u00e3o s\u00e3o afetados. Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.', rotulo: 'Excluir', resultado: n === 1 ? 'Vers\u00e3o salva exclu\u00edda.' : 'Vers\u00f5es salvas exclu\u00eddas.', aoConfirmar: limparVersoes });
+  }
+  function pedirExcluirLinks(g) {
+    const n = contar($('links')); if (!n) return;
+    importar.pedir({ gatilho: g, titulo: 'Excluir ' + n + (n === 1 ? ' link?' : ' links?'), descricao: 'Os links deixam de aparecer nesta lista. Se n\u00e3o foram guardados em outro lugar, n\u00e3o ser\u00e1 poss\u00edvel recuper\u00e1-los. Links j\u00e1 criados no PrivateBin continuam acess\u00edveis at\u00e9 expirar. Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.', rotulo: 'Excluir', resultado: n === 1 ? 'Link exclu\u00eddo.' : 'Links exclu\u00eddos.', aoConfirmar: limparLinks });
+  }
   async function limparSalvos() {
     if (typeof dbClear !== 'function') throw new Error('armazenamento indispon\u00edvel');
     if (window.Versoes && Versoes.excluirSalvas) await Versoes.excluirSalvas(); else await dbClear('rascunhos');
@@ -580,15 +613,6 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     if (nv) d = 'As vers\u00f5es autom\u00e1ticas e o \u00faltimo estado do salvamento autom\u00e1tico n\u00e3o s\u00e3o afetados. ' + d;
     if (nl) d += ' Links j\u00e1 criados no PrivateBin continuam acess\u00edveis at\u00e9 expirar.';
     importar.pedir({ gatilho: bExc, titulo: 'Excluir ' + partes.join(' e ') + '?', descricao: d, rotulo: 'Excluir', resultado: 'Vers\u00f5es salvas e links exclu\u00eddos.', aoConfirmar: limparSalvos });
-  }
-  async function apagarDados() {
-    if (!$('dclear')) throw new Error('fun\u00e7\u00e3o indispon\u00edvel');
-    semConfirmar(() => $('dclear').click());
-    await aguardar(() => !contar($('drafts')) && !contar($('links')));
-    const a = $('auto'); if (a && a.checked) { a.checked = false; a.dispatchEvent(new Event('change', { bubbles: true })); }
-  }
-  function pedirApagarDados(g) {
-    importar.pedir({ gatilho: g, titulo: 'Apagar todos os dados deste navegador?', descricao: 'Remove as vers\u00f5es do texto (salvas e autom\u00e1ticas), os links lembrados e as prefer\u00eancias. Esta a\u00e7\u00e3o n\u00e3o pode ser desfeita.', rotulo: 'Apagar', resultado: 'Dados apagados.', aoConfirmar: apagarDados });
   }
 
   /* ============================== Janela HISTORICO DE ARQUIVOS ============================== */
@@ -794,7 +818,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
         const h = semAcento(tr.dataset.busca != null ? tr.dataset.busca : tr.textContent), ok = ts.every(t => h.indexOf(t) >= 0);
         tr.hidden = !ok; if (ok) vis++;
       });
-      (o.grupos ? o.grupos() : []).forEach(g => { const rs = [...g.querySelectorAll('tr[data-busca]')]; g.hidden = !!ts.length && rs.length > 0 && rs.every(r => r.hidden); });
+      (o.grupos ? o.grupos() : []).forEach(g => { const rs = [...g.querySelectorAll('[data-busca]')]; g.hidden = !!ts.length && rs.length > 0 && rs.every(r => r.hidden); });
       inp.disabled = !linhas.length && !inp.value;
       bx.hidden = !inp.value; ic.hidden = !!inp.value;
       bl.hidden = !(ts.length && linhas.length && !vis);
@@ -810,7 +834,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   const buscaSav = criarBusca({
     id: 'jnBuscaSav', rotulo: 'Buscar nos salvos', placeholder: 'Nome, data, layout, tipo de link\u2026',
     ajuda: 'Busque por nome, data, tamanho, layout, tipo de link ou validade. Use aspas para uma frase exata.',
-    linhas: () => document.querySelectorAll('#drafts tr[data-busca], #links tr[data-busca]'), grupos: () => [gR, gL]
+    linhas: () => document.querySelectorAll('#drafts [data-busca], #links [data-busca]'), grupos: () => [gR, gL]
   });
   pSav.prepend(buscaSav.el);
   const buscaHist = criarBusca({
@@ -913,8 +937,9 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     if (b) { e.preventDefault(); cmp.abrir(); }
   });
   function atualizar() {
-    decorarLinks();
-    const n = contar($('drafts')) + contar($('links'));
+    const nv = contar($('drafts')), nl = contar($('links')), n = nv + nl;
+    nVer.textContent = nv ? String(nv) : ''; nLnk.textContent = nl ? String(nl) : '';
+    excVer.hidden = !nv; excLnk.hidden = !nl;
     const tab = $('jnImpTab-sav');
     if (tab) { tab.querySelector('.jn-ct').textContent = n ? String(n) : ''; tab.setAttribute('aria-label', 'Salvos, ' + (n ? n + (n === 1 ? ' item' : ' itens') : 'vazio')); }
     bExc.disabled = !n;

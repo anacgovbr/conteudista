@@ -48,15 +48,16 @@
     try { l = await marcadas(); }
     catch (e) { if (meu === seq) drafts.textContent = 'Armazenamento local indispon\u00edvel neste navegador.'; return; }
     if (meu !== seq) return;
-    if (!l.length) { drafts.innerHTML = 'Nenhuma vers\u00e3o salva.'; return; }
-    drafts.innerHTML = '<table><tr><th>Vers\u00e3o</th><th>Salva em</th><th></th></tr>' + l.map(v => {
+    if (!l.length) { drafts.innerHTML = '<p class="sv-vazio">Nenhuma vers\u00e3o salva. Use <b>Salvar \u203a Vers\u00e3o</b> para guardar uma.</p>'; return; }
+    const ico = '<svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/><path d="M5.5 9h3M5.5 13h3M15.5 9h3M15.5 13h3"/></svg>';
+    drafts.innerHTML = '<ul class="sv-lista">' + l.map(v => {
       const n = esc(nomeDe(v.rotulo)), tam = v.tam || ((v.g || '').length + (v.s || '').length);
-      const bm = window.BuscaMeta, busca = [nomeDe(v.rotulo), v.p, v.r, bm ? bm.data(v.data) : '', bm ? bm.tam(tam) : fmtTam(tam), bm ? bm.tema(bm.temaDeMd(v.s)) : '', 'versão salva versao'].filter(Boolean).join(' ');
-      return '<tr data-busca="' + esc(busca) + '"><td>' + n + '<br><small>' + fmtTam(tam) + (v.p ? ' \u00b7 ' + esc(v.p) : '') + '</small></td>' +
-        '<td><small>' + new Date(v.data).toLocaleString('pt-BR') + '</small></td>' +
-        '<td><button type="button" class="mini sec" data-a="ab" data-id="' + v.id + '" data-n="' + n + '">Abrir</button>' +
-        '<button type="button" class="mini dan" data-a="ex" data-id="' + v.id + '" data-n="' + n + '">Excluir</button></td></tr>';
-    }).join('') + '</table>';
+      const bm = window.BuscaMeta, busca = [nomeDe(v.rotulo), v.p, v.r, bm ? bm.data(v.data) : '', bm ? bm.tam(tam) : fmtTam(tam), bm ? bm.tema(bm.temaDeMd(v.s)) : '', 'vers\u00e3o salva versao'].filter(Boolean).join(' ');
+      return '<li class="sv-item" data-busca="' + esc(busca) + '"><span class="sv-ico" aria-hidden="true">' + ico + '</span>' +
+        '<div class="sv-corpo"><p class="sv-tit">' + n + '</p><p class="sv-meta">' + new Date(v.data).toLocaleString('pt-BR') + ' \u00b7 ' + fmtTam(tam) + (v.p ? ' \u00b7 ' + esc(v.p) : '') + '</p></div>' +
+        '<div class="sv-acoes"><button type="button" class="mini" data-a="ab" data-id="' + v.id + '" data-n="' + n + '" aria-label="Abrir ' + n + '">Abrir</button>' +
+        '<button type="button" class="mini sv-ter sv-dan" data-a="ex" data-id="' + v.id + '" data-n="' + n + '" aria-label="Excluir ' + n + '">Excluir</button></div></li>';
+    }).join('') + '</ul>';
   }
 
   // O codigo antigo chama listarRascunhos() a cada autossalvamento: aqui isso so marca a lista como
