@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.52 - 23/10/2026
+- **Busca no Histórico e em Importar › Salvos**: o campo **Buscar**, no padrão de campo de busca do Design System do Governo, filtra a lista enquanto você digita, sem diferenciar acentos nem maiúsculas. Pesquisa nome, data e hora, tamanho, layout, rodapé, narração e tipo de arquivo; nos links, também o tipo, a validade e a senha. Com várias palavras, só aparecem os itens que têm todas; aspas buscam uma frase exata; Esc limpa a busca.
+- Cada geração passa a guardar também o rodapé e a narração, e cada link guarda o layout, o rodapé e o tamanho, para a busca encontrar esses dados. Pacotes e links anteriores continuam na lista e são encontrados pelos dados que já tinham.
+- Tutorial e Ajuda ganharam a seção **Buscar no Histórico e em Salvos**. Corrigido o foco inicial das janelas, que agora vai ao primeiro campo disponível.
+
 ## 1.51 - 23/10/2026
 - **Termos padronizados em toda a aplicação**: **Conteúdo** (o material que você produz) no lugar de "curso" e **Apostila** no lugar de "Treinamento". A seção passa a se chamar **Gerar conteúdo**, o campo **Nome do conteúdo**, a aba **Conteúdo** e a janela **Link do conteúdo**. Os arquivos baixados passam a ser **Apostila_…** e **Conteudo_….zip**; os nomes antigos continuam reconhecidos ao importar e no Histórico.
 - **Tutorial e Ajuda reescritos** com o mesmo vocabulário, com a nova tabela **Termos usados**, os passos em torno de "gerar, guardar e recuperar um conteúdo" e a explicação de **arquivo** (conteúdo pronto) e **link** (texto-fonte).

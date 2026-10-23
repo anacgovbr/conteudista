@@ -45,10 +45,10 @@ details.sx[open]>summary{margin-bottom:10px}
 details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details.sx#dxRes,details.sx#dxLinks{margin-top:14px}
 .sec-cab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}.sec-cab h2{flex:1 1 auto;margin:0}#btnHistorico{margin:0}#btnHistorico svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:6px}#secRes #res{margin:0}
 </style>
-<link rel="stylesheet" href="govbr.css?v=1.51">
-<link rel="stylesheet" href="ds-botoes.css?v=1.51">
-<script src="editor.js?v=1.51"></script>
-<script src="ajuda.js?v=1.51" defer></script>
+<link rel="stylesheet" href="govbr.css?v=1.52">
+<link rel="stylesheet" href="ds-botoes.css?v=1.52">
+<script src="editor.js?v=1.52"></script>
+<script src="ajuda.js?v=1.52" defer></script>
 </head>
 <body>
 <a class="br-skiplink" href="#conteudo">Ir para o conteúdo</a>
@@ -221,6 +221,21 @@ function b58dec(s, len) {
 }
 const blobToDataURL = b => new Promise((ok, err) => { const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = err; r.readAsDataURL(b); });
 const tamanho = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.round(n / 1024) + ' KB';
+/* Metadados para a busca do Historico e de Salvos: o mesmo dado em varios formatos de escrita */
+const BuscaMeta = (() => {
+  const ROT = { govbr: 'Padrão gov.br', 'anac20-claro': 'ANAC 20 anos — claro', 'anac20-escuro': 'ANAC 20 anos — escuro', classico: 'Clássico' };
+  const p2 = n => String(n).padStart(2, '0');
+  const tema = v => v ? (ROT[v] || String(v)) + ' ' + v : '';
+  const data = ms => {
+    const d = new Date(ms); if (isNaN(d.getTime())) return '';
+    const dd = p2(d.getDate()), mm = p2(d.getMonth() + 1), aa = d.getFullYear(), hh = p2(d.getHours()), mi = p2(d.getMinutes()), ss = p2(d.getSeconds());
+    return [dd + '/' + mm + '/' + aa, dd + '/' + mm, hh + ':' + mi + ':' + ss, hh + ':' + mi, aa + '-' + mm + '-' + dd, d.toLocaleDateString('pt-BR', { weekday: 'long' }), d.toLocaleDateString('pt-BR', { month: 'long' }), String(aa)].join(' ');
+  };
+  const tam = n => { n = +n || 0; if (!n) return ''; const v = n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; return v + ' ' + v.replace('.', ',') + ' ' + v.replace(' ', ''); };
+  const temaDeMd = md => { const m = /^---\s*\n([\s\S]*?)\n---/.exec(String(md || '')), t = m && /^theme\s*:\s*([\w-]+)/m.exec(m[1]); return t ? t[1] : ''; };
+  return { tema, data, tam, temaDeMd };
+})();
+window.BuscaMeta = BuscaMeta;
 
 /* =========================== ZIP mínimo (sem bibliotecas) =========================== */
 const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
@@ -572,6 +587,7 @@ $('share').onclick = async () => {
       item = { tipo: 'PrivateBin (' + $('exp').selectedOptions[0].text + ($('burn').checked ? ', leitura única' : '') + (pw ? ', senha' : '') + info + ')', url: r.url, del: r.del, nome: d2.p, data: Date.now(), expira: (m => m ? Date.now() + m : 0)({ '1hour': 36e5, '1day': 864e5, '1week': 6048e5, '1month': 2592e6, '1year': 31536e6 }[$('exp').value]) };
       log('Enviado ao PrivateBin: ' + tamanho(r.tam) + ' cifrados.', 'ok');
     }
+    item.tema = $('tema').value; item.rodape = (d2.r || '').trim(); item.tam = n;
     sessaoLinks.unshift(item);
     if ($('keep').checked) await dbPut('links', item);
     if (window.Hist) Hist.registrar('compartilhado', 'Link criado: ' + item.tipo);
@@ -587,7 +603,8 @@ async function listarLinks() {
   if (!l.length) { $('links').innerHTML = 'Nenhum link nesta sessão.'; return; }
   $('links').innerHTML = '<table><tr><th>Conteúdo</th><th>Tipo</th><th>Link e QR Code</th><th></th></tr>' + l.map((x, i) => {
     const cur = linkCurto(x.url);
-    return '<tr><td>' + esc(x.nome || '') + '<br><small>' + new Date(x.data).toLocaleString('pt-BR') + '</small></td><td>' + esc(x.tipo) + (x.expira ? '<br><small>expira em ' + new Date(x.expira).toLocaleDateString('pt-BR') + '</small>' : /^(Autocontido|Link direto)/.test(x.tipo) ? '<br><small>não expira</small>' : '') + '</td>' +
+    const busca = [x.nome, x.tipo, x.expira ? 'expira em ' + BuscaMeta.data(x.expira) : /^(Autocontido|Link direto)/.test(x.tipo) ? 'não expira nao expira sem validade' : '', BuscaMeta.data(x.data), BuscaMeta.tema(x.tema), x.rodape, BuscaMeta.tam(x.tam), cur.tipo, cur.host, 'link'].filter(Boolean).join(' ');
+    return '<tr data-busca="' + esc(busca) + '"><td>' + esc(x.nome || '') + '<br><small>' + new Date(x.data).toLocaleString('pt-BR') + '</small></td><td>' + esc(x.tipo) + (x.expira ? '<br><small>expira em ' + new Date(x.expira).toLocaleDateString('pt-BR') + '</small>' : /^(Autocontido|Link direto)/.test(x.tipo) ? '<br><small>não expira</small>' : '') + '</td>' +
     '<td class="url"><div class="url-wrap"><a class="url-link" href="' + esc(x.url) + '" target="_blank" rel="noopener" title="Abrir o link em uma nova aba"><b>' + esc(cur.tipo) + '</b><code>' + esc(cur.id) + '</code><small>' + esc(cur.host) + '</small></a>' +
     '<div class="url-qr" data-q="' + i + '" title="QR Code do link completo" aria-label="QR Code do link"></div></div></td>' +
     '<td class="link-acoes"><button class="mini" data-c="' + i + '">Copiar</button>' + (x.del ? '<a class="btn mini dan" href="' + esc(x.del) + '" target="_blank" rel="noopener" title="Apaga o conteúdo no servidor (PrivateBin)">Apagar link</a>' : '') +
@@ -729,7 +746,8 @@ $('go').onclick = async () => {
       if (ext === 'html') h += '<button type="button" class="btn btn-arq btn-exibir" data-u="' + u + '" title="Exibir ' + nome + ' na tela">Exibir ' + (/^Apresentacao_/.test(nome) ? 'apresentação' : 'apostila') + '</button>';
     }
     py.runPython("import shutil; shutil.rmtree('/saida', ignore_errors=True)");
-    const meta = { data: Date.now(), prefixo: pref, tema: $('tema').value, tam: ultimos.reduce((a, f) => a + f.blob.size, 0) };
+    const meta = { data: Date.now(), prefixo: pref, tema: $('tema').value, rodape: $('rod').value.trim(), tam: ultimos.reduce((a, f) => a + f.blob.size, 0),
+      narracao: narr ? { voz: (window.Locucao && Locucao.nomeVoz ? Locucao.nomeVoz($('narrVoz').value) : $('narrVoz').value), formato: $('narrFmt').value, avanco: $('narrAuto').checked } : null };
     window.GeracaoMeta = meta;
     $('res').innerHTML = '<div class="ger-atual">' + (window.Gerados && Gerados.metaHtml ? Gerados.metaHtml(meta) : '') + '<div class="file-links">' + h + '</div>' + '<div class="file-grupo ger-fonte"><b>Texto-fonte:</b><div class="file-grupo-itens"><button type="button" class="mini" id="btnCriarLink" data-c="1" aria-haspopup="dialog" title="Criar um link com o conteúdo inteiro">Criar link</button><span class="note">Guarda o texto e as imagens em um endereço, para continuar em outro computador.</span></div></div></div>';
     $('res').querySelectorAll('[data-u]').forEach(a => a.onclick = e => {
@@ -817,20 +835,20 @@ statusImagens();
   try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}
 })();
 </script>
-<script src="historico.js?v=1.51"></script>
-<script src="changelog.js?v=1.51"></script>
-<script src="gerados.js?v=1.51"></script>
-<script src="audio-codec.js?v=1.51"></script>
-<script src="locucao.js?v=1.51"></script>
-<script src="narracao.js?v=1.51"></script>
-<script src="ui-ajustes.js?v=1.51"></script>
-<script src="ux-feedback.js?v=1.51"></script>
-<script src="ux-expansiveis.js?v=1.51"></script>
-<script src="ux-arquivos.js?v=1.51"></script>
-<script src="metadados.js?v=1.51"></script>
-<script src="dicas.js?v=1.51"></script>
-<script src="janelas.js?v=1.51"></script>
-<script src="versoes.js?v=1.51"></script>
-<script src="colar.js?v=1.51"></script>
+<script src="historico.js?v=1.52"></script>
+<script src="changelog.js?v=1.52"></script>
+<script src="gerados.js?v=1.52"></script>
+<script src="audio-codec.js?v=1.52"></script>
+<script src="locucao.js?v=1.52"></script>
+<script src="narracao.js?v=1.52"></script>
+<script src="ui-ajustes.js?v=1.52"></script>
+<script src="ux-feedback.js?v=1.52"></script>
+<script src="ux-expansiveis.js?v=1.52"></script>
+<script src="ux-arquivos.js?v=1.52"></script>
+<script src="metadados.js?v=1.52"></script>
+<script src="dicas.js?v=1.52"></script>
+<script src="janelas.js?v=1.52"></script>
+<script src="versoes.js?v=1.52"></script>
+<script src="colar.js?v=1.52"></script>
 </body>
 </html>

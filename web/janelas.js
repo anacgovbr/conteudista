@@ -155,6 +155,23 @@
 .jn-sw input:focus-visible+.jn-tr{outline:4px dashed #c2850c;outline-offset:3px}
 #secShare{display:none!important}
 .jn-win [hidden]{display:none!important}
+.jn-busca{margin:0 0 14px}
+.jn-busca .jn-lb{margin:0 0 4px}
+.jn-bi-c{position:relative;display:flex;align-items:center}
+.jn-win .jn-bi-c input[type=search]{width:100%;max-width:none;min-height:40px;padding:0 44px 0 12px;border:1px solid #888888;border-radius:4px;background:#fff;color:#333333;font:inherit;-webkit-appearance:none;appearance:none}
+.jn-bi-c input[type=search]::-webkit-search-decoration,.jn-bi-c input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.jn-bi-c input[type=search]:hover{border-color:#1351b4}
+.jn-bi-c input[type=search]:disabled{background:#ededed;color:#888888;border-color:#cccccc;cursor:not-allowed}
+.jn-bi-ic{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;color:#1351b4;pointer-events:none}
+.jn-back .jn-bi-b{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:32px!important;height:32px!important;min-height:32px!important;max-height:32px!important;margin:0!important;padding:0!important;display:inline-flex;align-items:center;justify-content:center;border:0!important;border-radius:50%!important;background:transparent!important;background-image:none!important;color:#1351b4!important;box-shadow:none!important;overflow:visible!important;line-height:1!important;cursor:pointer}
+.jn-back .jn-bi-b:hover{background:rgba(19,81,180,.16)!important}
+.jn-bi-c svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.jn-busca .jn-hint{margin:4px 0 0}
+.jn-bs{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:6px 0 0;min-height:20px;font-size:13px;color:#636363}
+.jn-bs .jn-bs-t{color:#333333}
+.jn-back .jn-bs .jn-bs-l{margin:0}
+html.contraste .jn-bi-ic,html.contraste .jn-back .jn-bi-b{color:#ff0!important}
+html.contraste .jn-bs,html.contraste .jn-bs .jn-bs-t{color:#fff!important}
 .jn-mi i.jn-rec{font-style:normal;font-size:11px;font-weight:600;background:#dbe8fb;color:#0c326f;border-radius:10px;padding:0 7px;margin-left:4px;white-space:nowrap}
 .ger-fonte .note{margin:0;font-size:13px}
 .jn-lc{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;border:1px solid var(--jn-line);border-radius:8px;padding:10px;margin:4px 0 8px}
@@ -272,7 +289,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
       back.hidden = false; back.scrollTop = 0; document.body.style.overflow = 'hidden';
       if (cfg.depoisAbrir) cfg.depoisAbrir(J.ativa);
       setTimeout(() => {
-        const f = abas ? $(id + 'Tab-' + J.ativa) : win.querySelector('.jn-pane select,.jn-pane input,.jn-pane button');
+        const f = abas ? $(id + 'Tab-' + J.ativa) : [...win.querySelectorAll('.jn-pane select,.jn-pane input,.jn-pane button')].find(el => !el.disabled && !el.hidden && el.getClientRects().length);
         if (f) f.focus();
       }, 30);
     };
@@ -744,6 +761,71 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   })();
 
   /* ============================== Contadores e observadores ============================== */
+  /* ============================== BUSCA no Historico e em Salvos (1.51) ==============================
+   Campo de busca no padrao do Design System gov.br (input com icone, rotulo acima, ajuda e estado):
+   - filtra a lista enquanto se digita (sem diferenciar maiusculas, minusculas e acentos);
+   - cada linha traz em data-busca todos os metadados (nome, data, tamanho, layout, rodape, narracao, tipos de arquivo,
+     tipo e validade do link); varias palavras exigem todas; aspas buscam uma frase exata;
+   - Esc limpa a busca (com o campo vazio, fecha a janela); o resultado e anunciado por regiao aria-live. */
+  const semAcento = s => String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const termosDeBusca = q => {
+    const t = [];
+    String(q || '').replace(/"([^"]*)"|(\S+)/g, (m, a, b) => { const v = semAcento(a != null ? a : b).replace(/^[,;]+|[,;]+$/g, '').trim(); if (v) t.push(v); return m; });
+    return t;
+  };
+  const SVG_LUPA = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>';
+  const SVG_XIS = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+  function criarBusca(o) {
+    const id = o.id, w = document.createElement('div');
+    w.className = 'jn-busca'; w.setAttribute('role', 'search');
+    w.innerHTML =
+      '<label class="jn-lb" for="' + id + '">' + o.rotulo + '</label>' +
+      '<div class="jn-bi-c"><input type="search" id="' + id + '" autocomplete="off" spellcheck="false" placeholder="' + o.placeholder + '" aria-describedby="' + id + 'H ' + id + 'S">' +
+      '<span class="jn-bi-ic" aria-hidden="true">' + SVG_LUPA + '</span>' +
+      '<button type="button" class="jn-bi-b" aria-label="Limpar busca" title="Limpar busca" hidden>' + SVG_XIS + '</button></div>' +
+      '<p class="jn-hint" id="' + id + 'H">' + o.ajuda + '</p>' +
+      '<p class="jn-bs"><span class="jn-bs-t" id="' + id + 'S" role="status" aria-live="polite"></span><button type="button" class="mini sec jn-bs-l" hidden>Limpar busca</button></p>';
+    const inp = w.querySelector('input'), bx = w.querySelector('.jn-bi-b'), ic = w.querySelector('.jn-bi-ic'), st = w.querySelector('.jn-bs-t'), bl = w.querySelector('.jn-bs-l');
+    let tD = null;
+    function aplicar(msg) {
+      const ts = termosDeBusca(inp.value), linhas = [...o.linhas()];
+      let vis = 0;
+      linhas.forEach(tr => {
+        const h = semAcento(tr.dataset.busca != null ? tr.dataset.busca : tr.textContent), ok = ts.every(t => h.indexOf(t) >= 0);
+        tr.hidden = !ok; if (ok) vis++;
+      });
+      (o.grupos ? o.grupos() : []).forEach(g => { const rs = [...g.querySelectorAll('tr[data-busca]')]; g.hidden = !!ts.length && rs.length > 0 && rs.every(r => r.hidden); });
+      inp.disabled = !linhas.length && !inp.value;
+      bx.hidden = !inp.value; ic.hidden = !!inp.value;
+      bl.hidden = !(ts.length && linhas.length && !vis);
+      st.textContent = msg || (!ts.length ? '' : vis ? 'Mostrando ' + vis + ' de ' + linhas.length + (linhas.length === 1 ? ' item.' : ' itens.') : 'Nenhum resultado para \u201c' + inp.value.trim() + '\u201d.');
+    }
+    function limpar(silencioso) { inp.value = ''; aplicar(silencioso ? '' : 'Busca limpa.'); }
+    inp.addEventListener('input', () => { bx.hidden = !inp.value; ic.hidden = !!inp.value; clearTimeout(tD); tD = setTimeout(() => aplicar(), 120); });
+    inp.addEventListener('keydown', e => { if (e.key === 'Escape' && inp.value) { e.preventDefault(); e.stopPropagation(); limpar(); } });
+    bx.addEventListener('click', () => { limpar(); inp.focus(); });
+    bl.addEventListener('click', () => { limpar(); inp.focus(); });
+    return { el: w, input: inp, limpar, reaplicar: () => aplicar(inp.value ? undefined : ''), valor: () => inp.value };
+  }
+  const buscaSav = criarBusca({
+    id: 'jnBuscaSav', rotulo: 'Buscar nos salvos', placeholder: 'Nome, data, layout, tipo de link\u2026',
+    ajuda: 'Busque por nome, data, tamanho, layout, tipo de link ou validade. Use aspas para uma frase exata.',
+    linhas: () => document.querySelectorAll('#drafts tr[data-busca], #links tr[data-busca]'), grupos: () => [gR, gL]
+  });
+  pSav.prepend(buscaSav.el);
+  const buscaHist = criarBusca({
+    id: 'jnBuscaHist', rotulo: 'Buscar no hist\u00f3rico', placeholder: 'Nome, data, layout, tipo de arquivo\u2026',
+    ajuda: 'Busque por nome, data, tamanho, layout, rodap\u00e9, narra\u00e7\u00e3o ou tipo de arquivo, como docx ou pptx. Use aspas para uma frase exata.',
+    linhas: () => document.querySelectorAll('#gerLista tr[data-busca]')
+  });
+  pHist.prepend(buscaHist.el);
+  { // a busca volta vazia sempre que a janela e aberta
+    const abrirImp = importar.abrir, abrirHist = hist.abrir;
+    importar.abrir = k => { buscaSav.limpar(true); abrirImp(k); };
+    hist.abrir = k => { buscaHist.limpar(true); abrirHist(k); };
+  }
+  window.BuscaJanelas = { salvos: buscaSav, historico: buscaHist };
+
   /* Janela LINK DO CONTEUDO (1.49) */
   const LIM_LINK_DIRETO = 30000;
   let linkRec = 'self', linkTam = 0;
@@ -837,6 +919,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     if (tab) { tab.querySelector('.jn-ct').textContent = n ? String(n) : ''; tab.setAttribute('aria-label', 'Salvos, ' + (n ? n + (n === 1 ? ' item' : ' itens') : 'vazio')); }
     bExc.disabled = !n;
     bHExc.disabled = !contar($('gerLista'));
+    buscaSav.reaplicar(); buscaHist.reaplicar();
   }
   let tC = null;
   const agendar = () => { clearTimeout(tC); tC = setTimeout(atualizar, 60); };

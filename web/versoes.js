@@ -51,7 +51,8 @@
     if (!l.length) { drafts.innerHTML = 'Nenhuma vers\u00e3o salva.'; return; }
     drafts.innerHTML = '<table><tr><th>Vers\u00e3o</th><th>Salva em</th><th></th></tr>' + l.map(v => {
       const n = esc(nomeDe(v.rotulo)), tam = v.tam || ((v.g || '').length + (v.s || '').length);
-      return '<tr><td>' + n + '<br><small>' + fmtTam(tam) + (v.p ? ' \u00b7 ' + esc(v.p) : '') + '</small></td>' +
+      const bm = window.BuscaMeta, busca = [nomeDe(v.rotulo), v.p, v.r, bm ? bm.data(v.data) : '', bm ? bm.tam(tam) : fmtTam(tam), bm ? bm.tema(bm.temaDeMd(v.s)) : '', 'versão salva versao'].filter(Boolean).join(' ');
+      return '<tr data-busca="' + esc(busca) + '"><td>' + n + '<br><small>' + fmtTam(tam) + (v.p ? ' \u00b7 ' + esc(v.p) : '') + '</small></td>' +
         '<td><small>' + new Date(v.data).toLocaleString('pt-BR') + '</small></td>' +
         '<td><button type="button" class="mini sec" data-a="ab" data-id="' + v.id + '" data-n="' + n + '">Abrir</button>' +
         '<button type="button" class="mini dan" data-a="ex" data-id="' + v.id + '" data-n="' + n + '">Excluir</button></td></tr>';

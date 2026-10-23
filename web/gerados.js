@@ -22,6 +22,17 @@
     const sel = $('tema'), o = sel ? [...sel.options].find(x => x.value === v) : null;
     return o ? o.text : String(v);
   }
+  /* Texto que a busca do Historico consulta (nome, data, tamanho, layout, rodape, narracao e tipos de arquivo) */
+  function buscaDe(p) {
+    const bm = window.BuscaMeta, t = [];
+    t.push(p.prefixo, bm ? bm.data(p.data) : new Date(p.data).toLocaleString('pt-BR'), bm ? bm.tam(p.tam) : fmt(p.tam), bm ? bm.tema(p.tema) : temaRotulo(p.tema), p.rodape);
+    if (p.narracao) t.push('narração narracao com narração', p.narracao.voz, p.narracao.formato, p.narracao.avanco ? 'avanço automático' : '');
+    (p.arquivos || []).forEach(f => {
+      const n = f.nome, e = (n.split('.').pop() || '').toLowerCase();
+      t.push(n, '.' + e, e, e === 'md' ? 'markdown' : '', /^(Apostila|Treinamento)_/.test(n) ? 'apostila treinamento' : /^Apresentacao_/.test(n) ? 'apresentação apresentacao slides' : 'todos', f.blob ? fmt(f.blob.size) : '');
+    });
+    return t.filter(Boolean).join(' ');
+  }
   function metaHtml(p) {
     const q = new Date(p.data), itens = [], t = temaRotulo(p.tema);
     if (!isNaN(q.getTime())) itens.push('<time class="m" datetime="' + q.toISOString() + '">' + q.toLocaleString('pt-BR') + '</time>');
@@ -179,7 +190,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
     const tam = arqs.reduce((a, f) => a + f.blob.size, 0), pref = ($('pref') && $('pref').value) || 'Conteudo';
     try {
       const gm = window.GeracaoMeta || {};
-      await tx('readwrite', s => s.add({ data: gm.data || Date.now(), prefixo: gm.prefixo || pref, tema: gm.tema || ($('tema') ? $('tema').value : ''), resumo: resumoDoLog(), tam, arquivos: arqs }));
+      await tx('readwrite', s => s.add({ data: gm.data || Date.now(), prefixo: gm.prefixo || pref, tema: gm.tema || ($('tema') ? $('tema').value : ''), rodape: gm.rodape || ($('rod') ? $('rod').value.trim() : ''), narracao: gm.narracao || null, resumo: resumoDoLog(), tam, arquivos: arqs }));
       await podar(); listar();
       logApp('Arquivos gerados guardados neste navegador (' + fmt(tam) + ').', 'ok');
     } catch (e) { logApp('Não foi possível guardar os arquivos gerados no navegador (' + e.message + ').', 'wa'); }
@@ -204,7 +215,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
     if (!l.length) { $('gerLista').innerHTML = 'Nenhum pacote guardado. Ao clicar em <b>Gerar arquivos</b>, os arquivos ficam disponíveis aqui mesmo depois de fechar a página.'; uso(0); return; }
     $('gerLista').innerHTML = '<table><tr><th>Conteúdo</th><th>Arquivos</th><th></th></tr>' + l.map(p => {
       const zip = p.arquivos.find(f => /\.zip$/i.test(f.nome)), outros = p.arquivos.filter(f => f !== zip);
-      return '<tr><td>' + metaHtml(p) + '</td><td>' +
+      return '<tr data-busca="' + esc(buscaDe(p)) + '"><td>' + metaHtml(p) + '</td><td>' +
         (zip ? '<a class="btn btn-arq download" href="' + urlDe(p.id + '/' + zip.nome, zip.blob) + '" download="' + esc(zip.nome) + '">.ZIP</a>' : '') +
         outros.map(f => '<a class="file-link download" href="' + urlDe(p.id + '/' + f.nome, f.blob) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + '</a>').join('') +
         outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="btn btn-arq btn-exibir" data-ver="' + p.id + '/' + esc(f.nome) + '">Exibir ' + (/^Apresentacao_/.test(f.nome) ? 'apresentação' : 'apostila') + '</button>').join('') +

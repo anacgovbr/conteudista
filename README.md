@@ -93,7 +93,7 @@ Aba **Locução** (`Alt+Shift+3`): gera áudio a partir de texto no navegador co
 
 ## Arquivos gerados guardados no navegador
 
-`web/gerados.js`: após cada **Gerar arquivos**, guarda os 6 arquivos + ZIP no IndexedDB `conteudista_arquivos` (últimos 10 por padrão), com download, visualização do HTML e exclusão. A lista abre em uma janela pelo botão **Histórico**, no cabeçalho da seção **Arquivos gerados**, junto com os rascunhos (seção recolhida).
+`web/gerados.js`: após cada **Gerar arquivos**, guarda os 6 arquivos + ZIP no IndexedDB `conteudista_arquivos` (últimos 10 por padrão), com download, visualização do HTML e exclusão. A lista abre em uma janela pelo botão **Histórico**, no cabeçalho da seção **Arquivos gerados**. Cada pacote guarda o nome do conteúdo, a data e a hora, o tamanho, o layout, o rodapé e a narração; o campo **Buscar** da janela (e o de **Importar › Salvos**) filtra por qualquer desses dados e pelo tipo de arquivo (`web/janelas.js`, padrão de campo de busca do Design System gov.br).
 
 > Para atualizar o repositório use sempre o `conteudista-web.zip` mais recente com o `atualizar-conteudista.ps1`.
 

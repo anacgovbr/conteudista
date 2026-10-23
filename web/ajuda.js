@@ -60,9 +60,9 @@
     { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em poucos passos você verá como <b>escrever</b>, <b>gerar</b>, <b>guardar</b> e <b>recuperar</b> um conteúdo. A conversão acontece no seu navegador; nada é enviado sem você pedir.' },
     { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apostila</b> e <b>Apresentação</b>. Cole o texto gerado pelo agente de IA, arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. O botão <b>Versões</b> guarda, compara e restaura o texto.' },
-    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe a apostila (HTML, DOCX, MD), a apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>, com o nome, a data, o tamanho e o layout de cada geração. Os anteriores ficam no <b>Histórico</b>. Para testar agora, use <b>Carregar exemplo</b>. Os arquivos são o conteúdo <b>pronto, para entregar</b>.' },
+    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe a apostila (HTML, DOCX, MD), a apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>, com o nome, a data, o tamanho e o layout de cada geração. Os anteriores ficam no <b>Histórico</b>, com busca. Para testar agora, use <b>Carregar exemplo</b>. Os arquivos são o conteúdo <b>pronto, para entregar</b>.' },
     { alvo: 'btnSalvar', t: '4. Guarde o conteúdo em um link', d: 'Em <b>Salvar › Link</b>, o conteúdo inteiro (texto, imagens, nome e rodapé) vira um endereço. Cole-o onde preferir, como um e-mail para você mesmo, o Teams ou os favoritos, e abra quando quiser <b>continuar editando</b>, em qualquer computador. O salvamento automático (chave à direita) só recupera o último trabalho neste navegador.' },
-    { alvo: 'btnImportar', t: '5. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
+    { alvo: 'btnImportar', t: '5. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. Use o campo <b>Buscar</b> para achar um item pelo nome, data, layout ou tipo de arquivo. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
@@ -129,7 +129,7 @@
 <ol>
 <li>Na aba <b>Apostila</b>, cole ou arraste o texto da apostila (<code>.md</code>); na aba <b>Apresentação</b>, o dos slides.</li>
 <li>Informe o <b>Nome do conteúdo</b> (usado nos nomes dos arquivos, como <code>Apostila_Nome.docx</code>) e escolha o <b>Layout (tema)</b>: <b>Padrão gov.br</b>, <b>ANAC 20 anos</b> (claro ou escuro) ou <b>Clássico</b>. Os temas ANAC 20 anos mudam só a apresentação; a apostila segue o padrão gov.br. O <b>rodapé</b> (opcional) fica entre o nome e o layout e aparece nos slides e no DOCX.</li>
-<li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Os pacotes anteriores ficam no botão <b>Histórico</b>, no cabeçalho da seção <b>Arquivos gerados</b>. Se só um dos dois textos estiver preenchido, são gerados apenas os arquivos dele.</li>
+<li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Os pacotes anteriores ficam no botão <b>Histórico</b>, no cabeçalho da seção <b>Arquivos gerados</b>, onde é possível <b>buscar</b>. Se só um dos dois textos estiver preenchido, são gerados apenas os arquivos dele.</li>
 </ol>
 <div class="dica">Na primeira geração o navegador carrega o motor Python (20 a 60 s). Depois é imediato.</div>
 <h4>Editor</h4>
@@ -171,7 +171,14 @@
 <tr><td><b>Salvamento automático</b> (ligado por padrão)</td><td>Neste navegador, neste computador</td><td>Abra a página de novo: o último trabalho volta sozinho</td></tr>
 <tr><td><b>Versão</b> (menu <b>Salvar</b>)</td><td>Neste navegador</td><td><b>Importar › Salvos</b></td></tr>
 <tr><td><b>Pasta</b>, <b>.MD</b> e <b>.ZIP</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas ou use <b>Importar › Computador</b></td></tr></table>
-<div class="dica">Limpar os dados do navegador apaga as versões salvas e os links lembrados. Para guardar por mais tempo, use <b>Link</b> ou <b>.ZIP</b>.</div><h4>Versões do texto (comparar antes e depois)</h4>
+<div class="dica">Limpar os dados do navegador apaga as versões salvas e os links lembrados. Para guardar por mais tempo, use <b>Link</b> ou <b>.ZIP</b>.</div><h4>Buscar no Histórico e em Salvos</h4>
+<ul>
+<li>Nas janelas <b>Histórico</b> (em <b>Arquivos gerados</b>) e <b>Importar › Salvos</b>, o campo <b>Buscar</b> filtra a lista enquanto você digita, sem diferenciar maiúsculas, minúsculas e acentos.</li>
+<li>A busca olha o <b>nome do conteúdo</b>, a <b>data e a hora</b>, o <b>tamanho</b>, o <b>layout</b>, o <b>rodapé</b>, a <b>narração</b> e o <b>tipo de arquivo</b> (apostila, apresentação, docx, pptx, html, md, zip). Nos links, também o tipo (direto ou PrivateBin), a validade e a senha.</li>
+<li>Com mais de uma palavra, aparecem só os itens que têm <b>todas</b>. Exemplo: <code>docx ANAC escuro</code>. Use aspas para uma frase exata: <code>"ANAC 20 anos"</code>.</li>
+<li><kbd>Esc</kbd> limpa a busca; com o campo vazio, fecha a janela.</li>
+</ul>
+<h4>Versões do texto (comparar antes e depois)</h4>
 <ul>
 <li>As versões do texto ficam <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), <b>arquivos carregados</b>, conteúdos <b>abertos de links</b>, rascunhos, exemplo, versões <b>marcadas</b> (★) e os momentos de gerar ou compartilhar. Antes de carregar ou restaurar algo, o conteúdo atual também é guardado.</li>
 <li>Abra pelo botão <b>Versões</b> na barra do editor (ao lado da tela cheia) ou <kbd>Alt+Shift+V</kbd>. A janela de comparação aparece sobre a página; feche com <b>Fechar</b> ou <kbd>Esc</kbd>.</li>
