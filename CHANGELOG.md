@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.59 - 23/10/2026
+- **A apresentação de exemplo agora é uma aula sobre o próprio Conteudista.** O botão **Carregar exemplo** traz 34 slides, um assunto por slide: privacidade e funcionamento, início rápido, percurso de aprendizado, tela principal, editor e atalhos, imagens, o que cabe no Markdown, fluxos Mermaid, checklists e exercícios, vídeos, importação, formas de guardar, link do conteúdo, versões, geração, layouts, Arquivos gerados, Histórico, narração, locução e produção com IA.
+- **Cada slide tem notas para narração**, com 63 a 81 palavras, em tom técnico e formal, escritas para serem ouvidas: sem símbolos, algarismos, parênteses nem endereços. Ao marcar **Narração dos slides**, o exemplo rende cerca de 15 minutos de áudio, e a aba **Locução** importa as notas como texto.
+- A apresentação traz 5 fluxos Mermaid (início rápido, percurso de aprendizado, processo de trabalho, onde guardar e uso com IA), 3 figuras da interface em formato próprio para slide e um vídeo em link. Com a Parte anterior, o exemplo completo tem apostila de 16 seções, apresentação de 34 slides e o prompt padrão para IA.
+
 ## 1.58 - 23/10/2026
 - **A apostila de exemplo fica completa, com 16 seções.** Às seções 1 a 8 da versão anterior somam-se: **9. Locução e narração** (notas, controle do que é falado e aba Locução), **10. O que cabe no Markdown** (tabela de elementos por formato, fluxos Mermaid, imagens, vídeos e o que evitar), **11. Produzir os textos com uma IA**, **12. Fluxo de trabalho de exemplo**, **13. Checklists**, **14. Exercícios**, **15. Gabarito** e **16. Referências**.
 - **Prompt padrão para IA**, na seção 11.3: um bloco único para copiar e colar, em 8 seções. Só a seção 1 (14 parâmetros: tema, público, objetivo, número de seções e de slides, tamanho das notas, formato de entrega) e a seção 2 (material de referência) são editadas; as demais fixam as regras de conteúdo e de formato. A IA entrega a apostila e a apresentação em dois blocos de texto ou em um ZIP com as imagens, e as duas formas se importam sem ajustes.
