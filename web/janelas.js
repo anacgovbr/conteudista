@@ -387,12 +387,12 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     '<textarea id="jnTexto" spellcheck="false" placeholder="Cole aqui um texto Markdown ou um link"></textarea>' +
     '<p class="jn-hint" id="jnColDica" aria-live="polite">Cole um texto Markdown ou um link.</p>' +
     '<div id="jnLinkCampos" hidden><label class="jn-lb" for="jnSenha">Senha (se houver)</label><input type="password" id="jnSenha" autocomplete="off"></div>' +
-    '<div id="jnTxtCampos"><label class="jn-lb" for="jnDest">Destino</label><select id="jnDest"><option value="g">Treinamento</option><option value="s">Apresenta\u00e7\u00e3o</option></select></div>' +
+    '<div id="jnTxtCampos"><label class="jn-lb" for="jnDest">Destino</label><select id="jnDest"><option value="g">Apostila</option><option value="s">Apresenta\u00e7\u00e3o</option></select></div>' +
     '<div class="jn-acoes"><button type="button" class="sec" id="jnColar">Colar agora</button><button type="button" id="jnColOk" disabled>Importar</button></div>';
 
   /* Computador: lista de arquivos antes de importar */
   const itens = [];
-  const porNome = n => /apresenta/i.test(n) ? 's' : /treinamento|guia/i.test(n) ? 'g' : '';
+  const porNome = n => /apresenta/i.test(n) ? 's' : /apostila|treinamento|guia/i.test(n) ? 'g' : '';
   const detectarConteudo = t => (/^---\s*\n[\s\S]*?\n---/.test(t) || /<!--\s*(class|notas):/.test(t) || (t.match(/\n---\s*\n/g) || []).length >= 2) ? 's' : 'g';
   const mimeImg = n => ({ png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', bmp: 'image/bmp', svg: 'image/svg+xml' })[(String(n).split('.').pop() || '').toLowerCase()] || 'image/png';
   const ehImagem = f => (window.MDEditor && MDEditor.ehImagem) ? MDEditor.ehImagem(f) : /^image\//.test(f.type || '');
@@ -405,7 +405,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
       '<div class="jn-it-m"><b>' + esc(x.nome) + '</b><small>' + fmtTam(x.tam) + (x.origem ? ' \u00b7 ' + esc(x.origem) : '') + '</small></div>' +
       (x.dest === 'i' ? '<span class="jn-it-d">Imagem</span>' :
         '<select data-i="' + i + '" aria-label="Destino de ' + esc(x.nome) + '">' +
-        '<option value="g"' + (x.dest === 'g' ? ' selected' : '') + '>Treinamento</option>' +
+        '<option value="g"' + (x.dest === 'g' ? ' selected' : '') + '>Apostila</option>' +
         '<option value="s"' + (x.dest === 's' ? ' selected' : '') + '>Apresenta\u00e7\u00e3o</option>' +
         '<option value="x"' + (x.dest === 'x' ? ' selected' : '') + '>Ignorar</option></select>') +
       '<button type="button" class="sec mini" data-rm="' + i + '" aria-label="Remover ' + esc(x.nome) + '">Remover</button></div>').join('');
@@ -449,7 +449,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   async function importarArquivos() {
     const it = itens.filter(x => x.dest !== 'x');
     const g = it.filter(x => x.dest === 'g'), s = it.filter(x => x.dest === 's'), im = it.filter(x => x.dest === 'i').map(x => x.f);
-    if (g.length > 1 || s.length > 1) { importar.msg('Escolha um arquivo para cada destino: Treinamento e Apresenta\u00e7\u00e3o.', false); return; }
+    if (g.length > 1 || s.length > 1) { importar.msg('Escolha um arquivo para cada destino: Apostila e Apresenta\u00e7\u00e3o.', false); return; }
     if (!g.length && !s.length && !im.length) { importar.msg('Nada para importar.', true); return; }
     if (typeof receberArquivos !== 'function') { importar.msg('Importa\u00e7\u00e3o indispon\u00edvel nesta p\u00e1gina.', false); return; }
     const botao = $('jnArqOk'); botao.disabled = true;
@@ -515,7 +515,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     if (!alvo) return;
     if (window.Hist && Hist.registrar) await Hist.registrar('antes', 'Antes de colar texto');
     alvo.value = v; alvo.dispatchEvent(new Event('input', { bubbles: true }));
-    if (window.Hist && Hist.registrar) Hist.registrar('arquivo', 'Texto colado (' + (t === 'g' ? 'treinamento' : 'apresenta\u00e7\u00e3o') + ')');
+    if (window.Hist && Hist.registrar) Hist.registrar('arquivo', 'Texto colado (' + (t === 'g' ? 'apostila' : 'apresenta\u00e7\u00e3o') + ')');
     if (typeof aba === 'function') aba(t);
     $('jnTexto').value = ''; atualizarColar();
     importar.fechar(true);
@@ -609,7 +609,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     id: 'jnCmp', pequena: true, rodape: () => true,
     aoAbrir: () => { prepararJanelaLink(); try { if (typeof estimarTamanho === 'function') Promise.resolve(estimarTamanho()).catch(() => {}); } catch (e) { /* sem estimativa */ } }
   });
-  cmp.titulo('Link do curso');
+  cmp.titulo('Link do conte\u00fado');
   (function montarCompartilhar() {
     const pl = $('pLink'), corpo = cmp.pane('0'); if (!pl) return;
     while (pl.firstChild) corpo.appendChild(pl.firstChild);
@@ -671,7 +671,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     const vazio = !(($('g') && $('g').value.trim()) || ($('s') && $('s').value.trim()));
     if (vazio) { anunciarGlobal('Nada para salvar.'); logApp('Nada para salvar.', 'wa'); return; }
     const b = $(alvo); if (!b) return;
-    if (alvo === 'dsave' && $('dname')) $('dname').value = '';     // usa o nome automatico (curso + data e hora)
+    if (alvo === 'dsave' && $('dname')) $('dname').value = '';     // usa o nome automatico (conteudo + data e hora)
     b.click();
     feedback(bSalvar, msg);
   }
@@ -744,7 +744,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   })();
 
   /* ============================== Contadores e observadores ============================== */
-  /* Janela LINK DO CURSO (1.49) */
+  /* Janela LINK DO CONTEUDO (1.49) */
   const LIM_LINK_DIRETO = 30000;
   let linkRec = 'self', linkTam = 0;
   (function montarLinkDoCurso() {
@@ -754,7 +754,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
       const form = document.createElement('div'); form.id = 'jnCmpForm';
       while (corpo.firstChild) form.appendChild(corpo.firstChild);
       const sub = document.createElement('p'); sub.className = 'jn-hint'; sub.id = 'jnSub'; sub.style.margin = '0 0 4px';
-      sub.textContent = 'Guarde ou envie o curso inteiro em um endere\u00e7o: texto, imagens, nome e rodap\u00e9.';
+      sub.textContent = 'Guarde ou envie o conte\u00fado inteiro em um endere\u00e7o: texto, imagens, nome e rodap\u00e9.';
       form.insertBefore(sub, form.firstChild);
       const aviso = document.createElement('p'); aviso.className = 'box warn'; aviso.id = 'jnAvisoLink'; aviso.style.margin = '12px 0 0';
       aviso.textContent = 'Sem o link (e a senha, se houver) n\u00e3o \u00e9 poss\u00edvel recuperar o conte\u00fado. O Conteudista n\u00e3o guarda c\u00f3pia. N\u00e3o inclua dados pessoais sem autoriza\u00e7\u00e3o da chefia.';
@@ -767,14 +767,14 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
       if (kl) [...kl.childNodes].forEach(n => { if (n.nodeType === 3 && n.textContent.trim()) n.textContent = ' Lembrar este link neste navegador'; });
       mo.addEventListener('change', rotularModoLink);
       rotularModoLink();
-    } catch (err) { console.warn('Link do curso:', err); }
+    } catch (err) { console.warn('Link do conteudo:', err); }
   })();
   function rotularModoLink() {
     const mo = $('mode'), aux = $('jnModoAux'); if (!mo) return;
     [...mo.options].forEach(o => { o.textContent = (o.value === 'pb' ? 'PrivateBin' : 'Link direto') + (o.value === linkRec ? ' \u00b7 recomendado' : ''); });
     if (!aux) return;
-    if (mo.value === 'pb') aux.textContent = 'Para cursos grandes ou com muitas imagens. Fica cifrado em um servidor e tem validade.';
-    else aux.textContent = (linkTam ? 'Seu curso: \u2248 ' + fmtTam(linkTam) + ' cifrados. ' : '') + 'Cabe no pr\u00f3prio endere\u00e7o, n\u00e3o usa servidor e n\u00e3o expira.' + (linkRec === 'pb' ? ' Aten\u00e7\u00e3o: com este tamanho o link pode ser cortado por e-mail ou Teams; prefira o PrivateBin.' : '');
+    if (mo.value === 'pb') aux.textContent = 'Para conte\u00fados grandes ou com muitas imagens. Fica cifrado em um servidor e tem validade.';
+    else aux.textContent = (linkTam ? 'Seu conte\u00fado: \u2248 ' + fmtTam(linkTam) + ' cifrados. ' : '') + 'Cabe no pr\u00f3prio endere\u00e7o, n\u00e3o usa servidor e n\u00e3o expira.' + (linkRec === 'pb' ? ' Aten\u00e7\u00e3o: com este tamanho o link pode ser cortado por e-mail ou Teams; prefira o PrivateBin.' : '');
   }
   function prepararJanelaLink() {
     estadoLink(false);
@@ -802,7 +802,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     r.innerHTML = '<div class="jn-lc"><div class="jn-qrc" id="jnCmpQr" role="img" aria-label="QR Code do link"></div>' +
       '<div class="jn-lct"><b>' + esc(titulo) + '</b><small>' + esc((cur.id || '') + ' ' + (cur.host || '')) + '</small></div>' +
       '<div class="jn-lca"><button type="button" class="mini" id="jnCmpCopiar">Copiar</button><a class="btn mini sec" id="jnCmpAbrir" target="_blank" rel="noopener">Abrir</a></div></div>' +
-      '<p class="box priv" style="margin:8px 0 0">Guarde este link onde preferir: um e-mail para voc\u00ea mesmo, o Teams ou os favoritos. Para voltar ao curso, use <b>Importar \u203a Colar \u203a Link</b>.</p>';
+      '<p class="box priv" style="margin:8px 0 0">Guarde este link onde preferir: um e-mail para voc\u00ea mesmo, o Teams ou os favoritos. Para voltar ao conte\u00fado, use <b>Importar \u203a Colar \u203a Link</b>.</p>';
     $('jnCmpAbrir').href = it.url;
     $('jnCmpCopiar').onclick = function () {
       const b = this, ok = () => feedback(b, 'Link copiado.');

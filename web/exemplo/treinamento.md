@@ -1,10 +1,10 @@
-# Curso de Exemplo — Treinamento Prático
+# Conteúdo de Exemplo — Apostila Prática
 
 **Treinamento organizacional para novos servidores**
 
 Unidade Responsável · Órgão · Versão 1.0
 
-> [!info] **Objetivo:** demonstrar o formato. Substitua este texto pelo treinamento gerado pelo agente "Gerador de Cursos ANAC".
+> [!info] **Objetivo:** demonstrar o formato. Substitua este texto pela apostila gerada pelo agente "Gerador de Cursos ANAC".
 
 ## 1. Como usar este material
 

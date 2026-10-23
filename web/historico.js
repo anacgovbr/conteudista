@@ -230,7 +230,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     '<div class="hrow"><div class="lg"><label for="hA">Versão A (antes)</label><select id="hA"></select></div>' +
     '<div class="hrow troca" style="min-width:auto;margin:0"><button type="button" class="sec mini" id="hTroca" title="Trocar A e B">⇄</button></div>' +
     '<div class="lg"><label for="hB">Versão B (depois)</label><select id="hB"></select></div></div>' +
-    '<div class="hrow op"><div><label for="hDoc">Documento</label><select id="hDoc"><option value="g">Treinamento</option><option value="s">Apresentação</option><option value="a">Ambos</option></select></div>' +
+    '<div class="hrow op"><div><label for="hDoc">Documento</label><select id="hDoc"><option value="g">Apostila</option><option value="s">Apresentação</option><option value="a">Ambos</option></select></div>' +
     '<div><label for="hModo">Exibição</label><select id="hModo"><option value="l">Lado a lado</option><option value="u">Unificada</option></select></div>' +
     '<div><label for="hCtx">Mostrar</label><select id="hCtx"><option value="3">Só alterações (± 3 linhas)</option><option value="10">Alterações (± 10 linhas)</option><option value="-1">Texto completo</option></select></div>' +
     '<div class="go" style="min-width:auto"><button type="button" id="hGo">Comparar</button></div></div>' +
@@ -282,7 +282,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     let out = '', mais = 0, menos = 0, ir = 0, inv = 0;
     for (const d of docs) {
       const r = comparar(A[d] || '', B[d] || '', modo, ctx); mais += r.mais; menos += r.menos; ir += r.imgRem; inv += r.imgNov;
-      out += (docs.length > 1 ? '<h4>' + (d === 'g' ? 'Treinamento' : 'Apresentação') + '</h4>' : '') + '<div class="dfwrap">' + r.html + '</div>' + r.imagens;
+      out += (docs.length > 1 ? '<h4>' + (d === 'g' ? 'Apostila' : 'Apresentação') + '</h4>' : '') + '<div class="dfwrap">' + r.html + '</div>' + r.imagens;
     }
     $('hRes').innerHTML = '<div class="dfst"><span><b>A:</b> ' + esc(A.rotulo) + ' (' + dataCurta(A.data) + ')</span><span><b>B:</b> ' + esc(B.rotulo) + ' (' + dataCurta(B.data) + ')</span>' +
       '<span class="p">+' + mais + ' linha(s)</span><span class="m">−' + menos + ' linha(s)</span>' + (ir || inv ? '<span>Imagens: <span class="m">−' + ir + '</span> / <span class="p">+' + inv + '</span></span>' : '') + '</div>' + out;
@@ -298,8 +298,8 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     await registrar('restaurado', 'Restaurada: ' + v.rotulo);
   }
   function baixarMd(v, sufixo) {
-    const x = (v.p || 'Curso').replace(/[^\w.-]+/g, '_'), t = new Date(v.data).toISOString().slice(0, 16).replace(/[:T]/g, '-');
-    [['Treinamento_', v.g], ['Apresentacao_', v.s]].forEach(([n, c], i) => setTimeout(() => {
+    const x = (v.p || 'Conteudo').replace(/[^\w.-]+/g, '_'), t = new Date(v.data).toISOString().slice(0, 16).replace(/[:T]/g, '-');
+    [['Apostila_', v.g], ['Apresentacao_', v.s]].forEach(([n, c], i) => setTimeout(() => {
       const u = URL.createObjectURL(new Blob([c || ''], { type: 'text/markdown' })), a = document.createElement('a'); a.href = u; a.download = n + x + '_' + sufixo + '_' + t + '.md'; a.click(); setTimeout(() => URL.revokeObjectURL(u), 4000);
     }, i * 400));
   }

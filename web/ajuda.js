@@ -57,12 +57,12 @@
 
   /* ---------------------------- Tutorial guiado ---------------------------- */
   const PASSOS = [
-    { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em poucos passos você verá como <b>escrever</b>, <b>gerar</b>, <b>guardar</b> e <b>recuperar</b> um curso. A conversão acontece no seu navegador; nada é enviado sem você pedir.' },
-    { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o conteúdo', d: 'Use as abas <b>Treinamento</b> e <b>Apresentação</b>. Cole o texto gerado pelo agente de IA, arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
+    { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em poucos passos você verá como <b>escrever</b>, <b>gerar</b>, <b>guardar</b> e <b>recuperar</b> um conteúdo. A conversão acontece no seu navegador; nada é enviado sem você pedir.' },
+    { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apostila</b> e <b>Apresentação</b>. Cole o texto gerado pelo agente de IA, arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. O botão <b>Versões</b> guarda, compara e restaura o texto.' },
-    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe treinamento (HTML, DOCX, MD), apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>. Para testar agora, use <b>Carregar exemplo</b>. Os arquivos são o curso <b>pronto, para entregar</b>.' },
-    { alvo: 'btnSalvar', t: '4. Guarde o curso em um link', d: 'Em <b>Salvar › Link</b>, o curso inteiro (texto, imagens, nome e rodapé) vira um endereço. Cole-o onde preferir, como um e-mail para você mesmo, o Teams ou os favoritos, e abra quando quiser <b>continuar editando</b>, em qualquer computador. O salvamento automático (chave à direita) só recupera o último trabalho neste navegador.' },
-    { alvo: 'btnImportar', t: '5. Recupere um curso', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do curso</b>. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
+    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe a apostila (HTML, DOCX, MD), a apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>, com o nome, a data, o tamanho e o layout de cada geração. Os anteriores ficam no <b>Histórico</b>. Para testar agora, use <b>Carregar exemplo</b>. Os arquivos são o conteúdo <b>pronto, para entregar</b>.' },
+    { alvo: 'btnSalvar', t: '4. Guarde o conteúdo em um link', d: 'Em <b>Salvar › Link</b>, o conteúdo inteiro (texto, imagens, nome e rodapé) vira um endereço. Cole-o onde preferir, como um e-mail para você mesmo, o Teams ou os favoritos, e abra quando quiser <b>continuar editando</b>, em qualquer computador. O salvamento automático (chave à direita) só recupera o último trabalho neste navegador.' },
+    { alvo: 'btnImportar', t: '5. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
@@ -113,12 +113,23 @@
   /* ---------------------------- Ajuda ---------------------------- */
   const AJUDA = `
 <h4>O que é</h4>
-<p>O Conteudista transforma dois arquivos Markdown — <b>treinamento</b> e <b>apresentação</b> — em um curso completo: <b>treinamento</b> (HTML, DOCX, MD) e <b>apresentação</b> (HTML, PPTX, MD). A conversão roda <b>no seu navegador</b>; o site não guarda nenhum curso.</p>
-<h4>Gerar um curso em 3 passos</h4>
+<p>O Conteudista transforma dois textos em Markdown — a <b>apostila</b> e a <b>apresentação</b> — em um <b>conteúdo</b> completo: apostila (HTML, DOCX, MD) e apresentação (HTML, PPTX, MD), com locução opcional. A conversão roda <b>no seu navegador</b>; o site não guarda nenhum conteúdo.</p>
+<h4>Termos usados</h4>
+<table><tr><th>Termo</th><th>O que é</th></tr>
+<tr><td><b>Conteúdo</b></td><td>O material que você produz: apostila e apresentação, com um <b>nome</b>, um <b>layout</b> e um <b>rodapé</b>.</td></tr>
+<tr><td><b>Apostila</b></td><td>O documento de estudo, em HTML, DOCX e MD.</td></tr>
+<tr><td><b>Apresentação</b></td><td>Os slides, em HTML, PPTX e MD, com narração opcional.</td></tr>
+<tr><td><b>Locução</b></td><td>Áudio gerado a partir de um texto (aba <b>Locução</b>).</td></tr>
+<tr><td><b>Arquivos</b></td><td>O conteúdo <b>pronto</b>, para entregar (.DOCX, .PPTX, .HTML, .ZIP).</td></tr>
+<tr><td><b>Texto-fonte</b></td><td>Os textos em Markdown e as imagens, para continuar editando.</td></tr>
+<tr><td><b>Link</b></td><td>O texto-fonte em um endereço, para guardar ou enviar.</td></tr>
+<tr><td><b>Versão</b></td><td>Uma cópia do texto-fonte guardada neste navegador.</td></tr>
+<tr><td><b>Histórico</b></td><td>A lista dos arquivos já gerados, neste navegador.</td></tr></table>
+<h4>Gerar um conteúdo em 3 passos</h4>
 <ol>
-<li>Na aba <b>Treinamento</b>, cole ou arraste o <code>treinamento.md</code>; na aba <b>Apresentação</b>, o <code>apresentacao.md</code>.</li>
-<li>Informe o <b>Nome do curso</b> (usado nos nomes dos arquivos) e escolha o <b>Layout (tema)</b>: <b>Padrão gov.br</b>, <b>ANAC 20 anos</b> (claro ou escuro) ou <b>Clássico</b>. Os temas ANAC 20 anos mudam só a apresentação; o treinamento segue o padrão gov.br. O <b>rodapé</b> (opcional) fica entre o nome e o layout e aparece nos slides e no DOCX.</li>
-<li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Os pacotes anteriores e os rascunhos ficam no botão <b>Histórico</b>, no cabeçalho da seção <b>Arquivos gerados</b>. Se só um dos dois estiver preenchido, são gerados apenas os arquivos dele.</li>
+<li>Na aba <b>Apostila</b>, cole ou arraste o texto da apostila (<code>.md</code>); na aba <b>Apresentação</b>, o dos slides.</li>
+<li>Informe o <b>Nome do conteúdo</b> (usado nos nomes dos arquivos, como <code>Apostila_Nome.docx</code>) e escolha o <b>Layout (tema)</b>: <b>Padrão gov.br</b>, <b>ANAC 20 anos</b> (claro ou escuro) ou <b>Clássico</b>. Os temas ANAC 20 anos mudam só a apresentação; a apostila segue o padrão gov.br. O <b>rodapé</b> (opcional) fica entre o nome e o layout e aparece nos slides e no DOCX.</li>
+<li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Os pacotes anteriores ficam no botão <b>Histórico</b>, no cabeçalho da seção <b>Arquivos gerados</b>. Se só um dos dois textos estiver preenchido, são gerados apenas os arquivos dele.</li>
 </ol>
 <div class="dica">Na primeira geração o navegador carrega o motor Python (20 a 60 s). Depois é imediato.</div>
 <h4>Editor</h4>
@@ -142,14 +153,14 @@
 <li><b>PPTX</b>: o áudio de cada slide começa sozinho na apresentação de slides. Com “Avançar os slides sozinho”, dá para usar <b>Arquivo → Exportar → Criar um vídeo</b> no PowerPoint.</li>
 <li>Para falar um texto diferente da nota, use <code>&lt;!-- narracao: texto --&gt;</code>; para um slide sem som, <code>&lt;!-- narracao: nao --&gt;</code>.</li>
 </ul>
-<h4>Guardar o curso: arquivo ou link?</h4>
-<p>O Conteudista não guarda nenhum curso no site. Você decide onde ele fica, e há dois tipos de saída:</p>
+<h4>Guardar o conteúdo: arquivo ou link?</h4>
+<p>O Conteudista não guarda nenhum conteúdo no site. Você decide onde ele fica, e há dois tipos de saída:</p>
 <ul>
-<li><b>Arquivos</b> (.DOCX, .PPTX, .HTML, .ZIP): são o curso <b>pronto</b>, para entregar e abrir no Word, no PowerPoint ou no navegador.</li>
-<li><b>Link</b>: é o seu <b>texto-fonte</b> (treinamento, apresentação, imagens, nome e rodapé) em um endereço. Serve para continuar editando depois, em qualquer computador.</li>
+<li><b>Arquivos</b> (.DOCX, .PPTX, .HTML, .ZIP): são o conteúdo <b>pronto</b>, para entregar e abrir no Word, no PowerPoint ou no navegador.</li>
+<li><b>Link</b>: é o seu <b>texto-fonte</b> (apostila, apresentação, imagens, nome e rodapé) em um endereço. Serve para continuar editando depois, em qualquer computador.</li>
 </ul>
 <table><tr><th>Quero…</th><th>Use</th></tr>
-<tr><td>Entregar o curso pronto</td><td><b>.DOCX</b>, <b>.PPTX</b> ou <b>.HTML</b></td></tr>
+<tr><td>Entregar o conteúdo pronto</td><td><b>.DOCX</b>, <b>.PPTX</b> ou <b>.HTML</b></td></tr>
 <tr><td>Continuar editando em outro computador</td><td><b>Link</b> (<b>Salvar › Link</b>)</td></tr>
 <tr><td>Enviar o texto-fonte a um colega</td><td><b>Link</b></td></tr>
 <tr><td>Guardar uma cópia em uma pasta</td><td><b>.ZIP</b> ou <b>Pasta</b> (menu <b>Salvar</b>)</td></tr>
@@ -166,13 +177,13 @@
 <li>Abra pelo botão <b>Versões</b> na barra do editor (ao lado da tela cheia) ou <kbd>Alt+Shift+V</kbd>. A janela de comparação aparece sobre a página; feche com <b>Fechar</b> ou <kbd>Esc</kbd>.</li>
 <li>Escolha a <b>Versão A</b> (antes) e a <b>Versão B</b> (depois) — de qualquer sessão, arquivo ou link, ou “Atual” — e clique em <b>Comparar</b>. Use ⇄ para inverter.</li>
 <li>Leitura do resultado: linhas <span style="background:#fde0db">removidas</span> e <span style="background:#e8f5ec">incluídas</span>, com as palavras alteradas destacadas; imagens aparecem como miniaturas e as que mudaram são listadas em “Antes” e “Depois”.</li>
-<li>Opções: Treinamento, Apresentação ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
+<li>Opções: Apostila, Apresentação ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
 <li><b>Restaurar A/B</b> coloca a versão nos editores; <b>.MD A/B</b> salva os .md; <b>★ Salvar versão</b> cria um ponto nomeado (não é apagado automaticamente). O limite é de 120 versões.</li>
 </ul>
 <h4>Criar um link</h4>
 <ol>
 <li>Clique em <b>Salvar › Link</b> (ou em <b>Criar link</b>, em <b>Arquivos gerados</b>).</li>
-<li>Confira a opção sugerida para o tamanho do seu curso. Você pode trocá-la.</li>
+<li>Confira a opção sugerida para o tamanho do seu conteúdo. Você pode trocá-la.</li>
 <li>Se quiser, defina uma <b>senha</b> e envie-a por outro canal.</li>
 <li>Clique em <b>Criar link</b>. Ele é copiado automaticamente e aparece na janela, com o QR Code.</li>
 <li>Guarde o link onde preferir. Com <b>Lembrar este link neste navegador</b> marcado, ele também fica em <b>Importar › Salvos</b>.</li>
@@ -180,16 +191,16 @@
 <table><tr><th></th><th>Link direto</th><th>PrivateBin</th></tr>
 <tr><td>Onde fica o conteúdo</td><td>No próprio endereço</td><td>Cifrado em um servidor</td></tr>
 <tr><td>Validade</td><td>Não expira</td><td>Até a data escolhida (padrão: 1 ano)</td></tr>
-<tr><td>Indicado para</td><td>Cursos pequenos ou médios</td><td>Cursos grandes ou com muitas imagens</td></tr>
+<tr><td>Indicado para</td><td>Conteúdos pequenos ou médios</td><td>Conteúdos grandes ou com muitas imagens</td></tr>
 <tr><td>Limite</td><td>Pode ser cortado por e-mail ou Teams</td><td>Cerca de 10 MB</td></tr></table>
 <ul>
 <li>No PrivateBin, as imagens podem ir como <b>anexo ZIP</b>; ao abrir aqui, voltam para base64.</li>
 <li>O <b>tamanho</b> aparece antes do envio. O privatebin.net aceita cerca de 10 MB.</li>
 </ul>
-<h4>Voltar a um curso</h4>
+<h4>Voltar a um conteúdo</h4>
 <ul>
 <li><b>Importar › Colar › Link</b>: cole o endereço (e a senha, se houver) e clique em <b>Importar</b>. O texto atual vai para <b>Versões</b> antes de ser substituído.</li>
-<li>Ou abra o link direto no navegador: o curso carrega sozinho.</li>
+<li>Ou abra o link direto no navegador: o conteúdo carrega sozinho.</li>
 <li>Os links criados neste navegador ficam em <b>Importar › Salvos</b>, com o tipo e a validade.</li>
 </ul>
 <h4>Cuidados com o link</h4>
@@ -203,12 +214,12 @@
 <tr><td>“Falha ao carregar … cdn.jsdelivr.net”</td><td>A rede bloqueou o motor Python. Tente outra rede ou peça liberação do endereço.</td></tr>
 <tr><td>“CORS ou rede bloqueada” no PrivateBin</td><td>Use o <b>link autocontido</b> ou outra instância do PrivateBin.</td></tr>
 <tr><td>Imagens “pendentes”</td><td>Arraste os arquivos de imagem citados no texto (com o mesmo nome) para a área da aba ou para o editor.</td></tr>
-<tr><td>Imagem não aparece</td><td>Confira o painel <b>Imagens do texto</b>; use <b>Localizar</b>. Arquivos muito grandes deixam o curso pesado — use <b>Redimensionar</b> ou <b>Reduzir todas…</b> (até ~1 MB por imagem).</td></tr>
+<tr><td>Imagem não aparece</td><td>Confira o painel <b>Imagens do texto</b>; use <b>Localizar</b>. Arquivos muito grandes deixam o conteúdo pesado — use <b>Redimensionar</b> ou <b>Reduzir todas…</b> (até ~1 MB por imagem).</td></tr>
 <tr><td>Sumário vazio no DOCX</td><td>No Word, clique com o botão direito no sumário → <b>Atualizar campo</b>.</td></tr>
 <tr><td>Fluxos Mermaid no DOCX/PPTX</td><td>Aparecem como tabela “De | Condição | Para” (desenho só no HTML).</td></tr>
 <tr><td>O link chegou cortado por e-mail ou Teams</td><td>Use o <b>PrivateBin</b>, que gera um endereço curto.</td></tr>
 <tr><td>“Este link exige senha”</td><td>Informe a senha, enviada por quem criou o link.</td></tr>
-<tr><td>O link do PrivateBin deixou de abrir</td><td>Ele expirou. Abra o curso por outra versão e crie um novo link.</td></tr>
+<tr><td>O link do PrivateBin deixou de abrir</td><td>Ele expirou. Abra o conteúdo por outra versão e crie um novo link.</td></tr>
 <tr><td>Perdi o link</td><td>Veja em <b>Importar › Salvos</b>. Só aparece se a opção de lembrar estava marcada neste navegador.</td></tr></table>
 <h4>Tutorial</h4>
 <p>O tutorial abre sozinho na primeira visita. Para vê-lo de novo, use o botão <b>▶ Tutorial</b>, o botão <b>↺ Reiniciar tutorial</b> desta janela ou <kbd>Alt+Shift+R</kbd>. Dentro do tutorial, <b>↺</b> volta ao primeiro passo.</p>
@@ -263,9 +274,9 @@
     { g: 'Arquivos', k: 'P', d: 'Salvar pasta', f: () => clicar('fsave') },
     { g: 'Salvar e recuperar', k: 'S', d: 'Salvar versão', f: () => { if (window.SalvarVersao) SalvarVersao.salvar(); } },
     { g: 'Salvar e recuperar', k: 'A', d: 'Ligar/desligar salvamento automático', f: () => { const c = $('auto'); c.checked = !c.checked; c.dispatchEvent(new Event('change')); toast('Salvamento automático ' + (c.checked ? 'ligado' : 'desligado')); } },
-    { g: 'Salvar e recuperar', k: 'L', d: 'Link do curso (guardar ou enviar)', f: () => { if (window.Compartilhar) Compartilhar.abrir(); } },
+    { g: 'Salvar e recuperar', k: 'L', d: 'Link do conteúdo (guardar ou enviar)', f: () => { if (window.Compartilhar) Compartilhar.abrir(); } },
     { g: 'Salvar e recuperar', k: 'O', d: 'Importar', f: () => { if (window.Importar) Importar.abrir(); } },
-    { g: 'Navegação', k: '1', d: 'Aba Treinamento (foca o editor)', f: () => focarEditor('g') },
+    { g: 'Navegação', k: '1', d: 'Aba Apostila (foca o editor)', f: () => focarEditor('g') },
     { g: 'Navegação', k: '2', d: 'Aba Apresentação (foca o editor)', f: () => focarEditor('s') },
     { g: 'Navegação', k: 'M', d: 'Alternar modo do editor (Editar → Dividido → Prévia)', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); if (!vis) return; const ordem = ['e', 's', 'p'], i = (ordem.indexOf(vis.dataset.m) + 1) % 3; const b = vis.querySelector('.mde-tb [data-m="' + ordem[i] + '"]'); if (b) b.click(); toast(['Somente editor', 'Editor + prévia', 'Somente prévia'][i]); } },
     { g: 'Navegação', k: 'V', d: 'Versões do texto (comparar antes e depois)', f: () => window.Hist && Hist.abrir() },

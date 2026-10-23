@@ -14,7 +14,7 @@
   const fmt = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
   const logApp = (m, c) => { try { if (typeof log === 'function') log(m, c); } catch { /* */ } };
   const LIM = 'conteudista.gerados.limite', ATIVO = 'conteudista.gerados.ativo';
-  /* Metadados minimos de cada pacote: nome do curso, data e hora, tamanho e layout (tema) */
+  /* Metadados minimos de cada pacote: nome do conteudo, data e hora, tamanho e layout (tema) */
   const TEMAS_ROTULO = { govbr: 'Padr\u00e3o gov.br', 'anac20-claro': 'ANAC 20 anos \u2014 claro', 'anac20-escuro': 'ANAC 20 anos \u2014 escuro', classico: 'Cl\u00e1ssico' };
   function temaRotulo(v) {
     if (!v) return '';
@@ -27,7 +27,7 @@
     if (!isNaN(q.getTime())) itens.push('<time class="m" datetime="' + q.toISOString() + '">' + q.toLocaleString('pt-BR') + '</time>');
     if (p.tam > 0) itens.push('<span class="m">' + fmt(p.tam) + '</span>');
     if (t) itens.push('<span class="m">' + esc(t) + '</span>');
-    return '<div class="ger-info"><p class="ger-nome">' + esc(p.prefixo || 'Curso') + '</p>' + (itens.length ? '<p class="ger-meta">' + itens.join(' \u00b7 ') + '</p>' : '') + '</div>';
+    return '<div class="ger-info"><p class="ger-nome">' + esc(p.prefixo || 'Conteudo') + '</p>' + (itens.length ? '<p class="ger-meta">' + itens.join(' \u00b7 ') + '</p>' : '') + '</div>';
   }
 
   /* ---------------------------- Banco ---------------------------- */
@@ -176,7 +176,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
     const assin = arqs.map(f => f.nome + ':' + f.blob.size).join('|');
     if (assin === ultimaAssin && arqs.some(f => salvos.has(f.blob))) return; ultimaAssin = assin;
     arqs.forEach(f => salvos.add(f.blob));
-    const tam = arqs.reduce((a, f) => a + f.blob.size, 0), pref = ($('pref') && $('pref').value) || 'Curso';
+    const tam = arqs.reduce((a, f) => a + f.blob.size, 0), pref = ($('pref') && $('pref').value) || 'Conteudo';
     try {
       const gm = window.GeracaoMeta || {};
       await tx('readwrite', s => s.add({ data: gm.data || Date.now(), prefixo: gm.prefixo || pref, tema: gm.tema || ($('tema') ? $('tema').value : ''), resumo: resumoDoLog(), tam, arquivos: arqs }));
@@ -196,18 +196,18 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
   const urls = new Map();
   function urlDe(chave, blob) { if (!urls.has(chave)) urls.set(chave, URL.createObjectURL(blob)); return urls.get(chave); }
   function limparUrls() { urls.forEach(u => URL.revokeObjectURL(u)); urls.clear(); }
-  const rotulo = n => { const e = n.split('.').pop().toLowerCase(); return (/^Treinamento_/.test(n) ? 'Treinamento ' : /^Apresentacao_/.test(n) ? 'Apresentação ' : '') + e.toUpperCase(); };
+  const rotulo = n => { const e = n.split('.').pop().toLowerCase(); return (/^(Apostila|Treinamento)_/.test(n) ? 'Apostila ' : /^Apresentacao_/.test(n) ? 'Apresentação ' : '') + e.toUpperCase(); };
   async function listar() {
     let l = [];
     try { l = await tx('readonly', s => s.getAll()); } catch (e) { $('gerLista').textContent = 'Armazenamento indisponível (' + e.message + ').'; return; }
     limparUrls(); l.sort((a, b) => b.id - a.id);
     if (!l.length) { $('gerLista').innerHTML = 'Nenhum pacote guardado. Ao clicar em <b>Gerar arquivos</b>, os arquivos ficam disponíveis aqui mesmo depois de fechar a página.'; uso(0); return; }
-    $('gerLista').innerHTML = '<table><tr><th>Curso</th><th>Arquivos</th><th></th></tr>' + l.map(p => {
+    $('gerLista').innerHTML = '<table><tr><th>Conteúdo</th><th>Arquivos</th><th></th></tr>' + l.map(p => {
       const zip = p.arquivos.find(f => /\.zip$/i.test(f.nome)), outros = p.arquivos.filter(f => f !== zip);
       return '<tr><td>' + metaHtml(p) + '</td><td>' +
         (zip ? '<a class="btn btn-arq download" href="' + urlDe(p.id + '/' + zip.nome, zip.blob) + '" download="' + esc(zip.nome) + '">.ZIP</a>' : '') +
         outros.map(f => '<a class="file-link download" href="' + urlDe(p.id + '/' + f.nome, f.blob) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + '</a>').join('') +
-        outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="btn btn-arq btn-exibir" data-ver="' + p.id + '/' + esc(f.nome) + '">Exibir ' + (/^Apresentacao_/.test(f.nome) ? 'apresentação' : 'treinamento') + '</button>').join('') +
+        outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="btn btn-arq btn-exibir" data-ver="' + p.id + '/' + esc(f.nome) + '">Exibir ' + (/^Apresentacao_/.test(f.nome) ? 'apresentação' : 'apostila') + '</button>').join('') +
         '</td><td><button type="button" class="dan" data-del="' + p.id + '">Excluir</button></td></tr>';
     }).join('') + '</table>';
     uso(l.reduce((a, p) => a + p.tam, 0));

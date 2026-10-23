@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.51 - 23/10/2026
+- **Termos padronizados em toda a aplicação**: **Conteúdo** (o material que você produz) no lugar de "curso" e **Apostila** no lugar de "Treinamento". A seção passa a se chamar **Gerar conteúdo**, o campo **Nome do conteúdo**, a aba **Conteúdo** e a janela **Link do conteúdo**. Os arquivos baixados passam a ser **Apostila_…** e **Conteudo_….zip**; os nomes antigos continuam reconhecidos ao importar e no Histórico.
+- **Tutorial e Ajuda reescritos** com o mesmo vocabulário, com a nova tabela **Termos usados**, os passos em torno de "gerar, guardar e recuperar um conteúdo" e a explicação de **arquivo** (conteúdo pronto) e **link** (texto-fonte).
+- O gerador, o conteúdo de exemplo e o README também seguem os novos termos.
+
 ## 1.50 - 23/10/2026
 - **Layout (tema)** com nomes curtos, sem texto entre parênteses: Padrão gov.br, ANAC 20 anos — claro, ANAC 20 anos — escuro e Clássico. A explicação de onde cada tema se aplica ficou na dica do campo e na Ajuda.
 - Corrigido um erro de script que aparecia no console a cada mudança nas listas de arquivos e rascunhos (contagens do Histórico).

@@ -1,7 +1,7 @@
 /* =====================================================================================
-   Conteudista - Importar > Colar: subabas Treinamento, Apresentacao e Link
+   Conteudista - Importar > Colar: subabas Apostila, Apresentacao e Link
 
-   - Treinamento e Apresentacao sao dois textos distintos: cada um tem a sua caixa Markdown.
+   - Apostila e Apresentacao sao dois textos distintos: cada um tem a sua caixa Markdown.
    - Link: endereco e senha. Colar um link numa das caixas de texto move o endereco para a subaba Link.
    - "Importar" envia o que estiver preenchido: um ou os dois textos (subabas de texto) ou o link
      (subaba Link). Antes de substituir, o texto atual dos editores vai para Versoes.
@@ -16,13 +16,13 @@
   const pane = $('jnImpPane-cl'), API = window.Importar;
   if (!pane || !API || typeof API.msg !== 'function' || typeof API.ativar !== 'function') return;
 
-  const SUB = [['g', 'Treinamento'], ['s', 'Apresenta\u00e7\u00e3o'], ['l', 'Link']];
-  const NOME = { g: 'Treinamento', s: 'Apresenta\u00e7\u00e3o' };
+  const SUB = [['g', 'Apostila'], ['s', 'Apresenta\u00e7\u00e3o'], ['l', 'Link']];
+  const NOME = { g: 'Apostila', s: 'Apresenta\u00e7\u00e3o' };
   const anunciar = m => { try { if (window.UXFeedback && UXFeedback.anunciar) UXFeedback.anunciar(m); } catch (e) { /* sem anuncio */ } };
   const logApp = (m, c) => { try { if (typeof log === 'function') log(m, c); } catch (e) { /* sem log */ } };
   const lin = t => { const n = t ? t.split('\n').length : 0; return n + (n === 1 ? ' linha' : ' linhas'); };
   const ehLink = v => /^https?:\/\/\S+$/i.test(String(v || '').trim());
-  // sinais fortes de apresentacao (evita confundir com os separadores "---" do treinamento)
+  // sinais fortes de apresentacao (evita confundir com os separadores "---" da apostila)
   const sinalApresentacao = t => /<!--\s*(class|notas):/.test(t) || /^---\s*\n[\s\S]*?\btitle\s*:/.test(t);
 
   /* ---------------------------- Estilos ---------------------------- */
@@ -50,13 +50,13 @@ html.contraste .cl-ok{color:#0f8}
     SUB.map(a => '<button type="button" role="tab" class="cl-tab" id="clTab-' + a[0] + '" data-ck="' + a[0] + '" aria-controls="clPane-' + a[0] + '" aria-selected="false" tabindex="-1"><span>' + a[1] + '</span><span class="cl-ok" aria-hidden="true">\u2713</span></button>').join('') +
     '</div>' +
     '<div class="cl-painel" role="tabpanel" id="clPane-g" aria-labelledby="clTab-g" hidden>' +
-    '<label class="jn-lb" for="clT-g">Markdown do treinamento</label>' +
-    '<textarea id="clT-g" spellcheck="false" aria-describedby="clDica" placeholder="Cole aqui o texto do treinamento"></textarea></div>' +
+    '<label class="jn-lb" for="clT-g">Markdown da apostila</label>' +
+    '<textarea id="clT-g" spellcheck="false" aria-describedby="clDica" placeholder="Cole aqui o texto da apostila"></textarea></div>' +
     '<div class="cl-painel" role="tabpanel" id="clPane-s" aria-labelledby="clTab-s" hidden>' +
     '<label class="jn-lb" for="clT-s">Markdown da apresenta\u00e7\u00e3o</label>' +
     '<textarea id="clT-s" spellcheck="false" aria-describedby="clDica" placeholder="Cole aqui o texto da apresenta\u00e7\u00e3o"></textarea></div>' +
     '<div class="cl-painel" role="tabpanel" id="clPane-l" aria-labelledby="clTab-l" hidden>' +
-    '<label class="jn-lb" for="clUrl">Endere\u00e7o do link do curso</label>' +
+    '<label class="jn-lb" for="clUrl">Endere\u00e7o do link do conte\u00fado</label>' +
     '<input type="url" id="clUrl" autocomplete="off" aria-describedby="clDica" placeholder="https://\u2026">' +
     '<label class="jn-lb" for="clSenha">Senha (se houver)</label>' +
     '<input type="password" id="clSenha" autocomplete="off"></div>' +
@@ -75,7 +75,7 @@ html.contraste .cl-ok{color:#0f8}
       t.setAttribute('aria-label', a[1] + (cheio ? ', preenchido' : ''));
     });
     let txt;
-    if (sub === 'l') txt = u ? 'Informe a senha, se houver, e clique em Importar.' : 'Tem um link do curso? Cole aqui. O texto atual vai para Vers\u00f5es antes de ser substitu\u00eddo.';
+    if (sub === 'l') txt = u ? 'Informe a senha, se houver, e clique em Importar.' : 'Tem um link do conte\u00fado? Cole aqui. O texto atual vai para Vers\u00f5es antes de ser substitu\u00eddo.';
     else {
       const p = [];
       ['g', 's'].forEach(k => { if (v[k]) p.push(NOME[k] + ' (' + lin(v[k]) + ')'); });
@@ -114,7 +114,7 @@ html.contraste .cl-ok{color:#0f8}
       for (const x of itens) {
         const k = x[0], alvo = $(k); if (!alvo) continue;
         alvo.value = x[1]; alvo.dispatchEvent(new Event('input', { bubbles: true }));
-        if (window.Hist && Hist.registrar) Hist.registrar('arquivo', 'Texto colado (' + (k === 'g' ? 'treinamento' : 'apresenta\u00e7\u00e3o') + ')');
+        if (window.Hist && Hist.registrar) Hist.registrar('arquivo', 'Texto colado (' + (k === 'g' ? 'apostila' : 'apresenta\u00e7\u00e3o') + ')');
       }
       const destino = itens[0][0];
       if (typeof aba === 'function') aba(destino);
@@ -123,7 +123,7 @@ html.contraste .cl-ok{color:#0f8}
       logApp('Texto colado: ' + itens.map(x => NOME[x[0]]).join(' e ') + '.', 'ok');
       if (API.fechar) API.fechar(true);
       const ed = $(destino === 'g' ? 'pg' : 'ps'); if (ed && ed.scrollIntoView) ed.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      anunciar(itens.length > 1 ? 'Treinamento e apresenta\u00e7\u00e3o importados.' : NOME[destino] + ' importado.');
+      anunciar(itens.length > 1 ? 'Apostila e apresenta\u00e7\u00e3o importadas.' : NOME[destino] + ' importado.');
       try { if (window.UXFeedback && $('btnImportar')) UXFeedback.confirmar($('btnImportar'), 'Texto importado.'); } catch (e) { /* sem feedback */ }
     } catch (err) {
       API.msg('Erro ao importar: ' + ((err && err.message) || err), false);

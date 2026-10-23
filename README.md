@@ -1,12 +1,12 @@
-# Conteudista ANAC — Gerador de cursos no navegador
+# Conteudista ANAC — Gerador de conteúdos no navegador
 
-Página única que converte os arquivos Markdown de um curso em:
+Página única que converte os arquivos Markdown de um conteúdo em:
 
-| Treinamento | Apresentação |
+| Apostila | Apresentação |
 |---|---|
-| `Treinamento_<PREFIXO>.md` · `.html` · `.docx` | `Apresentacao_<PREFIXO>.md` · `.html` · `.pptx` |
+| `Apostila_<NOME>.md` · `.html` · `.docx` | `Apresentacao_<NOME>.md` · `.html` · `.pptx` |
 
-**Nenhum curso é salvo no site.** A conversão roda no navegador de quem usa (Python via Pyodide). O repositório e o site contêm apenas a ferramenta e um curso de exemplo fictício, por isso podem ser públicos.
+**Nenhum conteúdo é salvo no site.** A conversão roda no navegador de quem usa (Python via Pyodide). O repositório e o site contêm apenas a ferramenta e um conteúdo de exemplo fictício, por isso podem ser públicos.
 
 ## Recursos
 
@@ -14,7 +14,7 @@ Página única que converte os arquivos Markdown de um curso em:
 |---|---|---|
 | Editor Markdown | Barra de ferramentas, **desfazer/refazer** próprio (Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z e botões; cobre botões, arquivos e rascunhos), atalhos (Ctrl+B/I/E/K, Ctrl+Shift+1/2/3 títulos, Ctrl+Shift+7/8/9 listas, Alt+↑/↓ mover linha, Ctrl+Shift+D duplicar), modos Editar/Dividido/Prévia, tela cheia, prévia fiel ao gerador (inclusive slides) | Só na memória do navegador |
 | Tutorial, Ajuda e Atalhos | Tutorial guiado na primeira visita (ou botão ▶ Tutorial), com **reinício** (↺ no tutorial, botão na Ajuda ou `Alt+Shift+R`); Ajuda **com busca** e destaque dos termos (botão ou F1); atalhos `Alt+Shift+tecla` com janela de consulta (botão ⌨ Atalhos ou `Alt+Shift+K`) | — |
-| Gerar curso | `treinamento.md` + `apresentacao.md` → 6 arquivos + ZIP, no layout **gov.br** (padrão) ou **Clássico** | Só na memória do navegador |
+| Gerar conteúdo | Apostila + apresentação em Markdown → 6 arquivos + ZIP, no layout **gov.br** (padrão) ou **Clássico** | Só na memória do navegador |
 | Imagens em base64 | Arraste, cole (Ctrl+V) ou insira pelo botão de imagem; no editor aparecem como `(img:N)` | No próprio texto `.md` |
 | Versões salvas | Salvamento automático ligado por padrão (recupera o último trabalho ao reabrir) e **versões salvas** com nome (menu **Salvar**), reunidas em **Versões** e em **Importar → Salvos** | IndexedDB do navegador, só nesta máquina |
 | Salvar na pasta / Baixar .zip | Grava os `.md` e os arquivos gerados numa pasta escolhida (Edge/Chrome) | Disco do usuário |
@@ -31,10 +31,10 @@ web/editor.js            ← editor Markdown leve (sem dependências)
 web/ajuda.js             ← tutorial guiado, ajuda e atalhos de teclado
 web/historico.js         ← histórico de versões e comparação (diff)
 web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
-web/metadados.js         ← Nome do curso, Rodapé (opcional) sempre visível (a Barra superior foi retirada)
+web/metadados.js         ← Nome do conteúdo, Rodapé (opcional) sempre visível (a Barra superior foi retirada)
 web/dicas.js             ← dicas (tooltip) acessíveis dos botões da barra do editor
 web/janelas.js           ← Importar, Salvar, Compartilhar e Histórico de arquivos (janelas e barra de ações)
-web/colar.js             ← Importar > Colar: subabas Treinamento, Apresentação e Link
+web/colar.js             ← Importar > Colar: subabas Apostila, Apresentação e Link
 web/versoes.js           ← rascunhos e versões unificados (salvar, abrir, excluir e migração dos dados antigos)
 web/locucao.js           ← aba Locução
 web/locucao-worker.js    ← motor de voz Kokoro-82M (Web Worker)
@@ -42,7 +42,7 @@ web/ptbr-g2p.js          ← fonemizador interno pt-BR
 web/changelog.js         ← botão Novidades (lê o CHANGELOG.md)
 web/govbr.css            ← tema do Padrão Digital de Governo (gov.br/ds)
 CHANGELOG.md             ← histórico de versões da aplicação
-web/exemplo/             ← curso de exemplo (fictício)
+web/exemplo/             ← conteúdo de exemplo (fictício)
 tools/gerador.py         ← motor de conversão (o mesmo do agente "Gerador de Cursos ANAC")
 tools/requirements.txt
 .github/workflows/publicar-pagina.yml  ← testa e publica a página no GitHub Pages
@@ -64,7 +64,7 @@ tools/requirements.txt
 
 ```
 pip install -r tools/requirements.txt
-python tools/gerador.py treinamento.md apresentacao.md --prefixo Meu_Curso --rodape "SIGLA · ANAC" --saida saida
+python tools/gerador.py apostila.md apresentacao.md --prefixo Meu_Conteudo --rodape "SIGLA · ANAC" --saida saida
 # só um dos dois: use '-' no lugar do arquivo ausente (ex.: python tools/gerador.py - apresentacao.md ...)
 ```
 
@@ -89,7 +89,7 @@ Aba **Locução** (`Alt+Shift+3`): gera áudio a partir de texto no navegador co
 | Textos longos | Fragmentação por frases (≤ 250 caracteres em pt-BR), geração trecho a trecho, cancelamento |
 | Áudio | Costura PCM via Web Audio API com micro-fades (sem estalos) e pausa configurável; WAV PCM 16 bits, 24 kHz |
 | Histórico/cache | IndexedDB `KokoroTTS_DB` / `audio_history` (índice `text + voice + speed`); texto idêntico com a mesma voz, velocidade e pausa é servido do histórico; painel com Ouvir, Baixar, Usar texto, Excluir e busca |
-| Integração | Importa notas do apresentador, texto dos slides ou o treinamento (sem Markdown); ajuda e atalhos (`Alt+Shift+3`, `Alt+Shift+N`) |
+| Integração | Importa notas do apresentador, texto dos slides ou a apostila (sem Markdown); ajuda e atalhos (`Alt+Shift+3`, `Alt+Shift+N`) |
 
 ## Arquivos gerados guardados no navegador
 
@@ -110,7 +110,7 @@ O GitHub Pages limita o site a ~1 GB. Para acrescentar outra voz do Piper, inclu
 
 ## Narração dos slides
 
-Na aba **Curso**, com a aba **Apresentação** selecionada, o painel **Narração dos slides** transforma as notas do apresentador (`<!-- notas: … -->`) em áudio embutido na apresentação:
+Na aba **Conteúdo**, com a aba **Apresentação** selecionada, o painel **Narração dos slides** transforma as notas do apresentador (`<!-- notas: … -->`) em áudio embutido na apresentação:
 
 | Arquivo | Como funciona |
 |---|---|

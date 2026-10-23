@@ -1,16 +1,16 @@
 ---
-title: Curso de Exemplo
+title: Conteúdo de Exemplo
 ---
 
 <!-- class: title -->
 
-# Curso de Exemplo
+# Conteúdo de Exemplo
 
-## Substitua pelo conteúdo do seu curso
+## Substitua pelo seu conteúdo
 
 Treinamento para novos servidores
 
-<!-- notas: Olá, seja bem-vindo ao Curso de Exemplo. Este treinamento foi preparado para novos servidores e mostra, de forma prática, como o conteúdo de um curso fica organizado. Nos próximos slides, você verá um passo a passo, um fluxo de trabalho e um exemplo de imagem. Para criar o seu curso, substitua estes textos pelo seu conteúdo. -->
+<!-- notas: Olá, seja bem-vindo ao Conteúdo de Exemplo. Este material foi preparado para novos servidores e mostra, de forma prática, como um conteúdo fica organizado. Nos próximos slides, você verá um passo a passo, um fluxo de trabalho e um exemplo de imagem. Para criar o seu conteúdo, substitua estes textos pelo seu texto. -->
 
 ---
 
@@ -52,4 +52,4 @@ Treinamento para novos servidores
 
 ## Dúvidas? Fale com a unidade responsável
 
-<!-- notas: Chegamos ao fim deste curso de exemplo. Obrigado pela atenção. Se tiver dúvidas, procure a unidade responsável. -->
+<!-- notas: Chegamos ao fim deste conteúdo de exemplo. Obrigado pela atenção. Se tiver dúvidas, procure a unidade responsável. -->

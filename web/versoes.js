@@ -11,7 +11,7 @@
    O QUE ESTE ARQUIVO FAZ
    1. Migra uma unica vez os rascunhos com nome para versoes marcadas (mesma data, mesmo conteudo;
       sem duplicar se rodar de novo). So marca a migracao como concluida se tudo deu certo.
-   2. Substitui "Salvar rascunho" (#dsave) por "Salvar versao" (nome automatico: curso + data e hora).
+   2. Substitui "Salvar rascunho" (#dsave) por "Salvar versao" (nome automatico: conteudo + data e hora).
    3. Redefine listarRascunhos(): a lista de #drafts (aba Salvos do Importar) passa a mostrar as
       VERSOES SALVAS, com Abrir e Excluir. So e desenhada com a janela aberta (leitura sob demanda,
       porque as versoes guardam o texto completo).
@@ -69,7 +69,7 @@
     let d = null;
     try { d = pacote(); } catch (e) { d = null; }
     if (!d || (!(d.g || '').trim() && !(d.s || '').trim())) { anunciar('Nada para salvar.'); logApp('Nada para salvar.', 'wa'); return null; }
-    const n = String(nome || '').trim() || ((d.p || 'Curso') + ' ' + new Date().toLocaleString('pt-BR'));
+    const n = String(nome || '').trim() || ((d.p || 'Conteudo') + ' ' + new Date().toLocaleString('pt-BR'));
     const v = await Hist.registrar('marco', '\u2605 ' + n, d);
     if (v) { sujo = true; logApp('Vers\u00e3o salva: ' + n + '.', 'ok'); anunciar('Vers\u00e3o salva.'); if (aberta()) desenhar(); }
     return v;
