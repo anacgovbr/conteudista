@@ -306,3 +306,474 @@ A seção **Arquivos gerados** mostra o nome do conteúdo, a data e a hora, o ta
 | **.MD** | O texto-fonte, para reimportar ou versionar |
 
 > [!info] Os fluxos Mermaid são desenhados no HTML. No DOCX e no PPTX aparecem como uma tabela com **De**, **Condição** e **Para**.
+
+## 9. Locução e narração
+
+### 9.1 Narração dos slides
+
+A narração transforma as **notas do apresentador** em áudio, dentro da própria apresentação.
+
+1. Escreva as notas ao final de cada slide, em um comentário `notas`.
+2. Na aba **Apresentação**, marque **Narração dos slides**.
+3. Escolha idioma, voz (a padrão é **Faber**), velocidade e formato do áudio: **MP3** (padrão), **OGG** (menor) ou **WAV** (sem compressão).
+4. Clique em **Gerar arquivos**.
+
+| Saída | Como a narração funciona |
+|---|---|
+| **HTML** | A apresentação abre com “Iniciar com narração”. Os botões **Narração** (`M`) e **Avanço automático** (`A`) controlam o som e a troca de slides |
+| **PPTX** | O áudio de cada slide inicia sozinho. Com “Avançar os slides sozinho”, é possível exportar um vídeo pelo PowerPoint |
+
+Dois comentários controlam o que é falado:
+
+```text
+<!-- notas: Texto que o apresentador e a narração leem. -->
+<!-- narracao: Texto diferente da nota, só para o áudio. -->
+<!-- narracao: nao -->
+```
+
+O primeiro define a nota. O segundo substitui a nota no áudio. O terceiro deixa o slide sem som.
+
+> [!tip] **Escreva para o ouvido.** Frases curtas, em texto corrido, sem símbolos, sem endereços e com as siglas por extenso na primeira vez. Números e datas devem soar naturais quando lidos em voz alta.
+
+### 9.2 Aba Locução
+
+A aba **Locução** converte qualquer texto em fala, sem relação com os slides.
+
+- **Importar** traz o texto das notas, dos slides ou da apostila.
+- Escolha **idioma**, **voz**, **velocidade** e **pausa** entre frases, e clique em **Gerar locução**.
+- O áudio é gerado **no seu computador**: o texto não é enviado a nenhum servidor.
+- Os recursos de voz são baixados sob demanda, em **Carregar áudio**. Na primeira vez, o download pode levar alguns minutos.
+- Cada áudio fica guardado em um histórico, para ouvir e baixar de novo (**MP3**, **OGG** ou **WAV**).
+
+## 10. O que cabe no Markdown
+
+A tabela resume o que o Conteudista converte. Cada elemento aparece neste próprio material.
+
+| Elemento | Como escrever | HTML | DOCX | PPTX |
+|---|---|---|---|---|
+| Títulos | `#`, `##` e `###` | Sim | Sim | Sim |
+| Ênfase | `**negrito**` e `*itálico*` | Sim | Sim | Sim |
+| Listas | `-` ou `1.`, em até três níveis | Sim | Sim | Sim |
+| Checklists | `- [ ] item` | Marcável | Caixa | Caixa |
+| Tabelas | Colunas separadas por barras verticais | Sim | Sim | Sim |
+| Caixas | `> [!info]`, `> [!tip]` e `> [!warning]` | Sim | Sim | Sim |
+| Código | Bloco com três crases | Sim | Sim | Sim |
+| Links | `[texto](endereço)` | Sim | Sim | Sim |
+| Imagens | `![legenda](arquivo)` | Sim | Sim | Sim |
+| Fluxos | Bloco `mermaid` | Desenho | Tabela | Tabela |
+| Vídeos | Link comum | Sim | Sim | Sim |
+| Notas e narração | Comentários `notas` e `narracao` | Não se aplica | Não se aplica | Notas e áudio |
+
+### 10.1 Caixas e checklists
+
+> [!info] **Informação:** contexto que ajuda a entender o assunto.
+
+> [!tip] **Dica:** atalho ou boa prática.
+
+> [!warning] **Atenção:** risco, restrição ou ação irreversível.
+
+- [ ] Item pendente de um checklist.
+- [x] Item concluído de um checklist.
+
+### 10.2 Fluxos com Mermaid
+
+Os fluxos são escritos em **Mermaid**, dentro de um bloco de código. Adote a convenção de nomes abaixo para que o desenho e a tabela do DOCX e do PPTX fiquem claros:
+
+| Nó | Nome | Forma |
+|---|---|---|
+| Início | `T00` | `T00((Início))` |
+| Tarefa | `T01`, `T02`… | `T01[01. Texto curto<br/>Responsável]` |
+| Decisão | `D01`, `D02`… | `D01{Pergunta?}` |
+| Fim | `T99` | `T99(((Fim)))` |
+| Ligação | `-->` | `T01 --> D01` e `D01 -->\|Sim\| T02` |
+
+Exemplo do código de um fluxo simples:
+
+```text
+flowchart LR
+    T00((Início)) --> T01[01. Receber o pedido<br/>Unidade]
+    T01 --> D01{Pedido completo?}
+    D01 -->|Sim| T02[02. Emitir o parecer]
+    D01 -->|Não| T03[03. Solicitar complementação]
+    T02 --> T99(((Fim)))
+    T03 --> T99
+```
+
+> [!warning] Não use parênteses, aspas nem dois-pontos dentro do texto dos nós, e não escreva a palavra `end` em minúsculas: o desenho deixa de ser gerado. O código completo do fluxo vai dentro de um bloco com a linguagem `mermaid`.
+
+> [!info] No HTML, o desenho é feito no navegador de quem lê e usa um componente carregado de `cdn.jsdelivr.net`. Sem acesso a esse endereço, o leitor vê o código do fluxo no lugar do desenho.
+
+### 10.3 Imagens
+
+Há três formas de trazer uma imagem para o texto:
+
+| Forma | Como |
+|---|---|
+| **Arquivo local** | Arraste o arquivo para o editor, cole com `Ctrl+V` ou use o botão de imagem |
+| **Nome no texto** | Escreva `![Legenda](figura.png)` e arraste `figura.png` para a aba, ou importe em um ZIP |
+| **Endereço na internet** | Escreva `![Legenda](https://…/figura.png)`: a aplicação tenta baixar e converter, se o site permitir |
+
+Uma imagem sozinha em uma linha vira uma figura com legenda. Em meio ao texto, vira uma imagem em linha: ![ícone de informação](data:image/png;base64,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) indica um destaque.
+
+> [!info] Escreva sempre uma legenda descritiva. Ela aparece sob a figura e serve de texto alternativo para leitores de tela.
+
+### 10.4 Vídeos e links
+
+O Conteudista **não incorpora um reprodutor de vídeo**. O vídeo entra no texto como um **link comum**, que abre em uma nova aba no HTML e funciona como hiperlink no DOCX e no PPTX. Para listar vários vídeos, use uma tabela:
+
+| Vídeo | Origem | Link |
+|---|---|---|
+| Semana +OM 2025: fatores humanos na manutenção | Canal Oficial ANAC | [Assistir ao vídeo](https://www.youtube.com/watch?v=ZvZ8Fj_kX8E) |
+| Vídeos sobre manutenção aeronáutica | Portal da ANAC | [Ver os vídeos](https://www.gov.br/anac/pt-br/assuntos/regulados/manutencao-aeronautica/videos) |
+| Todos os vídeos do canal | Canal Oficial ANAC | [Abrir o canal](https://www.youtube.com/oficial_anac) |
+
+> [!tip] O mesmo vale para áudio, planilhas, PDFs e páginas do SharePoint: use um link com um texto que diga o que a pessoa vai encontrar.
+
+### 10.5 O que evitar
+
+| Não use | Por quê | Use |
+|---|---|---|
+| Endereço solto no texto | Não vira link | `[texto](endereço)` |
+| Tags HTML, como `<b>` | Aparecem como texto | `**negrito**` e `*itálico*` |
+| Texto riscado, notas de rodapé e fórmulas | Não são convertidos | Reescreva o trecho |
+| Imagem dentro de link | A sintaxe se quebra | Imagem em uma linha e o link em outra |
+| Títulos de nível 4 ou mais | Aparecem no texto, mas não entram no sumário | Até `###` |
+
+## 11. Produzir os textos com uma IA
+
+Uma IA pode redigir a apostila e a apresentação a partir de um material de referência. O Conteudista oferece um **prompt padrão**, que já descreve a sintaxe aceita, de modo que a saída possa ser importada sem ajustes.
+
+> [!warning] Use somente ferramentas de IA autorizadas pela instituição e não envie dados pessoais nem informações restritas. A IA pode errar: revise todo o conteúdo antes de gerar os arquivos. A responsabilidade pelo conteúdo é de quem o publica.
+
+```mermaid
+flowchart LR
+    T00((Início)) --> T01[01. Copiar o prompt padrão]
+    T01 --> T02[02. Ajustar os parâmetros]
+    T02 --> T03[03. Enviar o material<br/>de referência à IA]
+    T03 --> T04[04. Receber a apostila<br/>e a apresentação]
+    T04 --> D01{A entrega veio<br/>em ZIP?}
+    D01 -->|Sim| T05[05. Importar o ZIP<br/>em Computador]
+    D01 -->|Não| T06[06. Colar os dois textos<br/>em Colar]
+    T05 --> T07[07. Revisar e editar]
+    T06 --> T07
+    T07 --> T08[08. Gerar os arquivos]
+    T08 --> T99(((Fim)))
+```
+
+### 11.1 Passo a passo
+
+1. Selecione e copie o **prompt padrão** da seção 11.3.
+2. Em uma conversa nova com a IA, cole o prompt e **edite os parâmetros** da seção 1 dele (tabela 11.2).
+3. Preencha a seção 2 do prompt com o **material de referência** ou anexe os arquivos. Anexe também as imagens que deseja usar.
+4. Envie. Se a IA pedir informações que faltam, responda.
+5. Receba os textos (dois blocos ou um ZIP) e importe no Conteudista (seção 11.4).
+6. **Revise**, ajuste e clique em **Gerar arquivos**.
+
+### 11.2 Parâmetros do prompt
+
+Só a seção 1 e a seção 2 do prompt precisam de edição. O restante do prompt fixa as regras de conteúdo e de formato.
+
+| Parâmetro | O que define | Exemplo ou padrão |
+|---|---|---|
+| `TEMA` | O assunto do conteúdo | Licenciamento de oficinas |
+| `PÚBLICO` | Quem vai estudar; muda o vocabulário e o nível de detalhe | Novos servidores da área |
+| `OBJETIVO DE APRENDIZAGEM` | O que o público deve saber fazer; organiza seções e exercícios | Preencher o formulário sem erros |
+| `NOME DO CONTEÚDO` | O nome dos arquivos gerados | `Gestao_de_Processos` |
+| `RODAPÉ` | O texto do rodapé dos slides e do DOCX | Unidade · Órgão |
+| `SEÇÕES DA APOSTILA` | A extensão da apostila | 6 a 8 |
+| `SLIDES` | A duração da aula, com capa e encerramento | 14 a 20 |
+| `EXERCÍCIOS`, `CHECKLISTS` e `FLUXOS MERMAID` | A quantidade de cada elemento | 4, 2 e 2 |
+| `TAMANHO DAS NOTAS` | A duração da narração de cada slide | 60 a 100 palavras, ou 25 a 40 segundos |
+| `IDIOMA E TOM` | O estilo do texto | Português do Brasil, técnico e formal |
+| `IMAGENS` | Quais imagens podem ser usadas | Somente as que eu enviar |
+| `FORMATO DE ENTREGA` | A forma de receber os textos | A (dois blocos) ou B (ZIP) |
+
+### 11.3 O prompt padrão
+
+> [!info] Copie todo o texto do bloco, da primeira à última linha. Os trechos entre colchetes são os que você substitui.
+
+```text
+PROMPT PADRÃO DO CONTEUDISTA — apostila e apresentação
+Versão 1.0. Edite somente a seção 1 (parâmetros) e a seção 2 (material de
+referência). Não altere as demais seções.
+
+==================================================
+1. PARÂMETROS (substitua os textos entre colchetes)
+==================================================
+TEMA: [tema do conteúdo]
+PÚBLICO: [quem vai estudar, por exemplo: novos servidores da área de
+   regulação]
+OBJETIVO DE APRENDIZAGEM: [o que o público deve saber fazer ao final]
+NOME DO CONTEÚDO: [sem acentos e sem espaços, com sublinhado, por exemplo:
+   Gestao_de_Processos]
+RODAPÉ: [texto curto para os slides e o DOCX, por exemplo: Unidade · Órgão]
+SEÇÕES DA APOSTILA: [de 6 a 8]
+SLIDES: [de 14 a 20, incluindo a capa e o encerramento]
+EXERCÍCIOS: [4, com gabarito]
+CHECKLISTS: [2]
+FLUXOS MERMAID: [2]
+TAMANHO DAS NOTAS DE CADA SLIDE: [de 60 a 100 palavras]
+IDIOMA E TOM: [português do Brasil; técnico e formal, direto e sem
+   repetições]
+IMAGENS: [somente as que eu enviar, citadas pelo nome do arquivo; ou
+   nenhuma]
+FORMATO DE ENTREGA: [A = dois blocos de texto; ou B = arquivo ZIP]
+
+Se TEMA, PÚBLICO, OBJETIVO DE APRENDIZAGEM ou NOME DO CONTEÚDO ainda
+estiverem com o texto de exemplo, pergunte-me antes de produzir qualquer
+coisa.
+
+==================================================
+2. MATERIAL DE REFERÊNCIA
+==================================================
+[Cole aqui os textos de referência (normas, procedimentos, manuais) ou anexe
+os arquivos. Indique o que é obrigatório e o que é opcional, se houver.]
+
+==================================================
+3. SEU PAPEL
+==================================================
+Você é um projetista instrucional e redator técnico. Com base nos parâmetros
+e no material de referência, produza uma apostila e uma apresentação com
+notas do apresentador, para serem convertidas pelo Conteudista.
+
+==================================================
+4. REGRAS DE CONTEÚDO
+==================================================
+1. Use apenas o material de referência. Não invente normas, números, prazos,
+   nomes, siglas ou links. Quando faltar informação, escreva: [A confirmar].
+2. Cada seção da apostila e cada slide trata de um único assunto. Cada
+   funcionalidade, etapa ou conceito tem o seu próprio slide, na ordem da
+   apostila.
+3. Escreva de forma técnica e formal, com frases curtas e voz ativa. Evite
+   adjetivos desnecessários, repetições e explicações longas.
+4. Defina cada sigla na primeira vez em que ela aparecer.
+5. Distribua os exercícios ao longo do conteúdo. Cada exercício verifica um
+   objetivo.
+6. Não inclua dados pessoais nem informações restritas que não estejam no
+   material.
+7. Não use imagens da internet. Use somente as que eu enviei, citadas pelo
+   nome do arquivo.
+
+==================================================
+5. FORMATO DA APOSTILA (arquivo Apostila_NOME.md)
+==================================================
+Use somente a sintaxe abaixo. Qualquer outra sintaxe não é convertida.
+- Primeira linha: o título, com "# ". Depois, uma linha em negrito com o
+  subtítulo e uma linha com a unidade e a versão.
+- Em seguida, a caixa de objetivo: > [!info] **Objetivo:** texto
+- Seções numeradas com "## 1. Título" e subseções com "### 1.1 Título". Não
+  use níveis maiores. A primeira seção é "Como usar este material", com uma
+  tabela "Se você quer… | Vá para".
+- Listas com "- " ou "1. ", em no máximo dois níveis. Checklists com "- [ ]
+  ".
+- Tabelas com barras verticais e a linha de separação |---|---|.
+- Caixas: > [!info], > [!tip] ou > [!warning], sempre na primeira linha da
+  citação.
+- Links somente como [texto](endereço). Não cole endereços soltos.
+- Ênfase com **negrito** e *itálico*. Não use HTML, texto riscado, notas de
+  rodapé nem fórmulas.
+- Fluxos: bloco de código com a linguagem mermaid (três crases e a palavra
+  mermaid na abertura; três crases no fechamento), iniciado por flowchart
+  LR. Nomes dos nós: T00 para o início, T01, T02... para as tarefas, D01,
+  D02... para as decisões e T99 para o fim. Formas: T00((Início)), T01[01.
+  Texto curto<br/>Responsável], D01{Pergunta?}, T99(((Fim))). Ligações: T01
+  --> D01 e D01 -->|Sim| T02. Não use parênteses, aspas nem dois-pontos nos
+  textos dos nós, nem a palavra end em minúsculas. Exemplo do código, sem as
+  cercas:
+      flowchart LR
+          T00((Início)) --> T01[01. Receber o pedido<br/>Unidade]
+          T01 --> D01{Pedido completo?}
+          D01 -->|Sim| T02[02. Emitir o parecer]
+          D01 -->|Não| T03[03. Solicitar complementação]
+          T02 --> T99(((Fim)))
+          T03 --> T99
+- Imagens, uma por linha: ![Legenda](nome-do-arquivo.png). Em ZIP, use
+  ![Legenda](imagens/nome-do-arquivo.png). Somente arquivos que eu enviei.
+- Exercícios: seção "## N. Exercícios" com "### Exercício 1 — Título" e o
+  enunciado. Gabarito: seção "## N+1. Gabarito" (a palavra Gabarito é
+  obrigatória no título), com "### Gabarito 1" e a resposta.
+- Última seção: "## N. Referências", com uma tabela "Referência | Link" que
+  use somente fontes do material.
+
+==================================================
+6. FORMATO DA APRESENTAÇÃO (arquivo Apresentacao_NOME.md)
+==================================================
+- O arquivo começa exatamente assim (sem a linha theme, que o Conteudista
+  acrescenta):
+      ---
+      title: Título da apresentação
+      ---
+- Cada slide é separado por uma linha com três hifens (---), com uma linha
+  em branco antes e outra depois.
+- Capa e encerramento: primeira linha <!-- class: title -->, depois "#
+  Título" e "## Subtítulo". Slide de destaque: <!-- class: highlight -->.
+- Slides de conteúdo: "# Título curto" (até 45 caracteres) e UM destes
+  elementos: até 5 marcadores curtos, uma tabela de até 5 linhas, um fluxo
+  mermaid ou uma imagem. Uma caixa > [!tip] pode complementar.
+- Ao final de cada slide, as notas: <!-- notas: texto -->
+- As notas serão convertidas em áudio e lidas em voz alta. Escreva em texto
+  corrido, no tamanho definido nos parâmetros, em tom técnico e formal, sem
+  símbolos, sem Markdown, sem parênteses, sem endereços e sem siglas que não
+  possam ser lidas por extenso. Complemente o slide: não repita os seus
+  tópicos. Não escreva "este slide".
+- Para um slide sem áudio, use <!-- narracao: nao -->
+
+==================================================
+7. FORMATO DE ENTREGA
+==================================================
+Se eu escolher A: entregue dois blocos de código com a linguagem markdown,
+   cada um aberto e fechado com quatro crases, para preservar os blocos
+   mermaid internos. Escreva, antes de cada bloco, o nome do arquivo:
+   Apostila_NOME.md e Apresentacao_NOME.md. Dentro dos blocos, somente o
+   texto do arquivo.
+Se eu escolher B: crie um arquivo ZIP, sem subpastas, com Apostila_NOME.md,
+   Apresentacao_NOME.md e, se houver imagens, uma pasta imagens com os
+   arquivos que eu enviei. Use UTF-8 sem BOM. Se você não puder criar
+   arquivos, use o formato A.
+
+==================================================
+8. VERIFICAÇÃO ANTES DE ENTREGAR
+==================================================
+Confira e corrija antes de responder:
+[ ] Todos os parâmetros foram atendidos.
+[ ] Nada foi inventado; as lacunas estão marcadas com [A confirmar].
+[ ] Os dois textos começam como descrito e usam somente a sintaxe permitida.
+[ ] Cada slide tem notas e cada fluxo segue os nomes T00, T01, D01 e T99.
+[ ] A numeração das seções e dos exercícios é contínua.
+Ao final, liste em até cinco itens o que uma pessoa precisa revisar.
+```
+
+### 11.4 Importar a saída da IA
+
+| Entrega | Como importar |
+|---|---|
+| **A — dois blocos de texto** | Copie o conteúdo do primeiro bloco e cole em **Importar › Colar › Apostila**; copie o segundo e cole em **Apresentação**. Clique em **Importar** em cada subaba |
+| **B — arquivo ZIP** | Em **Importar › Computador**, arraste o `.zip`. O destino de cada `.md` é detectado e as imagens da pasta `imagens/` são associadas pelo nome |
+
+Depois, **revise**: resolva os trechos marcados com `[A confirmar]`, confira os dados e ouça a narração antes de entregar. Em seguida, clique em **Gerar arquivos**.
+
+### 11.5 Como ajustar o resultado
+
+- **Mais curto ou mais longo:** altere `SEÇÕES DA APOSTILA`, `SLIDES` e `TAMANHO DAS NOTAS`.
+- **Outro público ou tom:** altere `PÚBLICO` e `IDIOMA E TOM`.
+- **Mudança pontual:** peça na mesma conversa, por exemplo: “Reescreva a seção 3 mantendo a sintaxe do Conteudista e entregue somente essa seção”.
+- **A IA saiu da sintaxe:** cole de novo a seção 5 ou a seção 6 do prompt e peça a correção.
+- **Imagens:** envie os arquivos junto com o prompt e use o formato B para recebê-los na pasta `imagens/`.
+
+## 12. Fluxo de trabalho de exemplo
+
+Além dos fluxos de uso da aplicação, a apostila costuma documentar **processos de trabalho**. O exemplo abaixo mostra a análise de um pedido, com os responsáveis em cada tarefa. Substitua as tarefas e os responsáveis pelos do seu processo, mantendo a nomenclatura dos nós.
+
+```mermaid
+flowchart LR
+    T00((Pedido recebido)) --> T01[01. Analisar pedido<br/>GTXY - Servidores]
+    T01 --> D01{Pedido completo?}
+    D01 -->|Sim| T02[02. Emitir parecer]
+    D01 -->|Não| T03[03. Solicitar complementação]
+    T02 --> T99(((Fim)))
+    T03 --> T99
+```
+
+| Etapa | Quem |
+|---|---|
+| 01. Analisar pedido | GTXY – Servidores |
+| 02. Emitir parecer | GTXY – Servidores |
+| 03. Solicitar complementação | GTXY – Servidores |
+
+### 12.1 Passo a passo do processo
+
+1. Abra o processo no sistema.
+2. Preencha o formulário.
+3. Envie ao gestor.
+
+> [!warning] Antes de enviar, **confira a versão vigente** do formulário.
+
+## 13. Checklists
+
+Os checklists ficam marcáveis no HTML da apostila, e a marcação é lembrada neste navegador.
+
+### Checklist A — Antes de gerar
+
+- [ ] A apostila e a apresentação estão preenchidas (ou apenas a que você deseja gerar).
+- [ ] O **Nome do conteúdo** está correto.
+- [ ] O **rodapé** e o **layout** foram conferidos.
+- [ ] As imagens estão em base64: o painel mostra “Imagens: N de N”.
+- [ ] Os fluxos Mermaid seguem a nomenclatura T00, T01, D01 e T99.
+- [ ] As notas dos slides foram escritas para serem ouvidas.
+
+### Checklist B — Antes de entregar
+
+- [ ] Os arquivos abrem no Word, no PowerPoint e no navegador.
+- [ ] No Word, o sumário foi atualizado (**Atualizar campo**).
+- [ ] A narração foi ouvida do início ao fim.
+- [ ] Os links externos foram testados.
+- [ ] Não há dados pessoais nem informações restritas.
+- [ ] O texto-fonte foi guardado em um link ou em uma versão.
+
+## 14. Exercícios
+
+### Exercício 1 — Início rápido
+
+Liste, em ordem, os quatro passos mínimos para gerar um conteúdo a partir do exemplo.
+
+### Exercício 2 — Guardar o trabalho
+
+Você precisa continuar o trabalho amanhã, em outro computador, e o conteúdo tem muitas imagens. Qual opção do menu **Salvar** você usa e qual tipo de link a janela deve sugerir?
+
+### Exercício 3 — Importar
+
+Uma IA entregou um arquivo ZIP com `Apostila_Licencas.md`, `Apresentacao_Licencas.md` e a pasta `imagens/`. Onde você importa o ZIP e o que acontece com o texto que já estava no editor?
+
+### Exercício 4 — Sintaxe
+
+O trecho abaixo tem três problemas de sintaxe. Identifique-os e escreva a forma correta.
+
+```text
+Veja https://www.gov.br/ds para conhecer o <b>padrão</b> e ~~ignore~~ o restante.
+```
+
+### Exercício 5 — Narração
+
+Como deixar um slide sem áudio? Como fazer a narração falar um texto diferente da nota?
+
+## 15. Gabarito
+
+### Gabarito 1
+
+1. **Carregar exemplo** (ou colar o texto na aba **Apostila**).
+2. Conferir o **Nome do conteúdo**.
+3. Clicar em **Gerar arquivos**.
+4. Baixar o **.ZIP** em **Arquivos gerados**.
+
+### Gabarito 2
+
+Use **Salvar › Link**. Com muitas imagens, a janela sugere o **PrivateBin**, porque o link direto pode ser cortado por e-mail ou Teams. A validade padrão do PrivateBin é de 1 ano.
+
+### Gabarito 3
+
+Importe em **Importar › Computador**, arrastando o `.zip`. O destino de cada `.md` é detectado pelo nome e as imagens da pasta `imagens/` são associadas pelo nome. O texto que estava no editor é guardado em **Versões** antes de ser substituído, e pode ser restaurado.
+
+### Gabarito 4
+
+1. O endereço solto não vira link. Use `[padrão](https://www.gov.br/ds)`.
+2. A tag `<b>` aparece como texto. Use `**padrão**`.
+3. O texto riscado não é convertido. Remova a marcação ou reescreva o trecho.
+
+### Gabarito 5
+
+Para deixar o slide sem áudio, escreva `<!-- narracao: nao -->`. Para falar um texto diferente da nota, escreva `<!-- narracao: texto que será falado -->`.
+
+## 16. Referências
+
+| Referência | Link |
+|---|---|
+| Padrão Digital de Governo | [gov.br/ds](https://www.gov.br/ds/) |
+| Documentação do Mermaid | [mermaid.js.org](https://mermaid.js.org) |
+| Guia de Markdown | [markdownguide.org](https://www.markdownguide.org) |
+| PrivateBin | [privatebin.info](https://privatebin.info) |
+| Semana +OM 2025: fatores humanos na manutenção (vídeo) | [Assistir ao vídeo](https://www.youtube.com/watch?v=ZvZ8Fj_kX8E) |
+| Vídeos sobre manutenção aeronáutica | [gov.br/anac](https://www.gov.br/anac/pt-br/assuntos/regulados/manutencao-aeronautica/videos) |
+| Canal Oficial ANAC no YouTube | [youtube.com/oficial_anac](https://www.youtube.com/oficial_anac) |
+| Site da ANAC | [gov.br/anac](https://www.gov.br/anac) |
+
+> [!info] Os links externos podem mudar com o tempo. Confira-os antes de entregar o material.
