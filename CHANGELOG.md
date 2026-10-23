@@ -1,5 +1,9 @@
 # Novidades do Conteudista
 
+## 1.57 - 23/10/2026
+- **O conteúdo de exemplo começa a virar um guia de uso do próprio Conteudista.** A apostila do botão **Carregar exemplo** ganha as seções 1 a 8: como usar o material, **Início rápido**, como a aplicação funciona, percurso de aprendizado, edição, importação, formas de guardar o trabalho e geração dos arquivos. Traz 3 fluxos Mermaid (início rápido, percurso de aprendizado e onde guardar), 4 figuras da interface, tabelas, caixas e a lista de termos. As seções 9 a 16 e a apresentação chegam nas próximas versões.
+- Corrigido o parâmetro de cache dos scripts da página, que não havia sido atualizado na versão anterior.
+
 ## 1.56 - 23/10/2026
 - **Gerador v3.7**: comentários HTML (`<!-- -->`) dentro de blocos de código e de código em linha agora são preservados na apostila e na prévia do editor, o que permite mostrar a sintaxe das notas e da narração em exemplos. Fora de código, continuam sendo removidos.
 - Exemplos de imagem escritos dentro de código (`![legenda](arquivo.png)`) deixam de contar como imagens pendentes e de ser buscados na internet, e o contador de imagens do editor ignora esses exemplos.
