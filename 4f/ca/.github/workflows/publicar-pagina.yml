@@ -1,0 +1,123 @@
+name: Publicar página do Conteudista
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "tools/**"
+      - "CHANGELOG.md"
+      - "MIGRACAO-LOCUCAO.md"
+      - ".github/workflows/publicar-pagina.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v5
+
+      - name: Configurar Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: tools/requirements.txt
+
+      - name: Instalar dependências
+        run: pip install -r tools/requirements.txt
+
+      - name: Testar o gerador com o curso de exemplo
+        run: |
+          python tools/gerador.py web/exemplo/treinamento.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste --tema govbr
+          python tools/gerador.py web/exemplo/treinamento.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste2 --tema classico
+          mkdir -p /tmp/aud && python -c "import wave,struct,math;w=wave.open('/tmp/aud/1.wav','wb');w.setnchannels(1);w.setsampwidth(2);w.setframerate(22050);w.writeframes(b''.join(struct.pack('<h',int(8000*math.sin(i/10))) for i in range(22050)))"
+          python tools/gerador.py - web/exemplo/apresentacao.md --prefixo Narr --saida /tmp/teste3 --audios /tmp/aud --avancar
+
+      - name: Verificar sintaxe dos scripts da página
+        run: |
+          node --check web/editor.js
+          node --check web/locucao.js
+          node --check web/gerados.js
+          cp web/locucao-worker.js /tmp/locucao-worker.mjs && node --check /tmp/locucao-worker.mjs
+          cp web/locucao-piper-worker.js /tmp/locucao-piper-worker.mjs && node --check /tmp/locucao-piper-worker.mjs
+          cp web/locucao-local.js /tmp/locucao-local.mjs && node --check /tmp/locucao-local.mjs
+          python -c "import json;json.load(open('web/modelos.json',encoding='utf-8'))"
+          node --check web/ajuda.js
+          node --check web/historico.js
+          node --check web/changelog.js
+          node --check web/audio-codec.js
+          node --check web/narracao.js
+          node --check web/ui-ajustes.js
+          node --check web/metadados.js
+          node --check web/dicas.js
+          node --check web/janelas.js
+          node --check web/colar.js
+          node --check web/versoes.js
+          cp web/ptbr-g2p.js /tmp/ptbr-g2p.mjs && node --check /tmp/ptbr-g2p.mjs
+          node -e "import('/tmp/ptbr-g2p.mjs').then(m=>{const r=m.phonemizePTBR('Olá, mundo. A gestão de processos.');console.log(r);if(!/ˈ/.test(r))process.exit(1)})"
+          python -c "import re;s=open('web/index.html',encoding='utf-8').read();open('/tmp/app.js','w',encoding='utf-8').write(re.findall(r'<script>(.*?)</script>',s,re.S)[-1])"
+          node --check /tmp/app.js
+
+      - name: Montar a página (sem nenhum curso salvo)
+        run: |
+          mkdir -p site/wheels
+          cp web/index.html web/*.js web/*.css tools/gerador.py site/
+          cp -r tools/temas site/temas
+          cp -r web/exemplo site/exemplo
+          cp CHANGELOG.md site/
+          pip download --no-deps --only-binary=:all: --dest site/wheels python-docx python-pptx XlsxWriter typing_extensions
+          python -c "import os,json;json.dump(sorted(f for f in os.listdir('site/wheels') if f.endswith('.whl')),open('site/wheels/wheels.json','w'))"
+          touch site/.nojekyll
+          ls -R site
+
+      - name: Chave do cache dos modelos
+        id: chave_modelos
+        env:
+          MODELOS_LOCAIS: ${{ vars.MODELOS_LOCAIS || 'piper-ptbr,piper-catalogo' }}
+        run: echo "perfis=$(echo "$MODELOS_LOCAIS" | tr -c 'A-Za-z0-9_.-' '_')" >> "$GITHUB_OUTPUT"
+
+      - name: Cache dos modelos de voz
+        continue-on-error: true
+        uses: actions/cache@v4
+        with:
+          path: .cache/modelos
+          key: modelos-${{ hashFiles('web/modelos.json') }}-${{ steps.chave_modelos.outputs.perfis }}
+
+      - name: Hospedar modelos de voz no site (opcional)
+        continue-on-error: true
+        env:
+          MODELOS_LOCAIS: ${{ vars.MODELOS_LOCAIS || 'piper-ptbr,piper-catalogo' }}
+          BIBLIOTECAS_LOCAIS: ${{ vars.BIBLIOTECAS_LOCAIS || 'piper,kokoro,espeak,lamejs' }}
+        run: |
+          python tools/hospedar_modelos.py --config web/modelos.json --saida site --cache .cache/modelos --perfis "$MODELOS_LOCAIS" --bibliotecas "$BIBLIOTECAS_LOCAIS"
+          du -sh site || true
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Enviar site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Publicar no GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

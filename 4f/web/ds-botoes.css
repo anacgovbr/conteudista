@@ -1,0 +1,129 @@
+/* =====================================================================================
+   Conteudista - botoes no padrao do Design System gov.br (br-button)
+   Referencia: https://www.gov.br/ds/components/button
+   UNICA fonte das regras de botao da aplicacao (as antigas foram removidas do govbr.css, do
+   index.html e dos scripts).
+     - altura fixa: small 32 px (.mini e acoes em tabelas/listas/janelas), medium 40 px (padrao),
+       large 48 px (Gerar arquivos); raio = metade da altura (o "100em" do DS sem virar bola)
+     - rotulo SEMPRE em uma linha (white-space: nowrap), com reticencias se faltar espaco
+     - variantes: primario (padrao), secundario (.sec) e perigo (.dan); estados hover e disabled
+     - o foco continua no govbr.css (tracejado dourado)
+   Fora do padrao (tem estilo proprio): barra do editor, cartoes de imagem, chips e abas das
+   janelas de edicao, abas da pagina e links de arquivo (.file-link).
+   ===================================================================================== */
+
+:where(button,.btn){font-family:inherit;font-weight:600;cursor:pointer}
+
+/* 1. Botao padrao (medium, 40 px) */
+body :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])){
+  --btn-h:40px;
+  --btn-bw:0px;
+  box-sizing:border-box;
+  display:inline-block;
+  height:var(--btn-h);
+  min-height:var(--btn-h);
+  max-height:var(--btn-h);
+  max-width:100%;
+  margin:4px 6px 4px 0;
+  padding:0 24px;
+  border:var(--btn-bw) solid var(--interactive,#1351b4);
+  border-radius:calc(var(--btn-h) / 2);
+  background-color:var(--interactive,#1351b4);
+  color:#fff;
+  font-size:16.8px;
+  line-height:calc(var(--btn-h) - 2 * var(--btn-bw));
+  text-align:center;
+  text-decoration:none;
+  vertical-align:middle;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  flex-shrink:0;
+}
+
+/* 2. Densidade alta (small, 32 px) */
+body :is(button,.btn):is(.mini,.mde-gb):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])),
+body :is(#gerBox td,#links td,#drafts td,.hc .b,.ah-it .b,.tr-pop,.md-hd,.md-tools) :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])){
+  --btn-h:32px;
+  padding:0 16px;
+  font-size:14.4px;
+}
+body .mde-gb{margin:0}
+body #gerBox td .btn-arq{margin:2px 6px 2px 0}
+
+/* 3. Secundario e perigo */
+body :is(button,.btn):is(.sec,.sec2):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])){
+  --btn-bw:1px;
+  background-color:#fff;
+  color:var(--interactive,#1351b4);
+}
+body :is(button,.btn).dan:not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])){
+  --btn-bw:1px;
+  background-color:#fff;
+  color:var(--red-vivid-50,#e52207);
+  border-color:var(--red-vivid-50,#e52207);
+}
+
+/* 4. Estados */
+body :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])):not(:disabled):hover{
+  background-image:linear-gradient(rgba(255,255,255,.14),rgba(255,255,255,.14));
+}
+body :is(button,.btn):is(.sec,.sec2):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])):not(:disabled):hover{
+  background-image:linear-gradient(rgba(19,81,180,.16),rgba(19,81,180,.16));
+}
+body :is(button,.btn).dan:not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])):not(:disabled):hover{
+  background-image:linear-gradient(rgba(229,34,7,.12),rgba(229,34,7,.12));
+}
+body :is(button,.btn):disabled:not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])){
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+/* 5. Gerar arquivos (large, 48 px) */
+body .acao-gerar #go{
+  --btn-h:48px;
+  min-width:min(420px,100%);
+  margin:4px 0;
+  padding:0 48px;
+  font-size:18px;
+  box-shadow:0 3px 8px rgba(19,81,180,.35);
+}
+body .acao-gerar #go::before{content:"\2699\00a0";font-weight:400}
+@media (max-width:700px){
+  body .acao-gerar #go{width:100%;min-width:0;padding:0 16px}
+}
+
+/* 6. Carregar exemplo e Limpar tela */
+body .acoes-meta{display:flex;flex-wrap:wrap;gap:8px;margin:-2px 0 12px}
+body .acoes-meta button{margin:0}
+
+/* 7. Importar (e botoes ao lado de campos): mesma altura do campo, sem margem que desalinhe */
+#secLoc .lin button{margin:0}
+#secLoc .lin>div.loc-btn-cell{flex:0 0 auto;min-width:0}
+
+/* 8. Arquivos gerados: Exibir treinamento, Exibir apresentacao e .ZIP (botao primario, como Gerar arquivos) */
+body .btn-arq{margin:0}
+body .btn-arq::before{content:"\25A3\00a0";font-weight:400}
+body .btn-arq.download::before{content:"\2B07\00a0"}
+body .file-grupo{align-items:center}
+body .file-grupo-itens{align-items:center;gap:8px 10px}
+
+/* 9. Barra "Imagens do texto": os botoes quebram de linha como grupo, sem espremer o rotulo */
+body .mde-gal>summary{flex-wrap:wrap;row-gap:6px}
+body .mde-gal>summary .gtools{flex:1 1 auto;flex-wrap:wrap;justify-content:flex-end;gap:6px;min-width:0}
+
+/* 10. Cabecalho (Tutorial, Ajuda, Atalhos, Novidades) */
+body>header .hb{display:flex;flex-wrap:wrap;gap:6px}
+body>header .hb button{
+  box-sizing:border-box;
+  height:40px;min-height:40px;
+  margin:0;padding:0 16px;
+  border:0!important;border-radius:20px;
+  background:transparent!important;color:var(--interactive,#1351b4)!important;
+  font-size:14.4px;line-height:40px;
+  white-space:nowrap;flex:0 0 auto;
+}
+body>header .hb button:hover{background:rgba(19,81,180,.16)!important}
+@media (max-width:700px){
+  body>header .hb button{height:36px;min-height:36px;line-height:36px;padding:0 8px;font-size:13px;border-radius:18px}
+}
