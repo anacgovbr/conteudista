@@ -14,6 +14,21 @@
   const fmt = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
   const logApp = (m, c) => { try { if (typeof log === 'function') log(m, c); } catch { /* */ } };
   const LIM = 'conteudista.gerados.limite', ATIVO = 'conteudista.gerados.ativo';
+  /* Metadados minimos de cada pacote: nome do curso, data e hora, tamanho e layout (tema) */
+  const TEMAS_ROTULO = { govbr: 'Padr\u00e3o gov.br', 'anac20-claro': 'ANAC 20 anos \u2014 claro', 'anac20-escuro': 'ANAC 20 anos \u2014 escuro', classico: 'Cl\u00e1ssico' };
+  function temaRotulo(v) {
+    if (!v) return '';
+    if (Object.prototype.hasOwnProperty.call(TEMAS_ROTULO, v)) return TEMAS_ROTULO[v];
+    const sel = $('tema'), o = sel ? [...sel.options].find(x => x.value === v) : null;
+    return o ? o.text : String(v);
+  }
+  function metaHtml(p) {
+    const q = new Date(p.data), itens = [], t = temaRotulo(p.tema);
+    if (!isNaN(q.getTime())) itens.push('<time class="m" datetime="' + q.toISOString() + '">' + q.toLocaleString('pt-BR') + '</time>');
+    if (p.tam > 0) itens.push('<span class="m">' + fmt(p.tam) + '</span>');
+    if (t) itens.push('<span class="m">' + esc(t) + '</span>');
+    return '<div class="ger-info"><p class="ger-nome">' + esc(p.prefixo || 'Curso') + '</p>' + (itens.length ? '<p class="ger-meta">' + itens.join(' \u00b7 ') + '</p>' : '') + '</div>';
+  }
 
   /* ---------------------------- Banco ---------------------------- */
   let dbP = null;
@@ -34,7 +49,14 @@
   st.textContent = `#gerBox{margin-top:16px;border:1px solid #cccccc;border-radius:10px;padding:12px 14px;background:#f8f8f8}
 #gerBox h3{margin:0 0 6px}#gerBox .gtop{display:flex;flex-wrap:wrap;gap:12px;align-items:center;font-size:13.5px}
 #gerBox select{width:auto;padding:4px 6px}#gerBox table{margin-top:8px}#gerBox td{vertical-align:top;font-size:13px}
-#gerBox td .file-link{margin:2px 12px 2px 0}#gerBox .uso{color:#636363;font-size:12.5px;margin:6px 0 0}`;
+#gerBox td .file-link{margin:2px 12px 2px 0}
+.ger-info{min-width:0}
+.ger-nome{margin:0;font-size:15px;font-weight:700;line-height:1.3;color:var(--pri,#0c326f);overflow-wrap:anywhere}
+.ger-meta{margin:2px 0 0;font-size:13px;line-height:1.4;color:var(--mu,#636363)}
+.ger-meta .m{white-space:nowrap}
+#res .ger-atual>.ger-info{margin:0 0 8px}
+html.contraste .ger-nome{color:#ff0!important}
+html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-size:12.5px;margin:6px 0 0}`;
   document.head.appendChild(st);
   const box = document.createElement('div'); box.id = 'gerBox';
   box.innerHTML = '' +
@@ -122,6 +144,7 @@
   // Contagens nos titulos das secoes, na linha do painel e no tooltip do botao
   const contarLinhas = el => el ? Math.max(0, el.querySelectorAll('tr').length - 1) : 0;
   function atualizarContagens() {
+    if (!$('gerTArq') || !$('gerTRasc')) return;   // janela antiga removida por janelas.js
     const na = contarLinhas($('gerLista')), nr = contarLinhas(drafts);
     $('gerTArq').textContent = 'Arquivos gerados' + (na ? ' (' + na + ')' : '');
     $('gerTRasc').textContent = 'Rascunhos' + (nr ? ' (' + nr + ')' : '');
@@ -155,7 +178,8 @@
     arqs.forEach(f => salvos.add(f.blob));
     const tam = arqs.reduce((a, f) => a + f.blob.size, 0), pref = ($('pref') && $('pref').value) || 'Curso';
     try {
-      await tx('readwrite', s => s.add({ data: Date.now(), prefixo: pref, resumo: resumoDoLog(), tam, arquivos: arqs }));
+      const gm = window.GeracaoMeta || {};
+      await tx('readwrite', s => s.add({ data: gm.data || Date.now(), prefixo: gm.prefixo || pref, tema: gm.tema || ($('tema') ? $('tema').value : ''), resumo: resumoDoLog(), tam, arquivos: arqs }));
       await podar(); listar();
       logApp('Arquivos gerados guardados neste navegador (' + fmt(tam) + ').', 'ok');
     } catch (e) { logApp('Não foi possível guardar os arquivos gerados no navegador (' + e.message + ').', 'wa'); }
@@ -178,9 +202,9 @@
     try { l = await tx('readonly', s => s.getAll()); } catch (e) { $('gerLista').textContent = 'Armazenamento indisponível (' + e.message + ').'; return; }
     limparUrls(); l.sort((a, b) => b.id - a.id);
     if (!l.length) { $('gerLista').innerHTML = 'Nenhum pacote guardado. Ao clicar em <b>Gerar arquivos</b>, os arquivos ficam disponíveis aqui mesmo depois de fechar a página.'; uso(0); return; }
-    $('gerLista').innerHTML = '<table><tr><th>Gerado em</th><th>Curso</th><th>Arquivos</th><th></th></tr>' + l.map(p => {
+    $('gerLista').innerHTML = '<table><tr><th>Curso</th><th>Arquivos</th><th></th></tr>' + l.map(p => {
       const zip = p.arquivos.find(f => /\.zip$/i.test(f.nome)), outros = p.arquivos.filter(f => f !== zip);
-      return '<tr><td>' + new Date(p.data).toLocaleString('pt-BR') + '<br><small>' + fmt(p.tam) + '</small></td><td><b>' + esc(p.prefixo) + '</b>' + (p.resumo ? '<br><small>' + esc(p.resumo) + '</small>' : '') + '</td><td>' +
+      return '<tr><td>' + metaHtml(p) + '</td><td>' +
         (zip ? '<a class="btn btn-arq download" href="' + urlDe(p.id + '/' + zip.nome, zip.blob) + '" download="' + esc(zip.nome) + '">.ZIP</a>' : '') +
         outros.map(f => '<a class="file-link download" href="' + urlDe(p.id + '/' + f.nome, f.blob) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + '</a>').join('') +
         outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="btn btn-arq btn-exibir" data-ver="' + p.id + '/' + esc(f.nome) + '">Exibir ' + (/^Apresentacao_/.test(f.nome) ? 'apresentação' : 'treinamento') + '</button>').join('') +
@@ -215,5 +239,5 @@
   if (logEl) new MutationObserver(() => { if (/Dados locais apagados/.test(logEl.lastChild && logEl.lastChild.textContent || '')) tx('readwrite', s => s.clear()).then(listar).catch(() => {}); }).observe(logEl, { childList: true });
 
   listar();
-  window.Gerados = { listar, capturar, abrir: abrirGer, fechar: fecharGer };
+  window.Gerados = { listar, capturar, abrir: abrirGer, fechar: fecharGer, metaHtml, temaRotulo };
 })();

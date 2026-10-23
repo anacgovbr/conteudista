@@ -114,10 +114,10 @@
 .jn-pane td button,.jn-pane td .btn{margin:2px 4px 2px 0}
 .jn-rasc td:nth-child(1){flex:1 1 180px;min-width:0}
 .jn-rasc td:nth-child(2){color:var(--jn-mut)}
-.jn-arq td:nth-child(2){order:1;flex:1 1 180px;min-width:0}
-.jn-arq td:nth-child(1){order:2;color:var(--jn-mut)}
-.jn-arq td:nth-child(4){order:3}
-.jn-back .jn-arq td:nth-child(3){order:4;flex:1 1 100%;padding-left:34px!important}
+.jn-arq td:nth-child(1){order:1;flex:1 1 180px;min-width:0}
+
+.jn-arq td:nth-child(3){order:2}
+.jn-back .jn-arq td:nth-child(2){order:3;flex:1 1 100%;padding-left:34px!important}
 .jn-lnk td:nth-child(1){order:1;flex:1 1 170px;min-width:0}
 .jn-lnk td:nth-child(2){order:2;color:var(--jn-mut)}
 .jn-lnk td:nth-child(4){order:3}
@@ -154,6 +154,18 @@
 .jn-sw input:checked+.jn-tr::after{left:19px}
 .jn-sw input:focus-visible+.jn-tr{outline:4px dashed #c2850c;outline-offset:3px}
 #secShare{display:none!important}
+.jn-win [hidden]{display:none!important}
+.jn-mi i.jn-rec{font-style:normal;font-size:11px;font-weight:600;background:#dbe8fb;color:#0c326f;border-radius:10px;padding:0 7px;margin-left:4px;white-space:nowrap}
+.ger-fonte .note{margin:0;font-size:13px}
+.jn-lc{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;border:1px solid var(--jn-line);border-radius:8px;padding:10px;margin:4px 0 8px}
+.jn-qrc{width:104px;height:104px;flex:0 0 104px;background:#fff;display:grid;place-items:center;border:1px solid #dddddd;border-radius:4px;padding:3px}
+.jn-qrc img,.jn-qrc canvas,.jn-qrc svg{display:block;width:96px!important;height:96px!important}
+.jn-qrc .qr-off{font-size:11px;text-align:center;color:#636363}
+.jn-lct{flex:1 1 160px;min-width:0}
+.jn-lct b{display:block}
+.jn-lct small{display:block;color:var(--jn-mut);overflow-wrap:anywhere}
+.jn-lca{display:flex;gap:6px;flex-wrap:wrap}
+html.contraste .jn-mi i.jn-rec{background:#000!important;color:#ff0!important;border:1px solid #ff0}
 @media (prefers-reduced-motion:reduce){.jn-tr,.jn-tr::after{transition:none}}
 @media(max-width:700px){
   .jn-back{padding:0;align-items:stretch}
@@ -354,7 +366,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   /* --- aba Salvos --- */
   const pSav = importar.pane('sav');
   const gR = document.createElement('section'); gR.className = 'jn-g jn-rasc'; gR.innerHTML = '<h3 class="jn-sub">Vers\u00f5es salvas</h3>';
-  const gL = document.createElement('section'); gL.className = 'jn-g jn-lnk'; gL.innerHTML = '<h3 class="jn-sub">Links</h3>';
+  const gL = document.createElement('section'); gL.className = 'jn-g jn-lnk'; gL.innerHTML = '<h3 class="jn-sub">Links</h3><p class="jn-hint">Sem o link (e a senha, se houver) o conte\u00fado n\u00e3o pode ser recuperado.</p>';
   const mais = document.createElement('details'); mais.className = 'jn-mais';
   mais.innerHTML = '<summary><h3>Mais op\u00e7\u00f5es</h3></summary><div class="jn-mais-c"><button type="button" class="dan mini" id="jnApagar">Apagar dados</button></div>';
   pSav.append(gR, gL, mais);
@@ -595,9 +607,9 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   /* ============================== Janela COMPARTILHAR ============================== */
   const cmp = criarJanela({
     id: 'jnCmp', pequena: true, rodape: () => true,
-    aoAbrir: () => { try { if (typeof estimarTamanho === 'function') Promise.resolve(estimarTamanho()).catch(() => {}); } catch (e) { /* sem estimativa */ } }
+    aoAbrir: () => { prepararJanelaLink(); try { if (typeof estimarTamanho === 'function') Promise.resolve(estimarTamanho()).catch(() => {}); } catch (e) { /* sem estimativa */ } }
   });
-  cmp.titulo('Compartilhar');
+  cmp.titulo('Link do curso');
   (function montarCompartilhar() {
     const pl = $('pLink'), corpo = cmp.pane('0'); if (!pl) return;
     while (pl.firstChild) corpo.appendChild(pl.firstChild);
@@ -640,19 +652,21 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   bSalvar.setAttribute('aria-haspopup', 'menu'); bSalvar.setAttribute('aria-expanded', 'false'); bSalvar.setAttribute('aria-controls', 'jnMenuSalvar');
   const menu = document.createElement('div'); menu.className = 'jn-mn'; menu.id = 'jnMenuSalvar'; menu.setAttribute('role', 'menu'); menu.setAttribute('aria-label', 'Salvar'); menu.hidden = true;
   const ITENS = [
-    ['rasc', 'Vers\u00e3o', 'Neste navegador', 'dsave', 'Vers\u00e3o salva.'],
+    ['lnk', 'Link', 'Qualquer computador', 'jnLink', '', 1],
+    ['rasc', 'Vers\u00e3o', 'S\u00f3 neste navegador', 'dsave', 'Vers\u00e3o salva.'],
     ['pc', 'Pasta', 'No computador', 'fsave', 'Salvo na pasta.'],
     ['arq', '.MD', 'Texto em Markdown', 'mdl', '.MD baixado.'],
     ['arq', '.ZIP', 'Todos os arquivos', 'zdl', '.ZIP baixado.']
   ];
-  menu.innerHTML = ITENS.map(x => '<button type="button" role="menuitem" class="jn-mi" tabindex="-1" data-c="1" data-alvo="' + x[3] + '" data-msg="' + x[4] + '">' + svg(x[0]) + '<span><b>' + x[1] + '</b><small>' + x[2] + '</small></span></button>').join('');
+  menu.innerHTML = ITENS.map(x => '<button type="button" role="menuitem" class="jn-mi" tabindex="-1" data-c="1" data-alvo="' + x[3] + '" data-msg="' + x[4] + '">' + svg(x[0]) + '<span><b>' + x[1] + (x[5] ? ' <i class="jn-rec">recomendado</i>' : '') + '</b><small>' + x[2] + '</small></span></button>').join('');
   dd.append(bSalvar, menu);
   const bCmp = mk('btnCompartilhar', 'sec', 'Compartilhar'); bCmp.setAttribute('aria-haspopup', 'dialog'); bCmp.title = 'Criar um link criptografado (Alt+Shift+L cria direto)';
-  barra.insertBefore(bImp, ex); barra.insertBefore(dd, ex); barra.insertBefore(bCmp, ex);
+  barra.insertBefore(bImp, ex); barra.insertBefore(dd, ex);
 
   function abrirMenu() { menu.hidden = false; bSalvar.setAttribute('aria-expanded', 'true'); const p = menu.querySelector('.jn-mi'); if (p) p.focus(); }
   function fecharMenu(foco) { if (menu.hidden) return; menu.hidden = true; bSalvar.setAttribute('aria-expanded', 'false'); if (foco) bSalvar.focus(); }
   function executarSalvar(alvo, msg) {
+    if (alvo === 'jnLink') { fecharMenu(true); cmp.abrir(); return; }
     fecharMenu(true);
     const vazio = !(($('g') && $('g').value.trim()) || ($('s') && $('s').value.trim()));
     if (vazio) { anunciarGlobal('Nada para salvar.'); logApp('Nada para salvar.', 'wa'); return; }
@@ -721,7 +735,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
         const a0 = antes; antes = -1;
         setTimeout(() => {
           if (contar($('links')) > a0) {
-            cmp.fechar(true); feedback(bCmp, 'Link criado.'); importar.abrir('sav');
+            mostrarLinkCriado();
             const l = $('links'); if (l && l.scrollIntoView) l.scrollIntoView({ block: 'nearest' });
           }
         }, 500);
@@ -730,6 +744,92 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   })();
 
   /* ============================== Contadores e observadores ============================== */
+  /* Janela LINK DO CURSO (1.49) */
+  const LIM_LINK_DIRETO = 30000;
+  let linkRec = 'self', linkTam = 0;
+  (function montarLinkDoCurso() {
+    try {
+      const corpo = cmp.pane('0'), mo = $('mode');
+      if (!corpo || !mo) return;
+      const form = document.createElement('div'); form.id = 'jnCmpForm';
+      while (corpo.firstChild) form.appendChild(corpo.firstChild);
+      const sub = document.createElement('p'); sub.className = 'jn-hint'; sub.id = 'jnSub'; sub.style.margin = '0 0 4px';
+      sub.textContent = 'Guarde ou envie o curso inteiro em um endere\u00e7o: texto, imagens, nome e rodap\u00e9.';
+      form.insertBefore(sub, form.firstChild);
+      const aviso = document.createElement('p'); aviso.className = 'box warn'; aviso.id = 'jnAvisoLink'; aviso.style.margin = '12px 0 0';
+      aviso.textContent = 'Sem o link (e a senha, se houver) n\u00e3o \u00e9 poss\u00edvel recuperar o conte\u00fado. O Conteudista n\u00e3o guarda c\u00f3pia. N\u00e3o inclua dados pessoais sem autoriza\u00e7\u00e3o da chefia.';
+      form.appendChild(aviso);
+      const res = document.createElement('div'); res.id = 'jnCmpRes'; res.hidden = true;
+      corpo.append(form, res);
+      const exp = $('exp'); if (exp) exp.value = '1year';
+      const le = document.querySelector('label[for="exp"]'); if (le) le.textContent = 'Validade';
+      const kl = $('keep') && $('keep').parentElement;
+      if (kl) [...kl.childNodes].forEach(n => { if (n.nodeType === 3 && n.textContent.trim()) n.textContent = ' Lembrar este link neste navegador'; });
+      mo.addEventListener('change', rotularModoLink);
+      rotularModoLink();
+    } catch (err) { console.warn('Link do curso:', err); }
+  })();
+  function rotularModoLink() {
+    const mo = $('mode'), aux = $('jnModoAux'); if (!mo) return;
+    [...mo.options].forEach(o => { o.textContent = (o.value === 'pb' ? 'PrivateBin' : 'Link direto') + (o.value === linkRec ? ' \u00b7 recomendado' : ''); });
+    if (!aux) return;
+    if (mo.value === 'pb') aux.textContent = 'Para cursos grandes ou com muitas imagens. Fica cifrado em um servidor e tem validade.';
+    else aux.textContent = (linkTam ? 'Seu curso: \u2248 ' + fmtTam(linkTam) + ' cifrados. ' : '') + 'Cabe no pr\u00f3prio endere\u00e7o, n\u00e3o usa servidor e n\u00e3o expira.' + (linkRec === 'pb' ? ' Aten\u00e7\u00e3o: com este tamanho o link pode ser cortado por e-mail ou Teams; prefira o PrivateBin.' : '');
+  }
+  function prepararJanelaLink() {
+    estadoLink(false);
+    (async () => {
+      let n = 0;
+      try { if (typeof pacote === 'function' && typeof deflate === 'function' && typeof enc !== 'undefined') n = Math.ceil((await deflate(enc.encode(JSON.stringify(pacote())))).length * 4 / 3) + location.href.length + 60; } catch (e) { n = 0; }
+      linkTam = n; linkRec = n > LIM_LINK_DIRETO ? 'pb' : 'self';
+      const mo = $('mode');
+      if (mo && mo.value !== linkRec) { mo.value = linkRec; mo.dispatchEvent(new Event('change', { bubbles: true })); }
+      rotularModoLink();
+      try { if (typeof estimarTamanho === 'function') await estimarTamanho(); } catch (e) { /* sem estimativa */ }
+    })();
+  }
+  function estadoLink(criado, it) {
+    const f = $('jnCmpForm'), r = $('jnCmpRes'); if (!f || !r) return;
+    f.hidden = !!criado; r.hidden = !criado;
+    const tam = $('tam'), sh = $('share'), fe = cmp.bt.querySelector('[data-jn="fechar"]');
+    if (tam) tam.hidden = !!criado;
+    if (sh) sh.hidden = !!criado;
+    if (fe) fe.textContent = criado ? 'Fechar' : 'Cancelar';
+    if (!criado || !it) { r.innerHTML = ''; return; }
+    const cur = typeof linkCurto === 'function' ? linkCurto(it.url) : { id: '', host: '' };
+    const direto = /^(Autocontido|Link direto)/.test(it.tipo || '');
+    const titulo = direto ? 'Link direto \u00b7 n\u00e3o expira' : String(it.tipo || 'PrivateBin') + (it.expira ? ' \u00b7 expira em ' + new Date(it.expira).toLocaleDateString('pt-BR') : '');
+    r.innerHTML = '<div class="jn-lc"><div class="jn-qrc" id="jnCmpQr" role="img" aria-label="QR Code do link"></div>' +
+      '<div class="jn-lct"><b>' + esc(titulo) + '</b><small>' + esc((cur.id || '') + ' ' + (cur.host || '')) + '</small></div>' +
+      '<div class="jn-lca"><button type="button" class="mini" id="jnCmpCopiar">Copiar</button><a class="btn mini sec" id="jnCmpAbrir" target="_blank" rel="noopener">Abrir</a></div></div>' +
+      '<p class="box priv" style="margin:8px 0 0">Guarde este link onde preferir: um e-mail para voc\u00ea mesmo, o Teams ou os favoritos. Para voltar ao curso, use <b>Importar \u203a Colar \u203a Link</b>.</p>';
+    $('jnCmpAbrir').href = it.url;
+    $('jnCmpCopiar').onclick = function () {
+      const b = this, ok = () => feedback(b, 'Link copiado.');
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(it.url).then(ok, () => window.prompt('Copie o link:', it.url));
+      else window.prompt('Copie o link:', it.url);
+    };
+    const box = $('jnCmpQr');
+    if (typeof carregarQR === 'function') {
+      carregarQR().then(Q => {
+        try {
+          if (it.url.length > 2800) throw new Error('longo');
+          new Q(box, { text: it.url, width: 96, height: 96, correctLevel: Q.CorrectLevel.L, useSVG: true });
+        } catch (e) { box.innerHTML = '<span class="qr-off">' + (it.url.length > 2800 ? 'Link longo demais para QR Code.' : 'QR indispon\u00edvel') + '</span>'; }
+      }).catch(() => { box.innerHTML = '<span class="qr-off">QR indispon\u00edvel</span>'; });
+    } else box.innerHTML = '<span class="qr-off">QR indispon\u00edvel</span>';
+    cmp.anunciar('Link criado e copiado. Guarde-o onde preferir.');
+    setTimeout(() => { const c = $('jnCmpCopiar'); if (c) c.focus(); }, 30);
+  }
+  function mostrarLinkCriado() {
+    const it = (typeof sessaoLinks !== 'undefined' && sessaoLinks && sessaoLinks[0]) || null;
+    if (!it || !it.url) { cmp.fechar(true); importar.abrir('sav'); return; }
+    estadoLink(true, it);
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest ? e.target.closest('#btnCriarLink') : null;
+    if (b) { e.preventDefault(); cmp.abrir(); }
+  });
   function atualizar() {
     decorarLinks();
     const n = contar($('drafts')) + contar($('links'));

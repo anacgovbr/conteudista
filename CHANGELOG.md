@@ -1,5 +1,19 @@
 # Novidades do Conteudista
 
+## 1.50 - 23/10/2026
+- **Layout (tema)** com nomes curtos, sem texto entre parênteses: Padrão gov.br, ANAC 20 anos — claro, ANAC 20 anos — escuro e Clássico. A explicação de onde cada tema se aplica ficou na dica do campo e na Ajuda.
+- Corrigido um erro de script que aparecia no console a cada mudança nas listas de arquivos e rascunhos (contagens do Histórico).
+
+## 1.49 - 23/10/2026
+- **Link do curso**: o link criptografado passa a ser a forma recomendada de guardar o texto-fonte (texto, imagens, nome e rodapé) e continuar em outro computador. O botão **Compartilhar** saiu da barra e deu lugar a **Salvar › Link** (primeiro item do menu) e ao botão **Criar link**, na nova linha **Texto-fonte** de Arquivos gerados. A janela passa a se chamar **Link do curso** e o atalho Alt+Shift+L abre essa janela.
+- A janela sugere **Link direto** ou **PrivateBin** conforme o tamanho do curso, traz a **validade** do PrivateBin (padrão: **1 ano**), um aviso fixo sobre a perda do link e, depois de criar, mostra o endereço, o QR Code e onde guardá-lo. **Lembrar este link** passa a vir marcado.
+- **Importar**: a lista de links mostra o tipo e a validade ("expira em" ou "não expira") e a aba Colar › Link ganhou uma orientação nova.
+- Como funciona, Tutorial e Ajuda reescritos em torno de "arquivo ou link": os arquivos são o curso pronto; o link é o texto-fonte.
+
+## 1.48 - 23/10/2026
+- **Arquivos gerados** agora traz um mínimo de metadados em cada pacote: **nome do curso**, **data e hora**, **tamanho** e **layout (tema)**, em uma linha discreta abaixo do nome. Vale para a seção e para o Histórico de arquivos.
+- Pacotes guardados antes desta versão aparecem sem o layout (ele não era registrado). A linha técnica de resumo da geração deixou de ser exibida na lista.
+
 ## 1.47 - 22/10/2026
 - **Arquivos gerados** deixou de ser uma subseção recolhível de "Gerar curso" e virou uma **seção própria**, logo depois dela, sempre visível. O botão **Histórico** fica no cabeçalho da seção. A página segue a ordem do trabalho: Como funciona → Gerar curso → Arquivos gerados.
 

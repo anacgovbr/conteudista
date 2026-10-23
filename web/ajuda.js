@@ -57,13 +57,12 @@
 
   /* ---------------------------- Tutorial guiado ---------------------------- */
   const PASSOS = [
-    { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em 6 passos rápidos você verá como <b>escrever</b>, <b>gerar</b>, <b>salvar</b> e <b>recuperar</b> um curso. Tudo acontece no seu navegador; nada é enviado sem você pedir.' },
+    { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em poucos passos você verá como <b>escrever</b>, <b>gerar</b>, <b>guardar</b> e <b>recuperar</b> um curso. A conversão acontece no seu navegador; nada é enviado sem você pedir.' },
     { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o conteúdo', d: 'Use as abas <b>Treinamento</b> e <b>Apresentação</b>. Cole o texto gerado pelo agente de IA, arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. O botão <b>Versões</b> guarda, compara e restaura o texto.' },
-    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe treinamento (HTML, DOCX, MD), apresentação (HTML, PPTX, MD) e um ZIP com tudo. Os botões <b>Exibir treinamento</b>, <b>Exibir apresentação</b> e <b>.ZIP</b> aparecem em <b>Arquivos gerados</b>, só para o que foi gerado. Para testar agora, use <b>Carregar exemplo</b>, logo abaixo dos campos do curso.' },
-    { alvo: 'btnSalvar', t: '4. Guarde seu trabalho', d: 'O <b>salvamento automático</b> (chave à direita da barra) recupera o último conteúdo ao voltar à página. Use <b>Salvar</b> para guardar uma <b>versão</b> (para voltar a ela depois), escolher uma pasta ou baixar os <code>.md</code> e o <code>.zip</code>.' },
-    { alvo: 'btnCompartilhar', t: '5. Compartilhe com segurança (opcional)', d: 'Em <b>Compartilhar</b>, gere um <b>link criptografado</b> (direto ou PrivateBin), com senha se quiser. O tamanho aparece antes do envio.' },
-    { alvo: 'btnImportar', t: '6. Importe e recupere', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole o texto do treinamento e o da apresentação, cada um na sua aba, ou um link (e a senha, se houver).' },
+    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe treinamento (HTML, DOCX, MD), apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>. Para testar agora, use <b>Carregar exemplo</b>. Os arquivos são o curso <b>pronto, para entregar</b>.' },
+    { alvo: 'btnSalvar', t: '4. Guarde o curso em um link', d: 'Em <b>Salvar › Link</b>, o curso inteiro (texto, imagens, nome e rodapé) vira um endereço. Cole-o onde preferir, como um e-mail para você mesmo, o Teams ou os favoritos, e abra quando quiser <b>continuar editando</b>, em qualquer computador. O salvamento automático (chave à direita) só recupera o último trabalho neste navegador.' },
+    { alvo: 'btnImportar', t: '5. Recupere um curso', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do curso</b>. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
@@ -118,7 +117,7 @@
 <h4>Gerar um curso em 3 passos</h4>
 <ol>
 <li>Na aba <b>Treinamento</b>, cole ou arraste o <code>treinamento.md</code>; na aba <b>Apresentação</b>, o <code>apresentacao.md</code>.</li>
-<li>Informe o <b>Nome do curso</b> (usado nos nomes dos arquivos) e escolha o <b>Layout (tema)</b>: <b>Padrão gov.br</b> (padrão: cores, fonte e destaques do Design System do Governo Federal) ou <b>Clássico</b> (layout original). O <b>rodapé</b> (opcional) fica entre o nome e o layout e aparece nos slides e no DOCX.</li>
+<li>Informe o <b>Nome do curso</b> (usado nos nomes dos arquivos) e escolha o <b>Layout (tema)</b>: <b>Padrão gov.br</b>, <b>ANAC 20 anos</b> (claro ou escuro) ou <b>Clássico</b>. Os temas ANAC 20 anos mudam só a apresentação; o treinamento segue o padrão gov.br. O <b>rodapé</b> (opcional) fica entre o nome e o layout e aparece nos slides e no DOCX.</li>
 <li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Os pacotes anteriores e os rascunhos ficam no botão <b>Histórico</b>, no cabeçalho da seção <b>Arquivos gerados</b>. Se só um dos dois estiver preenchido, são gerados apenas os arquivos dele.</li>
 </ol>
 <div class="dica">Na primeira geração o navegador carrega o motor Python (20 a 60 s). Depois é imediato.</div>
@@ -143,15 +142,25 @@
 <li><b>PPTX</b>: o áudio de cada slide começa sozinho na apresentação de slides. Com “Avançar os slides sozinho”, dá para usar <b>Arquivo → Exportar → Criar um vídeo</b> no PowerPoint.</li>
 <li>Para falar um texto diferente da nota, use <code>&lt;!-- narracao: texto --&gt;</code>; para um slide sem som, <code>&lt;!-- narracao: nao --&gt;</code>.</li>
 </ul>
-<h4>Salvar e recuperar</h4>
+<h4>Guardar o curso: arquivo ou link?</h4>
+<p>O Conteudista não guarda nenhum curso no site. Você decide onde ele fica, e há dois tipos de saída:</p>
+<ul>
+<li><b>Arquivos</b> (.DOCX, .PPTX, .HTML, .ZIP): são o curso <b>pronto</b>, para entregar e abrir no Word, no PowerPoint ou no navegador.</li>
+<li><b>Link</b>: é o seu <b>texto-fonte</b> (treinamento, apresentação, imagens, nome e rodapé) em um endereço. Serve para continuar editando depois, em qualquer computador.</li>
+</ul>
+<table><tr><th>Quero…</th><th>Use</th></tr>
+<tr><td>Entregar o curso pronto</td><td><b>.DOCX</b>, <b>.PPTX</b> ou <b>.HTML</b></td></tr>
+<tr><td>Continuar editando em outro computador</td><td><b>Link</b> (<b>Salvar › Link</b>)</td></tr>
+<tr><td>Enviar o texto-fonte a um colega</td><td><b>Link</b></td></tr>
+<tr><td>Guardar uma cópia em uma pasta</td><td><b>.ZIP</b> ou <b>Pasta</b> (menu <b>Salvar</b>)</td></tr>
+<tr><td>Voltar a uma versão anterior, neste navegador</td><td><b>Versão</b> (menu <b>Salvar</b>)</td></tr></table>
+<h4>Onde fica e como recuperar</h4>
 <table><tr><th>Como</th><th>Onde fica</th><th>Como recuperar</th></tr>
+<tr><td><b>Link</b></td><td>No próprio endereço ou no PrivateBin (cifrado)</td><td>Abra o link, ou <b>Importar › Colar › Link</b></td></tr>
 <tr><td><b>Salvamento automático</b> (ligado por padrão)</td><td>Neste navegador, neste computador</td><td>Abra a página de novo: o último trabalho volta sozinho</td></tr>
-<tr><td><b>Salvar versão</b> (menu <b>Salvar</b>)</td><td>Neste navegador</td><td>Botão <b>Importar</b> → aba <b>Salvos</b></td></tr>
-<tr><td><b>Salvar pasta</b> / <b>.MD</b> / <b>.ZIP</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas</td></tr>
-<tr><td><b>Link criptografado</b></td><td>No próprio link ou no PrivateBin (cifrado)</td><td>Botão <b>Importar</b> → aba <b>Colar</b> → subaba <b>Link</b> → cole o link (e a senha)</td></tr>
-<tr><td><b>Versões do texto</b></td><td>Neste navegador</td><td>Botão <b>Versões</b> na barra do editor → escolha a versão → <b>Restaurar</b></td></tr></table>
-<div class="dica">Limpar os dados do navegador apaga as versões salvas. Para guardar por mais tempo, use <b>Salvar na pasta</b>, <b>Baixar .md</b> ou <b>Baixar .zip</b>.</div>
-<h4>Versões do texto (comparar antes e depois)</h4>
+<tr><td><b>Versão</b> (menu <b>Salvar</b>)</td><td>Neste navegador</td><td><b>Importar › Salvos</b></td></tr>
+<tr><td><b>Pasta</b>, <b>.MD</b> e <b>.ZIP</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas ou use <b>Importar › Computador</b></td></tr></table>
+<div class="dica">Limpar os dados do navegador apaga as versões salvas e os links lembrados. Para guardar por mais tempo, use <b>Link</b> ou <b>.ZIP</b>.</div><h4>Versões do texto (comparar antes e depois)</h4>
 <ul>
 <li>As versões do texto ficam <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), <b>arquivos carregados</b>, conteúdos <b>abertos de links</b>, rascunhos, exemplo, versões <b>marcadas</b> (★) e os momentos de gerar ou compartilhar. Antes de carregar ou restaurar algo, o conteúdo atual também é guardado.</li>
 <li>Abra pelo botão <b>Versões</b> na barra do editor (ao lado da tela cheia) ou <kbd>Alt+Shift+V</kbd>. A janela de comparação aparece sobre a página; feche com <b>Fechar</b> ou <kbd>Esc</kbd>.</li>
@@ -160,21 +169,47 @@
 <li>Opções: Treinamento, Apresentação ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
 <li><b>Restaurar A/B</b> coloca a versão nos editores; <b>.MD A/B</b> salva os .md; <b>★ Salvar versão</b> cria um ponto nomeado (não é apagado automaticamente). O limite é de 120 versões.</li>
 </ul>
-<h4>Compartilhar</h4>
+<h4>Criar um link</h4>
+<ol>
+<li>Clique em <b>Salvar › Link</b> (ou em <b>Criar link</b>, em <b>Arquivos gerados</b>).</li>
+<li>Confira a opção sugerida para o tamanho do seu curso. Você pode trocá-la.</li>
+<li>Se quiser, defina uma <b>senha</b> e envie-a por outro canal.</li>
+<li>Clique em <b>Criar link</b>. Ele é copiado automaticamente e aparece na janela, com o QR Code.</li>
+<li>Guarde o link onde preferir. Com <b>Lembrar este link neste navegador</b> marcado, ele também fica em <b>Importar › Salvos</b>.</li>
+</ol>
+<table><tr><th></th><th>Link direto</th><th>PrivateBin</th></tr>
+<tr><td>Onde fica o conteúdo</td><td>No próprio endereço</td><td>Cifrado em um servidor</td></tr>
+<tr><td>Validade</td><td>Não expira</td><td>Até a data escolhida (padrão: 1 ano)</td></tr>
+<tr><td>Indicado para</td><td>Cursos pequenos ou médios</td><td>Cursos grandes ou com muitas imagens</td></tr>
+<tr><td>Limite</td><td>Pode ser cortado por e-mail ou Teams</td><td>Cerca de 10 MB</td></tr></table>
 <ul>
-<li><b>Link autocontido</b>: o conteúdo vai cifrado dentro do link; não usa servidor. Links muito longos podem ser cortados por e-mail/Teams.</li>
-<li><b>PrivateBin</b>: o conteúdo é cifrado no navegador e enviado ao serviço; escolha a expiração, leitura única e senha. As imagens podem ir como <b>anexo ZIP</b>.</li>
+<li>No PrivateBin, as imagens podem ir como <b>anexo ZIP</b>; ao abrir aqui, voltam para base64.</li>
 <li>O <b>tamanho</b> aparece antes do envio. O privatebin.net aceita cerca de 10 MB.</li>
-<li>Com senha, envie a senha por <b>outro canal</b>.</li>
 </ul>
-<h4>Problemas comuns</h4>
+<h4>Voltar a um curso</h4>
+<ul>
+<li><b>Importar › Colar › Link</b>: cole o endereço (e a senha, se houver) e clique em <b>Importar</b>. O texto atual vai para <b>Versões</b> antes de ser substituído.</li>
+<li>Ou abra o link direto no navegador: o curso carrega sozinho.</li>
+<li>Os links criados neste navegador ficam em <b>Importar › Salvos</b>, com o tipo e a validade.</li>
+</ul>
+<h4>Cuidados com o link</h4>
+<ul>
+<li><b>Quem tiver o link acessa o conteúdo.</b> Trate-o como trataria o arquivo.</li>
+<li><b>Não há como recuperar</b> um link perdido nem a sua senha. O Conteudista não guarda cópia.</li>
+<li><b>Não inclua dados pessoais</b> ou informações restritas sem autorização da chefia.</li>
+<li>O link direto aponta para o endereço atual desta página; se o site mudar de endereço, links antigos podem deixar de abrir.</li>
+</ul><h4>Problemas comuns</h4>
 <table><tr><th>Sintoma</th><th>O que fazer</th></tr>
 <tr><td>“Falha ao carregar … cdn.jsdelivr.net”</td><td>A rede bloqueou o motor Python. Tente outra rede ou peça liberação do endereço.</td></tr>
 <tr><td>“CORS ou rede bloqueada” no PrivateBin</td><td>Use o <b>link autocontido</b> ou outra instância do PrivateBin.</td></tr>
 <tr><td>Imagens “pendentes”</td><td>Arraste os arquivos de imagem citados no texto (com o mesmo nome) para a área da aba ou para o editor.</td></tr>
 <tr><td>Imagem não aparece</td><td>Confira o painel <b>Imagens do texto</b>; use <b>Localizar</b>. Arquivos muito grandes deixam o curso pesado — use <b>Redimensionar</b> ou <b>Reduzir todas…</b> (até ~1 MB por imagem).</td></tr>
 <tr><td>Sumário vazio no DOCX</td><td>No Word, clique com o botão direito no sumário → <b>Atualizar campo</b>.</td></tr>
-<tr><td>Fluxos Mermaid no DOCX/PPTX</td><td>Aparecem como tabela “De | Condição | Para” (desenho só no HTML).</td></tr></table>
+<tr><td>Fluxos Mermaid no DOCX/PPTX</td><td>Aparecem como tabela “De | Condição | Para” (desenho só no HTML).</td></tr>
+<tr><td>O link chegou cortado por e-mail ou Teams</td><td>Use o <b>PrivateBin</b>, que gera um endereço curto.</td></tr>
+<tr><td>“Este link exige senha”</td><td>Informe a senha, enviada por quem criou o link.</td></tr>
+<tr><td>O link do PrivateBin deixou de abrir</td><td>Ele expirou. Abra o curso por outra versão e crie um novo link.</td></tr>
+<tr><td>Perdi o link</td><td>Veja em <b>Importar › Salvos</b>. Só aparece se a opção de lembrar estava marcada neste navegador.</td></tr></table>
 <h4>Tutorial</h4>
 <p>O tutorial abre sozinho na primeira visita. Para vê-lo de novo, use o botão <b>▶ Tutorial</b>, o botão <b>↺ Reiniciar tutorial</b> desta janela ou <kbd>Alt+Shift+R</kbd>. Dentro do tutorial, <b>↺</b> volta ao primeiro passo.</p>
 <h4>Novidades</h4>
@@ -228,7 +263,7 @@
     { g: 'Arquivos', k: 'P', d: 'Salvar pasta', f: () => clicar('fsave') },
     { g: 'Salvar e recuperar', k: 'S', d: 'Salvar versão', f: () => { if (window.SalvarVersao) SalvarVersao.salvar(); } },
     { g: 'Salvar e recuperar', k: 'A', d: 'Ligar/desligar salvamento automático', f: () => { const c = $('auto'); c.checked = !c.checked; c.dispatchEvent(new Event('change')); toast('Salvamento automático ' + (c.checked ? 'ligado' : 'desligado')); } },
-    { g: 'Salvar e recuperar', k: 'L', d: 'Criar link criptografado', f: () => clicar('share') },
+    { g: 'Salvar e recuperar', k: 'L', d: 'Link do curso (guardar ou enviar)', f: () => { if (window.Compartilhar) Compartilhar.abrir(); } },
     { g: 'Salvar e recuperar', k: 'O', d: 'Importar', f: () => { if (window.Importar) Importar.abrir(); } },
     { g: 'Navegação', k: '1', d: 'Aba Treinamento (foca o editor)', f: () => focarEditor('g') },
     { g: 'Navegação', k: '2', d: 'Aba Apresentação (foca o editor)', f: () => focarEditor('s') },

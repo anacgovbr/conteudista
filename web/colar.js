@@ -56,7 +56,7 @@ html.contraste .cl-ok{color:#0f8}
     '<label class="jn-lb" for="clT-s">Markdown da apresenta\u00e7\u00e3o</label>' +
     '<textarea id="clT-s" spellcheck="false" aria-describedby="clDica" placeholder="Cole aqui o texto da apresenta\u00e7\u00e3o"></textarea></div>' +
     '<div class="cl-painel" role="tabpanel" id="clPane-l" aria-labelledby="clTab-l" hidden>' +
-    '<label class="jn-lb" for="clUrl">Endere\u00e7o do link</label>' +
+    '<label class="jn-lb" for="clUrl">Endere\u00e7o do link do curso</label>' +
     '<input type="url" id="clUrl" autocomplete="off" aria-describedby="clDica" placeholder="https://\u2026">' +
     '<label class="jn-lb" for="clSenha">Senha (se houver)</label>' +
     '<input type="password" id="clSenha" autocomplete="off"></div>' +
@@ -75,7 +75,7 @@ html.contraste .cl-ok{color:#0f8}
       t.setAttribute('aria-label', a[1] + (cheio ? ', preenchido' : ''));
     });
     let txt;
-    if (sub === 'l') txt = u ? 'Informe a senha, se houver, e clique em Importar.' : 'Cole o endere\u00e7o de um link criado aqui.';
+    if (sub === 'l') txt = u ? 'Informe a senha, se houver, e clique em Importar.' : 'Tem um link do curso? Cole aqui. O texto atual vai para Vers\u00f5es antes de ser substitu\u00eddo.';
     else {
       const p = [];
       ['g', 's'].forEach(k => { if (v[k]) p.push(NOME[k] + ' (' + lin(v[k]) + ')'); });
