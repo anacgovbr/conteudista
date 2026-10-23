@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.53 - 23/10/2026
+- **Arquivos gerados** agora também pode ser **recolhida e mostrada**, como as demais seções: o controle **recolher/mostrar** fica à direita do título. A seção continua começando aberta, abre sozinha quando os arquivos são gerados e quando um arquivo é exibido pelo Histórico.
+- O botão **Histórico** fica no cabeçalho, ao lado do título, e continua acessível com a seção recolhida; clicar nele (ou usar Enter) abre a janela sem alternar a seção.
+- A Ajuda explica o novo comportamento.
+
 ## 1.52 - 23/10/2026
 - **Busca no Histórico e em Importar › Salvos**: o campo **Buscar**, no padrão de campo de busca do Design System do Governo, filtra a lista enquanto você digita, sem diferenciar acentos nem maiúsculas. Pesquisa nome, data e hora, tamanho, layout, rodapé, narração e tipo de arquivo; nos links, também o tipo, a validade e a senha. Com várias palavras, só aparecem os itens que têm todas; aspas buscam uma frase exata; Esc limpa a busca.
 - Cada geração passa a guardar também o rodapé e a narração, e cada link guarda o layout, o rodapé e o tamanho, para a busca encontrar esses dados. Pacotes e links anteriores continuam na lista e são encontrados pelos dados que já tinham.

@@ -42,13 +42,13 @@ details.sx>summary .sxh,details.sx>summary .sxr{font-size:13px;color:var(--acc);
 
 .acao-gerar{margin:16px 0 12px;text-align:center}
 details.sx[open]>summary{margin-bottom:10px}
-details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details.sx#dxRes,details.sx#dxLinks{margin-top:14px}
-.sec-cab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}.sec-cab h2{flex:1 1 auto;margin:0}#btnHistorico{margin:0}#btnHistorico svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:6px}#secRes #res{margin:0}
+details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details.sx#dxLinks{margin-top:14px}
+.sec-cab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}.sec-cab h2{flex:1 1 auto;margin:0}#btnHistorico{margin:0}#btnHistorico svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:6px}#secRes #res{margin:0}#secRes .sec-cab{margin:0}#secRes .sec-cab h2{flex:0 1 auto}
 </style>
-<link rel="stylesheet" href="govbr.css?v=1.52">
-<link rel="stylesheet" href="ds-botoes.css?v=1.52">
-<script src="editor.js?v=1.52"></script>
-<script src="ajuda.js?v=1.52" defer></script>
+<link rel="stylesheet" href="govbr.css?v=1.53">
+<link rel="stylesheet" href="ds-botoes.css?v=1.53">
+<script src="editor.js?v=1.53"></script>
+<script src="ajuda.js?v=1.53" defer></script>
 </head>
 <body>
 <a class="br-skiplink" href="#conteudo">Ir para o conteúdo</a>
@@ -108,12 +108,13 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
   <div id="log">Pronto. Nenhum conteúdo é armazenado sem sua autorização.</div>
 </section>
 <section class="card" id="secRes" aria-labelledby="tRes">
-  <div class="sec-cab">
+<details class="sx" id="dxRes" open><summary><div class="summary-title sec-cab">
     <h2 id="tRes">Arquivos gerados</h2>
     <button type="button" id="btnHistorico" class="sec mini" data-c="1" aria-haspopup="dialog" title="Histórico de arquivos gerados"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/></svg>Histórico</button>
-  </div>
+  </div><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>
   <div id="res" class="note">Nenhum arquivo gerado ainda. Para guardar o texto agora, use <b>Salvar › Link</b>.</div>
   <iframe id="prev" title="Pré-visualização" hidden></iframe>
+</details>
 </section>
 
 <section class="card" id="secShare">
@@ -802,12 +803,12 @@ listarLinks().catch(() => {});
 /* =========================== Seções recolhidas (abrem quando necessárias) =========================== */
 function abrirSecao(el) { for (let d = el && el.closest ? el.closest('details') : null; d; d = d.parentElement && d.parentElement.closest('details')) d.open = true; }
 window.abrirSecao = abrirSecao;
-['dxComo', 'dxRes', 'dxShare', 'dxLinks'].forEach(id => { const d = $(id); if (d) d.open = false; });
+['dxComo', 'dxShare', 'dxLinks'].forEach(id => { const d = $(id); if (d) d.open = false; });
 setTimeout(() => {
   new MutationObserver(() => { if ($('res').querySelector('a[download]')) abrirSecao($('res')); }).observe($('res'), { childList: true, subtree: true });
   new MutationObserver(() => { if ($('links').querySelector('table')) abrirSecao($('links')); }).observe($('links'), { childList: true, subtree: true });
 }, 1500);
-document.addEventListener('focusin', e => { if (e.target.closest && e.target.closest('details.sx:not([open])') && !e.target.matches('summary')) abrirSecao(e.target); });
+document.addEventListener('focusin', e => { if (e.target.closest && e.target.closest('details.sx:not([open])') && !e.target.matches('summary') && !e.target.closest('#dxRes > summary')) abrirSecao(e.target); });
 addEventListener('hashchange', () => { const a = location.hash && document.querySelector(location.hash); if (a) abrirSecao(a); });
 $('tema').value = localStorage.getItem('conteudista.tema') || 'govbr';
 function aplicarTemaNoMarkdown(tema) {
@@ -835,20 +836,20 @@ statusImagens();
   try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}
 })();
 </script>
-<script src="historico.js?v=1.52"></script>
-<script src="changelog.js?v=1.52"></script>
-<script src="gerados.js?v=1.52"></script>
-<script src="audio-codec.js?v=1.52"></script>
-<script src="locucao.js?v=1.52"></script>
-<script src="narracao.js?v=1.52"></script>
-<script src="ui-ajustes.js?v=1.52"></script>
-<script src="ux-feedback.js?v=1.52"></script>
-<script src="ux-expansiveis.js?v=1.52"></script>
-<script src="ux-arquivos.js?v=1.52"></script>
-<script src="metadados.js?v=1.52"></script>
-<script src="dicas.js?v=1.52"></script>
-<script src="janelas.js?v=1.52"></script>
-<script src="versoes.js?v=1.52"></script>
-<script src="colar.js?v=1.52"></script>
+<script src="historico.js?v=1.53"></script>
+<script src="changelog.js?v=1.53"></script>
+<script src="gerados.js?v=1.53"></script>
+<script src="audio-codec.js?v=1.53"></script>
+<script src="locucao.js?v=1.53"></script>
+<script src="narracao.js?v=1.53"></script>
+<script src="ui-ajustes.js?v=1.53"></script>
+<script src="ux-feedback.js?v=1.53"></script>
+<script src="ux-expansiveis.js?v=1.53"></script>
+<script src="ux-arquivos.js?v=1.53"></script>
+<script src="metadados.js?v=1.53"></script>
+<script src="dicas.js?v=1.53"></script>
+<script src="janelas.js?v=1.53"></script>
+<script src="versoes.js?v=1.53"></script>
+<script src="colar.js?v=1.53"></script>
 </body>
 </html>

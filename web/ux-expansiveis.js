@@ -80,7 +80,7 @@ html body #narrAv[open] > summary::before { transform: rotate(90deg); }
   // Foco em campo dentro de seção recolhida (atalhos, tutorial, Tab): abre a seção
   document.addEventListener('focusin', e => {
     const d = e.target.closest && e.target.closest('details:not([open])');
-    if (d && !e.target.matches('summary')) d.open = true;
+    if (d && !e.target.matches('summary') && !e.target.closest('#dxRes > summary')) d.open = true;
   });
 
   window.UXExpansiveis = { normalizar };

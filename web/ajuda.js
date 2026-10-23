@@ -129,7 +129,7 @@
 <ol>
 <li>Na aba <b>Apostila</b>, cole ou arraste o texto da apostila (<code>.md</code>); na aba <b>Apresentação</b>, o dos slides.</li>
 <li>Informe o <b>Nome do conteúdo</b> (usado nos nomes dos arquivos, como <code>Apostila_Nome.docx</code>) e escolha o <b>Layout (tema)</b>: <b>Padrão gov.br</b>, <b>ANAC 20 anos</b> (claro ou escuro) ou <b>Clássico</b>. Os temas ANAC 20 anos mudam só a apresentação; a apostila segue o padrão gov.br. O <b>rodapé</b> (opcional) fica entre o nome e o layout e aparece nos slides e no DOCX.</li>
-<li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Os pacotes anteriores ficam no botão <b>Histórico</b>, no cabeçalho da seção <b>Arquivos gerados</b>, onde é possível <b>buscar</b>. Se só um dos dois textos estiver preenchido, são gerados apenas os arquivos dele.</li>
+<li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Os pacotes anteriores ficam no botão <b>Histórico</b>, no cabeçalho da seção <b>Arquivos gerados</b>, onde é possível <b>buscar</b>. A seção <b>Arquivos gerados</b> abre sozinha ao gerar e pode ser recolhida, como as demais, pelo controle <b>recolher</b> à direita do título; o botão <b>Histórico</b> continua à mão com ela recolhida. Se só um dos dois textos estiver preenchido, são gerados apenas os arquivos dele.</li>
 </ol>
 <div class="dica">Na primeira geração o navegador carrega o motor Python (20 a 60 s). Depois é imediato.</div>
 <h4>Editor</h4>

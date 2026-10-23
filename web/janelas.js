@@ -937,5 +937,5 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   'use strict';
   const b = document.getElementById('btnHistorico');
   if (!b) return;
-  b.addEventListener('click', () => { if (window.HistoricoArquivos) window.HistoricoArquivos.abrir(); });
+  b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); if (window.HistoricoArquivos) window.HistoricoArquivos.abrir(); });
 })();
