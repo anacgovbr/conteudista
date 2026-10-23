@@ -66,6 +66,17 @@
 .ger-meta{margin:2px 0 0;font-size:13px;line-height:1.4;color:var(--mu,#636363)}
 .ger-meta .m{white-space:nowrap}
 #res .ger-atual>.ger-info{margin:0 0 8px}
+#prevPkg{margin:14px 0 0;padding:12px 14px;border:1px solid #cccccc;border-radius:8px;background:#f8f8f8}
+#prevPkg[hidden]{display:none}
+#prevPkg>.ger-info{margin:0 0 8px}
+#prevPkg .file-grupos{margin:0}
+.ger-pkg-rot{margin:0 0 4px;font-size:12.5px;font-weight:700;color:#155bcb}
+body #prevPkg .btn-exibir[aria-pressed="true"]{background-color:#0c326f}
+body #prevPkg .btn-exibir[aria-pressed="true"]::before{content:"✓ "}
+#dxRes.tem-pkg #res:not(:has(.ger-atual)){display:none}
+@media(max-width:700px){#prevPkg .file-grupo{flex-wrap:wrap}#prevPkg .file-grupo>b{flex:1 1 100%}#prevPkg .file-grupo-itens{flex:1 1 100%}}
+html.contraste #prevPkg{background:#000!important;border-color:#fff!important}
+html.contraste .ger-pkg-rot{color:#ff0!important}
 html.contraste .ger-nome{color:#ff0!important}
 html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-size:12.5px;margin:6px 0 0}`;
   document.head.appendChild(st);
@@ -228,26 +239,86 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
     try { if (navigator.storage && navigator.storage.estimate) { const e = await navigator.storage.estimate(); t += ' Uso total deste site no navegador: ' + fmt(e.usage || 0) + ' de ' + fmt(e.quota || 0) + '.'; } } catch { /* */ }
     $('gerUso').textContent = t.trim();
   }
+  /* ---------------------------- Pacote em exibicao: arquivos e ZIP acima da previa ---------------------------- */
+  const pkg = $('prevPkg'), dxRes = $('dxRes');
+  let pkgUrls = new Map(), pkgId = null;
+  const limparPkgUrls = () => { pkgUrls.forEach(u => URL.revokeObjectURL(u)); pkgUrls.clear(); };
+  function ocultarPkg() {
+    if (!pkg) return;
+    pkg.hidden = true; pkg.innerHTML = ''; pkgId = null; limparPkgUrls();
+    if (dxRes) dxRes.classList.remove('tem-pkg');
+  }
+  /* Fecha a exibicao do pacote (bloco e previa) quando o pacote deixa de existir */
+  function fecharExibicaoDoPacote() { if (pkgId === null) return; ocultarPkg(); if (prev) { prev.hidden = true; prev.src = 'about:blank'; } }
+  function marcarPkg(nome) { if (pkg) pkg.querySelectorAll('[data-pv]').forEach(b => b.setAttribute('aria-pressed', b.dataset.pv === nome ? 'true' : 'false')); }
+  const tipoDe = n => /^Apresentacao_/.test(n) ? 'apresentação' : 'apostila';
+  const anunciarPkg = m => { try { if (window.UXFeedback && UXFeedback.anunciar) UXFeedback.anunciar(m); } catch { /* sem anuncio */ } };
+  function rolarPara(el) {
+    if (!el) return;
+    el.style.scrollMarginTop = '96px';
+    requestAnimationFrame(() => requestAnimationFrame(() => el.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })));
+  }
+  async function mostrarPkg(id, nome) {
+    if (!pkg) return null;
+    let p = null;
+    try { p = await tx('readonly', s => s.get(id)); } catch { p = null; }
+    if (!p || !(p.arquivos || []).some(f => f.nome === nome)) return null;
+    limparPkgUrls();
+    const zip = p.arquivos.find(f => /\.zip$/i.test(f.nome)), outros = p.arquivos.filter(f => f !== zip);
+    const url = f => { if (!pkgUrls.has(f.nome)) pkgUrls.set(f.nome, URL.createObjectURL(f.blob)); return pkgUrls.get(f.nome); };
+    pkg.innerHTML = '<p class="ger-pkg-rot">Em exibição</p>' + metaHtml(p) + '<div class="file-links">' +
+      (zip ? '<a class="btn btn-arq download" href="' + url(zip) + '" download="' + esc(zip.nome) + '">.ZIP</a>' : '') +
+      outros.map(f => '<a class="file-link download" href="' + url(f) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + '</a>').join('') +
+      outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="btn btn-arq btn-exibir" data-pv="' + esc(f.nome) + '" aria-pressed="false">Exibir ' + tipoDe(f.nome) + '</button>').join('') + '</div>';
+    pkgId = id; pkg.hidden = false; if (dxRes) dxRes.classList.add('tem-pkg');
+    marcarPkg(nome);
+    if (window.UXArquivos && UXArquivos.processar) UXArquivos.processar();
+    return pkgUrls.get(nome) || null;
+  }
+  function abrirSecaoPrev() { for (let d = prev && prev.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) d.open = true; }
+  // a previa some (Limpar tela, nova geracao): o bloco do pacote some junto
+  if (prev && pkg) new MutationObserver(() => { if (prev.hidden) ocultarPkg(); }).observe(prev, { attributes: true, attributeFilter: ['hidden'] });
+  // Exibir da geracao atual (em Arquivos gerados): o bloco do historico sai, para nao duplicar
+  res.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-u]')) ocultarPkg(); });
+  // Trocar entre apostila e apresentacao do pacote em exibicao
+  if (pkg) pkg.addEventListener('click', e => {
+    const b = e.target.closest ? e.target.closest('[data-pv]') : null; if (!b) return;
+    e.preventDefault();
+    const u = pkgUrls.get(b.dataset.pv); if (!u || !prev) return;
+    prev.hidden = false; prev.src = u; marcarPkg(b.dataset.pv);
+    anunciarPkg('Exibindo a ' + tipoDe(b.dataset.pv) + '.');
+    rolarPara(pkg);
+  });
+
   $('gerLista').addEventListener('click', async e => {
     const v = e.target.closest('[data-ver]'), d = e.target.closest('[data-del]'); if (v) fecharGer(true);
     if (v) {
       e.preventDefault();
       if (prev) {
-        const u = urls.get(v.dataset.ver);
+        const k = v.dataset.ver.indexOf('/'), id = +v.dataset.ver.slice(0, k), nome = v.dataset.ver.slice(k + 1);
+        let u = await mostrarPkg(id, nome);
+        const comBloco = !!u;
+        if (!u) { ocultarPkg(); u = urls.get(v.dataset.ver); }   // alternativa: exibicao simples, sem bloco (e sem restos do pacote anterior)
         if (u) {
-          for (let d = prev.closest('details'); d; d = d.parentElement && d.parentElement.closest('details')) d.open = true;
+          abrirSecaoPrev();
           prev.hidden = false;
           prev.src = u;
-          prev.style.scrollMarginTop = '96px';
-          requestAnimationFrame(() => requestAnimationFrame(() => prev.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' })));
+          if (comBloco) { pkg.focus({ preventScroll: true }); anunciarPkg('Exibindo a ' + tipoDe(nome) + '. Os arquivos do pacote est\u00e3o acima da exibi\u00e7\u00e3o.'); }
+          rolarPara(comBloco ? pkg : prev);
         }
       }
     }
-    if (d) { if (!confirm('Excluir este pacote de arquivos guardado?')) return; await tx('readwrite', s => s.delete(+d.dataset.del)); listar(); }
+    if (d) {
+      if (!confirm('Excluir este pacote de arquivos guardado?')) return;
+      const id = +d.dataset.del;
+      await tx('readwrite', s => s.delete(id));
+      if (pkgId === id) fecharExibicaoDoPacote();
+      listar();
+    }
   });
-  $('gerLimpar').onclick = async () => { if (!confirm('Apagar todos os pacotes de arquivos gerados guardados neste navegador?')) return; await tx('readwrite', s => s.clear()); listar(); };
+  $('gerLimpar').onclick = async () => { if (!confirm('Apagar todos os pacotes de arquivos gerados guardados neste navegador?')) return; await tx('readwrite', s => s.clear()); fecharExibicaoDoPacote(); listar(); };
   const logEl = $('log');
-  if (logEl) new MutationObserver(() => { if (/Dados locais apagados/.test(logEl.lastChild && logEl.lastChild.textContent || '')) tx('readwrite', s => s.clear()).then(listar).catch(() => {}); }).observe(logEl, { childList: true });
+  if (logEl) new MutationObserver(() => { if (/Dados locais apagados/.test(logEl.lastChild && logEl.lastChild.textContent || '')) tx('readwrite', s => s.clear()).then(() => { fecharExibicaoDoPacote(); listar(); }).catch(() => {}); }).observe(logEl, { childList: true });
 
   listar();
   window.Gerados = { listar, capturar, abrir: abrirGer, fechar: fecharGer, metaHtml, temaRotulo };

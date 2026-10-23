@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.55 - 23/10/2026
+- **Exibir no Histórico agora traz os arquivos junto.** Ao escolher **Exibir apostila** ou **Exibir apresentação**, o pacote escolhido aparece na seção Arquivos gerados, num bloco **Em exibição** logo acima da pré-visualização, com o nome, a data, o tamanho e o layout, os arquivos (.MD, .HTML, .DOCX ou .PPTX) e o **.ZIP**. Assim dá para baixar exatamente a versão que está sendo vista.
+- Dentro do bloco, **Exibir apostila** e **Exibir apresentação** alternam a pré-visualização, e o botão do arquivo exibido fica marcado com ✓. O bloco acompanha a exibição: some ao recolher a seção, ao limpar a tela, ao gerar novos arquivos ou ao excluir o pacote exibido.
+- Corrigido o foco depois de Exibir, que agora vai para o bloco, para leitores de tela anunciarem o pacote em exibição.
+
 ## 1.54 - 23/10/2026
 - **Importar › Salvos reorganizado.** Cada grupo (Versões salvas e Links) tem o título com a contagem, uma linha de explicação e, logo abaixo, o texto **Excluir versões salvas** ou **Excluir links**, que apaga só aquele grupo. **Excluir tudo** continua no rodapé da janela. Toda exclusão, inclusive a de um item, pede confirmação.
 - **Todos os itens seguem o mesmo desenho**: ícone, nome, detalhes e uma única linha de ações alinhada ao texto, com **Abrir** como ação principal. O QR Code agora abre sob demanda em **QR code**. O tipo do link mostra a validade e os detalhes sem parênteses, e **Apagar link** passou a se chamar **Apagar no servidor**, para não se confundir com **Excluir**.

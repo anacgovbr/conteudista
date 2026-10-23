@@ -69,7 +69,7 @@
   }
   function processar() {
     const hosts = new Set();
-    document.querySelectorAll('#res a[download], #gerLista a[download]').forEach(a => {
+    document.querySelectorAll('#res a[download], #gerLista a[download], #prevPkg a[download]').forEach(a => {
       const p = a.parentElement;
       if (p && !p.classList.contains('file-grupo-itens')) hosts.add(p);
     });
