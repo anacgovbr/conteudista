@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# GERADOR PADRÃO DE CONTEÚDO v3.6 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX) — Apostila (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
+# GERADOR PADRÃO DE CONTEÚDO v3.7 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX) — Apostila (HTML + DOCX) e Apresentação (HTML + PPTX) a partir de Markdown.
 # Requisitos: Python 3 + python-docx + python-pptx (+ Pillow). HTML usa só biblioteca padrão.
 # Uso: python gerador.py apostila.md apresentacao.md --prefixo NOME --rodape "TEXTO" [--barra "TEXTO"] [--saida pasta] [--sem-embutir] [--tema govbr|classico] [--audios pasta] [--avancar]
 # Imagens ![alt](caminho|URL) sao convertidas para data:URI base64 (texto puro) nos .md de saida.
@@ -12,6 +12,14 @@ def slug(s):
     s=re.sub(r'<[^>]+>','',s).lower().translate(str.maketrans('áàâãäéèêëíìîïóòôõöúùûüçñ','aaaaaeeeeiiiiooooouuuucn'))
     return re.sub(r'[^a-z0-9]+','-',s).strip('-')
 LI=re.compile(r'^(\s*)([-*]|\d+\.)\s+(.*)$')
+CODIGO_RX=re.compile(r'(?ms)(^```[^\n]*\n.*?^```[ \t]*$|`[^`\n]+`)')
+def sem_comentarios(md):
+    """Remove comentarios HTML (<!-- -->) do texto, preservando os que aparecem em blocos de codigo e em codigo em linha."""
+    out=[];p=0
+    for m in CODIGO_RX.finditer(md):
+        out.append(re.sub(r'<!--.*?-->','',md[p:m.start()],flags=re.S));out.append(m.group(0));p=m.end()
+    out.append(re.sub(r'<!--.*?-->','',md[p:],flags=re.S))
+    return ''.join(out)
 def blocks(md):
     L=md.split('\n');n=len(L);i=0;o=[]
     st=lambda l:l.startswith(('#','```','|','>')) or LI.match(l) or l.strip() in('','---')
@@ -104,7 +112,11 @@ def embed_images(md,base_dir='.'):
         except Exception:fail.append(src);return m.group(0)
         ok[0]+=1
         return '![%s](data:%s;base64,%s)'%(alt,mime or 'image/png',base64.b64encode(raw).decode())
-    return IMG.sub(rep,md),ok[0],fail
+    partes=[];p=0
+    for m in CODIGO_RX.finditer(md):
+        partes.append(IMG.sub(rep,md[p:m.start()]));partes.append(m.group(0));p=m.end()
+    partes.append(IMG.sub(rep,md[p:]))
+    return ''.join(partes),ok[0],fail
 def mermaid_edges(code):
     lab={};rows=[]
     node=r'([A-Za-z0-9_]+)\s*(\(\(\(.*?\)\)\)|\(\(.*?\)\)|\[.*?\]|\{.*?\}|\(.*?\))?'
@@ -379,6 +391,14 @@ def treinamento_docx(md,path,foot,tema=None):
     from docx.shared import Pt,RGBColor,Cm
     from docx.enum.text import WD_BREAK
     from docx.oxml.ns import qn
+    def novo_num(doc):
+        "Cria uma numeracao nova (reiniciada em 1) para cada lista numerada; sem isso o Word continua a contagem da lista anterior."
+        sn=doc.styles['List Number'].element.pPr.numPr.numId.val
+        nums=doc.part.numbering_part.numbering_definitions._numbering
+        ab=[int(n.find(qn('w:abstractNumId')).get(qn('w:val'))) for n in nums.findall(qn('w:num')) if int(n.get(qn('w:numId')))==sn][0]
+        n=nums.add_num(ab);n.add_lvlOverride(ilvl=0).add_startOverride(1);return n.numId
+    def aplica_num(p,nid):
+        np_=p._p.get_or_add_pPr().get_or_add_numPr();np_.get_or_add_ilvl().val=0;np_.get_or_add_numId().val=nid
     from docx.oxml import OxmlElement
     PRI=C('0B3D6E');ACC=C('0A7CC1')
     d=Document();sec=d.sections[0];sec.page_height=Cm(29.7);sec.page_width=Cm(21)
@@ -457,6 +477,7 @@ def treinamento_docx(md,path,foot,tema=None):
                     c=d.add_paragraph();c.alignment=1;r=c.add_run(b[1]);r.italic=True;r.font.size=Pt(9)
             elif k=='table':table(b[1])
             elif k=='list':
+                nid=None
                 for dp,od,ck,t in b[1]:
                     if ck is not None:
                         p=d.add_paragraph();p.paragraph_format.left_indent=Cm(0.6+0.6*dp);p.add_run(('☒ ' if ck else '☐ ')).font.size=Pt(12);fill(p,t)
@@ -464,6 +485,9 @@ def treinamento_docx(md,path,foot,tema=None):
                         st='List Number' if od else 'List Bullet'
                         if dp:st+=' %d'%(min(dp,2)+1)
                         p=d.add_paragraph(style=st);fill(p,t)
+                        if od and not dp:
+                            if nid is None:nid=novo_num(d)
+                            aplica_num(p,nid)
                     p.paragraph_format.space_after=Pt(2)
                     if inq:shade(p._p,inq[0]);lborder(p,inq[1])
             elif k=='quote':
@@ -475,7 +499,7 @@ def treinamento_docx(md,path,foot,tema=None):
                     table(mermaid_edges(b[2]))
                 else:
                     p=d.add_paragraph();r=p.add_run(b[2]);r.font.name='Consolas';r.font.size=Pt(9);shade(p._p,H('F1F4F8'))
-    bl=blocks(re.sub(r'<!--.*?-->','',md,flags=re.S))
+    bl=blocks(sem_comentarios(md))
     hi=next((i for i,x in enumerate(bl) if x[0]=='h' and x[1]==2),len(bl))
     render(bl[:hi])
     p=d.add_paragraph();r=p.add_run('Sumário');r.bold=True;r.font.size=Pt(14);r.font.color.rgb=PRI
@@ -715,7 +739,7 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
     P=lambda e,n:os.path.join(saida,n+prefixo+e)
     arqs=[];msg='';g='';sl=[]
     if tem_g:
-        gm_=re.sub(r'<!--.*?-->','',gm,flags=re.S);g=treinamento_html(gm_,barra,tema)
+        gm_=sem_comentarios(gm);g=treinamento_html(gm_,barra,tema)
         open(P('.md','Apostila_'),'w',encoding='utf-8').write(gm);open(P('.html','Apostila_'),'w',encoding='utf-8').write(g)
         arqs+=[P('.md','Apostila_'),P('.html','Apostila_')]
         try:treinamento_docx(gm_,P('.docx','Apostila_'),rodape or title_of(gm_,''),tema);arqs.append(P('.docx','Apostila_'));msg+=' | docx: ok'
@@ -729,7 +753,7 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
         except Exception as e:msg+=' | pptx: ERRO %s'%e
         if nr['html'] or nr['pptx']:msg+=' | narração: %d slide(s)'%len(set(nr['html'])|set(nr['pptx']))
     else:msg+=' | apresentação: vazia (não gerada)'
-    res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d | imagens: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'),len(IMG.findall(gm))+len(IMG.findall(sm)))+' | tema: '+tema
+    res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d | imagens: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'),len(IMG.findall(CODIGO_RX.sub('',gm)))+len(IMG.findall(CODIGO_RX.sub('',sm))))+' | tema: '+tema
     return arqs,res
 if __name__=='__main__':
     a=argparse.ArgumentParser();a.add_argument('apostila',help="arquivo da apostila ('-' para não gerar)");a.add_argument('apresentacao',nargs='?',default='-',help="arquivo da apresentação ('-' ou omitido para não gerar)");a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.')

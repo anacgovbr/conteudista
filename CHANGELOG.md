@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.56 - 23/10/2026
+- **Gerador v3.7**: comentários HTML (`<!-- -->`) dentro de blocos de código e de código em linha agora são preservados na apostila e na prévia do editor, o que permite mostrar a sintaxe das notas e da narração em exemplos. Fora de código, continuam sendo removidos.
+- Exemplos de imagem escritos dentro de código (`![legenda](arquivo.png)`) deixam de contar como imagens pendentes e de ser buscados na internet, e o contador de imagens do editor ignora esses exemplos.
+- No DOCX, cada lista numerada passa a reiniciar em 1; antes, a numeração continuava a da lista anterior.
+
 ## 1.55 - 23/10/2026
 - **Exibir no Histórico agora traz os arquivos junto.** Ao escolher **Exibir apostila** ou **Exibir apresentação**, o pacote escolhido aparece na seção Arquivos gerados, num bloco **Em exibição** logo acima da pré-visualização, com o nome, a data, o tamanho e o layout, os arquivos (.MD, .HTML, .DOCX ou .PPTX) e o **.ZIP**. Assim dá para baixar exatamente a versão que está sendo vista.
 - Dentro do bloco, **Exibir apostila** e **Exibir apresentação** alternam a pré-visualização, e o botão do arquivo exibido fica marcado com ✓. O bloco acompanha a exibição: some ao recolher a seção, ao limpar a tela, ao gerar novos arquivos ou ao excluir o pacote exibido.

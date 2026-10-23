@@ -292,10 +292,12 @@ function deTexto(t) {
 const IMG = /!\[([^\]]*)\]\(([^)\s]+)\)/g;
 const imgMap = new Map();
 const nomeBase = src => { try { src = decodeURIComponent(src); } catch {} return src.split(/[\\/]/).pop().split(/[?#]/)[0].toLowerCase(); };
-function pendentes(txt) { return [...txt.matchAll(IMG)].map(m => m[2]).filter(s => !s.startsWith('data:')); }
+/* Blocos de codigo e codigo em linha (mesmo tamanho, em branco): exemplos de sintaxe nao contam como imagens */
+const mascaraCodigo = t => t.replace(/^```[^\n]*\n[\s\S]*?^```[ \t]*$|`[^`\n]+`/gm, m => m.replace(/[^\n]/g, ' '));
+function pendentes(txt) { return [...mascaraCodigo(txt).matchAll(IMG)].map(m => m[2]).filter(s => !s.startsWith('data:')); }
 function statusImagens() {
   refreshEditors();
-  const t = $('g').value + '\n' + $('s').value, tot = [...t.matchAll(IMG)].length, pen = pendentes(t);
+  const t = $('g').value + '\n' + $('s').value, tot = [...mascaraCodigo(t).matchAll(IMG)].length, pen = pendentes(t);
   $('imgst').innerHTML = !tot ? 'Imagens: nenhuma referência encontrada.' :
     'Imagens: <b>' + (tot - pen.length) + '</b> de ' + tot + ' em base64' +
     (pen.length ? ' · <span style="color:var(--wa)">pendentes: ' + esc([...new Set(pen.map(nomeBase))].join(', ')) + ' — arraste esses arquivos para embutir.</span>' : ' ✔');
@@ -310,7 +312,9 @@ async function embutir(txt) {
     }
     if (data) { cache.set(src, data); n++; } else falhas.push(src);
   }
-  return { out: txt.replace(IMG, (m, alt, src) => cache.has(src) ? '![' + alt + '](' + cache.get(src) + ')' : m), n, falhas };
+  let out = '', p = 0;
+  for (const m of mascaraCodigo(txt).matchAll(IMG)) { out += txt.slice(p, m.index) + (cache.has(m[2]) ? '![' + m[1] + '](' + cache.get(m[2]) + ')' : m[0]); p = m.index + m[0].length; }
+  return { out: out + txt.slice(p), n, falhas };
 }
 async function embutirTudo(silencioso) {
   const a = await embutir($('g').value), b = await embutir($('s').value);

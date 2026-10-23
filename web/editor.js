@@ -36,8 +36,16 @@
     return t.replace(/\u0000(\d+)\u0000/g, (m, i) => tok[+i]);
   }
   const LI = /^(\s*)([-*]|\d+\.)\s+(.*)$/;
+  /* Comentarios HTML sao removidos do texto, exceto dentro de blocos de codigo e de codigo em linha */
+  const CODIGO = /^```[^\n]*\n[\s\S]*?^```[ \t]*$|`[^`\n]+`/gm;
+  const mascaraCodigo = t => t.replace(/^```[^\n]*\n[\s\S]*?^```[ \t]*$|`[^`\n]+`/gm, m => m.replace(/[^\n]/g, ' '));
+  function semComentarios(md) {
+    let out = '', p = 0, m; CODIGO.lastIndex = 0;
+    while ((m = CODIGO.exec(md))) { out += md.slice(p, m.index).replace(/<!--[\s\S]*?-->/g, '') + m[0]; p = m.index + m[0].length; }
+    return out + md.slice(p).replace(/<!--[\s\S]*?-->/g, '');
+  }
   function render(md) {
-    const L = md.replace(/<!--[\s\S]*?-->/g, '').split('\n'); let i = 0; const o = [];
+    const L = semComentarios(md).split('\n'); let i = 0; const o = [];
     const start = l => /^(#|```|\||>)/.test(l) || LI.test(l) || /^\s*$/.test(l) || l.trim() === '---';
     while (i < L.length) {
       const l = L[i];
@@ -266,7 +274,7 @@
     function preview() { if (box.dataset.m === 'e') return; const md = real.value; pv.innerHTML = tipo === 'slides' ? renderSlides(md) : render(md); drawMermaid(pv); }
     function status() {
       const v = ta.value, words = (v.replace(/\(img:\d+\)/g, '').match(/[\wÀ-ÿ]+/g) || []).length;
-      const ni = (real.value.match(/!\[[^\]]*\]\(/g) || []).length;
+      const ni = (mascaraCodigo(real.value).match(/!\[[^\]]*\]\(/g) || []).length;
       const extra = tipo === 'slides' ? 'Slides: ' + (real.value.replace(/^---\n[\s\S]*?\n---\n/, '').split(/\n---\s*\n/).filter(p => p.trim()).length) : 'Seções: ' + (v.match(/^## /gm) || []).length;
       galeria();
       st.innerHTML = '<span>Palavras: ' + words.toLocaleString('pt-BR') + '</span><span>Linhas: ' + v.split('\n').length + '</span><span>Imagens: ' + ni + '</span><span>' + extra + '</span><span style="flex:1"></span><span>' + (real.value.length / 1024).toFixed(1) + ' KB</span>';
