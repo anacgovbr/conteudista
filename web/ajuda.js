@@ -58,9 +58,9 @@
   /* ---------------------------- Tutorial guiado ---------------------------- */
   const PASSOS = [
     { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em poucos passos você verá como <b>escrever</b>, <b>gerar</b>, <b>guardar</b> e <b>recuperar</b> um conteúdo. A conversão acontece no seu navegador; nada é enviado sem você pedir.' },
-    { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apostila</b> e <b>Apresentação</b>. Cole o texto gerado pelo agente de IA, arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
+    { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apostila</b> e <b>Apresentação</b>. Cole o texto gerado por uma IA (use o prompt padrão do exemplo), arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. O botão <b>Versões</b> guarda, compara e restaura o texto.' },
-    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe a apostila (HTML, DOCX, MD), a apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>, com o nome, a data, o tamanho e o layout de cada geração. Os anteriores ficam no <b>Histórico</b>, com busca. Para testar agora, use <b>Carregar exemplo</b>. Os arquivos são o conteúdo <b>pronto, para entregar</b>.' },
+    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe a apostila (HTML, DOCX, MD), a apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>, com o nome, a data, o tamanho e o layout de cada geração. Os anteriores ficam no <b>Histórico</b>, com busca. Para testar agora, use <b>Carregar exemplo</b>, que traz um guia completo de uso da aplicação, com apostila, apresentação e prompt padrão para IA. Os arquivos são o conteúdo <b>pronto, para entregar</b>.' },
     { alvo: 'btnSalvar', t: '4. Guarde o conteúdo em um link', d: 'Em <b>Salvar › Link</b>, o conteúdo inteiro (texto, imagens, nome e rodapé) vira um endereço. Cole-o onde preferir, como um e-mail para você mesmo, o Teams ou os favoritos, e abra quando quiser <b>continuar editando</b>, em qualquer computador. O salvamento automático (chave à direita) só recupera o último trabalho neste navegador.' },
     { alvo: 'btnImportar', t: '5. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. Use o campo <b>Buscar</b> para achar um item pelo nome, data, layout ou tipo de arquivo. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
@@ -132,6 +132,21 @@
 <li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Os pacotes anteriores ficam no botão <b>Histórico</b>, no cabeçalho da seção <b>Arquivos gerados</b>, onde é possível <b>buscar</b>. Ao usar <b>Exibir</b> no Histórico, o pacote escolhido aparece na seção com os seus arquivos e o ZIP <b>acima da exibição</b>, para você baixar a versão que está vendo. A seção <b>Arquivos gerados</b> abre sozinha ao gerar e pode ser recolhida, como as demais, pelo controle <b>recolher</b> à direita do título; o botão <b>Histórico</b> continua à mão com ela recolhida. Se só um dos dois textos estiver preenchido, são gerados apenas os arquivos dele.</li>
 </ol>
 <div class="dica">Na primeira geração o navegador carrega o motor Python (20 a 60 s). Depois é imediato.</div>
+<h4>Conteúdo de exemplo</h4>
+<p>O botão <b>Carregar exemplo</b> traz um <b>guia de uso do próprio Conteudista</b>, que serve de aula e de modelo para o seu conteúdo:</p>
+<ul>
+<li>uma <b>apostila</b> de 16 seções, do <b>Início rápido</b> ao prompt para IA, com 5 fluxos Mermaid, figuras, vídeos, checklists, exercícios com gabarito e referências;</li>
+<li>uma <b>apresentação</b> de 34 slides, um assunto por slide, com <b>notas para narração</b> (cerca de 15 minutos de áudio);</li>
+<li>o <b>prompt padrão para IA</b>, na seção 11.3 da apostila.</li>
+</ul>
+<p>Para criar o seu conteúdo, substitua os textos e mantenha a estrutura. Para gerar a aula narrada, marque <b>Narração dos slides</b> na aba <b>Apresentação</b> antes de <b>Gerar arquivos</b>. Para ouvir apenas as notas, importe-as na aba <b>Locução</b>.</p>
+<h4>Produzir os textos com uma IA</h4>
+<ul>
+<li>Na seção <b>11.3</b> da apostila de exemplo está o <b>prompt padrão</b>: um bloco único, para copiar e colar em uma IA autorizada pela instituição.</li>
+<li>Edite somente a seção 1 do prompt, com 14 parâmetros (tema, público, objetivo de aprendizagem, número de seções e de slides, tamanho das notas, formato de entrega e outros), e a seção 2, com o material de referência. As demais seções fixam as regras de conteúdo e de formato.</li>
+<li>Escolha a entrega: <b>A</b>, dois blocos de texto, que você cola em <b>Importar › Colar</b>, nas subabas <b>Apostila</b> e <b>Apresentação</b>; ou <b>B</b>, um arquivo <b>ZIP</b> com os dois textos e a pasta <code>imagens/</code>, que você importa em <b>Importar › Computador</b>.</li>
+<li>Revise tudo antes de gerar os arquivos, em especial os trechos marcados com <code>[A confirmar]</code>. Não envie dados pessoais nem informações restritas.</li>
+</ul>
 <h4>Editor</h4>
 <ul>
 <li>Modos <b>Editar</b>, <b>Dividido</b> (editor + prévia) e <b>Prévia</b>; tela cheia pelo último botão da barra.</li>
@@ -224,6 +239,8 @@
 <tr><td>Imagens “pendentes”</td><td>Arraste os arquivos de imagem citados no texto (com o mesmo nome) para a área da aba ou para o editor.</td></tr>
 <tr><td>Imagem não aparece</td><td>Confira o painel <b>Imagens do texto</b>; use <b>Localizar</b>. Arquivos muito grandes deixam o conteúdo pesado — use <b>Redimensionar</b> ou <b>Reduzir todas…</b> (até ~1 MB por imagem).</td></tr>
 <tr><td>Sumário vazio no DOCX</td><td>No Word, clique com o botão direito no sumário → <b>Atualizar campo</b>.</td></tr>
+<tr><td>A IA devolveu um texto fora do padrão</td><td>Cole de novo a seção 5 (apostila) ou a seção 6 (apresentação) do prompt padrão e peça a correção.</td></tr>
+<tr><td>A narração lê símbolos ou endereços</td><td>Reescreva a nota em texto corrido, sem símbolos nem endereços, e gere de novo. Para falar um texto diferente da nota, use <code>&lt;!-- narracao: texto --&gt;</code>.</td></tr>
 <tr><td>Fluxos Mermaid no DOCX/PPTX</td><td>Aparecem como tabela “De | Condição | Para” (desenho só no HTML).</td></tr>
 <tr><td>O link chegou cortado por e-mail ou Teams</td><td>Use o <b>PrivateBin</b>, que gera um endereço curto.</td></tr>
 <tr><td>“Este link exige senha”</td><td>Informe a senha, enviada por quem criou o link.</td></tr>

@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.60 - 23/10/2026
+- **Ajuda e Tutorial passam a apresentar o conteúdo de exemplo e o prompt padrão para IA.** Duas seções novas na Ajuda, **Conteúdo de exemplo** e **Produzir os textos com uma IA**, explicam o que o botão **Carregar exemplo** traz (apostila de 16 seções, apresentação de 34 slides com notas para narração e o prompt padrão) e como usar o prompt, com as duas formas de entrega: dois blocos de texto ou um ZIP. Os passos 1 e 3 do Tutorial citam o exemplo e o prompt, e a tabela de problemas comuns ganhou duas linhas sobre o texto devolvido pela IA e a leitura da narração.
+- O parâmetro de cache dos scripts da página passa a 1.60, para que a Ajuda nova chegue a quem já abriu o site.
+- O README descreve o exemplo como guia de uso, com a manutenção do conteúdo e as mudanças do gerador 3.7.
+
 ## 1.59 - 23/10/2026
 - **A apresentação de exemplo agora é uma aula sobre o próprio Conteudista.** O botão **Carregar exemplo** traz 34 slides, um assunto por slide: privacidade e funcionamento, início rápido, percurso de aprendizado, tela principal, editor e atalhos, imagens, o que cabe no Markdown, fluxos Mermaid, checklists e exercícios, vídeos, importação, formas de guardar, link do conteúdo, versões, geração, layouts, Arquivos gerados, Histórico, narração, locução e produção com IA.
 - **Cada slide tem notas para narração**, com 63 a 81 palavras, em tom técnico e formal, escritas para serem ouvidas: sem símbolos, algarismos, parênteses nem endereços. Ao marcar **Narração dos slides**, o exemplo rende cerca de 15 minutos de áudio, e a aba **Locução** importa as notas como texto.

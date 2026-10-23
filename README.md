@@ -6,7 +6,7 @@ Página única que converte os arquivos Markdown de um conteúdo em:
 |---|---|
 | `Apostila_<NOME>.md` · `.html` · `.docx` | `Apresentacao_<NOME>.md` · `.html` · `.pptx` |
 
-**Nenhum conteúdo é salvo no site.** A conversão roda no navegador de quem usa (Python via Pyodide). O repositório e o site contêm apenas a ferramenta e um conteúdo de exemplo fictício, por isso podem ser públicos.
+**Nenhum conteúdo é salvo no site.** A conversão roda no navegador de quem usa (Python via Pyodide). O repositório e o site contêm apenas a ferramenta e um conteúdo de exemplo (o guia de uso do próprio Conteudista), por isso podem ser públicos.
 
 ## Recursos
 
@@ -42,7 +42,7 @@ web/ptbr-g2p.js          ← fonemizador interno pt-BR
 web/changelog.js         ← botão Novidades (lê o CHANGELOG.md)
 web/govbr.css            ← tema do Padrão Digital de Governo (gov.br/ds)
 CHANGELOG.md             ← histórico de versões da aplicação
-web/exemplo/             ← conteúdo de exemplo (fictício)
+web/exemplo/             ← conteúdo de exemplo: guia de uso (apostila, apresentação com notas para narração e prompt padrão para IA)
 tools/gerador.py         ← motor de conversão (o mesmo do agente "Gerador de Cursos ANAC")
 tools/requirements.txt
 .github/workflows/publicar-pagina.yml  ← testa e publica a página no GitHub Pages
@@ -58,6 +58,7 @@ tools/requirements.txt
 
 - Alterou o visual dos arquivos gerados? Edite `tools/gerador.py`; o workflow testa e republica.
 - Mantenha a mesma versão do `gerador.py` na PARTE 6 do `Pacote_Gerador_Cursos.txt` do agente.
+- A versão 3.7 do gerador (1.56) preserva comentários HTML dentro de código, na apostila e na prévia; não trata exemplos de imagem escritos em código como imagens pendentes; e reinicia a numeração de cada lista numerada no DOCX.
 - A página precisa de acesso a `cdn.jsdelivr.net` (motor Python e desenho dos fluxos Mermaid). O PrivateBin exige que a instância aceite chamadas de outros sites (CORS); se não aceitar, use o link autocontido.
 
 ## Execução local (opcional, com Python 3)
@@ -71,6 +72,23 @@ python tools/gerador.py apostila.md apresentacao.md --prefixo Meu_Conteudo --rod
 ## Atalhos da aplicação
 
 `Alt+Shift` + tecla (no Mac, `Option+Shift`): **G** gerar · **E** exemplo · **D** baixar .md · **P** salvar em pasta · **S** salvar versão · **A** ligar/desligar autossalvamento · **L** criar link · **O** abrir link · **V** versões do texto · **1/2** abas · **M** modo do editor · **F** tela cheia · **T** tutorial · **R** reiniciar tutorial · **H** ajuda · **K** lista de atalhos · **F1** ajuda.
+
+## Conteúdo de exemplo e prompt padrão para IA
+
+O botão **Carregar exemplo** carrega `web/exemplo/treinamento.md` (apostila) e `web/exemplo/apresentacao.md` (apresentação), que formam um **guia de uso do próprio Conteudista**. Os nomes dos arquivos são mantidos por compatibilidade com o carregamento em `web/index.html` e com o workflow de publicação.
+
+| Arquivo | Conteúdo |
+|---|---|
+| `treinamento.md` | Apostila de 16 seções: Início rápido, funcionamento, percurso de aprendizado, edição, importação, formas de guardar, geração, locução e narração, o que cabe no Markdown, produção com IA, fluxo de trabalho, checklists, exercícios, gabarito e referências. Traz 5 fluxos Mermaid, 4 figuras, links para vídeos e o **prompt padrão para IA** (seção 11.3) |
+| `apresentacao.md` | 34 slides, um assunto por slide, com notas para narração (63 a 81 palavras por slide, cerca de 15 minutos de áudio), 5 fluxos Mermaid e 3 figuras |
+
+Manutenção do exemplo:
+
+- É texto comum: edite os dois `.md`. As figuras são PNG embutidas em base64, de modo que cada arquivo é autossuficiente.
+- O prompt padrão está em um único bloco de código. Qualquer mudança na sintaxe aceita pelo gerador deve ser refletida nas seções 5 e 6 do prompt e na tabela da seção 10 da apostila.
+- As notas dos slides são escritas para serem ouvidas: texto corrido, sem símbolos, parênteses nem endereços.
+- O workflow de publicação gera o exemplo com os temas `govbr` e `classico` como teste.
+- No HTML, os fluxos Mermaid dependem de `cdn.jsdelivr.net`.
 
 ## Atalhos do editor (com o cursor no editor)
 
