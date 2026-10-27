@@ -72,15 +72,13 @@ Apresentação de uso da aplicação
 
 ```mermaid
 flowchart LR
-    T00((Início)) --> T01[01. Abrir a aplicação]
-    T01 --> T02[02. Carregar exemplo<br/>ou colar o texto]
-    T02 --> T03[03. Conferir o nome do conteúdo]
-    T03 --> T04[04. Gerar arquivos]
-    T04 --> D01{Primeira geração?}
-    D01 -->|Sim| T05[05. Aguardar o motor<br/>de 20 a 60 segundos]
-    D01 -->|Não| T06[06. Baixar o ZIP]
-    T05 --> T06
-    T06 --> T99(((Fim)))
+    T00((Início)) --> T01[01. Carregar exemplo]
+    T01 --> T02[02. Gerar arquivos]
+    T02 --> D01{Primeira geração?}
+    D01 -->|Sim| T03[03. Aguardar o motor]
+    D01 -->|Não| T04[04. Baixar o ZIP]
+    T03 --> T04
+    T04 --> T99(((Fim)))
 ```
 
 <!-- notas: O início rápido reúne o mínimo necessário para gerar um conteúdo. Abra a aplicação, carregue o exemplo ou cole o seu texto, confira o nome do conteúdo e gere os arquivos. Na primeira geração, o navegador carrega o motor de conversão, o que leva de vinte a sessenta segundos. Nas demais, o resultado é imediato. Por fim, baixe o pacote compactado em Arquivos gerados. -->
@@ -106,11 +104,11 @@ flowchart LR
 flowchart LR
     T00((Início)) --> T01[01. Início rápido]
     T01 --> T02[02. Escrever e editar]
-    T02 --> T03[03. Importar textos e imagens]
-    T03 --> T04[04. Salvar versão ou link]
-    T04 --> T05[05. Gerar e baixar os arquivos]
-    T05 --> T06[06. Narrar os slides]
-    T06 --> T07[07. Produzir com IA<br/>opcional]
+    T02 --> T03[03. Importar]
+    T03 --> T04[04. Guardar]
+    T04 --> T05[05. Gerar]
+    T05 --> T06[06. Narrar]
+    T06 --> T07[07. IA opcional]
     T07 --> T99(((Fim)))
 ```
 
@@ -386,14 +384,13 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    T00((Início)) --> T01[01. Copiar o prompt padrão]
-    T01 --> T02[02. Ajustar os parâmetros]
-    T02 --> T03[03. Enviar o material<br/>de referência à IA]
-    T03 --> T04[04. Receber a apostila<br/>e a apresentação]
-    T04 --> T05[05. Importar em Colar<br/>ou em Computador]
-    T05 --> T06[06. Revisar e editar]
-    T06 --> T07[07. Gerar os arquivos]
-    T07 --> T99(((Fim)))
+    T00((Início)) --> T01[01. Copiar o prompt]
+    T01 --> T02[02. Ajustar]
+    T02 --> T03[03. Enviar material]
+    T03 --> T04[04. Importar textos]
+    T04 --> T05[05. Revisar]
+    T05 --> T06[06. Gerar arquivos]
+    T06 --> T99(((Fim)))
 ```
 
 <!-- notas: A produção assistida por inteligência artificial segue um fluxo definido. Copie o prompt padrão, ajuste os parâmetros, envie o material de referência e receba a apostila e a apresentação. Em seguida, importe os textos, em Colar ou em Computador, conforme o formato da entrega. Antes de gerar os arquivos, revise e edite o conteúdo. A apostila detalha cada um dos dois caminhos de importação. -->

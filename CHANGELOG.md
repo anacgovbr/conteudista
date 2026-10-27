@@ -1,5 +1,10 @@
 # Novidades do Conteudista
 
+## 1.62 - 27/10/2026
+- **Fluxos mais legíveis na apresentação de exemplo.** Os três fluxos mais longos (Início rápido, Percurso de aprendizado e Produzir os textos com IA) tinham rótulos longos e, ao caberem na largura do slide, mostravam o texto com cerca de 12 px. Os rótulos e as etapas foram encurtados e o texto passa a cerca de 17,5 px, mais perto dos outros dois fluxos do exemplo (cerca de 22 px).
+- No **Início rápido** a decisão "Primeira geração?" foi mantida e o passo "Conferir o nome" ficou apenas na lista do slide seguinte. No **Percurso de aprendizado** e em **Produzir os textos com IA** as etapas ficaram com nomes curtos, sem quebra de linha, o que também deixa mais limpas as tabelas De, Condição e Para do PPTX.
+- Muda somente a apresentação de exemplo. A apostila de exemplo e o gerador permanecem como estavam. O parâmetro de cache dos scripts da página passa a 1.62.
+
 ## 1.61 - 23/10/2026
 - **Corrigido: os fluxos Mermaid não apareciam na apresentação em HTML.** Esse HTML mostra um slide por vez, e o Mermaid não consegue desenhar dentro de um elemento oculto; por isso os fluxos de todos os slides, exceto o primeiro a ser exibido, saíam vazios. Agora, ao **Gerar arquivos**, cada fluxo da apresentação é desenhado na própria página e embutido no HTML como imagem, sem depender da rede nem de qual slide está visível. O `.md` continua com o código do fluxo e o PPTX, com a tabela De, Condição e Para.
 - Se o componente Mermaid não estiver acessível ao gerar, ou se um fluxo tiver erro de sintaxe, a página avisa e esse fluxo continua sendo desenhado no navegador de quem abrir a apresentação, agora com todos os slides mensuráveis, o que corrige também esse caminho.
