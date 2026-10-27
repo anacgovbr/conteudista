@@ -1,3 +1,11 @@
 __pycache__/
 *.pyc
 site/
+# Pacotes, exportacoes e scripts de apoio (nao versionar)
+*.backup-*
+/conteudista-web*.zip
+/conteudista-export-*.txt
+/exportar-conteudista.ps1
+/limpar-conteudista.ps1
+/limpar-repositorio.ps1
+/atualizar-conteudista.ps1
