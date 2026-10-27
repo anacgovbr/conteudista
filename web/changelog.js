@@ -5,7 +5,7 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const VERSAO = '1.62';
+  const VERSAO = '1.63';
   const CHAVE = 'conteudista.versaoVista';
   const $ = id => document.getElementById(id);
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

@@ -1,10 +1,12 @@
 /* =====================================================================================
    Conteudista - Janelas: Importar, Historico de arquivos e Compartilhar (etapa 1)
 
-   - Barra de acoes: Importar | Salvar (menu) | Compartilhar | Carregar exemplo | Limpar tela | chave.
+   - Barra de acoes: Importar | Carregar exemplo | Limpar tela | chave "Salvar automatico", com o status do ultimo salvamento.
+   - Salvar \u25be (menu): fica ao lado de "Gerar arquivos" e reune Guardar no navegador, Baixar tudo (.zip), Compartilhar link,
+     Salvar na pasta e Baixar .md. E o unico caminho para guardar o conteudo.
    - Importar: janela com abas Salvos, Computador e Colar (uma aba por origem).
    - Historico de arquivos: janela aberta pelo botao ao lado do titulo "Arquivos gerados".
-   - Compartilhar: janela com destino, senha, lembrar links e tamanho.
+   - Compartilhar link: janela com destino, senha, lembrar links e tamanho (aberta pelo menu Salvar).
    - Os blocos que ja existem (rascunhos, links, pacotes guardados, campos do link) sao MOVIDOS para
      as janelas; os ids e os manipuladores continuam os mesmos.
    - Excluir tudo, Excluir versoes salvas, Excluir links e a exclusao de cada item usam confirmacao acessivel: role="alertdialog" com titulo e descricao,
@@ -159,7 +161,17 @@ html.contraste .sv-qr{background:#000;border-color:#fff}
 .ger-tb.mde-tb{display:inline-flex!important;padding:0!important;background:transparent!important;border:0!important;flex:0 0 auto}
 .jn-barra{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .jn-barra button{margin:0}
-.jn-barra button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-left:6px}
+.jn-barra button svg,.jn-dd>button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-left:6px}
+.acao-gerar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 12px}
+.acao-gerar .jn-dd{vertical-align:top}
+body .acao-gerar #go{margin:0}
+body .acao-gerar .jn-dd>#btnSalvar{--btn-h:48px;margin:0;padding:0 28px;font-size:18px}
+.acao-gerar .jn-mn{min-width:320px;max-width:calc(100vw - 32px)}
+.jn-mn .jn-sepm{height:1px;margin:4px 6px;background:#cccccc}
+.jn-autost{margin:-4px 0 10px;font-size:13px;line-height:1.4;color:#636363}
+.jn-autost.ok{color:#168821}
+html.contraste .jn-autost,html.contraste .jn-autost.ok{color:#fff!important}
+html.contraste .jn-mn .jn-sepm{background:#fff}
 .jn-sp{flex:1 1 12px}
 .jn-dd{position:relative;display:inline-block}
 .jn-mn{position:absolute;top:calc(100% + 4px);left:0;z-index:60;min-width:240px;background:#fff;border:1px solid #cccccc;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.25);padding:4px}
@@ -196,7 +208,6 @@ html.contraste .sv-qr{background:#000;border-color:#fff}
 html.contraste .jn-bi-ic,html.contraste .jn-back .jn-bi-b{color:#ff0!important}
 html.contraste .jn-bs,html.contraste .jn-bs .jn-bs-t{color:#fff!important}
 .jn-mi i.jn-rec{font-style:normal;font-size:11px;font-weight:600;background:#dbe8fb;color:#0c326f;border-radius:10px;padding:0 7px;margin-left:4px;white-space:nowrap}
-.ger-fonte .note{margin:0;font-size:13px}
 .jn-lc{display:flex;flex-wrap:wrap;align-items:center;gap:10px 12px;border:1px solid var(--jn-line);border-radius:8px;padding:10px;margin:4px 0 8px}
 .jn-qrc{width:104px;height:104px;flex:0 0 104px;background:#fff;display:grid;place-items:center;border:1px solid #dddddd;border-radius:4px;padding:3px}
 .jn-qrc img,.jn-qrc canvas,.jn-qrc svg{display:block;width:96px!important;height:96px!important}
@@ -208,6 +219,9 @@ html.contraste .jn-bs,html.contraste .jn-bs .jn-bs-t{color:#fff!important}
 html.contraste .jn-mi i.jn-rec{background:#000!important;color:#ff0!important;border:1px solid #ff0}
 @media (prefers-reduced-motion:reduce){.jn-tr,.jn-tr::after{transition:none}}
 @media(max-width:700px){
+  .acao-gerar .jn-dd{width:100%}
+  body .acao-gerar .jn-dd>#btnSalvar{width:100%;padding:0 16px}
+  .acao-gerar .jn-mn{left:0;right:0;min-width:0;width:100%}
   .jn-back{padding:0;align-items:stretch}
   .jn-win,.jn-win.jn-peq{width:100%;max-height:none;min-height:100%;border-radius:0}
   .jn-top h2{font-size:16px}
@@ -690,19 +704,25 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   const bImp = mk('btnImportar', 'sec', 'Importar'); bImp.setAttribute('aria-haspopup', 'dialog'); bImp.title = 'Importar: salvos, arquivos do computador, texto ou link (Alt+Shift+O)';
   const dd = document.createElement('span'); dd.className = 'jn-dd';
   const bSalvar = mk('btnSalvar', 'sec', 'Salvar' + svg('chev'));
+  bSalvar.title = 'Salvar: guardar no navegador, baixar tudo, compartilhar link (Alt+Shift+S guarda uma vers\u00e3o)';
   bSalvar.setAttribute('aria-haspopup', 'menu'); bSalvar.setAttribute('aria-expanded', 'false'); bSalvar.setAttribute('aria-controls', 'jnMenuSalvar');
   const menu = document.createElement('div'); menu.className = 'jn-mn'; menu.id = 'jnMenuSalvar'; menu.setAttribute('role', 'menu'); menu.setAttribute('aria-label', 'Salvar'); menu.hidden = true;
   const ITENS = [
-    ['lnk', 'Link', 'Qualquer computador', 'jnLink', '', 1],
-    ['rasc', 'Vers\u00e3o', 'S\u00f3 neste navegador', 'dsave', 'Vers\u00e3o salva.'],
-    ['pc', 'Pasta', 'No computador', 'fsave', 'Salvo na pasta.'],
-    ['arq', '.MD', 'Texto em Markdown', 'mdl', '.MD baixado.'],
-    ['arq', '.ZIP', 'Todos os arquivos', 'zdl', '.ZIP baixado.']
+    ['rasc', 'Guardar no navegador', 'Vers\u00e3o s\u00f3 neste navegador', 'dsave', 'Vers\u00e3o salva.'],
+    ['arq', 'Baixar tudo (.zip)', 'Textos e arquivos gerados, em um ZIP', 'zdl', '.ZIP baixado.'],
+    ['lnk', 'Compartilhar link', 'Texto-fonte, em qualquer computador', 'jnLink', '', 1],
+    '-',
+    ['pc', 'Salvar na pasta', 'No computador (Edge e Chrome)', 'fsave', 'Salvo na pasta.'],
+    ['arq', 'Baixar .md', 'Textos em Markdown', 'mdl', '.MD baixado.']
   ];
-  menu.innerHTML = ITENS.map(x => '<button type="button" role="menuitem" class="jn-mi" tabindex="-1" data-c="1" data-alvo="' + x[3] + '" data-msg="' + x[4] + '">' + svg(x[0]) + '<span><b>' + x[1] + (x[5] ? ' <i class="jn-rec">recomendado</i>' : '') + '</b><small>' + x[2] + '</small></span></button>').join('');
+  menu.innerHTML = ITENS.map(x => x === '-' ? '<div class="jn-sepm" role="separator"></div>' : '<button type="button" role="menuitem" class="jn-mi" tabindex="-1" data-c="1" data-alvo="' + x[3] + '" data-msg="' + x[4] + '">' + svg(x[0]) + '<span><b>' + x[1] + (x[5] ? ' <i class="jn-rec">recomendado</i>' : '') + '</b><small>' + x[2] + '</small></span></button>').join('');
   dd.append(bSalvar, menu);
   const bCmp = mk('btnCompartilhar', 'sec', 'Compartilhar'); bCmp.setAttribute('aria-haspopup', 'dialog'); bCmp.title = 'Criar um link criptografado (Alt+Shift+L cria direto)';
-  barra.insertBefore(bImp, ex); barra.insertBefore(dd, ex);
+  barra.insertBefore(bImp, ex);
+  { // Salvar fica ao lado de "Gerar arquivos": um unico caminho para guardar o conteudo
+    const go = $('go');
+    if (go && go.parentNode) go.insertAdjacentElement('afterend', dd); else barra.insertBefore(dd, ex);
+  }
 
   function abrirMenu() { menu.hidden = false; bSalvar.setAttribute('aria-expanded', 'true'); const p = menu.querySelector('.jn-mi'); if (p) p.focus(); }
   function fecharMenu(foco) { if (menu.hidden) return; menu.hidden = true; bSalvar.setAttribute('aria-expanded', 'false'); if (foco) bSalvar.focus(); }
@@ -746,6 +766,28 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     sw.addEventListener('change', () => { auto.checked = sw.checked; auto.dispatchEvent(new Event('change', { bubbles: true })); });
     auto.addEventListener('change', () => { sw.checked = auto.checked; });
     barra.append(sp, lab);
+  })();
+
+  /* Status do salvamento automatico: espelha o texto de #autost (painel oculto) em uma linha sempre visivel.
+     Leitores de tela ouvem so o primeiro salvamento da sessao e as mudancas da chave, nunca a cada tecla. */
+  (function statusSalvamento() {
+    const auto = $('auto'), src = $('autost'); if (!auto || !src) return;
+    const p = document.createElement('p'); p.id = 'jnAutoSt'; p.className = 'jn-autost';
+    barra.insertAdjacentElement('afterend', p);
+    let falou = false, anterior = '';
+    function atualizar() {
+      const t = (src.textContent || '').trim(), m = /^Salvo automaticamente \u00e0s (\d{1,2}):(\d{2})/.exec(t);
+      let txt, ok = false, fala = '';
+      if (m) { txt = '\u2713 Salvo automaticamente \u00e0s ' + m[1].padStart(2, '0') + ':' + m[2] + ' \u00b7 neste navegador'; ok = true; if (!falou) { falou = true; fala = 'Salvo automaticamente neste navegador.'; } }
+      else if (!auto.checked || /^Desativado/.test(t)) { txt = 'Salvamento autom\u00e1tico desligado. Use Salvar \u25be para guardar o conte\u00fado.'; fala = anterior === 'off' ? '' : 'Salvamento autom\u00e1tico desligado.'; anterior = 'off'; }
+      else { txt = 'Salvamento autom\u00e1tico ligado: o texto \u00e9 guardado neste navegador a cada altera\u00e7\u00e3o.'; if (anterior === 'off') fala = 'Salvamento autom\u00e1tico ligado.'; anterior = 'on'; }
+      if (m) anterior = 'on';
+      p.textContent = txt; p.classList.toggle('ok', ok);
+      if (fala) anunciarGlobal(fala);
+    }
+    new MutationObserver(atualizar).observe(src, { childList: true, characterData: true, subtree: true });
+    auto.addEventListener('change', () => setTimeout(atualizar, 0));
+    atualizar();
   })();
 
   /* Botao "Historico" ao lado do titulo de "Arquivos gerados" */
@@ -932,10 +974,6 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     if (!it || !it.url) { cmp.fechar(true); importar.abrir('sav'); return; }
     estadoLink(true, it);
   }
-  document.addEventListener('click', e => {
-    const b = e.target.closest ? e.target.closest('#btnCriarLink') : null;
-    if (b) { e.preventDefault(); cmp.abrir(); }
-  });
   function atualizar() {
     const nv = contar($('drafts')), nl = contar($('links')), n = nv + nl;
     nVer.textContent = nv ? String(nv) : ''; nLnk.textContent = nl ? String(nl) : '';

@@ -16,8 +16,8 @@ Página única que converte os arquivos Markdown de um conteúdo em:
 | Tutorial, Ajuda e Atalhos | Tutorial guiado na primeira visita (ou botão ▶ Tutorial), com **reinício** (↺ no tutorial, botão na Ajuda ou `Alt+Shift+R`); Ajuda **com busca** e destaque dos termos (botão ou F1); atalhos `Alt+Shift+tecla` com janela de consulta (botão ⌨ Atalhos ou `Alt+Shift+K`) | — |
 | Gerar conteúdo | Apostila + apresentação em Markdown → 6 arquivos + ZIP, no layout **gov.br** (padrão) ou **Clássico** | Só na memória do navegador |
 | Imagens em base64 | Arraste, cole (Ctrl+V) ou insira pelo botão de imagem; no editor aparecem como `(img:N)` | No próprio texto `.md` |
-| Versões salvas | Salvamento automático ligado por padrão (recupera o último trabalho ao reabrir) e **versões salvas** com nome (menu **Salvar**), reunidas em **Versões** e em **Importar → Salvos** | IndexedDB do navegador, só nesta máquina |
-| Salvar na pasta / Baixar .zip | Grava os `.md` e os arquivos gerados numa pasta escolhida (Edge/Chrome) | Disco do usuário |
+| Versões salvas | Salvamento automático ligado por padrão (recupera o último trabalho ao reabrir) e **versões salvas** (**Salvar ▾ → Guardar no navegador**), reunidas em **Versões** e em **Importar → Salvos**. O horário do último salvamento automático aparece sob a barra de ações | IndexedDB do navegador, só nesta máquina |
+| Salvar ▾ | Botão ao lado de **Gerar arquivos**, único caminho para guardar o conteúdo. Itens: **Guardar no navegador** (versão), **Baixar tudo (.zip)**, **Compartilhar link**, **Salvar na pasta** (grava os `.md` e os arquivos gerados numa pasta escolhida, Edge/Chrome) e **Baixar .md** | Navegador, disco do usuário ou link |
 | Link autocontido | Conteúdo comprimido e cifrado (AES-256-GCM) no próprio link; chave no `#` ou senha (PBKDF2 310.000 iterações) | Somente no link |
 | Versões do texto | Botão **Versões** na barra do editor ou `Alt+Shift+V`. Versões guardadas no navegador (edições da sessão a cada 3 min, arquivos carregados, links abertos, rascunhos, exemplo, versões marcadas ★, geração/compartilhamento; “antes de carregar/restaurar” automático; até 120). Diff “antes e depois” entre quaisquer duas versões ou o conteúdo atual: lado a lado ou unificado, só alterações ou texto completo, palavras destacadas, imagens como miniaturas e lista de imagens removidas/incluídas; restaurar, baixar A/B, excluir | IndexedDB do navegador, só nesta máquina |
 | Tamanho antes do envio | Estimativa do conteúdo e do envio cifrado, com alerta perto do limite de 10 MB e confirmação antes de enviar | — |
@@ -33,7 +33,7 @@ web/historico.js         ← histórico de versões e comparação (diff)
 web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
 web/metadados.js         ← Nome do conteúdo, Rodapé (opcional) sempre visível (a Barra superior foi retirada)
 web/dicas.js             ← dicas (tooltip) acessíveis dos botões da barra do editor
-web/janelas.js           ← Importar, Salvar, Compartilhar e Histórico de arquivos (janelas e barra de ações)
+web/janelas.js           ← Importar, Salvar ▾ (menu), Compartilhar link e Histórico de arquivos (janelas, barra de ações e status do salvamento)
 web/colar.js             ← Importar > Colar: subabas Apostila, Apresentação e Link
 web/versoes.js           ← rascunhos e versões unificados (salvar, abrir, excluir e migração dos dados antigos)
 web/locucao.js           ← aba Locução

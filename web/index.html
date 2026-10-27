@@ -45,10 +45,10 @@ details.sx[open]>summary{margin-bottom:10px}
 details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details.sx#dxLinks{margin-top:14px}
 .sec-cab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}.sec-cab h2{flex:1 1 auto;margin:0}#btnHistorico{margin:0}#btnHistorico svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:6px}#secRes #res{margin:0}#secRes .sec-cab{margin:0}#secRes .sec-cab h2{flex:0 1 auto}
 </style>
-<link rel="stylesheet" href="govbr.css?v=1.62">
-<link rel="stylesheet" href="ds-botoes.css?v=1.62">
-<script src="editor.js?v=1.62"></script>
-<script src="ajuda.js?v=1.62" defer></script>
+<link rel="stylesheet" href="govbr.css?v=1.63">
+<link rel="stylesheet" href="ds-botoes.css?v=1.63">
+<script src="editor.js?v=1.63"></script>
+<script src="ajuda.js?v=1.63" defer></script>
 </head>
 <body>
 <a class="br-skiplink" href="#conteudo">Ir para o conteúdo</a>
@@ -70,7 +70,7 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
   <ol>
     <li>Cole, arraste ou escreva a <b>apostila</b> e a <b>apresentação</b> no editor (barra de ferramentas, atalhos e prévia ao lado). Imagens arrastadas, coladas (Ctrl+V) ou inseridas pelo botão de imagem são convertidas para <b>base64</b>.</li>
     <li>Clique em <b>Gerar arquivos</b> e baixe o que precisar. Os arquivos são o conteúdo <b>pronto</b>, para abrir no Word, no PowerPoint ou no navegador.</li>
-    <li>Para <b>guardar o texto e continuar em outro computador</b>, use <b>Salvar › Link</b>. O link leva o conteúdo inteiro e funciona como um "salvar como" que cabe em um endereço.</li>
+    <li>Para <b>guardar o texto e continuar em outro computador</b>, use <b>Salvar ▾ › Compartilhar link</b>. O link leva o conteúdo inteiro e funciona como um "salvar como" que cabe em um endereço.</li>
   </ol>
   <p class="note">Atalhos do editor: <b>Ctrl+Z / Ctrl+Y</b> desfazer/refazer · <b>Ctrl+B</b> negrito · <b>Ctrl+I</b> itálico · <b>Ctrl+K</b> link · <b>Tab/Shift+Tab</b> recuo de listas · <b>Enter</b> continua listas e checklists · <b>Esc</b> sai da tela cheia. Lista completa: botão <b>⌨ Atalhos</b>. No editor, imagens aparecem como <code>(img:N)</code>; o texto completo em base64 é mantido e usado na geração.</p>
 </details>
@@ -112,7 +112,7 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
     <h2 id="tRes">Arquivos gerados</h2>
     <button type="button" id="btnHistorico" class="sec mini" data-c="1" aria-haspopup="dialog" title="Histórico de arquivos gerados"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/></svg>Histórico</button>
   </div><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>
-  <div id="res" class="note">Nenhum arquivo gerado ainda. Para guardar o texto agora, use <b>Salvar › Link</b>.</div>
+  <div id="res" class="note">Nenhum arquivo gerado ainda. Para guardar o texto agora, use <b>Salvar ▾ › Compartilhar link</b>.</div>
   <div id="prevPkg" class="ger-pkg" role="region" aria-label="Arquivos do pacote em exibição" tabindex="-1" hidden></div>
   <iframe id="prev" title="Pré-visualização" hidden></iframe>
 </details>
@@ -401,7 +401,7 @@ $('ex').onclick = async () => {
     if (window.Hist) Hist.registrar('exemplo', 'Exemplo');
   } catch { log('Exemplo indisponível.', 'err'); }
 };
-function limparDownloads() { urls.forEach(u => URL.revokeObjectURL(u)); urls = []; ultimos = []; $('res').innerHTML = 'Nenhum arquivo gerado ainda. Para guardar o texto agora, use <b>Salvar › Link</b>.'; $('prev').hidden = true; $('prev').src = 'about:blank'; }
+function limparDownloads() { urls.forEach(u => URL.revokeObjectURL(u)); urls = []; ultimos = []; $('res').innerHTML = 'Nenhum arquivo gerado ainda. Para guardar o texto agora, use <b>Salvar ▾ › Compartilhar link</b>.'; $('prev').hidden = true; $('prev').src = 'about:blank'; }
 $('clr').onclick = () => { aplicar({}); imgMap.clear(); limparDownloads(); log('Tela limpa (rascunhos salvos não foram apagados).', 'ok'); };
 
 /* =========================== Persistência local (IndexedDB) =========================== */
@@ -618,7 +618,7 @@ async function listarLinks() {
   let l = sessaoLinks.slice();
   if ($('keep').checked) { const g = await dbAll('links'); g.forEach(x => { if (!l.some(y => y.url === x.url)) l.push(x); }); }
   l.sort((a, b) => b.data - a.data);
-  if (!l.length) { $('links').innerHTML = '<p class="sv-vazio">Nenhum link criado. Use <b>Salvar › Link</b> para criar um.</p>'; return; }
+  if (!l.length) { $('links').innerHTML = '<p class="sv-vazio">Nenhum link criado. Use <b>Salvar ▾ › Compartilhar link</b> para criar um.</p>'; return; }
   const icoLink = '<svg viewBox="0 0 24 24" focusable="false"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>';
   $('links').innerHTML = '<ul class="sv-lista">' + l.map((x, i) => {
     const cur = linkCurto(x.url), rot = esc(x.nome || 'conteúdo');
@@ -823,7 +823,7 @@ $('go').onclick = async () => {
     const meta = { data: Date.now(), prefixo: pref, tema: $('tema').value, rodape: $('rod').value.trim(), tam: ultimos.reduce((a, f) => a + f.blob.size, 0),
       narracao: narr ? { voz: (window.Locucao && Locucao.nomeVoz ? Locucao.nomeVoz($('narrVoz').value) : $('narrVoz').value), formato: $('narrFmt').value, avanco: $('narrAuto').checked } : null };
     window.GeracaoMeta = meta;
-    $('res').innerHTML = '<div class="ger-atual">' + (window.Gerados && Gerados.metaHtml ? Gerados.metaHtml(meta) : '') + '<div class="file-links">' + h + '</div>' + '<div class="file-grupo ger-fonte"><b>Texto-fonte:</b><div class="file-grupo-itens"><button type="button" class="mini" id="btnCriarLink" data-c="1" aria-haspopup="dialog" title="Criar um link com o conteúdo inteiro">Criar link</button><span class="note">Guarda o texto e as imagens em um endereço, para continuar em outro computador.</span></div></div></div>';
+    $('res').innerHTML = '<div class="ger-atual">' + (window.Gerados && Gerados.metaHtml ? Gerados.metaHtml(meta) : '') + '<div class="file-links">' + h + '</div></div>';
     $('res').querySelectorAll('[data-u]').forEach(a => a.onclick = e => {
   e.preventDefault();
   const frame = $('prev');
@@ -909,20 +909,20 @@ statusImagens();
   try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}
 })();
 </script>
-<script src="historico.js?v=1.62"></script>
-<script src="changelog.js?v=1.62"></script>
-<script src="gerados.js?v=1.62"></script>
-<script src="audio-codec.js?v=1.62"></script>
-<script src="locucao.js?v=1.62"></script>
-<script src="narracao.js?v=1.62"></script>
-<script src="ui-ajustes.js?v=1.62"></script>
-<script src="ux-feedback.js?v=1.62"></script>
-<script src="ux-expansiveis.js?v=1.62"></script>
-<script src="ux-arquivos.js?v=1.62"></script>
-<script src="metadados.js?v=1.62"></script>
-<script src="dicas.js?v=1.62"></script>
-<script src="janelas.js?v=1.62"></script>
-<script src="versoes.js?v=1.62"></script>
-<script src="colar.js?v=1.62"></script>
+<script src="historico.js?v=1.63"></script>
+<script src="changelog.js?v=1.63"></script>
+<script src="gerados.js?v=1.63"></script>
+<script src="audio-codec.js?v=1.63"></script>
+<script src="locucao.js?v=1.63"></script>
+<script src="narracao.js?v=1.63"></script>
+<script src="ui-ajustes.js?v=1.63"></script>
+<script src="ux-feedback.js?v=1.63"></script>
+<script src="ux-expansiveis.js?v=1.63"></script>
+<script src="ux-arquivos.js?v=1.63"></script>
+<script src="metadados.js?v=1.63"></script>
+<script src="dicas.js?v=1.63"></script>
+<script src="janelas.js?v=1.63"></script>
+<script src="versoes.js?v=1.63"></script>
+<script src="colar.js?v=1.63"></script>
 </body>
 </html>

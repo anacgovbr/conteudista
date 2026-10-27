@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.63 - 27/10/2026
+- **O menu Salvar ▾ sai da barra de ações e passa a ficar ao lado de Gerar arquivos.** Ele agora tem **Guardar no navegador** (versão salva), **Baixar tudo (.zip)** e **Compartilhar link**, além de **Salvar na pasta** e **Baixar .md** em um segundo grupo. A barra de ações fica com **Importar**, **Carregar exemplo**, **Limpar tela** e a chave **Salvar automático**.
+- **Um único caminho para guardar.** A linha **Texto-fonte** (botão **Criar link**) deixou de aparecer em **Arquivos gerados**; o link é criado em **Salvar ▾ › Compartilhar link** (ou Alt+Shift+L). Os atalhos continuam os mesmos.
+- **Status do salvamento automático sempre visível.** Sob a barra de ações aparece "✓ Salvo automaticamente às HH:MM · neste navegador" (ou o aviso de que o salvamento está desligado). Leitores de tela ouvem só o primeiro salvamento da sessão e as mudanças da chave, nunca a cada alteração.
+- No celular, **Gerar arquivos** e **Salvar ▾** ocupam toda a largura e o menu abre sob o botão.
+- Tutorial, Ajuda (nova seção **O botão Salvar ▾**), README, mensagens da tela, apostila e apresentação de exemplo (com as figuras e as notas de narração) seguem o novo caminho. O parâmetro de cache dos scripts passa a 1.63.
 
 ## 1.62 - 27/10/2026
 - **Fluxos mais legíveis na apresentação de exemplo.** Os três fluxos mais longos (Início rápido, Percurso de aprendizado e Produzir os textos com IA) tinham rótulos longos e, ao caberem na largura do slide, mostravam o texto com cerca de 12 px. Os rótulos e as etapas foram encurtados e o texto passa a cerca de 17,5 px, mais perto dos outros dois fluxos do exemplo (cerca de 22 px).

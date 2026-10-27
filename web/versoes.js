@@ -48,7 +48,7 @@
     try { l = await marcadas(); }
     catch (e) { if (meu === seq) drafts.textContent = 'Armazenamento local indispon\u00edvel neste navegador.'; return; }
     if (meu !== seq) return;
-    if (!l.length) { drafts.innerHTML = '<p class="sv-vazio">Nenhuma vers\u00e3o salva. Use <b>Salvar \u203a Vers\u00e3o</b> para guardar uma.</p>'; return; }
+    if (!l.length) { drafts.innerHTML = '<p class="sv-vazio">Nenhuma vers\u00e3o salva. Use <b>Salvar \u25be \u203a Guardar no navegador</b> para guardar uma.</p>'; return; }
     const ico = '<svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/><path d="M5.5 9h3M5.5 13h3M15.5 9h3M15.5 13h3"/></svg>';
     drafts.innerHTML = '<ul class="sv-lista">' + l.map(v => {
       const n = esc(nomeDe(v.rotulo)), tam = v.tam || ((v.g || '').length + (v.s || '').length);
