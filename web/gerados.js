@@ -1,7 +1,7 @@
 /* =====================================================================================
    Conteudista — Arquivos gerados guardados no navegador (IndexedDB)
    - Banco próprio "conteudista_arquivos" / store "pacotes" (não interfere no banco principal)
-   - Após cada "Gerar arquivos", guarda os 6 arquivos + ZIP (Blobs) deste navegador
+   - Após cada "Gerar arquivos", guarda os 8 arquivos + ZIP (Blobs) deste navegador (apostila: MD, HTML, DOCX, EPUB e EPUB OpenDyslexic)
    - Lista com download de cada arquivo/ZIP, visualização do HTML e exclusão
    - Mantém os últimos N pacotes (padrão 10) e mostra o espaço usado
    Integra-se sem alterar os outros arquivos: só precisa de <script src="gerados.js"></script>.
@@ -29,7 +29,7 @@
     if (p.narracao) t.push('narração narracao com narração', p.narracao.voz, p.narracao.formato, p.narracao.avanco ? 'avanço automático' : '');
     (p.arquivos || []).forEach(f => {
       const n = f.nome, e = (n.split('.').pop() || '').toLowerCase();
-      t.push(n, '.' + e, e, e === 'md' ? 'markdown' : '', /^(Apostila|Treinamento)_/.test(n) ? 'apostila treinamento' : /^Apresentacao_/.test(n) ? 'apresentação apresentacao slides' : 'todos', f.blob ? fmt(f.blob.size) : '');
+      t.push(n, '.' + e, e, e === 'md' ? 'markdown' : '', e === 'epub' ? 'epub ebook livro digital acessível acessivel' + (/_OpenDyslexic\.epub$/i.test(n) ? ' opendyslexic dislexia' : ' atkinson') : '', /^(Apostila|Treinamento)_/.test(n) ? 'apostila treinamento' : /^Apresentacao_/.test(n) ? 'apresentação apresentacao slides' : 'todos', f.blob ? fmt(f.blob.size) : '');
     });
     return t.filter(Boolean).join(' ');
   }
@@ -218,7 +218,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
   const urls = new Map();
   function urlDe(chave, blob) { if (!urls.has(chave)) urls.set(chave, URL.createObjectURL(blob)); return urls.get(chave); }
   function limparUrls() { urls.forEach(u => URL.revokeObjectURL(u)); urls.clear(); }
-  const rotulo = n => { const e = n.split('.').pop().toLowerCase(); return (/^(Apostila|Treinamento)_/.test(n) ? 'Apostila ' : /^Apresentacao_/.test(n) ? 'Apresentação ' : '') + e.toUpperCase(); };
+  const rotulo = n => { const e = n.split('.').pop().toLowerCase(); return (/^(Apostila|Treinamento)_/.test(n) ? 'Apostila ' : /^Apresentacao_/.test(n) ? 'Apresentação ' : '') + e.toUpperCase() + (/_OpenDyslexic\.epub$/i.test(n) ? ' (OpenDyslexic)' : ''); };
   async function listar() {
     let l = [];
     try { l = await tx('readonly', s => s.getAll()); } catch (e) { $('gerLista').textContent = 'Armazenamento indisponível (' + e.message + ').'; return; }

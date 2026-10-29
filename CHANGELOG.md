@@ -2,6 +2,13 @@
 ## 1.66 - 29/10/2026
 - **O item Compartilhar link sai do menu Salvar ▾**, porque o botão **Compartilhar link** já fica ao lado de **Salvar ▾**. O menu agora reúne só as formas de guardar neste computador: **Guardar no navegador**, **Baixar tudo (.zip)**, **Salvar na pasta** e **Baixar .md**. O botão da barra de ações, o ícone do editor e o atalho Alt+Shift+L continuam como antes.
 - Tutorial, Ajuda, README e o conteúdo de exemplo (apostila, apresentação e figura do menu) seguem o novo menu.
+- **Acessibilidade para dislexia na apostila e na apresentação.** Os arquivos HTML gerados ganham o seletor **Leitura**, separado do **Tema**: **Padrão (Verdana)**, **Atkinson Hyperlegible Next** e **OpenDyslexic**. As duas últimas vão embutidas no arquivo (sem internet). O texto da apostila passa a 18 px, entrelinha 1,7, à esquerda e sem hifenização, com foco visível, tabelas e código roláveis pelo teclado, gabarito acessível e uma **Tabela do fluxo** para cada Mermaid.
+- **Modo leitura na apresentação HTML** (`L`): todos os slides em sequência, em fundo claro, com as notas visíveis. Telas pequenas já abrem assim; **Modo slides** volta aos slides e a escolha fica salva. Os slides ganham descrição para leitor de tela, contador anunciado e auto-ajuste sem cortar conteúdo; o modo leitura não inicia a narração.
+- **Impressão A4** da apostila e da apresentação pelo botão **Imprimir / PDF**, em fundo branco, com a fonte escolhida e as notas dos slides. O PDF **não é PDF/UA**.
+- **EPUB em duas versões:** `Apostila_<nome>.epub` (Atkinson Hyperlegible Next) e `Apostila_<nome>_OpenDyslexic.epub`, com sumário, fontes embutidas, fluxos em tabela, checklists ☐/☒ e metadados de acessibilidade. Agora são 8 arquivos + ZIP.
+- **DOCX** em Verdana 12 pt, entrelinha 1,5 e 6 pt após parágrafos, com texto alternativo nas imagens e idioma português (Brasil).
+- **PPTX** mantém a fonte do layout e recebe texto alternativo, notas e textos em português (Brasil), cabeçalho de tabela, entrelinha 1,2 e corpo de no mínimo 16 pt.
+- README, Ajuda, exemplo, testes (`tools/testar_acessibilidade.py`) e o workflow atualizados; gerador v3.9. O menu **Salvar ▾** continua sem **Compartilhar link**.
 ## 1.65 - 29/10/2026
 - **Importar link em Versões.** A janela **Versões do texto** tem o novo botão **Importar link**: cole o link do Conteudista (direto ou PrivateBin) e escolha **Adicionar como versão**. O texto entra como versão **via link**, **sem alterar os editores**, é selecionado como Versão A e já é comparado com o texto atual. Para comparar dois links, importe os dois e escolha A e B.
 - **Link com senha:** a senha é pedida antes de adicionar. Um conteúdo que já está nas versões não é duplicado.

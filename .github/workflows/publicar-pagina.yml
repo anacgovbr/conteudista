@@ -39,10 +39,18 @@ jobs:
 
       - name: Testar o gerador com o curso de exemplo
         run: |
+          python -m py_compile tools/gerador.py
           python tools/gerador.py web/exemplo/treinamento.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste --tema govbr
           python tools/gerador.py web/exemplo/treinamento.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida /tmp/teste2 --tema classico
           mkdir -p /tmp/aud && python -c "import wave,struct,math;w=wave.open('/tmp/aud/1.wav','wb');w.setnchannels(1);w.setsampwidth(2);w.setframerate(22050);w.writeframes(b''.join(struct.pack('<h',int(8000*math.sin(i/10))) for i in range(22050)))"
           python tools/gerador.py - web/exemplo/apresentacao.md --prefixo Narr --saida /tmp/teste3 --audios /tmp/aud --avancar
+
+      - name: Verificar fontes de leitura e acessibilidade das saídas (EPUB, DOCX, PPTX e HTML)
+        run: |
+          python tools/fontes/verificar_fontes.py
+          EXIGIR=$(python -c "import json;m=json.load(open('tools/fontes/manifesto.json'));print('--exigir-fontes' if any(f.get('arquivos') for f in m['familias']) else '')")
+          python tools/testar_acessibilidade.py /tmp/teste --prefixo Exemplo $EXIGIR
+          python tools/testar_acessibilidade.py /tmp/teste2 --prefixo Exemplo --fonte-pptx "Segoe UI" $EXIGIR
 
       - name: Verificar sintaxe dos scripts da página
         run: |
@@ -74,6 +82,7 @@ jobs:
           mkdir -p site/wheels
           cp web/index.html web/*.js web/*.css tools/gerador.py site/
           cp -r tools/temas site/temas
+          cp -r tools/fontes site/fontes
           cp -r web/exemplo site/exemplo
           cp CHANGELOG.md site/
           pip download --no-deps --only-binary=:all: --dest site/wheels python-docx python-pptx XlsxWriter typing_extensions

@@ -60,7 +60,7 @@
     { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em poucos passos você verá como <b>escrever</b>, <b>gerar</b>, <b>guardar</b> e <b>recuperar</b> um conteúdo. A conversão acontece no seu navegador; nada é enviado sem você pedir.' },
     { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apostila</b> e <b>Apresentação</b>. Cole o texto gerado por uma IA (use o prompt padrão do exemplo), arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. O botão <b>Versões</b> guarda, compara e restaura o texto.' },
-    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe a apostila (HTML, DOCX, MD), a apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>, com o nome, a data, o tamanho e o layout de cada geração. Os anteriores ficam no <b>Histórico</b>, com busca. Para testar agora, use <b>Carregar exemplo</b>, que traz um guia completo de uso da aplicação, com apostila, apresentação e prompt padrão para IA. Os arquivos são o conteúdo <b>pronto, para entregar</b>.' },
+    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe a apostila (HTML, DOCX, EPUB, MD), a apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>, com o nome, a data, o tamanho e o layout de cada geração. Os anteriores ficam no <b>Histórico</b>, com busca. Para testar agora, use <b>Carregar exemplo</b>, que traz um guia completo de uso da aplicação, com apostila, apresentação e prompt padrão para IA. Os arquivos são o conteúdo <b>pronto, para entregar</b>.' },
     { alvo: 'btnSalvar', t: '4. Guarde o conteúdo', d: 'O botão <b>Salvar ▾</b>, ao lado de <b>Gerar arquivos</b>, reúne as formas de guardar neste computador: <b>Guardar no navegador</b>, <b>Baixar tudo (.zip)</b>, <b>Salvar na pasta</b> e <b>Baixar .md</b>. Para guardar em um link, use o botão <b>Compartilhar link</b>, ao lado de <b>Salvar ▾</b> (ele também aparece ao lado de <b>Importar</b> e na barra do editor, e abre sempre a mesma janela). Com o link, o conteúdo inteiro (texto, imagens, nome e rodapé) vira um endereço: cole-o onde preferir, como um e-mail para você mesmo, o Teams ou os favoritos, e abra quando quiser <b>continuar editando</b>, em qualquer computador. O salvamento automático (chave no alto, com o horário do último salvamento) só recupera o último trabalho neste navegador.' },
     { alvo: 'btnImportar', t: '5. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. Use o campo <b>Buscar</b> para achar um item pelo nome, data, layout ou tipo de arquivo. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
@@ -113,14 +113,14 @@
   /* ---------------------------- Ajuda ---------------------------- */
   const AJUDA = `
 <h4>O que é</h4>
-<p>O Conteudista transforma dois textos em Markdown — a <b>apostila</b> e a <b>apresentação</b> — em um <b>conteúdo</b> completo: apostila (HTML, DOCX, MD) e apresentação (HTML, PPTX, MD), com locução opcional. A conversão roda <b>no seu navegador</b>; o site não guarda nenhum conteúdo.</p>
+<p>O Conteudista transforma dois textos em Markdown — a <b>apostila</b> e a <b>apresentação</b> — em um <b>conteúdo</b> completo: apostila (HTML, DOCX, EPUB, MD) e apresentação (HTML, PPTX, MD), com locução opcional. A conversão roda <b>no seu navegador</b>; o site não guarda nenhum conteúdo.</p>
 <h4>Termos usados</h4>
 <table><tr><th>Termo</th><th>O que é</th></tr>
 <tr><td><b>Conteúdo</b></td><td>O material que você produz: apostila e apresentação, com um <b>nome</b>, um <b>layout</b> e um <b>rodapé</b>.</td></tr>
-<tr><td><b>Apostila</b></td><td>O documento de estudo, em HTML, DOCX e MD.</td></tr>
+<tr><td><b>Apostila</b></td><td>O documento de estudo, em HTML, DOCX, EPUB (duas versões) e MD.</td></tr>
 <tr><td><b>Apresentação</b></td><td>Os slides, em HTML, PPTX e MD, com narração opcional.</td></tr>
 <tr><td><b>Locução</b></td><td>Áudio gerado a partir de um texto (aba <b>Locução</b>).</td></tr>
-<tr><td><b>Arquivos</b></td><td>O conteúdo <b>pronto</b>, para entregar (.DOCX, .PPTX, .HTML, .ZIP).</td></tr>
+<tr><td><b>Arquivos</b></td><td>O conteúdo <b>pronto</b>, para entregar (.DOCX, .PPTX, .HTML, .EPUB, .ZIP).</td></tr>
 <tr><td><b>Texto-fonte</b></td><td>Os textos em Markdown e as imagens, para continuar editando.</td></tr>
 <tr><td><b>Link</b></td><td>O texto-fonte em um endereço, para guardar ou enviar.</td></tr>
 <tr><td><b>Versão</b></td><td>Uma cópia do texto-fonte guardada neste navegador.</td></tr>
@@ -160,6 +160,18 @@
 <li>Se o texto já cita uma imagem pelo nome (ex.: <code>![Figura](fluxo.png)</code>), arraste o arquivo <code>fluxo.png</code>: ele é associado à referência e convertido para base64.</li>
 <li>Na apresentação, cada slide é separado por uma linha <code>---</code>. Use os botões <b>Slide</b>, <b>Capa</b>, <b>Destaque</b> e <b>Notas</b>.</li>
 </ul>
+<h4>Leitura acessível (dislexia)</h4>
+<ul>
+<li><b>Tema e Leitura são controles separados</b> nos arquivos HTML gerados. O <b>Tema</b> muda as cores (claro, escuro, alto contraste). A <b>Leitura</b> muda a fonte do texto: <b>Padrão (Verdana)</b>, <b>Atkinson Hyperlegible Next</b> ou <b>OpenDyslexic</b>. Trocar um não muda o outro, e a escolha de Leitura fica salva no navegador.</li>
+<li>As fontes Atkinson Hyperlegible Next e OpenDyslexic vão <b>embutidas</b> no HTML e no EPUB: funcionam sem internet. O seletor fica no arquivo gerado, não na tela do aplicativo; o <b>Layout (tema)</b> do aplicativo continua o mesmo.</li>
+<li>O texto da apostila usa 18 px, entrelinha 1,7, alinhamento à esquerda e sem hifenização. Tabelas largas e blocos de código rolam com o teclado, e cada fluxo Mermaid tem uma <b>Tabela do fluxo</b> (De, Condição, Para).</li>
+<li>Na apresentação em HTML, o botão <b>Modo leitura</b> (<kbd>L</kbd>) mostra todos os slides em sequência, em fundo claro, com as <b>notas do apresentador</b> abaixo de cada um. Em telas pequenas ela já abre assim; o botão <b>Modo slides</b> volta aos slides e a escolha fica salva. O modo leitura não inicia a narração.</li>
+<li><b>EPUB</b>: a apostila sai em duas versões, <code>Apostila_&lt;nome&gt;.epub</code> (Atkinson Hyperlegible Next) e <code>Apostila_&lt;nome&gt;_OpenDyslexic.epub</code>. Abra em um leitor de livros digitais (Thorium, Calibre, Apple Books, Google Play Livros). O leitor pode trocar a fonte e o tamanho.</li>
+<li><b>PDF</b>: abra o HTML, escolha a Leitura e use <b>Imprimir / PDF</b> › <b>Salvar como PDF</b>, papel A4. O PDF sai com fundo branco e texto preto e usa a fonte escolhida, mas <b>não é um PDF/UA</b>. Para um PDF com marcação (tags), use um conversor que preserve a estrutura ou a exportação acessível do Word.</li>
+<li><b>DOCX</b>: Verdana 12 pt, entrelinha 1,5 e 6 pt após parágrafos, com texto alternativo nas imagens e idioma português (Brasil). A fonte não é embutida: se o computador não tiver Verdana, o Word usa outra.</li>
+<li><b>PPTX</b>: mantém a fonte do layout e recebe texto alternativo nas imagens, cabeçalho de tabela, entrelinha 1,2, corpo de no mínimo 16 pt e idioma português (Brasil). Não tem modo leitura.</li>
+<li>Uma imagem sem descrição (<code>![](…)</code>) continua sem texto alternativo e gera um aviso ao gerar. Escreva a descrição entre os colchetes.</li>
+</ul>
 <h4>Narração dos slides</h4>
 <ul>
 <li>Na aba <b>Apresentação</b>, marque <b>Narração dos slides</b> (acima de <b>Gerar arquivos</b>) para transformar as <b>notas do apresentador</b> (<code>&lt;!-- notas: … --&gt;</code>) em áudio dentro da apresentação. O painel só aparece com a aba Apresentação selecionada; a escolha continua valendo ao gerar os arquivos.</li>
@@ -171,11 +183,11 @@
 <h4>Guardar o conteúdo: arquivo ou link?</h4>
 <p>O Conteudista não guarda nenhum conteúdo no site. Você decide onde ele fica, e há dois tipos de saída:</p>
 <ul>
-<li><b>Arquivos</b> (.DOCX, .PPTX, .HTML, .ZIP): são o conteúdo <b>pronto</b>, para entregar e abrir no Word, no PowerPoint ou no navegador.</li>
+<li><b>Arquivos</b> (.DOCX, .PPTX, .HTML, .EPUB, .ZIP): são o conteúdo <b>pronto</b>, para entregar e abrir no Word, no PowerPoint, no navegador ou em um leitor de livros digitais.</li>
 <li><b>Link</b>: é o seu <b>texto-fonte</b> (apostila, apresentação, imagens, nome e rodapé) em um endereço. Serve para continuar editando depois, em qualquer computador.</li>
 </ul>
 <table><tr><th>Quero…</th><th>Use</th></tr>
-<tr><td>Entregar o conteúdo pronto</td><td><b>.DOCX</b>, <b>.PPTX</b> ou <b>.HTML</b></td></tr>
+<tr><td>Entregar o conteúdo pronto</td><td><b>.DOCX</b>, <b>.PPTX</b>, <b>.HTML</b> ou <b>.EPUB</b> (PDF: <b>Imprimir / PDF</b> no HTML)</td></tr>
 <tr><td>Continuar editando em outro computador</td><td><b>Link</b> (botão <b>Compartilhar link</b>)</td></tr>
 <tr><td>Enviar o texto-fonte a um colega</td><td><b>Link</b></td></tr>
 <tr><td>Guardar uma cópia em uma pasta</td><td><b>.ZIP</b> ou <b>Pasta</b> (<b>Salvar ▾</b>)</td></tr>
@@ -196,7 +208,7 @@
 <h4>Buscar no Histórico e em Salvos</h4>
 <ul>
 <li>Nas janelas <b>Histórico</b> (em <b>Arquivos gerados</b>) e <b>Importar › Salvos</b>, o campo <b>Buscar</b> filtra a lista enquanto você digita, sem diferenciar maiúsculas, minúsculas e acentos.</li>
-<li>A busca olha o <b>nome do conteúdo</b>, a <b>data e a hora</b>, o <b>tamanho</b>, o <b>layout</b>, o <b>rodapé</b>, a <b>narração</b> e o <b>tipo de arquivo</b> (apostila, apresentação, docx, pptx, html, md, zip). Nos links, também o tipo (direto ou PrivateBin), a validade e a senha.</li>
+<li>A busca olha o <b>nome do conteúdo</b>, a <b>data e a hora</b>, o <b>tamanho</b>, o <b>layout</b>, o <b>rodapé</b>, a <b>narração</b> e o <b>tipo de arquivo</b> (apostila, apresentação, docx, pptx, html, epub, md, zip). Nos links, também o tipo (direto ou PrivateBin), a validade e a senha.</li>
 <li>Com mais de uma palavra, aparecem só os itens que têm <b>todas</b>. Exemplo: <code>docx ANAC escuro</code>. Use aspas para uma frase exata: <code>"ANAC 20 anos"</code>.</li>
 <li><kbd>Esc</kbd> limpa a busca; com o campo vazio, fecha a janela.</li>
 </ul>

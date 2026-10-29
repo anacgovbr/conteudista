@@ -1,0 +1,88 @@
+{
+    "versao":  1,
+    "atualizado":  "2026-10-29T22:04:43Z",
+    "familias":  [
+                     {
+                         "id":  "atkinson",
+                         "nome":  "Atkinson Hyperlegible Next",
+                         "licenca":  "OFL-1.1",
+                         "arquivos":  [
+                                          {
+                                              "peso":  400,
+                                              "estilo":  "normal",
+                                              "arquivo":  "atkinson-hyperlegible-next-400.woff2",
+                                              "sha256":  "18b2a1a39a2fa298b0ba5390aca68462669826c90925656f1c1f6796e0e1bbaf",
+                                              "origem":  "https://fonts.gstatic.com/s/atkinsonhyperlegiblenext/v7/NaPNcYPdHfdVxJw0IfIP0lvYFqijb-UxCtm5_wdGseiJn3o.woff2",
+                                              "subconjunto":  "latin"
+                                          },
+                                          {
+                                              "peso":  400,
+                                              "estilo":  "italic",
+                                              "arquivo":  "atkinson-hyperlegible-next-400-italic.woff2",
+                                              "sha256":  "4a5037bfaf6680f40147407407ec09fa42925774bde809a579283d27f9f08106",
+                                              "origem":  "https://fonts.gstatic.com/s/atkinsonhyperlegiblenext/v7/NaPPcYPdHfdVxJw0IfIP0lvYFqijb-UxCtm5_wdGseiMr3i-oQ.woff2",
+                                              "subconjunto":  "latin"
+                                          },
+                                          {
+                                              "peso":  700,
+                                              "estilo":  "normal",
+                                              "arquivo":  "atkinson-hyperlegible-next-700.woff2",
+                                              "sha256":  "18b2a1a39a2fa298b0ba5390aca68462669826c90925656f1c1f6796e0e1bbaf",
+                                              "origem":  "https://fonts.gstatic.com/s/atkinsonhyperlegiblenext/v7/NaPNcYPdHfdVxJw0IfIP0lvYFqijb-UxCtm5_wdGseiJn3o.woff2",
+                                              "subconjunto":  "latin"
+                                          },
+                                          {
+                                              "peso":  700,
+                                              "estilo":  "italic",
+                                              "arquivo":  "atkinson-hyperlegible-next-700-italic.woff2",
+                                              "sha256":  "4a5037bfaf6680f40147407407ec09fa42925774bde809a579283d27f9f08106",
+                                              "origem":  "https://fonts.gstatic.com/s/atkinsonhyperlegiblenext/v7/NaPPcYPdHfdVxJw0IfIP0lvYFqijb-UxCtm5_wdGseiMr3i-oQ.woff2",
+                                              "subconjunto":  "latin"
+                                          }
+                                      ]
+                     },
+                     {
+                         "id":  "opendyslexic",
+                         "nome":  "OpenDyslexic",
+                         "licenca":  "OFL-1.1",
+                         "arquivos":  [
+                                          {
+                                              "peso":  400,
+                                              "estilo":  "normal",
+                                              "arquivo":  "opendyslexic-400.woff2",
+                                              "sha256":  "0441bc21071e42db57c217f93fbc48d3b55a2987c02814c94dc93621c42e8695",
+                                              "origem":  "https://raw.githubusercontent.com/antijingoist/opendyslexic/master/compiled/OpenDyslexic-Regular.woff2",
+                                              "subconjunto":  "completo"
+                                          },
+                                          {
+                                              "peso":  400,
+                                              "estilo":  "italic",
+                                              "arquivo":  "opendyslexic-400-italic.woff2",
+                                              "sha256":  "b18685dcb99b4ba903549d215c0ae2ab39a5087097614fd4100ae6d387332b47",
+                                              "origem":  "https://raw.githubusercontent.com/antijingoist/opendyslexic/master/compiled/OpenDyslexic-Italic.woff2",
+                                              "subconjunto":  "completo"
+                                          },
+                                          {
+                                              "peso":  700,
+                                              "estilo":  "normal",
+                                              "arquivo":  "opendyslexic-700.woff2",
+                                              "sha256":  "b534a0b84ef3cca941ebdb506ce3f4e0010aa4ef881271bac8b6959dbf694fbf",
+                                              "origem":  "https://raw.githubusercontent.com/antijingoist/opendyslexic/master/compiled/OpenDyslexic-Bold.woff2",
+                                              "subconjunto":  "completo"
+                                          },
+                                          {
+                                              "peso":  700,
+                                              "estilo":  "italic",
+                                              "arquivo":  "opendyslexic-700-italic.woff2",
+                                              "sha256":  "1aadc8fa9656c92c09c8194790d0671bcd2b4bd961ba41fb8f7e605e5c493be0",
+                                              "origem":  "https://raw.githubusercontent.com/antijingoist/opendyslexic/master/compiled/OpenDyslexic-Bold-Italic.woff2",
+                                              "subconjunto":  "completo"
+                                          }
+                                      ]
+                     }
+                 ],
+    "licencas":  [
+                     "OFL-Atkinson-Hyperlegible-Next.txt",
+                     "OFL-OpenDyslexic.txt"
+                 ]
+}

@@ -14,7 +14,7 @@ Página única que converte os arquivos Markdown de um conteúdo em:
 |---|---|---|
 | Editor Markdown | Barra de ferramentas, **desfazer/refazer** próprio (Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z e botões; cobre botões, arquivos e rascunhos), atalhos (Ctrl+B/I/E/K, Ctrl+Shift+1/2/3 títulos, Ctrl+Shift+7/8/9 listas, Alt+↑/↓ mover linha, Ctrl+Shift+D duplicar), modos Editar/Dividido/Prévia, tela cheia, prévia fiel ao gerador (inclusive slides) | Só na memória do navegador |
 | Tutorial, Ajuda e Atalhos | Tutorial guiado na primeira visita (ou botão ▶ Tutorial), com **reinício** (↺ no tutorial, botão na Ajuda ou `Alt+Shift+R`); Ajuda **com busca** e destaque dos termos (botão ou F1); atalhos `Alt+Shift+tecla` com janela de consulta (botão ⌨ Atalhos ou `Alt+Shift+K`) | — |
-| Gerar conteúdo | Apostila + apresentação em Markdown → 6 arquivos + ZIP, no layout **gov.br** (padrão) ou **Clássico** | Só na memória do navegador |
+| Gerar conteúdo | Apostila + apresentação em Markdown → 8 arquivos + ZIP (apostila MD, HTML, DOCX, EPUB e EPUB OpenDyslexic; apresentação MD, HTML e PPTX; PDF pela impressão do HTML), no layout **gov.br** (padrão) ou **Clássico** | Só na memória do navegador |
 | Imagens em base64 | Arraste, cole (Ctrl+V) ou insira pelo botão de imagem; no editor aparecem como `(img:N)` | No próprio texto `.md` |
 | Versões salvas | Salvamento automático ligado por padrão (recupera o último trabalho ao reabrir) e **versões salvas** (**Salvar ▾ → Guardar no navegador**), reunidas em **Versões** e em **Importar → Salvos**. O horário do último salvamento automático aparece sob a barra de ações | IndexedDB do navegador, só nesta máquina |
 | Salvar ▾ | Botão ao lado de **Gerar arquivos** que reúne as formas de guardar neste computador. Itens: **Guardar no navegador** (versão), **Baixar tudo (.zip)**, **Salvar na pasta** (grava os `.md` e os arquivos gerados numa pasta escolhida, Edge/Chrome) e **Baixar .md** | Navegador ou disco do usuário |
@@ -44,10 +44,46 @@ web/changelog.js         ← botão Novidades (lê o CHANGELOG.md)
 web/govbr.css            ← tema do Padrão Digital de Governo (gov.br/ds)
 CHANGELOG.md             ← histórico de versões da aplicação
 web/exemplo/             ← conteúdo de exemplo: guia de uso (apostila, apresentação com notas para narração e prompt padrão para IA)
-tools/gerador.py         ← motor de conversão (o mesmo do agente "Gerador de Cursos ANAC")
-tools/requirements.txt
+tools/gerador.py         ← motor de conversão (o mesmo do agente "Gerador de Cursos ANAC"), v3.9
+tools/fontes/            ← fontes de leitura (WOFF2), licenças OFL, manifesto.json, baixar-fontes.ps1 e verificar_fontes.py
+tools/testar_acessibilidade.py ← testes de acessibilidade das saídas (EPUB, DOCX, PPTX e HTML)
+tools/requirements.txt   ← python-docx, python-pptx, Pillow e lxml
 .github/workflows/publicar-pagina.yml  ← testa e publica a página no GitHub Pages
 ```
+
+## Leitura acessível
+
+Os arquivos gerados foram ajustados para a leitura por pessoas com dislexia, sem retirar recursos.
+
+| Formato | O que oferece |
+|---|---|
+| Apostila HTML | **Tema** (claro, escuro, alto contraste) e **Leitura** (Padrão/Verdana, Atkinson Hyperlegible Next, OpenDyslexic) independentes; a Leitura fica salva em `localStorage['conteudista.leitura']`. Texto em 18 px, entrelinha 1,7, à esquerda e sem hifenização; foco visível; tabelas e código com rolagem por teclado; **Tabela do fluxo** para cada Mermaid; gabarito com `aria-expanded`; **Imprimir / PDF** em A4 |
+| Apresentação HTML | Mesmo seletor **Leitura**; **Modo leitura** (`L`) vertical, em fundo claro, com as notas visíveis; telas de até 900 px abrem nele (a escolha fica em `localStorage['conteudista.apresentacao.modo']`); ARIA de apresentação e de slide, contador anunciado, auto-ajuste até 0,85 e rolagem abaixo disso; impressão A4 com as notas |
+| Apostila EPUB | `Apostila_<nome>.epub` (Atkinson Hyperlegible Next) e `Apostila_<nome>_OpenDyslexic.epub`; XHTML, sumário (nav e NCX), fontes embutidas, Mermaid em tabela, checklists ☐/☒ e metadados de acessibilidade (EPUB Accessibility 1.1) |
+| Apostila DOCX | Verdana 12 pt, entrelinha 1,5, 6 pt após parágrafos, texto alternativo nas imagens, idioma pt-BR e cabeçalho de tabela repetido |
+| Apresentação PPTX | Mantém a fonte do layout (`pptx_font`); texto alternativo, notas em pt-BR, cabeçalho de tabela (`firstRow`), entrelinha 1,2 e corpo de no mínimo 16 pt |
+
+As fontes Atkinson Hyperlegible Next e OpenDyslexic ficam em `tools/fontes/` e são embutidas em base64 no HTML e como arquivo no EPUB; não há CDN para elas. A leitura padrão (Verdana) não precisa de arquivo.
+
+## Acessibilidade
+
+Referências: WCAG 2.2 (nível AA), ABNT NBR 17225:2025, Lei 13.146/2015 (LBI) e EPUB Accessibility 1.1. O objetivo é aproximar as saídas dessas referências; **não há certificação formal**.
+
+Limitações conhecidas:
+
+- O PDF da apostila é uma impressão do HTML em A4. Ele usa a fonte de leitura escolhida, mas **não é um PDF/UA**. Para um PDF com tags, use um conversor que preserve a estrutura ou o recurso de exportação acessível do Word.
+- O DOCX não embute fonte: se o computador não tiver Verdana, o Word usa outra.
+- O PPTX não tem modo leitura nem placeholders de título; a ordem de leitura dos objetos não foi revista. Recebe só texto alternativo, notas, cabeçalho de tabela, entrelinha, tamanho mínimo e idioma.
+- O EPUB depende do leitor: leitores antigos podem não aceitar fontes WOFF2 e usam a fonte do aparelho.
+- Imagem sem descrição (`![](…)`) continua sem texto alternativo; a geração mostra um aviso. A descrição não é inventada.
+- Legendas, audiodescrição e Libras estão fora do escopo.
+
+### Fontes de leitura: manutenção
+
+- `tools/fontes/manifesto.json` é a fonte de verdade: lista cada WOFF2 com peso, estilo, SHA-256 e origem. O aplicativo lê o manifesto e copia os arquivos para o Pyodide.
+- Para baixar ou atualizar: `powershell -ExecutionPolicy Bypass -File .\tools\fontes\baixar-fontes.ps1`; depois `python tools/fontes/verificar_fontes.py`. Faça o commit da pasta inteira e atualize o parâmetro de cache (`?v=`) se trocar scripts.
+- Se uma face faltar, a geração continua: o texto cai para Verdana e o resultado mostra um aviso.
+- Créditos: Atkinson Hyperlegible Next — Braille Institute (Google Fonts); OpenDyslexic — Abbie Gonzalez (antijingoist/opendyslexic). Ambas sob a SIL Open Font License 1.1 (`OFL-*.txt` na mesma pasta).
 
 ## Manutenção
 
@@ -113,7 +149,7 @@ Aba **Locução** (`Alt+Shift+3`): gera áudio a partir de texto no navegador co
 
 ## Arquivos gerados guardados no navegador
 
-`web/gerados.js`: após cada **Gerar arquivos**, guarda os 6 arquivos + ZIP no IndexedDB `conteudista_arquivos` (últimos 10 por padrão), com download, visualização do HTML e exclusão. A lista abre em uma janela pelo botão **Histórico**, no cabeçalho da seção **Arquivos gerados**. Cada pacote guarda o nome do conteúdo, a data e a hora, o tamanho, o layout, o rodapé e a narração; o campo **Buscar** da janela (e o de **Importar › Salvos**) filtra por qualquer desses dados e pelo tipo de arquivo (`web/janelas.js`, padrão de campo de busca do Design System gov.br).
+`web/gerados.js`: após cada **Gerar arquivos**, guarda os 8 arquivos + ZIP no IndexedDB `conteudista_arquivos` (últimos 10 por padrão), com download, visualização do HTML e exclusão. A lista abre em uma janela pelo botão **Histórico**, no cabeçalho da seção **Arquivos gerados**. Cada pacote guarda o nome do conteúdo, a data e a hora, o tamanho, o layout, o rodapé e a narração; o campo **Buscar** da janela (e o de **Importar › Salvos**) filtra por qualquer desses dados e pelo tipo de arquivo (`web/janelas.js`, padrão de campo de busca do Design System gov.br).
 
 > Para atualizar o repositório use sempre o `conteudista-web.zip` mais recente com o `atualizar-conteudista.ps1`.
 
