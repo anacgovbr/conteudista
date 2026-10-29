@@ -61,7 +61,7 @@
     { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apostila</b> e <b>Apresentação</b>. Cole o texto gerado por uma IA (use o prompt padrão do exemplo), arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. O botão <b>Versões</b> guarda, compara e restaura o texto.' },
     { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe a apostila (HTML, DOCX, MD), a apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>, com o nome, a data, o tamanho e o layout de cada geração. Os anteriores ficam no <b>Histórico</b>, com busca. Para testar agora, use <b>Carregar exemplo</b>, que traz um guia completo de uso da aplicação, com apostila, apresentação e prompt padrão para IA. Os arquivos são o conteúdo <b>pronto, para entregar</b>.' },
-    { alvo: 'btnSalvar', t: '4. Guarde o conteúdo', d: 'O botão <b>Salvar ▾</b>, ao lado de <b>Gerar arquivos</b>, reúne as formas de guardar: <b>Compartilhar link</b>, <b>Guardar no navegador</b> e <b>Baixar tudo (.zip)</b>. Com o link, o conteúdo inteiro (texto, imagens, nome e rodapé) vira um endereço: cole-o onde preferir, como um e-mail para você mesmo, o Teams ou os favoritos, e abra quando quiser <b>continuar editando</b>, em qualquer computador. O salvamento automático (chave no alto, com o horário do último salvamento) só recupera o último trabalho neste navegador.' },
+    { alvo: 'btnSalvar', t: '4. Guarde o conteúdo', d: 'O botão <b>Salvar ▾</b>, ao lado de <b>Gerar arquivos</b>, reúne as formas de guardar: <b>Guardar no navegador</b>, <b>Baixar tudo (.zip)</b> e <b>Compartilhar link</b>. O botão <b>Compartilhar link</b> também fica ao lado de <b>Salvar ▾</b>, ao lado de <b>Importar</b> e na barra do editor, e todos abrem a mesma janela. Com o link, o conteúdo inteiro (texto, imagens, nome e rodapé) vira um endereço: cole-o onde preferir, como um e-mail para você mesmo, o Teams ou os favoritos, e abra quando quiser <b>continuar editando</b>, em qualquer computador. O salvamento automático (chave no alto, com o horário do último salvamento) só recupera o último trabalho neste navegador.' },
     { alvo: 'btnImportar', t: '5. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. Use o campo <b>Buscar</b> para achar um item pelo nome, data, layout ou tipo de arquivo. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
@@ -176,7 +176,7 @@
 </ul>
 <table><tr><th>Quero…</th><th>Use</th></tr>
 <tr><td>Entregar o conteúdo pronto</td><td><b>.DOCX</b>, <b>.PPTX</b> ou <b>.HTML</b></td></tr>
-<tr><td>Continuar editando em outro computador</td><td><b>Link</b> (<b>Salvar ▾ › Compartilhar link</b>)</td></tr>
+<tr><td>Continuar editando em outro computador</td><td><b>Link</b> (botão <b>Compartilhar link</b>)</td></tr>
 <tr><td>Enviar o texto-fonte a um colega</td><td><b>Link</b></td></tr>
 <tr><td>Guardar uma cópia em uma pasta</td><td><b>.ZIP</b> ou <b>Pasta</b> (<b>Salvar ▾</b>)</td></tr>
 <tr><td>Voltar a uma versão anterior, neste navegador</td><td><b>Versão</b> (<b>Salvar ▾ › Guardar no navegador</b>)</td></tr></table>
@@ -212,7 +212,7 @@
 </ul>
 <h4>Criar um link</h4>
 <ol>
-<li>Clique em <b>Salvar ▾</b>, ao lado de <b>Gerar arquivos</b>, e em <b>Compartilhar link</b>.</li>
+<li>Clique em <b>Compartilhar link</b>: ao lado de <b>Salvar ▾</b>, ao lado de <b>Importar</b> ou no ícone da barra do editor. Também vale <b>Salvar ▾ › Compartilhar link</b>. Todos abrem a mesma janela.</li>
 <li>Confira a opção sugerida para o tamanho do seu conteúdo. Você pode trocá-la.</li>
 <li>Se quiser, defina uma <b>senha</b> e envie-a por outro canal.</li>
 <li>Clique em <b>Criar link</b>. Ele é copiado automaticamente e aparece na janela, com o QR Code.</li>

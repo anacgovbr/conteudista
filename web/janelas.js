@@ -4,6 +4,8 @@
    - Barra de acoes: Importar | Carregar exemplo | Limpar tela | chave "Salvar automatico", com o status do ultimo salvamento.
    - Salvar \u25be (menu): fica ao lado de "Gerar arquivos" e reune Guardar no navegador, Baixar tudo (.zip), Compartilhar link,
      Salvar na pasta e Baixar .md. E o unico caminho para guardar o conteudo.
+   - Compartilhar link (1.64): a MESMA janela abre por tres botoes: na barra de acoes (depois de Importar), na barra de
+     ferramentas de cada editor (so icone) e ao lado de Salvar \u25be. No celular o rotulo vira "Link" (nome acessivel completo).
    - Importar: janela com abas Salvos, Computador e Colar (uma aba por origem).
    - Historico de arquivos: janela aberta pelo botao ao lado do titulo "Arquivos gerados".
    - Compartilhar link: janela com destino, senha, lembrar links e tamanho (aberta pelo menu Salvar).
@@ -31,6 +33,7 @@
     cl: '<rect x="6" y="4" width="12" height="17" rx="1"/><path d="M9 4h6v3H9z"/>',
     rasc: '<rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/><path d="M5.5 9h3M5.5 13h3M15.5 9h3M15.5 13h3"/>',
     lnk: '<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/>',
+    shr: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/>',
     up: '<path d="M12 16V4M7 9l5-5 5 5M4 20h16"/>',
     chev: '<path d="M6 9l6 6 6-6"/>',
     hist: '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/>'
@@ -162,10 +165,17 @@ html.contraste .sv-qr{background:#000;border-color:#fff}
 .jn-barra{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .jn-barra button{margin:0}
 .jn-barra button svg,.jn-dd>button svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-left:6px}
+.jn-ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin:0 6px 0 0;flex:none}
+.jn-barra button svg.jn-ic,.jn-par button svg.jn-ic{margin:0 6px 0 0}
+.jn-rc{display:none}
 .acao-gerar{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 12px}
 .acao-gerar .jn-dd{vertical-align:top}
 body .acao-gerar #go{margin:0}
-body .acao-gerar .jn-dd>#btnSalvar{--btn-h:48px;margin:0;padding:0 28px;font-size:18px}
+.jn-par{display:inline-flex;align-items:center;gap:8px 12px;flex-wrap:wrap;justify-content:center}
+body .acao-gerar .jn-dd>#btnSalvar,body .acao-gerar .jn-par>#btnCompartilharAcao{--btn-h:48px;margin:0;padding:0 28px;font-size:18px}
+body .acao-gerar .jn-par>#btnCompartilharAcao .jn-ic{width:18px;height:18px}
+.mde-tb button.hbtn.jn-cmpbtn{min-width:30px;justify-content:center}
+.mde-tb button.hbtn.jn-cmpbtn svg{margin:0}
 .acao-gerar .jn-mn{min-width:320px;max-width:calc(100vw - 32px)}
 .jn-mn .jn-sepm{height:1px;margin:4px 6px;background:#cccccc}
 .jn-autost{margin:-4px 0 10px;font-size:13px;line-height:1.4;color:#636363}
@@ -219,8 +229,11 @@ html.contraste .jn-bs,html.contraste .jn-bs .jn-bs-t{color:#fff!important}
 html.contraste .jn-mi i.jn-rec{background:#000!important;color:#ff0!important;border:1px solid #ff0}
 @media (prefers-reduced-motion:reduce){.jn-tr,.jn-tr::after{transition:none}}
 @media(max-width:700px){
-  .acao-gerar .jn-dd{width:100%}
-  body .acao-gerar .jn-dd>#btnSalvar{width:100%;padding:0 16px}
+  .acao-gerar .jn-par{display:flex;flex-wrap:nowrap;width:100%;position:relative}
+  .acao-gerar .jn-par .jn-dd{position:static;flex:1 1 calc(50% - 6px);min-width:0}
+  body .acao-gerar .jn-par .jn-dd>#btnSalvar,body .acao-gerar .jn-par>#btnCompartilharAcao{width:100%;padding:0 12px}
+  body .acao-gerar .jn-par>#btnCompartilharAcao{flex:1 1 calc(50% - 6px);min-width:0}
+  .jn-rl{display:none}.jn-rc{display:inline}
   .acao-gerar .jn-mn{left:0;right:0;min-width:0;width:100%}
   .jn-back{padding:0;align-items:stretch}
   .jn-win,.jn-win.jn-peq{width:100%;max-height:none;min-height:100%;border-radius:0}
@@ -710,19 +723,41 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   const ITENS = [
     ['rasc', 'Guardar no navegador', 'Vers\u00e3o s\u00f3 neste navegador', 'dsave', 'Vers\u00e3o salva.'],
     ['arq', 'Baixar tudo (.zip)', 'Textos e arquivos gerados, em um ZIP', 'zdl', '.ZIP baixado.'],
-    ['lnk', 'Compartilhar link', 'Texto-fonte, em qualquer computador', 'jnLink', '', 1],
+    ['shr', 'Compartilhar link', 'Texto-fonte, em qualquer computador', 'jnLink', '', 1],
     '-',
     ['pc', 'Salvar na pasta', 'No computador (Edge e Chrome)', 'fsave', 'Salvo na pasta.'],
     ['arq', 'Baixar .md', 'Textos em Markdown', 'mdl', '.MD baixado.']
   ];
   menu.innerHTML = ITENS.map(x => x === '-' ? '<div class="jn-sepm" role="separator"></div>' : '<button type="button" role="menuitem" class="jn-mi" tabindex="-1" data-c="1" data-alvo="' + x[3] + '" data-msg="' + x[4] + '">' + svg(x[0]) + '<span><b>' + x[1] + (x[5] ? ' <i class="jn-rec">recomendado</i>' : '') + '</b><small>' + x[2] + '</small></span></button>').join('');
   dd.append(bSalvar, menu);
-  const bCmp = mk('btnCompartilhar', 'sec', 'Compartilhar'); bCmp.setAttribute('aria-haspopup', 'dialog'); bCmp.title = 'Criar um link criptografado (Alt+Shift+L cria direto)';
-  barra.insertBefore(bImp, ex);
-  { // Salvar fica ao lado de "Gerar arquivos": um unico caminho para guardar o conteudo
-    const go = $('go');
-    if (go && go.parentNode) go.insertAdjacentElement('afterend', dd); else barra.insertBefore(dd, ex);
+  /* Compartilhar link: tres botoes que abrem a MESMA janela. No celular o rotulo vira "Link"; o nome acessivel continua completo. */
+  const NOME_CMP = 'Compartilhar link', DICA_CMP = 'Compartilhar link: criar um link com o texto-fonte (Alt+Shift+L)';
+  const icoCmp = svg('shr').replace('<svg ', '<svg class="jn-ic" ');
+  function mkCmp(id) {
+    const b = mk(id, 'sec', icoCmp + '<span class="jn-rl">' + NOME_CMP + '</span><span class="jn-rc">Link</span>');
+    b.setAttribute('aria-haspopup', 'dialog'); b.setAttribute('aria-label', NOME_CMP); b.title = DICA_CMP;
+    return b;
   }
+  const bCmp = mkCmp('btnCompartilhar');            // B: barra de acoes, depois de Importar
+  const bCmpAcao = mkCmp('btnCompartilharAcao');    // D: ao lado de Salvar
+  barra.insertBefore(bImp, ex);
+  barra.insertBefore(bCmp, ex);
+  { // Salvar fica ao lado de "Gerar arquivos"; Compartilhar link fica ao lado de Salvar
+    const go = $('go'), par = document.createElement('span'); par.className = 'jn-par';
+    par.append(dd, bCmpAcao);
+    if (go && go.parentNode) go.insertAdjacentElement('afterend', par); else barra.insertBefore(par, ex);
+  }
+  [['pg', 'g'], ['ps', 's']].forEach(a => {   // C: barra de ferramentas de cada editor (so icone), antes de Versoes
+    const tb = document.querySelector('#' + a[0] + ' .mde-tb');
+    if (!tb || tb.querySelector('.jn-cmpbtn')) return;
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'hbtn jn-cmpbtn'; b.setAttribute('data-c', '1'); b.setAttribute('aria-haspopup', 'dialog');
+    b.setAttribute('aria-label', NOME_CMP); b.title = DICA_CMP; b.innerHTML = svg('shr');
+    const ver = tb.querySelector('button.hbtn'), btns = [...tb.querySelectorAll('button')];
+    tb.insertBefore(b, ver || btns[btns.length - 1] || null);
+    b.addEventListener('click', () => cmp.abrir());
+  });
+  try { if (window.UXDicas && UXDicas.preparar) UXDicas.preparar(); } catch (e) { /* sem dicas */ }
 
   function abrirMenu() { menu.hidden = false; bSalvar.setAttribute('aria-expanded', 'true'); const p = menu.querySelector('.jn-mi'); if (p) p.focus(); }
   function fecharMenu(foco) { if (menu.hidden) return; menu.hidden = true; bSalvar.setAttribute('aria-expanded', 'false'); if (foco) bSalvar.focus(); }
@@ -755,6 +790,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
 
   bImp.addEventListener('click', () => importar.abrir());
   bCmp.addEventListener('click', () => cmp.abrir());
+  bCmpAcao.addEventListener('click', () => cmp.abrir());
 
   /* Chave "Salvar automatico" (ligada ao checkbox original #auto) */
   (function chave() {

@@ -1,4 +1,8 @@
 # Novidades do Conteudista
+## 1.64 - 29/10/2026
+- **O botão Compartilhar link ganha três pontos de acesso**, além do item em **Salvar ▾**: na **barra de ações, logo depois de Importar**; na **barra de ferramentas de cada editor** (só o ícone, antes de Versões); e **ao lado de Salvar ▾**, perto de Gerar arquivos. Todos abrem a mesma janela **Link do conteúdo**, e o atalho Alt+Shift+L continua como antes.
+- No celular o rótulo vira **Link** (o nome acessível continua "Compartilhar link") e **Salvar ▾** e **Link** dividem a mesma linha, sob **Gerar arquivos**.
+- Tutorial, Ajuda, README e o conteúdo de exemplo seguem os novos botões. O parâmetro de cache dos scripts passa a 1.64.
 ## 1.63 - 27/10/2026
 - **O menu Salvar ▾ sai da barra de ações e passa a ficar ao lado de Gerar arquivos.** Ele agora tem **Guardar no navegador** (versão salva), **Baixar tudo (.zip)** e **Compartilhar link**, além de **Salvar na pasta** e **Baixar .md** em um segundo grupo. A barra de ações fica com **Importar**, **Carregar exemplo**, **Limpar tela** e a chave **Salvar automático**.
 - **Um único caminho para guardar.** A linha **Texto-fonte** (botão **Criar link**) deixou de aparecer em **Arquivos gerados**; o link é criado em **Salvar ▾ › Compartilhar link** (ou Alt+Shift+L). Os atalhos continuam os mesmos.

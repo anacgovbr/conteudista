@@ -291,10 +291,11 @@ flowchart LR
 - PrivateBin: cifrado em servidor, validade padrão de 1 ano
 - Senha opcional, enviada por outro canal
 - A janela sugere o tipo conforme o tamanho
+- Compartilhar link: ao lado de Importar e de Salvar, e na barra do editor
 
 > [!warning] Sem o link, e sem a senha, o conteúdo não pode ser recuperado.
 
-<!-- notas: O link reúne o conteúdo inteiro, com textos, imagens, nome e rodapé. O link direto carrega os dados no próprio endereço, não usa servidor e não expira. O PrivateBin guarda os dados cifrados em um servidor e tem validade, de um ano por padrão. A aplicação sugere a opção conforme o tamanho. A senha é opcional e deve ser enviada por outro canal. Sem o link e sem a senha, o conteúdo não pode ser recuperado. -->
+<!-- notas: O link reúne o conteúdo inteiro, com textos, imagens, nome e rodapé. O botão Compartilhar link fica ao lado de Importar, ao lado de Salvar e na barra do editor, abrindo a mesma janela. O link direto vai no próprio endereço e não expira. O PrivateBin guarda os dados cifrados, com validade padrão de um ano. A senha é opcional e deve ser enviada por outro canal. Sem o link e sem a senha, o conteúdo não pode ser recuperado. -->
 
 ---
 
