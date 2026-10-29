@@ -3,6 +3,8 @@
    - Versões guardadas SOMENTE neste navegador (IndexedDB, store "versoes")
    - Origens: sessão (automático), versão marcada, arquivo carregado, link, rascunho,
      exemplo, antes de carregar/restaurar, arquivos gerados, compartilhado
+   - Importar link (1.65): traz o texto-fonte de um link do Conteudista (direto ou PrivateBin; pede a senha se houver) como
+     versão "via link", SEM alterar os editores, para comparar com o texto atual ou com qualquer outra versão
    - Diff por linhas (Myers) com destaque de palavras; imagens base64 mostradas como miniaturas
    Depende de: pacote(), aplicar(), dbAll/dbPut/dbDel/dbClear, log(), esc(), tamanho()  (index.html)
    ===================================================================================== */
@@ -18,7 +20,7 @@
   };
   const GRUPOS = [
     ['sess', 'Esta sessão (desde ' + INI.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + ')'],
-    ['arquivo', 'Arquivos carregados'], ['link', 'Arquivos carregados de links'], ['marco', 'Versões salvas'],
+    ['arquivo', 'Arquivos carregados'], ['link', 'Via link (abertos e importados)'], ['marco', 'Versões salvas'],
     ['outros', 'Exemplo e rascunhos antigos'], ['antigas', 'Sessões anteriores']
   ];
   const grupoDe = v => v.origem === 'arquivo' ? 'arquivo' : v.origem === 'link' ? 'link' : v.origem === 'marco' ? 'marco'
@@ -177,6 +179,21 @@
 #secHist .hrow>div{display:flex;flex-direction:column;min-width:150px}#secHist .hrow>div.lg{flex:1;min-width:260px}
 #secHist select{width:100%}#secHist .hrow button{margin:0}
 #secHist .hint{font-size:12.5px;color:#636363;margin:2px 0 0}
+#secHist .hic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:6px}
+#secHist .hlink{border:1px solid #cccccc;border-radius:8px;padding:12px 14px;margin:8px 0;background:#f8f8f8}
+#secHist .hlink[hidden],#secHist .hlink [hidden]{display:none}
+#secHist .hlink label{display:block;margin:0 0 4px}
+#secHist .hlink input{width:100%;max-width:640px}
+#secHist .hlink .hl-s{margin-top:8px}
+#secHist .hlink .hint{margin:6px 0 0}
+#secHist .hlink-msg{margin:8px 0 0;padding:8px 12px;border-left:6px solid #e52207;background:#fde0db;border-radius:0 6px 6px 0;font-size:13.5px}
+#secHist .hlink-msg.info{border-left-color:#155bcb;background:#edf5ff}
+#secHist .hlink-ac{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}#secHist .hlink-ac button{margin:0}
+#secHist .hfeed{margin:4px 0 0;font-size:13px;color:#168821}
+#secHist .hfeed:empty{display:none}
+html.contraste #secHist .hlink{background:#000!important;border-color:#fff!important}
+html.contraste #secHist .hlink-msg,html.contraste #secHist .hlink-msg.info{background:#000!important;border-color:#ff0!important;color:#fff!important}
+html.contraste #secHist .hfeed{color:#fff!important}
 #secHist .dfst{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin:12px 0 6px;font-size:13.5px}
 #secHist .dfst .p{color:#168821;font-weight:700}#secHist .dfst .m{color:#e52207;font-weight:700}
 #secHist .dfwrap{border:1px solid #cccccc;border-radius:8px;max-height:65vh;overflow:auto;background:#fff}
@@ -206,7 +223,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
 @media(max-width:700px){
   .mde-tb button.hbtn .ht{display:none}
   .mde-tb button.hbtn{min-width:36px;min-height:34px;justify-content:center}
-  .hist-back{padding:0;align-items:stretch}
+  .hist-back{padding:0;align-items:flex-start}   /* stretch cortava o fundo branco quando o conteúdo passava da altura da tela */
   .hist-back #secHist{width:100%;min-height:100%;border-radius:0;border:0;padding:0 14px 20px}
   #secHist .htop{position:sticky;top:0;z-index:3;background:#fff;margin:0 -14px 8px;padding:10px 14px;border-bottom:1px solid #cccccc}
   #secHist .htop h2{font-size:16px;line-height:1.25}
@@ -217,6 +234,8 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   #secHist .hrow.op>div.go{flex:1 1 100%}#secHist .hrow.op>div.go button{width:100%}
   #secHist .hrow.troca{justify-content:center;margin:2px 0}
   #secHist .hrow.acts{display:flex;flex-wrap:wrap;gap:8px}
+  #secHist .hrow.acts #hImpLink{flex:1 1 100%}
+  #secHist .hlink-ac button{flex:1 1 100%}
   #secHist .dfst{font-size:12.5px;gap:6px 12px}
   #secHist .dfwrap{max-height:none}
   table.df{font-size:11.5px}table.df col.n,table.df td.n{width:30px}table.df td{padding:1px 4px}
@@ -224,6 +243,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
 }`;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
+  const ICO_LINK = '<svg class="hic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>';
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secHist';
   sec.innerHTML = '<div class="htop"><h2>Vers\u00f5es do texto</h2><button type="button" class="sec mini hx" id="hFechar" title="Fechar (Esc)">Fechar ✕</button></div>' +
     '<p class="note">Versões guardadas <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), arquivos carregados, conteúdos abertos de links, exemplo, versões salvas e momentos de geração/compartilhamento. Escolha duas versões e compare.</p>' +
@@ -234,7 +254,15 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     '<div><label for="hModo">Exibição</label><select id="hModo"><option value="l">Lado a lado</option><option value="u">Unificada</option></select></div>' +
     '<div><label for="hCtx">Mostrar</label><select id="hCtx"><option value="3">Só alterações (± 3 linhas)</option><option value="10">Alterações (± 10 linhas)</option><option value="-1">Texto completo</option></select></div>' +
     '<div class="go" style="min-width:auto"><button type="button" id="hGo">Comparar</button></div></div>' +
-    '<div class="hrow acts"><button type="button" class="sec mini" id="hMarca">★ Salvar versão</button><button type="button" class="sec mini" id="hResA">Restaurar A</button><button type="button" class="sec mini" id="hResB">Restaurar B</button><button type="button" class="file-link download" id="hBx" title="Baixar as versões A e B">.MD A/B</button><button type="button" class="dan mini" id="hDel">Excluir A</button><button type="button" class="dan mini" id="hLimpa">Limpar histórico</button></div>' +
+    '<div class="hrow acts"><button type="button" class="sec mini" id="hImpLink" data-c="1" aria-expanded="false" aria-controls="hLinkBox" title="Trazer o texto-fonte de um link como uma versão, sem alterar os editores">' + ICO_LINK + 'Importar link</button><button type="button" class="sec mini" id="hMarca">★ Salvar versão</button><button type="button" class="sec mini" id="hResA">Restaurar A</button><button type="button" class="sec mini" id="hResB">Restaurar B</button><button type="button" class="file-link download" id="hBx" title="Baixar as versões A e B">.MD A/B</button><button type="button" class="dan mini" id="hDel">Excluir A</button><button type="button" class="dan mini" id="hLimpa">Limpar histórico</button></div>' +
+    '<div class="hlink" id="hLinkBox" role="group" aria-labelledby="hLinkT" hidden>' +
+    '<label for="hLinkUrl" id="hLinkT">Link do Conteudista</label>' +
+    '<input type="url" id="hLinkUrl" autocomplete="off" spellcheck="false" placeholder="https://…" aria-describedby="hLinkAj">' +
+    '<div class="hl-s" id="hLinkSenhaC" hidden><label for="hLinkSenha">Senha do link</label><input type="password" id="hLinkSenha" autocomplete="off"></div>' +
+    '<p class="hint" id="hLinkAj">O link entra como uma versão marcada “via link”, sem alterar o texto dos editores. Se o link tiver senha, ela será pedida antes de adicionar.</p>' +
+    '<p class="hlink-msg" id="hLinkMsg" role="alert" hidden></p>' +
+    '<div class="hlink-ac"><button type="button" class="mini" id="hLinkOk" data-c="1" disabled>Adicionar como versão</button><button type="button" class="sec mini" id="hLinkCancel" data-c="1">Cancelar</button></div></div>' +
+    '<p class="hfeed" id="hFeed" role="status" aria-live="polite"></p>' +
     '<p class="hint" id="hInfo"></p><div id="hRes"></div>';
   // Janela sobreposta: só aparece quando o botão "Histórico" (barra do editor) é clicado
   const back = document.createElement('div'); back.className = 'hist-back'; back.hidden = true; back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true'); back.setAttribute('aria-label', 'Versões do texto');
@@ -243,12 +271,17 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     if (doc) $('hDoc').value = doc;
     if (matchMedia('(max-width: 700px)').matches && !abrir.modoDefinido) { $('hModo').value = 'u'; abrir.modoDefinido = true; }  // celular: exibição unificada
     back.hidden = false; back.scrollTop = 0; document.body.style.overflow = 'hidden';
+    $('hFeed').textContent = '';
     montarSelects().then(async () => { const l = await lista(); if ($('hA').value === 'atual' && l[0]) $('hA').value = String(l[0].id); $('hB').value = 'atual'; executar(); });
     setTimeout(() => $('hA').focus(), 30);
   }
-  function fecharHist() { back.hidden = true; document.body.style.overflow = ''; }
+  function fecharHist() { limparLinkBox(); back.hidden = true; document.body.style.overflow = ''; }
   back.addEventListener('click', e => { if (e.target === back) fecharHist(); });
-  addEventListener('keydown', e => { if (e.key === 'Escape' && !back.hidden) { e.preventDefault(); e.stopPropagation(); fecharHist(); } }, true);
+  addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || back.hidden) return;
+    e.preventDefault(); e.stopPropagation();
+    if (!$('hLinkBox').hidden) fecharLinkBox(true); else fecharHist();   // Esc fecha primeiro o painel Importar link
+  }, true);
   // Botão "Histórico" na barra de cada editor, logo antes do botão de tela cheia
   const ICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/><path d="M5.5 9h3M5.5 13h3M15.5 9h3M15.5 13h3"/></svg>';
   [['pg', 'g'], ['ps', 's']].forEach(([id, doc]) => {
@@ -262,7 +295,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   let tUI = null; function agendarUI() { clearTimeout(tUI); tUI = setTimeout(montarSelects, 250); }
   async function montarSelects() {
     const l = await lista(), selA = $('hA'), selB = $('hB'), va = selA.value, vb = selB.value;
-    const opt = v => '<option value="' + v.id + '">' + dataCurta(v.data) + ' — ' + esc(v.rotulo) + (v.p ? ' · ' + esc(v.p) : '') + ' · ' + fmt(v.tam) + '</option>';
+    const opt = v => '<option value="' + v.id + '">' + dataCurta(v.data) + ' — ' + esc(v.rotulo) + (v.p ? ' · ' + esc(v.p) : '') + ' · ' + fmt(v.tam) + (v.origem === 'link' ? ' · via link' : '') + '</option>';
     let h = '<option value="atual">★ Atual (conteúdo dos editores)</option>';
     for (const [g, nome] of GRUPOS) { const it = l.filter(v => grupoDe(v) === g); if (it.length) h += '<optgroup label="' + esc(nome) + ' (' + it.length + ')">' + it.map(opt).join('') + '</optgroup>'; }
     selA.innerHTML = h; selB.innerHTML = h;
@@ -315,6 +348,65 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   $('hDel').onclick = async () => { const v = await obter($('hA').value); if (!v || v.atual) return; if (!confirm('Excluir do histórico a versão:\n' + v.rotulo + ' (' + dataCurta(v.data) + ')?')) return; await dbDel('versoes', v.id); invalidar(); await montarSelects(); $('hRes').innerHTML = ''; log('Versão excluída do histórico.', 'ok'); };
   $('hLimpa').onclick = async () => { if (!confirm('Apagar TODO o histórico de versões deste navegador?')) return; await dbClear('versoes'); invalidar(); await montarSelects(); $('hRes').innerHTML = ''; log('Histórico apagado.', 'ok'); };
 
+  /* ---------------------------- Importar link (1.65) ---------------------------- */
+  const linkBox = $('hLinkBox'), linkUrl = $('hLinkUrl'), linkSenhaC = $('hLinkSenhaC'), linkSenha = $('hLinkSenha'), linkMsg = $('hLinkMsg'), linkOk = $('hLinkOk'), btnLink = $('hImpLink');
+  let linkOcupado = false;
+  const ehLinkUrl = v => /^https?:\/\/\S+$/i.test(String(v || '').trim());
+  function msgLink(t, info) {
+    if (!t) { linkMsg.hidden = true; linkMsg.textContent = ''; return; }
+    linkMsg.classList.toggle('info', !!info); linkMsg.hidden = false; linkMsg.textContent = ''; setTimeout(() => { linkMsg.textContent = t; }, 30);
+  }
+  function limparLinkBox() {
+    linkUrl.value = ''; linkSenha.value = ''; linkSenhaC.hidden = true; msgLink(''); linkOk.disabled = true; linkOk.textContent = 'Adicionar como versão'; linkOcupado = false;
+  }
+  function abrirLinkBox() { linkBox.hidden = false; btnLink.setAttribute('aria-expanded', 'true'); linkUrl.focus(); }
+  function fecharLinkBox(foco) { limparLinkBox(); linkBox.hidden = true; btnLink.setAttribute('aria-expanded', 'false'); if (foco) btnLink.focus(); }
+  btnLink.onclick = () => { if (linkBox.hidden) abrirLinkBox(); else fecharLinkBox(true); };
+  $('hLinkCancel').onclick = () => fecharLinkBox(true);
+  const atualizarLinkOk = () => { if (!linkOcupado) linkOk.disabled = !ehLinkUrl(linkUrl.value); };
+  linkUrl.addEventListener('input', () => { msgLink(''); linkSenhaC.hidden = true; linkSenha.value = ''; atualizarLinkOk(); });
+  linkUrl.addEventListener('paste', () => setTimeout(() => { linkUrl.value = linkUrl.value.trim(); atualizarLinkOk(); }, 0));
+  [linkUrl, linkSenha].forEach(el => el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); if (!linkOk.disabled) adicionarLink(); } }));
+  linkOk.onclick = () => adicionarLink();
+  async function adicionarLink() {
+    if (linkOcupado) return;
+    const url = linkUrl.value.trim(), pw = linkSenha.value;
+    if (!ehLinkUrl(url)) { msgLink('Cole um link do Conteudista, que começa com https://.'); linkUrl.focus(); return; }
+    if (typeof abrirLink !== 'function') { msgLink('A abertura de links não está disponível nesta página.'); return; }
+    linkOcupado = true; linkOk.disabled = true; linkOk.textContent = 'Lendo o link…'; msgLink('');
+    let d = null;
+    try { d = await abrirLink(url, pw); }
+    catch (err) {
+      linkOcupado = false; linkOk.textContent = 'Adicionar como versão'; atualizarLinkOk();
+      const t = (err && err.message) || String(err);
+      if (/senha/i.test(t) && linkSenhaC.hidden) {   // o link tem senha: pede antes de adicionar
+        linkSenhaC.hidden = false; linkSenha.focus();
+        msgLink('Este link parece ter senha. Informe a senha e clique em Adicionar como versão.', true);
+      } else msgLink(t);
+      return;
+    }
+    try {
+      if (!d || (!(d.g || '').trim() && !(d.s || '').trim())) throw new Error('O link não tem nenhum texto para comparar.');
+      const h = hash((d.g || '') + '\u0001' + (d.s || '')); let v = (await lista()).find(x => x.h === h);
+      const existente = v || null;
+      if (!v) { await registrar('link', 'Link importado', d); invalidar(); v = (await lista()).find(x => x.h === h && x.origem === 'link'); }   // o registro devolvido não traz o id gerado pelo IndexedDB
+      if (!v) throw new Error('Não foi possível guardar a versão.');
+      invalidar(); await montarSelects();
+      $('hA').value = String(v.id); $('hB').value = 'atual';
+      const temG = !!(d.g || '').trim(), temS = !!(d.s || '').trim();
+      $('hDoc').value = temG && temS ? 'a' : temS ? 's' : 'g';   // compara o(s) texto(s) que o link traz
+      fecharLinkBox(false);
+      const tx = existente ? 'Este conteúdo já estava nas versões (' + dataCurta(existente.data) + '). Ele foi selecionado como Versão A e comparado com o texto atual.' : 'Link importado como versão “via link” e selecionado como Versão A, comparado com o texto atual.';
+      $('hFeed').textContent = ''; setTimeout(() => { $('hFeed').textContent = tx; }, 30);
+      try { log(existente ? 'Link importado: conteúdo já existente nas versões.' : 'Link importado como versão (via link).', 'ok'); } catch (e) { /* sem log */ }
+      try { if (window.UXFeedback && UXFeedback.confirmar) UXFeedback.confirmar(btnLink, 'Link importado como versão.'); } catch (e) { /* sem feedback */ }
+      await executar();
+      btnLink.focus();
+    } catch (err) {
+      linkOcupado = false; linkOk.textContent = 'Adicionar como versão'; atualizarLinkOk();
+      msgLink((err && err.message) || String(err));
+    }
+  }
   window.Hist = { registrar, sessao, atualizar: () => { invalidar(); agendarUI(); }, abrir: () => abrir($('ps') && !$('ps').hidden ? 's' : 'g'), fechar: fecharHist, comparar: executar, _myers: myers };
   montarSelects();
 })();

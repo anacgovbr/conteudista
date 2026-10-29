@@ -303,11 +303,11 @@ flowchart LR
 
 - O botão Versões fica na barra do editor
 - Compara duas versões, com as diferenças destacadas
+- Importar link traz o texto de um link como versão
 - Restaura qualquer versão
-- Versões salvas com nome não são apagadas
-- O limite é de 120 versões
+- Versões salvas com nome não são apagadas; limite de 120
 
-<!-- notas: As versões protegem o seu trabalho. O botão Versões, na barra do editor, abre a lista de cópias guardadas neste navegador. É possível comparar duas versões, com as diferenças destacadas, e restaurar qualquer uma delas. Versões salvas com nome não são apagadas automaticamente. A aplicação mantém até cento e vinte versões e também guarda o estado anterior antes de cada importação, o que permite voltar atrás com segurança. -->
+<!-- notas: As versões protegem o seu trabalho. O botão Versões, na barra do editor, abre a lista de cópias guardadas neste navegador. É possível comparar duas versões, com as diferenças destacadas, e restaurar qualquer uma delas. O botão Importar link traz o texto de um link como versão, sem alterar os editores, para comparar. Versões salvas com nome não são apagadas. A aplicação mantém até cento e vinte versões e guarda o estado anterior antes de cada importação. -->
 
 ---
 

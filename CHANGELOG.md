@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.65 - 29/10/2026
+- **Importar link em Versões.** A janela **Versões do texto** tem o novo botão **Importar link**: cole o link do Conteudista (direto ou PrivateBin) e escolha **Adicionar como versão**. O texto entra como versão **via link**, **sem alterar os editores**, é selecionado como Versão A e já é comparado com o texto atual. Para comparar dois links, importe os dois e escolha A e B.
+- **Link com senha:** a senha é pedida antes de adicionar. Um conteúdo que já está nas versões não é duplicado.
+- As versões abertas ou importadas por link ficam no grupo **Via link** e mostram "via link" no nome. **Esc** fecha primeiro o painel Importar link e, no segundo toque, a janela.
+- Corrigido: no celular, o fundo branco da janela Versões do texto era cortado quando o conteúdo passava da altura da tela.
+- Ajuda, README e conteúdo de exemplo atualizados. O parâmetro de cache dos scripts passa a 1.65.
 ## 1.64 - 29/10/2026
 - **O botão Compartilhar link ganha três pontos de acesso**, além do item em **Salvar ▾**: na **barra de ações, logo depois de Importar**; na **barra de ferramentas de cada editor** (só o ícone, antes de Versões); e **ao lado de Salvar ▾**, perto de Gerar arquivos. Todos abrem a mesma janela **Link do conteúdo**, e o atalho Alt+Shift+L continua como antes.
 - No celular o rótulo vira **Link** (o nome acessível continua "Compartilhar link") e **Salvar ▾** e **Link** dividem a mesma linha, sob **Gerar arquivos**.

@@ -20,7 +20,7 @@ Página única que converte os arquivos Markdown de um conteúdo em:
 | Salvar ▾ | Botão ao lado de **Gerar arquivos**, único caminho para guardar o conteúdo. Itens: **Guardar no navegador** (versão), **Baixar tudo (.zip)**, **Compartilhar link**, **Salvar na pasta** (grava os `.md` e os arquivos gerados numa pasta escolhida, Edge/Chrome) e **Baixar .md** | Navegador, disco do usuário ou link |
 | Compartilhar link | Quatro pontos de acesso, todos para a **mesma janela** (**Link do conteúdo**): botão na **barra de ações**, depois de **Importar**; ícone na **barra de ferramentas de cada editor**; botão **ao lado de Salvar ▾**; e o item **Salvar ▾ › Compartilhar link** (`Alt+Shift+L`). No celular o rótulo vira **Link** | Somente no link |
 | Link autocontido | Conteúdo comprimido e cifrado (AES-256-GCM) no próprio link; chave no `#` ou senha (PBKDF2 310.000 iterações) | Somente no link |
-| Versões do texto | Botão **Versões** na barra do editor ou `Alt+Shift+V`. Versões guardadas no navegador (edições da sessão a cada 3 min, arquivos carregados, links abertos, rascunhos, exemplo, versões marcadas ★, geração/compartilhamento; “antes de carregar/restaurar” automático; até 120). Diff “antes e depois” entre quaisquer duas versões ou o conteúdo atual: lado a lado ou unificado, só alterações ou texto completo, palavras destacadas, imagens como miniaturas e lista de imagens removidas/incluídas; restaurar, baixar A/B, excluir | IndexedDB do navegador, só nesta máquina |
+| Versões do texto | Botão **Versões** na barra do editor ou `Alt+Shift+V`. Versões guardadas no navegador (edições da sessão a cada 3 min, arquivos carregados, links abertos, rascunhos, exemplo, versões marcadas ★, geração/compartilhamento; “antes de carregar/restaurar” automático; até 120). Diff “antes e depois” entre quaisquer duas versões ou o conteúdo atual: lado a lado ou unificado, só alterações ou texto completo, palavras destacadas, imagens como miniaturas e lista de imagens removidas/incluídas; restaurar, baixar A/B, excluir. **Importar link** traz o texto-fonte de um link (direto ou PrivateBin, com senha se houver) como versão **via link**, sem alterar os editores, para comparar com o texto atual ou com qualquer outra versão | IndexedDB do navegador, só nesta máquina |
 | Tamanho antes do envio | Estimativa do conteúdo e do envio cifrado, com alerta perto do limite de 10 MB e confirmação antes de enviar | — |
 | PrivateBin | Formato PrivateBin v2 (AES-256-GCM, PBKDF2-SHA256 100.000, chave base58 no `#`); **senha opcional** (chave ‖ senha, compatível com o site do PrivateBin); **imagens como anexo ZIP** (`.md` + `imagens/`), restauradas para base64 ao abrir aqui; expiração e leitura única | Servidor PrivateBin (somente conteúdo cifrado) |
 
@@ -30,7 +30,7 @@ Página única que converte os arquivos Markdown de um conteúdo em:
 web/index.html           ← a página
 web/editor.js            ← editor Markdown leve (sem dependências)
 web/ajuda.js             ← tutorial guiado, ajuda e atalhos de teclado
-web/historico.js         ← histórico de versões e comparação (diff)
+web/historico.js         ← histórico de versões, comparação (diff) e Importar link
 web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
 web/metadados.js         ← Nome do conteúdo, Rodapé (opcional) sempre visível (a Barra superior foi retirada)
 web/dicas.js             ← dicas (tooltip) acessíveis dos botões da barra do editor

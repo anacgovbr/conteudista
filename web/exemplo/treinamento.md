@@ -188,6 +188,7 @@ O botão **Versões**, na barra do editor, abre a lista de cópias do texto guar
 - A aplicação guarda sozinha o estado anterior antes de cada importação ou restauração.
 - É possível **comparar** duas versões, com as linhas e as palavras alteradas destacadas, e **restaurar** qualquer uma.
 - **★ Salvar versão** cria um ponto nomeado, que não é apagado automaticamente. O limite é de 120 versões.
+- **Importar link** traz o texto-fonte de um link do Conteudista (direto ou PrivateBin) como uma versão **via link**, sem alterar os editores. Se o link tiver senha, ela é pedida antes de adicionar. A versão importada fica selecionada como **Versão A** e já é comparada com o texto atual; para comparar dois links, importe os dois e escolha A e B.
 
 ## 6. Importar
 
