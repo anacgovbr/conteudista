@@ -831,7 +831,7 @@ $('go').onclick = async () => {
     for (const f of files) {
       const nome = f.split('/').pop(), ext = nome.split('.').pop(), blob = new Blob([py.FS.readFile(f)], { type: tipos[ext] || 'application/octet-stream' });
       const u = URL.createObjectURL(blob); urls.push(u); ultimos.push({ nome, blob });
-      h += '<a class="' + (ext === 'zip' ? 'btn btn-arq download' : 'file-link download') + '" href="' + u + '" download="' + nome + '" title="Baixar ' + nome + '">.' + ext.toUpperCase() + '</a>';
+      h += '<a class="' + (ext === 'zip' ? 'btn btn-arq download' : 'file-link download') + '" href="' + u + '" download="' + nome + '" title="Baixar ' + nome + '">.' + ext.toUpperCase() + (/_OpenDyslexic\.epub$/i.test(nome) ? ' OpenDyslexic' : '') + '</a>';
       if (ext === 'html') h += '<button type="button" class="btn btn-arq btn-exibir" data-u="' + u + '" title="Exibir ' + nome + ' na tela">Exibir ' + (/^Apresentacao_/.test(nome) ? 'apresentação' : 'apostila') + '</button>';
     }
     py.runPython("import shutil; shutil.rmtree('/saida', ignore_errors=True)");

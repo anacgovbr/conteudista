@@ -8,6 +8,9 @@
 - **EPUB em duas versões:** `Apostila_<nome>.epub` (Atkinson Hyperlegible Next) e `Apostila_<nome>_OpenDyslexic.epub`, com sumário, fontes embutidas, fluxos em tabela, checklists ☐/☒ e metadados de acessibilidade. Agora são 8 arquivos + ZIP.
 - **DOCX** em Verdana 12 pt, entrelinha 1,5 e 6 pt após parágrafos, com texto alternativo nas imagens e idioma português (Brasil).
 - **PPTX** mantém a fonte do layout e recebe texto alternativo, notas e textos em português (Brasil), cabeçalho de tabela, entrelinha 1,2 e corpo de no mínimo 16 pt.
+- **Tutorial com 9 passos**, incluindo **Leia como preferir** (Tema, Leitura, Modo leitura e PDF) e **Guarde em um link** (os três pontos de acesso de Compartilhar link). A Ajuda cita os botões da barra do editor, os dois EPUB e novos problemas comuns (fonte de leitura ausente, imagem sem descrição, fonte no leitor de EPUB).
+- **Em Arquivos gerados e no Histórico, o segundo EPUB aparece como .EPUB OpenDyslexic**, para não confundir com o .EPUB da apostila.
+- **Imagens do exemplo refeitas a partir da tela atual** (tela principal, Importar › Salvos, menu Salvar ▾ e Arquivos gerados com os dois EPUB), na apostila e na apresentação. Textos e notas de narração do exemplo citam o ícone Compartilhar link e o botão Versões na barra do editor, a Tabela do fluxo, o EPUB, a Leitura e o modo leitura.
 - README, Ajuda, exemplo, testes (`tools/testar_acessibilidade.py`) e o workflow atualizados; gerador v3.9. O menu **Salvar ▾** continua sem **Compartilhar link**.
 ## 1.65 - 29/10/2026
 - **Importar link em Versões.** A janela **Versões do texto** tem o novo botão **Importar link**: cole o link do Conteudista (direto ou PrivateBin) e escolha **Adicionar como versão**. O texto entra como versão **via link**, **sem alterar os editores**, é selecionado como Versão A e já é comparado com o texto atual. Para comparar dois links, importe os dois e escolha A e B.

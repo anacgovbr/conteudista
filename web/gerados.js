@@ -228,7 +228,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
       const zip = p.arquivos.find(f => /\.zip$/i.test(f.nome)), outros = p.arquivos.filter(f => f !== zip);
       return '<tr data-busca="' + esc(buscaDe(p)) + '"><td>' + metaHtml(p) + '</td><td>' +
         (zip ? '<a class="btn btn-arq download" href="' + urlDe(p.id + '/' + zip.nome, zip.blob) + '" download="' + esc(zip.nome) + '">.ZIP</a>' : '') +
-        outros.map(f => '<a class="file-link download" href="' + urlDe(p.id + '/' + f.nome, f.blob) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + '</a>').join('') +
+        outros.map(f => '<a class="file-link download" href="' + urlDe(p.id + '/' + f.nome, f.blob) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + (/_OpenDyslexic\.epub$/i.test(f.nome) ? ' OpenDyslexic' : '') + '</a>').join('') +
         outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="btn btn-arq btn-exibir" data-ver="' + p.id + '/' + esc(f.nome) + '">Exibir ' + (/^Apresentacao_/.test(f.nome) ? 'apresentação' : 'apostila') + '</button>').join('') +
         '</td><td><button type="button" class="dan" data-del="' + p.id + '">Excluir</button></td></tr>';
     }).join('') + '</table>';
@@ -268,7 +268,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
     const url = f => { if (!pkgUrls.has(f.nome)) pkgUrls.set(f.nome, URL.createObjectURL(f.blob)); return pkgUrls.get(f.nome); };
     pkg.innerHTML = '<p class="ger-pkg-rot">Em exibição</p>' + metaHtml(p) + '<div class="file-links">' +
       (zip ? '<a class="btn btn-arq download" href="' + url(zip) + '" download="' + esc(zip.nome) + '">.ZIP</a>' : '') +
-      outros.map(f => '<a class="file-link download" href="' + url(f) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + '</a>').join('') +
+      outros.map(f => '<a class="file-link download" href="' + url(f) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + (/_OpenDyslexic\.epub$/i.test(f.nome) ? ' OpenDyslexic' : '') + '</a>').join('') +
       outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="btn btn-arq btn-exibir" data-pv="' + esc(f.nome) + '" aria-pressed="false">Exibir ' + tipoDe(f.nome) + '</button>').join('') + '</div>';
     pkgId = id; pkg.hidden = false; if (dxRes) dxRes.classList.add('tem-pkg');
     marcarPkg(nome);
