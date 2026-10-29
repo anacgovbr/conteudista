@@ -1,14 +1,15 @@
 # Novidades do Conteudista
+## 1.66 - 29/10/2026
+- **O item Compartilhar link sai do menu Salvar ▾**, porque o botão **Compartilhar link** já fica ao lado de **Salvar ▾**. O menu agora reúne só as formas de guardar neste computador: **Guardar no navegador**, **Baixar tudo (.zip)**, **Salvar na pasta** e **Baixar .md**. O botão da barra de ações, o ícone do editor e o atalho Alt+Shift+L continuam como antes.
+- Tutorial, Ajuda, README e o conteúdo de exemplo (apostila, apresentação e figura do menu) seguem o novo menu.
 ## 1.65 - 29/10/2026
 - **Importar link em Versões.** A janela **Versões do texto** tem o novo botão **Importar link**: cole o link do Conteudista (direto ou PrivateBin) e escolha **Adicionar como versão**. O texto entra como versão **via link**, **sem alterar os editores**, é selecionado como Versão A e já é comparado com o texto atual. Para comparar dois links, importe os dois e escolha A e B.
 - **Link com senha:** a senha é pedida antes de adicionar. Um conteúdo que já está nas versões não é duplicado.
 - As versões abertas ou importadas por link ficam no grupo **Via link** e mostram "via link" no nome. **Esc** fecha primeiro o painel Importar link e, no segundo toque, a janela.
 - Corrigido: no celular, o fundo branco da janela Versões do texto era cortado quando o conteúdo passava da altura da tela.
-- Ajuda, README e conteúdo de exemplo atualizados. O parâmetro de cache dos scripts passa a 1.65.
 ## 1.64 - 29/10/2026
-- **O botão Compartilhar link ganha três pontos de acesso**, além do item em **Salvar ▾**: na **barra de ações, logo depois de Importar**; na **barra de ferramentas de cada editor** (só o ícone, antes de Versões); e **ao lado de Salvar ▾**, perto de Gerar arquivos. Todos abrem a mesma janela **Link do conteúdo**, e o atalho Alt+Shift+L continua como antes.
+- **O botão Compartilhar link ganha três pontos de acesso**: na **barra de ações, logo depois de Importar**; na **barra de ferramentas de cada editor** (só o ícone, antes de Versões); e **ao lado de Salvar ▾**, perto de Gerar arquivos. Todos abrem a mesma janela **Link do conteúdo**.
 - No celular o rótulo vira **Link** (o nome acessível continua "Compartilhar link") e **Salvar ▾** e **Link** dividem a mesma linha, sob **Gerar arquivos**.
-- Tutorial, Ajuda, README e o conteúdo de exemplo seguem os novos botões. O parâmetro de cache dos scripts passa a 1.64.
 ## 1.63 - 27/10/2026
 - **O menu Salvar ▾ sai da barra de ações e passa a ficar ao lado de Gerar arquivos.** Ele agora tem **Guardar no navegador** (versão salva), **Baixar tudo (.zip)** e **Compartilhar link**, além de **Salvar na pasta** e **Baixar .md** em um segundo grupo. A barra de ações fica com **Importar**, **Carregar exemplo**, **Limpar tela** e a chave **Salvar automático**.
 - **Um único caminho para guardar.** A linha **Texto-fonte** (botão **Criar link**) deixou de aparecer em **Arquivos gerados**; o link é criado em **Salvar ▾ › Compartilhar link** (ou Alt+Shift+L). Os atalhos continuam os mesmos.

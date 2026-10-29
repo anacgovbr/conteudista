@@ -2,8 +2,8 @@
    Conteudista - Janelas: Importar, Historico de arquivos e Compartilhar (etapa 1)
 
    - Barra de acoes: Importar | Carregar exemplo | Limpar tela | chave "Salvar automatico", com o status do ultimo salvamento.
-   - Salvar \u25be (menu): fica ao lado de "Gerar arquivos" e reune Guardar no navegador, Baixar tudo (.zip), Compartilhar link,
-     Salvar na pasta e Baixar .md. E o unico caminho para guardar o conteudo.
+   - Salvar \u25be (menu): fica ao lado de "Gerar arquivos" e reune Guardar no navegador, Baixar tudo (.zip), Salvar na pasta e
+     Baixar .md. Compartilhar link NAO esta no menu (1.66): tem botao proprio ao lado de Salvar.
    - Compartilhar link (1.64): a MESMA janela abre por tres botoes: na barra de acoes (depois de Importar), na barra de
      ferramentas de cada editor (so icone) e ao lado de Salvar \u25be. No celular o rotulo vira "Link" (nome acessivel completo).
    - Importar: janela com abas Salvos, Computador e Colar (uma aba por origem).
@@ -717,13 +717,12 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   const bImp = mk('btnImportar', 'sec', 'Importar'); bImp.setAttribute('aria-haspopup', 'dialog'); bImp.title = 'Importar: salvos, arquivos do computador, texto ou link (Alt+Shift+O)';
   const dd = document.createElement('span'); dd.className = 'jn-dd';
   const bSalvar = mk('btnSalvar', 'sec', 'Salvar' + svg('chev'));
-  bSalvar.title = 'Salvar: guardar no navegador, baixar tudo, compartilhar link (Alt+Shift+S guarda uma vers\u00e3o)';
+  bSalvar.title = 'Salvar: guardar no navegador, baixar tudo, salvar na pasta ou baixar .md (Alt+Shift+S guarda uma vers\u00e3o)';
   bSalvar.setAttribute('aria-haspopup', 'menu'); bSalvar.setAttribute('aria-expanded', 'false'); bSalvar.setAttribute('aria-controls', 'jnMenuSalvar');
   const menu = document.createElement('div'); menu.className = 'jn-mn'; menu.id = 'jnMenuSalvar'; menu.setAttribute('role', 'menu'); menu.setAttribute('aria-label', 'Salvar'); menu.hidden = true;
   const ITENS = [
     ['rasc', 'Guardar no navegador', 'Vers\u00e3o s\u00f3 neste navegador', 'dsave', 'Vers\u00e3o salva.'],
     ['arq', 'Baixar tudo (.zip)', 'Textos e arquivos gerados, em um ZIP', 'zdl', '.ZIP baixado.'],
-    ['shr', 'Compartilhar link', 'Texto-fonte, em qualquer computador', 'jnLink', '', 1],
     '-',
     ['pc', 'Salvar na pasta', 'No computador (Edge e Chrome)', 'fsave', 'Salvo na pasta.'],
     ['arq', 'Baixar .md', 'Textos em Markdown', 'mdl', '.MD baixado.']
@@ -762,7 +761,6 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   function abrirMenu() { menu.hidden = false; bSalvar.setAttribute('aria-expanded', 'true'); const p = menu.querySelector('.jn-mi'); if (p) p.focus(); }
   function fecharMenu(foco) { if (menu.hidden) return; menu.hidden = true; bSalvar.setAttribute('aria-expanded', 'false'); if (foco) bSalvar.focus(); }
   function executarSalvar(alvo, msg) {
-    if (alvo === 'jnLink') { fecharMenu(true); cmp.abrir(); return; }
     fecharMenu(true);
     const vazio = !(($('g') && $('g').value.trim()) || ($('s') && $('s').value.trim()));
     if (vazio) { anunciarGlobal('Nada para salvar.'); logApp('Nada para salvar.', 'wa'); return; }

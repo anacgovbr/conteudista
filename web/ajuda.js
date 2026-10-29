@@ -61,7 +61,7 @@
     { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apostila</b> e <b>Apresentação</b>. Cole o texto gerado por uma IA (use o prompt padrão do exemplo), arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. O botão <b>Versões</b> guarda, compara e restaura o texto.' },
     { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe a apostila (HTML, DOCX, MD), a apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>, com o nome, a data, o tamanho e o layout de cada geração. Os anteriores ficam no <b>Histórico</b>, com busca. Para testar agora, use <b>Carregar exemplo</b>, que traz um guia completo de uso da aplicação, com apostila, apresentação e prompt padrão para IA. Os arquivos são o conteúdo <b>pronto, para entregar</b>.' },
-    { alvo: 'btnSalvar', t: '4. Guarde o conteúdo', d: 'O botão <b>Salvar ▾</b>, ao lado de <b>Gerar arquivos</b>, reúne as formas de guardar: <b>Guardar no navegador</b>, <b>Baixar tudo (.zip)</b> e <b>Compartilhar link</b>. O botão <b>Compartilhar link</b> também fica ao lado de <b>Salvar ▾</b>, ao lado de <b>Importar</b> e na barra do editor, e todos abrem a mesma janela. Com o link, o conteúdo inteiro (texto, imagens, nome e rodapé) vira um endereço: cole-o onde preferir, como um e-mail para você mesmo, o Teams ou os favoritos, e abra quando quiser <b>continuar editando</b>, em qualquer computador. O salvamento automático (chave no alto, com o horário do último salvamento) só recupera o último trabalho neste navegador.' },
+    { alvo: 'btnSalvar', t: '4. Guarde o conteúdo', d: 'O botão <b>Salvar ▾</b>, ao lado de <b>Gerar arquivos</b>, reúne as formas de guardar neste computador: <b>Guardar no navegador</b>, <b>Baixar tudo (.zip)</b>, <b>Salvar na pasta</b> e <b>Baixar .md</b>. Para guardar em um link, use o botão <b>Compartilhar link</b>, ao lado de <b>Salvar ▾</b> (ele também aparece ao lado de <b>Importar</b> e na barra do editor, e abre sempre a mesma janela). Com o link, o conteúdo inteiro (texto, imagens, nome e rodapé) vira um endereço: cole-o onde preferir, como um e-mail para você mesmo, o Teams ou os favoritos, e abra quando quiser <b>continuar editando</b>, em qualquer computador. O salvamento automático (chave no alto, com o horário do último salvamento) só recupera o último trabalho neste navegador.' },
     { alvo: 'btnImportar', t: '5. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. Use o campo <b>Buscar</b> para achar um item pelo nome, data, layout ou tipo de arquivo. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
@@ -187,11 +187,10 @@
 <tr><td><b>Versão</b> (<b>Salvar ▾ › Guardar no navegador</b>)</td><td>Neste navegador</td><td><b>Importar › Salvos</b></td></tr>
 <tr><td><b>Pasta</b>, <b>.MD</b> e <b>.ZIP</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas ou use <b>Importar › Computador</b></td></tr></table>
 <div class="dica">Limpar os dados do navegador apaga as versões salvas e os links lembrados. Para guardar por mais tempo, use <b>Link</b> ou <b>.ZIP</b>.</div><h4>O botão Salvar ▾</h4>
-<p>O botão <b>Salvar ▾</b> fica ao lado de <b>Gerar arquivos</b> e é o único caminho para guardar o conteúdo. Não há botão Salvar no editor: o texto é guardado sozinho pelo salvamento automático.</p>
+<p>O botão <b>Salvar ▾</b> fica ao lado de <b>Gerar arquivos</b> e reúne as formas de guardar o conteúdo neste computador. Para guardar em um link, use o botão <b>Compartilhar link</b>, ao lado dele. Não há botão Salvar no editor: o texto é guardado sozinho pelo salvamento automático.</p>
 <table><tr><th>Item do menu</th><th>O que faz</th></tr>
 <tr><td><b>Guardar no navegador</b></td><td>Cria uma <b>versão salva</b>, só neste navegador (<kbd>Alt+Shift+S</kbd>). Reabra em <b>Importar › Salvos</b>.</td></tr>
 <tr><td><b>Baixar tudo (.zip)</b></td><td>Baixa os dois textos em Markdown e os arquivos gerados em um único ZIP.</td></tr>
-<tr><td><b>Compartilhar link</b></td><td>Abre a janela <b>Link do conteúdo</b> (<kbd>Alt+Shift+L</kbd>).</td></tr>
 <tr><td><b>Salvar na pasta</b></td><td>Grava os arquivos em uma pasta do computador (Edge e Chrome) (<kbd>Alt+Shift+P</kbd>).</td></tr>
 <tr><td><b>Baixar .md</b></td><td>Baixa só os textos em Markdown (<kbd>Alt+Shift+D</kbd>).</td></tr></table>
 <h4>Buscar no Histórico e em Salvos</h4>
@@ -213,7 +212,7 @@
 </ul>
 <h4>Criar um link</h4>
 <ol>
-<li>Clique em <b>Compartilhar link</b>: ao lado de <b>Salvar ▾</b>, ao lado de <b>Importar</b> ou no ícone da barra do editor. Também vale <b>Salvar ▾ › Compartilhar link</b>. Todos abrem a mesma janela.</li>
+<li>Clique em <b>Compartilhar link</b>: ao lado de <b>Salvar ▾</b>, ao lado de <b>Importar</b> ou no ícone da barra do editor. Os três abrem a mesma janela (<kbd>Alt+Shift+L</kbd>).</li>
 <li>Confira a opção sugerida para o tamanho do seu conteúdo. Você pode trocá-la.</li>
 <li>Se quiser, defina uma <b>senha</b> e envie-a por outro canal.</li>
 <li>Clique em <b>Criar link</b>. Ele é copiado automaticamente e aparece na janela, com o QR Code.</li>
