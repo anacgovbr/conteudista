@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.67 - 03/11/2026
+- **Barra B+ nas apresentações HTML.** Controles principais mais limpos, recolhimento por inatividade e menu de opções secundárias, com densidade reduzida no celular e em orientação horizontal.
+- **Interação unificada por Pointer Events**, com estado centralizado da barra e adaptação independente por largura e método de entrada. Mouse, teclado, toque e caneta compartilham as mesmas ações; dispositivos híbridos alternam o comportamento conforme a entrada atual.
+- **Toque e gesto horizontal:** o primeiro toque revela a barra sem executar outra ação; deslizar horizontalmente troca de slide, sem capturar movimentos verticais nem gestos iniciados nos controles.
+- **Atalhos B+:** setas para navegar, Espaço para reproduzir/pausar, A para acessibilidade, S para som da narração, N para notas, F para tela cheia, M para Mais opções, ? para ajuda e Esc para fechar a camada atual.
+- Alvos de toque de pelo menos 44 px, foco visível, nomes acessíveis, suporte a `prefers-reduced-motion` e proteção dos atalhos em campos editáveis. Gerador v4.0.
 ## 1.66 - 29/10/2026
 - **O item Compartilhar link sai do menu Salvar ▾**, porque o botão **Compartilhar link** já fica ao lado de **Salvar ▾**. O menu agora reúne só as formas de guardar neste computador: **Guardar no navegador**, **Baixar tudo (.zip)**, **Salvar na pasta** e **Baixar .md**. O botão da barra de ações, o ícone do editor e o atalho Alt+Shift+L continuam como antes.
 - Tutorial, Ajuda, README e o conteúdo de exemplo (apostila, apresentação e figura do menu) seguem o novo menu.

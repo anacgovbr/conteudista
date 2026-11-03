@@ -107,6 +107,9 @@ python tools/gerador.py apostila.md apresentacao.md --prefixo Meu_Conteudo --rod
 # só um dos dois: use '-' no lugar do arquivo ausente (ex.: python tools/gerador.py - apresentacao.md ...)
 ```
 
+## Controles da apresentação HTML (B+)
+A barra usa Pointer Events e estado centralizado, adaptando densidade e interação à largura e à entrada atual (mouse, teclado, toque ou caneta). Atalhos: `←` anterior · `→` próximo · `Espaço` reproduzir/pausar · `A` acessibilidade · `S` som da narração · `N` notas · `F` tela cheia · `M` mais opções · `?` ajuda · `Esc` fechar a camada atual. No toque, o primeiro toque revela os controles e o gesto horizontal navega entre slides.
+
 ## Atalhos da aplicação
 
 `Alt+Shift` + tecla (no Mac, `Option+Shift`): **G** gerar · **E** exemplo · **D** baixar .md · **P** salvar em pasta · **S** salvar versão · **A** ligar/desligar autossalvamento · **L** criar link · **O** abrir link · **V** versões do texto · **1/2** abas · **M** modo do editor · **F** tela cheia · **T** tutorial · **R** reiniciar tutorial · **H** ajuda · **K** lista de atalhos · **F1** ajuda.
