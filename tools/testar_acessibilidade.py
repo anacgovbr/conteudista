@@ -161,9 +161,14 @@ def testar_slides_html(cam, exigir_fontes):
     ok('id="c" role="status" aria-live="polite"' in h, n + ': #c com aria-live')
     ok('aria-label="Slide anterior"' in h and 'aria-label="Próximo slide"' in h, n + ': botões com nome acessível')
     ok(re.search(r'aria-label="[^"]*\([^"]*\)"', h) is None, n + ': nomes acessíveis sem atalho embutido (atalho em aria-keyshortcuts)')
-    for b, k in (('p', 'ArrowLeft'), ('n', 'ArrowRight'), ('bp', 'Space'), ('bmais', 'M'), ('b1', 'N'), ('b2', 'F'), ('imp', 'Control+P')):
+    for b, k in (('p', 'ArrowLeft'), ('n', 'ArrowRight'), ('bp', 'Space'), ('bmais', 'M'), ('b1', 'N'), ('b2', 'F'), ('imp', 'Control+P'), ('bLer', 'L')):
         ok(re.search(r'<button id="%s"[^>]*aria-keyshortcuts="%s"' % (b, re.escape(k)), h) is not None, '%s: #%s com aria-keyshortcuts="%s"' % (n, b, k))
-    for b in ('b1', 'b2', 'bLer'): ok(re.search(r'<button id="%s" type="button" aria-pressed="false"' % b, h) is not None, '%s: #%s com aria-pressed' % (n, b))
+    for b in ('b1', 'b2'): ok(re.search(r'<button id="%s" type="button" aria-pressed="false"' % b, h) is not None, '%s: #%s com aria-pressed' % (n, b))
+    ok(re.search(r'<button id="bLer" class="md" type="button" aria-label="Modo leitura" aria-keyshortcuts="L"', h) is not None, n + ': botão de modo (Leitura/Slides) na barra, com nome acessível e atalho L')
+    ok('body.modo-leitura #hud{position:sticky' not in h and 'body.modo-leitura #hud button{' not in h, n + ': Modo leitura usa a mesma barra B+ (sem a barra antiga que rolava com o texto)')
+    ok(re.search(r'<div id="tam" class="tam" role="group" aria-labelledby="tamL">', h) is not None and 'id="tamS" class="vh" role="status" aria-live="polite"' in h, n + ': controle de tamanho do texto rotulado, com aviso por leitor de tela')
+    ok('calc(1rem*var(--lb)*var(--lt))' in h and 'html{--lb:1;--lt:1}' in h, n + ': tamanho do texto do Modo leitura em 16 px (Verdana) com ajuste da pessoa')
+    ok('function irLeitura(' in h and 'function slideLeitura(' in h, n + ': anterior/próximo/seletor funcionam no Modo leitura')
     ok('id="hud" role="toolbar"' in h and 'aria-label="Controles da apresentação"' in h, n + ': barra B+ como toolbar rotulada')
     ok('pointerdown' in h and 'pointercancel' in h, n + ': B+ sobre Pointer Events')
     hud = re.search(r'<div id="hud".*?<button id="b2"', h, re.S)

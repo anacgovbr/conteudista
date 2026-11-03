@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.71 - 03/11/2026
+- **Barra do Modo leitura redesenhada.** A barra antiga (que rolava junto com o texto e mostrava só Acessibilidade e Mais opções) foi substituída pela **mesma pílula branca dos slides**, fixa na base da tela e sempre visível: anterior, próximo, contador, botão **Slides**, Acessibilidade e Mais opções. Play e som saem do Modo leitura, onde não funcionam. No celular, Acessibilidade passa para Mais opções.
+- **Ir e voltar entre os modos com o mesmo gesto.** O Modo slides ganha o botão **Leitura** no mesmo lugar do botão **Slides** do Modo leitura (atalho `L`). Ao trocar, a tela abre no slide em que você estava.
+- **Navegação no Modo leitura.** Anterior e próximo levam ao início do slide vizinho; o contador acompanha a rolagem; clicar nele (ou `G`) abre o seletor de slide.
+- **Verdana menor no Modo leitura:** o texto passa de 18 px para **16 px** (títulos 28/22 px; notas e tabelas 15 px). Atkinson e OpenDyslexic ficam como estavam.
+- **Tamanho do texto ajustável** (A− · 100% · A+, de 90% a 150%) no painel Acessibilidade, só no Modo leitura; a escolha fica salva neste navegador. Gerador v4.3.
 ## 1.70 - 03/11/2026
 - **Confirmação de ação mais rápida.** O botão fica verde **no instante do clique** (antes havia um atraso de 80 ms), permanece verde por **1 s** e esmaece em 0,2 s, num total de **1,2 s** (antes, 2,6 s). Com a preferência do sistema por menos movimento, não há esmaecimento: o verde sai ao fim de 1,2 s. Leitores de tela continuam recebendo a mensagem pela região oculta, independentemente do tempo visual.
 - **Tick alinhado.** O "✓" (caractere, que variava com a fonte e ficava mais perto da borda) foi substituído por um ícone SVG simétrico, posicionado **equidistante da borda do botão e do início do texto**, a partir da medida real do botão. Em botões estreitos o ícone encolhe (mínimo de 10 px) para manter folga dos dois lados; em botões largos com texto centralizado, o tick acompanha o texto (folga máxima de 12 px). A largura do botão não muda.
