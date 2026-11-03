@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# GERADOR PADRÃO DE CONTEÚDO v4.3 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX;
+# GERADOR PADRÃO DE CONTEÚDO v4.4 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX;
 #   leitura acessível: Verdana / Atkinson Hyperlegible Next / OpenDyslexic, modo leitura dos slides, EPUB) — Apostila (HTML + DOCX + EPUB)
 #   e Apresentação (HTML + PPTX) a partir de Markdown.
 # Requisitos: Python 3 + python-docx + python-pptx + lxml (+ Pillow). HTML usa só biblioteca padrão.
@@ -44,7 +44,7 @@ def fontes_css():
         _FONTES_CSS='\n'.join(o)+'\n'
     return _FONTES_CSS
 # Aplica a leitura salva antes da pintura (evita troca visível de fonte). Preferência global, separada do tema.
-LEITURA_HEAD='(function(){var l=null;try{l=localStorage.getItem("conteudista.leitura")}catch(e){}if(["padrao","atkinson","opendyslexic"].indexOf(l)<0)l="padrao";document.documentElement.setAttribute("data-leitura",l)})();'
+LEITURA_HEAD='(function(){var l=null;try{l=localStorage.getItem("conteudista.leitura")}catch(e){}if(["padrao","atkinson","opendyslexic"].indexOf(l)<0)l="padrao";document.documentElement.setAttribute("data-leitura",l)})();(function(){var t=null;try{t=parseInt(localStorage.getItem("conteudista.leitura.tamanho"),10)}catch(e){}if([90,100,110,125,150].indexOf(t)>-1)document.documentElement.style.setProperty("--lt",String(t/100))})();'
 LEITURA_SEL=('<label for="leitura" class="lt">Leitura</label><select id="leitura"><option value="padrao">Padrão (Verdana)</option>'
              '<option value="atkinson">Atkinson Hyperlegible Next</option><option value="opendyslexic">OpenDyslexic</option></select>')
 LEITURA_JS="""(function(){var s=document.getElementById('leitura'),h=document.documentElement,V=['padrao','atkinson','opendyslexic'];if(!s)return;
@@ -312,7 +312,7 @@ a.onclick=function(){sg(g.classList.contains('hid'))}}
 var l=[].slice.call(document.querySelectorAll('nav a')),h=l.map(function(x){return document.getElementById(x.getAttribute('href').slice(1))});
 addEventListener('scroll',function(){var y=scrollY+90,k=0;h.forEach(function(e,i){if(e&&e.offsetTop<=y)k=i});l.forEach(function(x,i){x.classList.toggle('on',i===k)})})})();"""
 CSS_S=""":root{--pri:#0b3d6e;--acc:#0a7cc1;--ac2:#19a974;--ink:#1b2430;--mu:#5a6676;--line:#d9e2ee;--soft:#eef4fa}*{box-sizing:border-box}
-html,body{margin:0;height:100%;background:#0d1b2a;font-family:"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden}#st{position:absolute;left:50%;top:50%;width:1280px;height:720px}
+html,body{margin:0;height:100%;overscroll-behavior:none;background:#0d1b2a;font-family:"Segoe UI",Roboto,Arial,sans-serif;overflow:hidden}#st{position:fixed;left:50%;top:50%;width:1280px;height:720px;touch-action:pan-y}
 .s{position:absolute;inset:0;background:#fff;color:var(--ink);display:none;overflow:hidden}.s.on{display:block}
 .s:before{content:"";position:absolute;left:0;top:0;bottom:0;width:14px;background:linear-gradient(var(--pri),var(--acc))}
 .s:after{content:"__F__";position:absolute;left:60px;bottom:22px;font-size:13px;color:var(--mu)}.in{position:absolute;left:60px;right:60px;top:44px;bottom:60px;display:flex;flex-direction:column}
@@ -342,7 +342,10 @@ function mostrar(entrada){if(entrada)setEntrada(entrada);if(UI.estado==='hidden'
 function fecharSilencioso(){if(menu)menu.hidden=true;if(a11y)a11y.hidden=true;if(pk)pk.hidden=true;[bmais,ba11y,cb].forEach(function(b){if(b)b.setAttribute('aria-expanded','false')})}
 function fecharCamadas(foco){fecharSilencioso();setEstado('visible');if(foco&&foco.focus)foco.focus();programarInatividade()}
 function retornoA11y(){return ba11y&&ba11y.offsetParent?ba11y:bmais}
-function f(){st.style.transform=ler()?'':'translate(-50%,-50%) scale('+Math.min(innerWidth/1280,innerHeight/720)*.98+')'}
+function estreito(){return !!(window.matchMedia&&matchMedia('(max-width:700px) and (orientation:portrait)').matches)}
+function f(){if(ler()){st.style.transform='';st.style.width='';st.style.height='';H.classList.remove('estreito');return}
+if(estreito()){var W=480,Hh=Math.max(560,Math.round(W*innerHeight/innerWidth));H.classList.add('estreito');st.style.width=W+'px';st.style.height=Hh+'px';st.style.transform='translate(-50%,-50%) scale('+(innerWidth/W)+')'}
+else{H.classList.remove('estreito');st.style.width='';st.style.height='';st.style.transform='translate(-50%,-50%) scale('+Math.min(innerWidth/1280,innerHeight/720)*.98+')'}}
 function ajustar(s){if(!s)return;var c=s.querySelector('.conteudo'),n=s.querySelector('.in');if(!c||!n)return;c.style.transform='';c.style.width='';c.style.transformOrigin='';n.classList.remove('rola');n.removeAttribute('tabindex');if(ler())return;var a=n.clientHeight,h=c.scrollHeight;if(!a||h<=a+2)return;var k=a/h;if(k<.85){k=.85;n.classList.add('rola');n.setAttribute('tabindex','0')}c.style.transformOrigin='top left';c.style.width=(100/k)+'%';c.style.transform='scale('+k+')'}
 function marca(){S.forEach(function(x,k){var v=ler()||k===i;x.setAttribute('aria-hidden',v?'false':'true');if(v)x.removeAttribute('inert');else x.setAttribute('inert','')})}
 function contador(){var c=$('c');if(c&&!ler())c.textContent='Slide '+(i+1)+' de '+N;if(cb){cb.textContent=(i+1)+' / '+N;cb.setAttribute('aria-label','Slide '+(i+1)+' de '+N+'. Ir para o slide')}var b=$('bar');if(b)b.style.width=(i+1)/N*100+'%';try{history.replaceState(null,'','#'+(i+1))}catch(e){}}
@@ -360,7 +363,7 @@ var podeFs=!!(H.requestFullscreen||H.webkitRequestFullscreen)&&(D.fullscreenEnab
 if(!podeFs){if(b2)b2.hidden=true;var m2=$('b2m');if(m2)m2.hidden=true}
 function nt(){var on=B.classList.toggle('sn');if(b1){b1.setAttribute('aria-pressed',on?'true':'false');b1.textContent=on?'Ocultar notas':'Mostrar notas'}}
 function marcaModo(on){if(!bLer)return;bLer.setAttribute('aria-label',on?'Modo slides':'Modo leitura');bLer.setAttribute('data-dica',(on?'Modo slides':'Modo leitura')+' · L');atualizarDica()}
-function modo(on,salvar){var era=ler();if(era&&!on)i=slideLeitura();B.classList.toggle('modo-leitura',on);H.classList.toggle('ml',on);marcaModo(on);if(salvar)try{localStorage.setItem(K,on?'leitura':'slides')}catch(e){}if(on){parar();S.forEach(function(x){x.classList.add('on')});marca();contador();requestAnimationFrame(function(){f();if(salvar){UI.travaL=Date.now()+700;S[i].scrollIntoView({block:'start'})}})}else{S.forEach(function(x,k){x.classList.toggle('on',k===i)});g(i);f()}D.dispatchEvent(new CustomEvent('conteudista:modo',{detail:on?'leitura':'slides'}))}
+function modo(on,salvar){var era=ler();if(era&&!on)i=slideLeitura();B.classList.toggle('modo-leitura',on);H.classList.toggle('ml',on);marcaModo(on);if(salvar)try{localStorage.setItem(K,on?'leitura':'slides')}catch(e){}if(on){parar();S.forEach(function(x){x.classList.add('on')});marca();contador();requestAnimationFrame(function(){f();if(salvar){UI.travaL=Date.now()+700;S[i].scrollIntoView({block:'start'})}})}else{S.forEach(function(x,k){x.classList.toggle('on',k===i)});f();g(i)}D.dispatchEvent(new CustomEvent('conteudista:modo',{detail:on?'leitura':'slides'}))}
 addEventListener('scroll',function(){if(!ler()||UI.rafL)return;UI.rafL=requestAnimationFrame(function(){UI.rafL=0;if(Date.now()<(UI.travaL||0))return;var k=slideLeitura();if(k!==i){i=k;contador()}})},{passive:true});
 function marcaPlay(){if(!bp)return;bp.setAttribute('data-on',UI.reproduzindo?'true':'false');bp.setAttribute('aria-label',UI.reproduzindo?'Pausar apresentação':'Reproduzir apresentação');bp.setAttribute('data-dica',(UI.reproduzindo?'Pausar':'Reproduzir')+' · Espaço');atualizarDica()}
 function parar(){UI.reproduzindo=false;clearInterval(UI.relogio);UI.relogio=null;marcaPlay()}
@@ -436,8 +439,8 @@ if(ler())return;if(k===' '&&!ctl){e.preventDefault();reproduzir();return}
 if(k==='ArrowRight'||k==='PageDown'){e.preventDefault();g(i+1)}else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();g(i-1)}else if(k==='Home'){e.preventDefault();g(0)}else if(k==='End'){e.preventDefault();g(N-1)}},true);
 addEventListener('resize',function(){f();ajustar(S[i]);posDica()});D.addEventListener('conteudista:leitura',function(){ajustar(S[i])});if(D.fonts&&D.fonts.ready)D.fonts.ready.then(function(){ajustar(S[i])});
 var h=parseInt(location.hash.slice(1));i=isNaN(h)?0:Math.max(0,Math.min(N-1,h-1));modo(ler(),false);if(ler()&&i>0)S[i].scrollIntoView();marcaFs();setEstado('visible');programarInatividade()})();"""
-# Modo dos slides: telas pequenas abrem no modo leitura, salvo escolha anterior. Aplicado antes da pintura (sem piscar os slides).
-SLIDES_MODO_HEAD='(function(){var t=null;try{t=parseInt(localStorage.getItem("conteudista.leitura.tamanho"),10)}catch(e){}if([90,100,110,125,150].indexOf(t)>-1)document.documentElement.style.setProperty("--lt",String(t/100))})();(function(){var m=null;try{m=localStorage.getItem("conteudista.apresentacao.modo")}catch(e){}if(m!=="leitura"&&m!=="slides")m=(window.matchMedia&&matchMedia("(max-width: 900px)").matches)?"leitura":"slides";if(m==="leitura")document.documentElement.classList.add("ml")})();'
+# Modo dos slides: sempre abre em slides, salvo escolha explícita anterior da pessoa (1.72: não abre mais em Modo leitura por causa do tamanho da tela). Aplicado antes da pintura.
+SLIDES_MODO_HEAD='(function(){var m=null;try{m=localStorage.getItem("conteudista.apresentacao.modo")}catch(e){}if(m!=="leitura"&&m!=="slides")m="slides";if(m==="leitura")document.documentElement.classList.add("ml")})();'
 SLIDES_MODO_BODY='if(document.documentElement.classList.contains("ml"))document.body.classList.add("modo-leitura");'
 CSS_S_A11Y="""
 .s{font-family:var(--leitura)}.slide-num{display:none}
@@ -451,12 +454,12 @@ CSS_S_A11Y="""
 #hud select{background:#fff;color:#0b3d6e;border:1px solid #fff;border-radius:6px;padding:5px 6px;font:inherit;font-size:13px}
 #hud button:focus-visible,#hud select:focus-visible,#ini button:focus-visible{outline:3px solid #ffcd07;outline-offset:2px}
 .skip:focus-visible,.s .in:focus-visible,.s .tbl:focus-visible,.s pre.code:focus-visible,.s summary:focus-visible{outline:3px solid #0b3d6e;outline-offset:2px}
-.in.rola{overflow-y:auto}.s .tbl{overflow-x:auto}.s pre.code{overflow:auto;background:var(--soft);padding:10px;border-radius:8px;font-size:17px}
+.in.rola{overflow-y:auto}.s .tbl{overflow-x:auto;touch-action:pan-x pan-y}.s pre.code{touch-action:pan-x pan-y}.s pre.code{overflow:auto;background:var(--soft);padding:10px;border-radius:8px;font-size:17px}
 .s details.fluxo-tabela{font-size:16px;margin:6px 0;text-align:left}.s details.fluxo-tabela summary{cursor:pointer;color:var(--pri);font-weight:600}
 .s details.fluxo-tabela table,.s details.fluxo-tabela p{font-size:16px}.fluxo-print{display:none}
 @media (max-width:900px){#hud{left:8px;right:8px;justify-content:center;max-width:none}}
 html.ml,html.ml body{overflow:auto!important;height:auto!important}
-html{--lb:1;--lt:1}html[data-leitura="atkinson"],html[data-leitura="opendyslexic"]{--lb:1.125}
+html{--lt:1;--s-p:1rem;--s-h1:1.75rem;--s-h2:1.375rem;--s-h3:1.125rem;--s-t:.9375rem;--s-n:.9375rem;--s-num:.8125rem}html[data-leitura="atkinson"],html[data-leitura="opendyslexic"]{--s-p:1.125rem;--s-h1:2rem;--s-h2:1.5rem;--s-h3:1.2rem;--s-t:1rem;--s-n:1rem;--s-num:.875rem}
 body.modo-leitura #st{padding-bottom:7rem!important}
 body.modo-leitura .s{scroll-margin-top:1rem}body.modo-leitura .s:focus{outline:none}body.modo-leitura .s:focus-visible{outline:3px solid #0b3d6e;outline-offset:2px}
 body.modo-leitura{background:#fff!important;color:#111!important;overflow:auto!important}
@@ -466,20 +469,20 @@ body.modo-leitura .s:before,body.modo-leitura .s:after{display:none!important}
 body.modo-leitura .s.title,body.modo-leitura .s.highlight{background:#fff!important;color:#111!important}
 body.modo-leitura .s.title h1,body.modo-leitura .s.title h2,body.modo-leitura .s.title p,body.modo-leitura .s.title strong{color:#111!important}
 body.modo-leitura .s h1,body.modo-leitura .s h2,body.modo-leitura .s h3,body.modo-leitura .s strong{color:#0b3d6e!important}
-body.modo-leitura .s h1{font-size:calc(1.75rem*var(--lb)*var(--lt))!important;border-bottom:3px solid #0b3d6e!important;display:block!important}
-body.modo-leitura .s h2{font-size:calc(1.375rem*var(--lb)*var(--lt))!important}body.modo-leitura .s h3{font-size:calc(1.125rem*var(--lb)*var(--lt))!important}
+body.modo-leitura .s h1{font-size:calc(var(--s-h1)*var(--lt))!important;border-bottom:3px solid #0b3d6e!important;display:block!important}
+body.modo-leitura .s h2{font-size:calc(var(--s-h2)*var(--lt))!important}body.modo-leitura .s h3{font-size:calc(var(--s-h3)*var(--lt))!important}
 body.modo-leitura .s a{color:#0b3d6e!important;text-decoration:underline}
-body.modo-leitura .s p,body.modo-leitura .s li{font-size:calc(1rem*var(--lb)*var(--lt))!important;line-height:1.7!important;color:#111!important}
-body.modo-leitura .s table,body.modo-leitura .s details.fluxo-tabela,body.modo-leitura .s details.fluxo-tabela table,body.modo-leitura .s details.fluxo-tabela p{font-size:calc(.9375rem*var(--lb)*var(--lt))!important;background:#fff!important}
+body.modo-leitura .s p,body.modo-leitura .s li{font-size:calc(var(--s-p)*var(--lt))!important;line-height:1.7!important;color:#111!important}
+body.modo-leitura .s table,body.modo-leitura .s details.fluxo-tabela,body.modo-leitura .s details.fluxo-tabela table,body.modo-leitura .s details.fluxo-tabela p{font-size:calc(var(--s-t)*var(--lt))!important;background:#fff!important}
 body.modo-leitura .s th{background:#e8eef7!important;color:#111!important;border:1px solid #767676}
 body.modo-leitura .s td{color:#111!important;border:1px solid #bbb}
 body.modo-leitura .s code{background:#f4f4f4!important;color:#111!important}
 body.modo-leitura .s blockquote{background:#f4f4f4!important;border-left-color:#555!important}
 body.modo-leitura .s .in{position:static!important;display:block!important;height:auto!important;padding:0!important;margin:0!important;width:auto!important;overflow:visible!important}
 body.modo-leitura .s .conteudo{transform:none!important;width:auto!important}
-body.modo-leitura .s .nt{display:block!important;position:static!important;margin-top:1.25rem;padding:1rem 1.1rem;background:#f4f4f4!important;border:1px solid #bbb;border-left:5px solid #555;border-radius:6px;color:#111!important;font-size:calc(.9375rem*var(--lb)*var(--lt))!important;line-height:1.55!important;max-height:none!important}
-body.modo-leitura .s pre.code{font-size:calc(.9375rem*var(--lb)*var(--lt))!important}
-body.modo-leitura .slide-num{display:block!important;margin:0 0 .75rem;color:#555!important;font-size:calc(.8125rem*var(--lb)*var(--lt));text-transform:uppercase;letter-spacing:.06em}
+body.modo-leitura .s .nt{display:block!important;position:static!important;margin-top:1.25rem;padding:1rem 1.1rem;background:#f4f4f4!important;border:1px solid #bbb;border-left:5px solid #555;border-radius:6px;color:#111!important;font-size:calc(var(--s-n)*var(--lt))!important;line-height:1.55!important;max-height:none!important}
+body.modo-leitura .s pre.code{font-size:calc(var(--s-t)*var(--lt))!important}
+body.modo-leitura .slide-num{display:block!important;margin:0 0 .75rem;color:#555!important;font-size:calc(var(--s-num)*var(--lt));text-transform:uppercase;letter-spacing:.06em}
 body.modo-leitura #bar,body.modo-leitura #bp,body.modo-leitura #bn,body.modo-leitura #ba,body.modo-leitura #b1,body.modo-leitura #b2,body.modo-leitura #ini{display:none!important}
 @media print{
 #hud,#bar,#ini,.skip,.tem-som,#dimp,#b2,#dica{display:none!important}
@@ -518,15 +521,19 @@ html.imp-slides #st>:last-child{break-after:auto!important;page-break-after:auto
 """
 # Leitura acessível da apostila (1.66): vem depois do CSS do tema; não muda cores de identidade, só texto/foco/contraste.
 CSS_G_A11Y="""
-:root{--mu:#4f5b6a}[data-theme=dark]{--mu:#b8c4d2}[data-theme=contrast]{--mu:#fff}
+:root{--mu:#4f5b6a;--lt:1;--a-p:16px;--a-h1:28px;--a-h2:22px;--a-h3:18px;--a-t:15px;--a-c:13px}html[data-leitura="atkinson"],html[data-leitura="opendyslexic"]{--a-p:18px;--a-h1:30px;--a-h2:23px;--a-h3:18px;--a-t:14.5px;--a-c:13px}[data-theme=dark]{--mu:#b8c4d2}[data-theme=contrast]{--mu:#fff}
+.vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+header .tam{display:inline-flex;align-items:center;gap:4px}header .tam button{min-width:40px;min-height:36px}header .tam button[aria-disabled="true"]{opacity:.5;cursor:not-allowed}
+@media(max-width:700px){header{position:static}}
 .skip{position:absolute;left:8px;top:-80px;z-index:50;background:#fff;color:#0b3d6e;border:2px solid #0b3d6e;padding:8px 14px;border-radius:4px;font-weight:700;text-decoration:underline}
 .skip:focus{top:8px}
 header{flex-wrap:wrap}header label.lt{font-size:13px;color:inherit;font-weight:600}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 main:focus{outline:none}
-article{font-family:var(--leitura);font-size:1.125rem;line-height:1.7;text-align:left;hyphens:none;-webkit-hyphens:none;overflow-wrap:break-word}
+article{font-family:var(--leitura);font-size:calc(var(--a-p)*var(--lt));line-height:1.7;text-align:left;hyphens:none;-webkit-hyphens:none;overflow-wrap:break-word}
 article p{margin:0 0 .85em}article li{margin:.3em 0}
 article h1,article h2,article h3{font-family:var(--leitura);text-align:left;line-height:1.25}
+article h1{font-size:calc(var(--a-h1)*var(--lt))}article h2{font-size:calc(var(--a-h2)*var(--lt))}article h3{font-size:calc(var(--a-h3)*var(--lt))}article .tbl table{font-size:calc(var(--a-t)*var(--lt))}article figcaption{font-size:calc(var(--a-c)*var(--lt))}
 article a{color:var(--pri);text-decoration:underline;text-underline-offset:.15em}
 article code,article pre.code{font-family:Consolas,monospace}
 a:focus-visible,button:focus-visible,select:focus-visible,summary:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid currentColor;outline-offset:3px}
@@ -538,6 +545,7 @@ details.fluxo-tabela{margin:-6px 0 16px}details.fluxo-tabela>summary{cursor:poin
 li.task label{cursor:pointer}
 @media print{
 @page{size:A4;margin:18mm 16mm}
+html{--lt:1!important}
 header,.skip,.ab{display:none!important}
 .wrap{display:block!important}
 nav{display:block!important;position:static!important;height:auto!important;overflow:visible!important;border:0!important;padding:0!important;font-size:11pt;color:#000!important}
@@ -560,6 +568,18 @@ details.fluxo-tabela{display:none!important}
 .fluxo-print{display:block!important}
 }
 """
+# Tamanho do texto da apostila HTML (1.72): A− · 100% · A+ (90 a 150%), mesma preferência da apresentação.
+TAM_HTML=('<span id="tam" class="tam" role="group" aria-label="Tamanho do texto">'
+          '<button id="tamM" type="button" aria-label="A\u2212: diminuir texto">A\u2212</button>'
+          '<button id="tamR" type="button" aria-label="Tamanho do texto: 100%. Voltar a 100%">100%</button>'
+          '<button id="tamP" type="button" aria-label="A+: aumentar texto">A+</button></span><span id="tamS" class="vh" role="status" aria-live="polite"></span>')
+TAM_JS="""
+(function(){var h=document.documentElement,T=[90,100,110,125,150],K='conteudista.leitura.tamanho',i=1,m=document.getElementById('tamM'),r=document.getElementById('tamR'),p=document.getElementById('tamP'),s=document.getElementById('tamS');if(!m||!r||!p)return;
+try{var v=parseInt(localStorage.getItem(K),10),k=T.indexOf(v);if(k>-1)i=k}catch(e){}
+function ap(k,av){i=Math.max(0,Math.min(T.length-1,k));var v=T[i];h.style.setProperty('--lt',String(v/100));try{localStorage.setItem(K,String(v))}catch(e){}r.textContent=v+'%';r.setAttribute('aria-label','Tamanho do texto: '+v+'%. Voltar a 100%');m.setAttribute('aria-disabled',i===0?'true':'false');p.setAttribute('aria-disabled',i===T.length-1?'true':'false');if(av&&s){s.textContent='';setTimeout(function(){s.textContent='Tamanho do texto: '+v+'%'},30)}}
+function passo(d){var k=d===0?1:i+d;if(d!==0&&(k<0||k>T.length-1))return;ap(k,true)}
+m.addEventListener('click',function(){passo(-1)});p.addEventListener('click',function(){passo(1)});r.addEventListener('click',function(){passo(0)});ap(i,false)})();
+"""
 def title_of(md,d):
     m=re.search(r'^#\s+(.+)$',md,re.M);return plain(m.group(1)).strip() if m else d
 def treinamento_html(md,bar,tema=None):
@@ -576,9 +596,9 @@ def treinamento_html(md,bar,tema=None):
     return ('<!DOCTYPE html><html lang="pt-BR" data-theme="light" data-leitura="padrao"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title>'
     '<script>%s</script><style>%s%s%s</style></head><body><a class="skip" href="#conteudo">Ir para o conteúdo</a>'
     '<header><span class="t">%s</span><span id="pg" role="status" aria-live="polite"></span><select id="th" aria-label="Tema"><option value="light">Tema claro</option><option value="dark">Tema escuro</option><option value="contrast">Alto contraste</option></select>'
-    '%s<button id="rs" type="button">Limpar checklists</button><button type="button" onclick="print()" title="Imprimir ou salvar em PDF em A4">Imprimir / PDF</button></header>'
+    '%s%s<button id="rs" type="button">Limpar checklists</button><button type="button" onclick="print()" title="Imprimir ou salvar em PDF em A4">Imprimir / PDF</button></header>'
     '<div class="wrap"><nav aria-label="Sumário"><ul>%s</ul></nav><main id="conteudo" tabindex="-1"><article>%s</article></main></div><script>%s%s</script>%s</body></html>'
-    )%(E(t),LEITURA_HEAD,fontes_css(),tcss(CSS_G,T,T['extra_g']),CSS_G_A11Y,E(bar or t),LEITURA_SEL,tc,b,LEITURA_JS,JS_G.replace('__K__',slug(t)[:40]),MER)
+    )%(E(t),LEITURA_HEAD,fontes_css(),tcss(CSS_G,T,T['extra_g']),CSS_G_A11Y,E(bar or t),LEITURA_SEL,TAM_HTML,tc,b,LEITURA_JS+TAM_JS,JS_G.replace('__K__',slug(t)[:40]),MER)
 def split_slides(md):
     t='Apresentação';fm=re.match(r'^---\n(.*?)\n---\n',md,re.S)
     if fm:
@@ -620,8 +640,26 @@ def _narr(narr):
     return {'html':f(narr.get('html')),'pptx':f(narr.get('pptx')),'avancar':bool(narr.get('avancar')),'duracoes':dur}
 MIME_AUDIO={'.mp3':'audio/mpeg','.ogg':'audio/ogg','.oga':'audio/ogg','.opus':'audio/ogg','.wav':'audio/wav','.m4a':'audio/mp4'}
 
+CSS_ESTREITO="""
+html.estreito .s:before{width:8px}
+html.estreito .s:after{left:24px;bottom:16px;font-size:12px}
+html.estreito .in{left:24px;right:18px;top:72px;bottom:96px}
+html.estreito .s h1{font-size:30px;margin:0 0 16px;padding-bottom:8px}
+html.estreito .s h2{font-size:22px;margin:0 0 10px}
+html.estreito .s p,html.estreito .s li{font-size:20px;line-height:1.4;margin:5px 0}
+html.estreito .s ul,html.estreito .s ol{padding-left:26px}
+html.estreito .s li li{font-size:18px}
+html.estreito .s table{font-size:16px;margin:4px 0 8px}html.estreito .s th{padding:7px 8px}html.estreito .s td{padding:6px 8px}
+html.estreito .s blockquote{margin:10px 0 0;padding:10px 12px}html.estreito .s blockquote p{font-size:18px}
+html.estreito .s figure img{max-height:300px}html.estreito .s figcaption{font-size:13px}
+html.estreito .s .mw img.fxi{max-height:420px}html.estreito .s pre.code{font-size:14px}
+html.estreito .s details.fluxo-tabela,html.estreito .s details.fluxo-tabela table,html.estreito .s details.fluxo-tabela p{font-size:15px}
+html.estreito .s.title h1{font-size:38px}html.estreito .s.title h2{font-size:24px}html.estreito .s.title p{font-size:19px}
+html.estreito.sn .s.on .nt{left:24px;right:18px;bottom:92px;font-size:15px}
+html.estreito .s .tem-som{right:12px;top:80px}
+"""
 CSS_BPLUS="""
-#hud.bplus{position:fixed;z-index:30;left:50%;right:auto;top:auto;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:2px;margin:0;padding:5px;max-width:calc(100vw - 16px);border:1px solid #b9c9e0;border-radius:999px;background:#fff;color:#1351b4;box-shadow:0 6px 20px rgba(0,0,0,.45);opacity:1;font-size:15px;transition:opacity .18s ease,transform .18s ease;touch-action:manipulation}
+#hud.bplus{position:fixed;z-index:30;left:50%;right:auto;top:auto;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:2px;margin:0;padding:5px;max-width:calc(100vw - 16px);border:1px solid #b9c9e0;border-radius:999px;background:#fff;color:#1351b4;box-shadow:0 6px 20px rgba(0,0,0,.45);opacity:1;font-size:15px;transition:opacity .18s ease,transform .18s ease;touch-action:pan-y}
 #hud.bplus[data-estado="hidden"]{opacity:0;transform:translate(-50%,10px);pointer-events:none}
 #hud.bplus>button,#b2{display:inline-grid;place-items:center;min-width:44px;min-height:44px;margin:0;padding:0 10px;border:0;border-radius:999px;background:transparent;color:#1351b4;font:700 15px/1 inherit;cursor:pointer;box-shadow:none}
 #hud.bplus>button[aria-pressed="true"],#b2[aria-pressed="true"]{background:transparent;color:#1351b4}
@@ -633,7 +671,7 @@ CSS_BPLUS="""
 #hud.bplus>.cnt{padding:0 12px;border:1px dashed #b9c9e0;color:#333;font-variant-numeric:tabular-nums;white-space:nowrap}
 #hud.bplus>.sep{width:1px;height:24px;margin:0 4px;background:#ccc;flex:none}
 #hud .vh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
-#b2{position:fixed;z-index:30;top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));width:44px;height:44px;padding:0;border-radius:8px;background:#fff;border:1px solid #b9c9e0;box-shadow:0 6px 20px rgba(0,0,0,.45);transition:opacity .18s ease}
+#b2{position:fixed;z-index:30;top:max(14px,env(safe-area-inset-top));right:max(14px,env(safe-area-inset-right));width:44px;height:44px;padding:0;border-radius:8px;background:#fff;border:1px solid #b9c9e0;box-shadow:0 6px 20px rgba(0,0,0,.45);transition:opacity .18s ease;touch-action:pan-y}
 html[data-barra="hidden"] #b2{opacity:0;pointer-events:none}
 #b2[hidden]{display:none}
 #hud.bplus button:focus-visible,#hud.bplus select:focus-visible,#hud.bplus input:focus-visible,#b2:focus-visible{outline:2px solid transparent;outline-offset:2px;box-shadow:0 0 0 2px #fff,0 0 0 5px #0c326f,0 0 0 7px #ffcd07}
@@ -798,7 +836,7 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
             if 0<=k<n:
                 mime=MIME_AUDIO.get(os.path.splitext(cam)[1].lower(),'audio/mpeg')
                 aud+='<audio class="narr" data-s="%d" preload="auto" src="data:%s;base64,%s"></audio>'%(k,mime,base64.b64encode(open(cam,'rb').read()).decode())
-    css+=CSS_S_A11Y+CSS_BPLUS
+    css+=CSS_S_A11Y+CSS_BPLUS+CSS_ESTREITO
     hud=('<div id="hud" role="toolbar" aria-label="Controles da apresentação" class="bplus" data-estado="visible">'
          '<button id="p" type="button" aria-label="Slide anterior" aria-keyshortcuts="ArrowLeft" data-dica="Slide anterior · ←">'+_ic('prev')+'</button>'
          '<button id="bp" type="button" aria-label="Reproduzir apresentação" aria-keyshortcuts="Space" data-on="false" data-dica="Reproduzir · Espaço">'+_ic('play','i-off')+_ic('pause','i-on')+'</button>'
@@ -815,7 +853,7 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
          '<p id="irparaE" class="ir-err" aria-live="polite"></p><ul id="irparaL" class="ir-lst" aria-label="Slides"></ul></div>'
          '<div id="a11y" class="bplus-pop" hidden><label for="leitura">Leitura</label>'+LEITURA_SEL.replace('<label for="leitura" class="lt">Leitura</label>','')+
          '<div id="tam" class="tam" role="group" aria-labelledby="tamL"><span id="tamL" class="tam-l">Tamanho do texto</span><div class="tam-b">'
-         '<button id="tamM" type="button" aria-label="Diminuir texto">A\u2212</button><button id="tamR" type="button" aria-label="Tamanho do texto: 100%. Voltar a 100%">100%</button><button id="tamP" type="button" aria-label="Aumentar texto">A+</button></div>'
+         '<button id="tamM" type="button" aria-label="A\u2212: diminuir texto">A\u2212</button><button id="tamR" type="button" aria-label="Tamanho do texto: 100%. Voltar a 100%">100%</button><button id="tamP" type="button" aria-label="A+: aumentar texto">A+</button></div>'
          '<span id="tamS" class="vh" role="status" aria-live="polite"></span></div></div>'
          '<div id="bmais-menu" class="bplus-pop" hidden>'
          '<button id="ba11yM" class="so-mobile" type="button" aria-haspopup="true" aria-controls="a11y">Acessibilidade (A)</button>'

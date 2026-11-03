@@ -321,7 +321,7 @@ Os arquivos gerados foram ajustados para facilitar a leitura, inclusive por pess
 |---|---|
 | **Tema e Leitura** | São controles separados no HTML gerado. O **Tema** muda as cores; a **Leitura** muda a fonte do texto. Trocar um não muda o outro |
 | **Fontes** | **Padrão (Verdana)**, **Atkinson Hyperlegible Next** e **OpenDyslexic**. As duas últimas vão embutidas no arquivo e funcionam sem internet |
-| **Modo leitura** | Na apresentação HTML, mostra todos os slides em sequência, em fundo claro, com as notas abaixo de cada um. A barra continua fixa na base da tela, com anterior, próximo, o contador (clique para escolher o slide) e o botão **Slides**, que volta aos slides. O tamanho do texto se ajusta em **Acessibilidade**. Em telas pequenas já abre assim |
+| **Modo leitura** | Na apresentação HTML, mostra todos os slides em sequência, em fundo claro, com as notas abaixo de cada um. A barra continua fixa na base da tela, com anterior, próximo, o contador (clique para escolher o slide) e o botão **Slides**, que volta aos slides. O tamanho do texto se ajusta em **Acessibilidade**. A apresentação sempre abre em slides; o Modo leitura só abre se você escolher |
 | **EPUB** | Duas versões da apostila: a base, com Atkinson Hyperlegible Next, e a `_OpenDyslexic` |
 | **PDF** | Abra o HTML, escolha a Leitura e use **Imprimir / PDF** › **Salvar como PDF**, em A4. O PDF usa a fonte escolhida, mas **não é um PDF/UA** |
 
