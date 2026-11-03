@@ -368,7 +368,7 @@ flowchart LR
 - No PPTX: o áudio inicia sozinho em cada slide
 - No modo leitura, a narração não começa sozinha
 
-<!-- notas: A narração transforma as notas do apresentador em áudio. Na aba Apresentação, marque Narração dos slides e escolha idioma, voz, velocidade e formato de áudio. Na página web, o botão de som liga e desliga a narração, e o botão Reproduzir troca os slides sozinho, sempre depois que a narração do slide termina. O botão Pausar para o áudio no ponto exato, e Reproduzir continua de onde parou. O modo leitura não inicia o som. No PowerPoint, o áudio de cada slide inicia sozinho. Para falar um texto diferente da nota, usa-se o comentário narração, e, para um slide sem som, esse comentário com o valor não. -->
+<!-- notas: A narração transforma as notas do apresentador em áudio. Na aba Apresentação, marque Narração dos slides e escolha idioma, voz, velocidade e formato de áudio. Na página web, o botão de som liga e desliga a narração, e o botão Reproduzir troca os slides sozinho, sempre depois que a narração do slide termina. O botão Pausar para o áudio no ponto exato, e Reproduzir continua de onde parou. Se você pausar e mudar de slide, a narração do novo slide só começa quando você apertar Reproduzir. O modo leitura não inicia o som. No PowerPoint, o áudio de cada slide inicia sozinho. Para falar um texto diferente da nota, usa-se o comentário narração, e, para um slide sem som, esse comentário com o valor não. -->
 
 ---
 

@@ -340,7 +340,7 @@ A narração transforma as **notas do apresentador** em áudio, dentro da própr
 
 | Saída | Como a narração funciona |
 |---|---|
-| **HTML** | A apresentação abre com “Iniciar com narração”. O botão de **som** (`S`) liga e desliga a narração, e **Reproduzir** (`Espaço`) troca os slides sozinho, sempre depois que a narração do slide termina. Enquanto a narração toca, o botão vira **Pausar**: ele para o áudio no ponto exato, e **Reproduzir** continua de onde parou |
+| **HTML** | A apresentação abre com “Iniciar com narração”. O botão de **som** (`S`) liga e desliga a narração, e **Reproduzir** (`Espaço`) troca os slides sozinho, sempre depois que a narração do slide termina. Enquanto a narração toca, o botão vira **Pausar**: ele para o áudio no ponto exato, e **Reproduzir** continua de onde parou. Se você pausar e mudar de slide, a narração do novo slide só começa quando você apertar **Reproduzir** |
 | **PPTX** | O áudio de cada slide inicia sozinho. Com “Avançar os slides sozinho”, é possível exportar um vídeo pelo PowerPoint |
 
 Dois comentários controlam o que é falado:

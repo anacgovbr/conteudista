@@ -176,7 +176,8 @@ def testar_slides_html(cam, exigir_fontes):
     ok('id="hud" role="toolbar"' in h and 'aria-label="Controles da apresentação"' in h, n + ': barra B+ como toolbar rotulada')
     ok('pointerdown' in h and 'pointercancel' in h, n + ': B+ sobre Pointer Events')
     ok('conteudista:narrfim' in h and 'function tempoLeitura(' in h and ',5000)}' not in h, n + ': avanço automático espera a narração ou o tempo de leitura (sem tempo fixo de 5 s)')
-    ok('conteudista:retomar' in h and "if(ativo()){parar();return}" in h, n + ': Pausar também pausa a narração e Reproduzir retoma do mesmo ponto')
+    ok('conteudista:retomar' in h and "if(ativo()){D.dispatchEvent(new CustomEvent('conteudista:pausou'));parar();return}" in h, n + ': Pausar também pausa a narração e Reproduzir retoma do mesmo ponto')
+    ok("function g(n,forcar){" in h and "g(i,true)" in h, n + ': ir ao mesmo slide (Próximo no último) não recarrega o slide nem reinicia a narração')
     ok(not re.search(r'body\.modo-leitura[^{]*#b2[,{]', h) and 'id="b2m"' not in h, n + ': tela cheia no mesmo lugar (canto superior direito) no Modo leitura')
     hud = re.search(r'<div id="hud".*?<button id="b2"', h, re.S)
     hud = hud.group(0) if hud else ''

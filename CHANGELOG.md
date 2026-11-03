@@ -1,4 +1,11 @@
 # Novidades do Conteudista
+## 1.76 - 03/11/2026
+- **A pausa é respeitada ao mudar de slide.** Se você apertar **Pausar** (ou `Espaço`) e depois navegar, o slide novo não começa a narrar sozinho: o botão continua em **Reproduzir**, e a narração do slide em que você estiver só começa quando você apertar **Reproduzir**. Ligar o som de novo (`S`) também retoma a narração do slide atual. Sem pausa, a navegação continua narrando o slide novo, como antes.
+- **Próximo no último slide não reinicia mais a narração.** Antes, cada toque em Próximo (ou `→`, `End`, gesto de deslizar) no último slide recarregava o slide e reiniciava o áudio. Agora nada acontece quando o destino é o slide em que você já está.
+- **Corrigido o slide que ficava mudo.** Ao navegar muito rápido, a interrupção de um áudio que acabava de começar era tratada como falha, e a narração daquele slide deixava de tocar até recarregar a página. Interrupções por troca de slide ou pausa não marcam mais falha.
+- **Botão Pausar/Reproduzir coerente com o som.** Ao sair de um slide narrado para outro sem narração (ou pausado), o botão passa a mostrar **Reproduzir**, em vez de continuar em **Pausar** sem som.
+- **Reproduzir no último slide:** se a narração do último slide ainda não tinha tocado (por exemplo, depois de pausar e ir ao fim), ela toca em vez de a apresentação voltar ao slide 1; a volta ao início só ocorre depois que a narração termina.
+- README, ajuda, apostila e apresentação de exemplo atualizados (no README, o atalho do botão de narração passa a `S`).
 ## 1.75 - 03/11/2026
 - **Pausar também pausa a narração.** Na apresentação HTML, o botão **Pausar** (e a tecla Espaço) agora para o áudio da narração no ponto exato, além do avanço automático. **Reproduzir** continua o áudio do mesmo ponto e, quando ele termina, passa ao próximo slide. Antes, a pausa parava só a troca de slides e o áudio continuava tocando.
 - O botão mostra **Pausar** sempre que a narração está tocando, inclusive quando você navega pelos slides sem o avanço automático; pausado no último slide, Reproduzir retoma o áudio em vez de voltar ao início.
