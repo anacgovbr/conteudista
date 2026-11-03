@@ -108,7 +108,7 @@ python tools/gerador.py apostila.md apresentacao.md --prefixo Meu_Conteudo --rod
 ```
 
 ## Controles da apresentação HTML (B+)
-A barra usa Pointer Events e estado centralizado, adaptando densidade e interação à largura e à entrada atual (mouse, teclado, toque ou caneta). Atalhos: `←` anterior · `→` próximo · `Espaço` reproduzir/pausar · `A` acessibilidade · `S` som da narração · `N` notas · `F` tela cheia · `M` mais opções · `?` ajuda · `Esc` fechar a camada atual. No toque, o primeiro toque revela os controles e o gesto horizontal navega entre slides.
+A barra usa Pointer Events e estado centralizado, adaptando densidade e interação à largura e à entrada atual (mouse, teclado, toque ou caneta). Barra em pílula branca com ícones SVG, legenda com nome e atalho em cada botão, som da narração sempre visível e tela cheia flutuante no canto superior direito; some por completo após 2,5 s sem interação. Atalhos: `←` anterior · `→` próximo · `Espaço` reproduzir/pausar · `G` ir para o slide (ou clique no contador) · `A` acessibilidade · `S` som da narração · `N` notas · `F` tela cheia · `M` mais opções · `?` ajuda · `Esc` fechar a camada atual. No toque, o primeiro toque revela os controles e o gesto horizontal navega entre slides.
 
 **Imprimir / PDF…** (menu Mais opções ou Ctrl+P) abre a janela *Imprimir apresentação*, com os formatos **Slides** (um slide por página, 16:9) e **Documento** (linear, A4), notas opcionais. A impressão nunca altera o Modo slides/Modo leitura.
 

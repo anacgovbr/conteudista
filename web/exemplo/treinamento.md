@@ -307,7 +307,7 @@ A seção **Arquivos gerados** mostra o nome do conteúdo, a data e a hora, o ta
 | **Apostila HTML** | Sumário lateral, **Tema** (claro, escuro, alto contraste) e **Leitura** (fonte), checklists que ficam marcados, gabarito oculto e **Imprimir / PDF** em A4 |
 | **Apostila DOCX** | Texto editável no Word, em Verdana 12 pt, com sumário. No Word, use botão direito no sumário e **Atualizar campo** |
 | **Apostila EPUB** | Livro digital para leitores como Thorium ou Calibre. `Apostila_<nome>.epub` usa Atkinson Hyperlegible Next; `Apostila_<nome>_OpenDyslexic.epub` usa OpenDyslexic |
-| **Apresentação HTML** | Navegação por setas, `N` para as notas, `F` para tela cheia, `L` para o **Modo leitura** e, se houver, os botões de narração |
+| **Apresentação HTML** | Navegação por setas, `G` (ou clique no contador) para ir a um slide, `N` para as notas, `F` ou o botão do canto superior direito para tela cheia, `L` para o **Modo leitura** e, se houver, o botão de som da narração |
 | **Apresentação PPTX** | Slides editáveis, com as notas do apresentador e o áudio de cada slide, se gerado |
 | **.MD** | O texto-fonte, para reimportar ou versionar |
 

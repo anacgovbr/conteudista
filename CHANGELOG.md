@@ -1,4 +1,12 @@
 # Novidades do Conteudista
+## 1.69 - 03/11/2026
+- **Barra B+ redesenhada (pílula branca).** Fundo branco com borda e sombra: a barra se destaca tanto sobre o slide quanto sobre a área escura. Ícones em SVG no estilo Material (sem emoji), em azul gov.br.
+- **A barra agora some por completo** após 2,5 s sem interação (antes ficava sempre visível) e reaparece ao mover o mouse, tocar ou usar o teclado. Permanece aberta com o mouse sobre ela, com foco de teclado nela ou com um menu aberto. Recolhida, não intercepta cliques nem toques.
+- **Legenda em cada botão**, com nome e atalho (ex.: "Próximo slide · →"): aparece no hover e no foco por teclado, pode ser sobrevoada e fecha com Esc (WCAG 1.4.13).
+- **Seletor de slide:** clique no contador ("5 / 34") ou tecle **G** para digitar o número ou escolher o slide numa lista com os títulos.
+- **Som da narração sempre visível** na barra (alto-falante com ondas / cortado); antes ficava no menu.
+- **Tela cheia flutuante** no canto superior direito, em botão quadrado; some junto com a barra. Fica oculta onde o navegador não oferece tela cheia (ex.: Safari do iPhone). No Modo leitura, fica no menu Mais opções.
+- No celular, **Acessibilidade** passa a ficar no menu Mais opções (antes ficava inacessível em telas estreitas). Corrigido o deslocamento da barra no Modo leitura. Gerador v4.2.
 ## 1.68 - 03/11/2026
 - **Janela "Imprimir apresentação".** *Imprimir / PDF…* (menu Mais opções da barra B+, ou Ctrl+P) abre uma janela com escolha explícita do formato: **Slides** (um slide por página, preservando composição, cores e proporção 16:9) ou **Documento** (conteúdo linear em A4).
 - **A impressão não altera mais o modo de visualização.** É possível imprimir nos dois formatos tanto no Modo slides quanto no Modo leitura; o modo, o slide atual, as notas e a preferência salva permanecem como estavam. Antes, toda impressão saía no formato de leitura.
