@@ -1,4 +1,11 @@
 # Novidades do Conteudista
+## 1.68 - 03/11/2026
+- **Janela "Imprimir apresentação".** *Imprimir / PDF…* (menu Mais opções da barra B+, ou Ctrl+P) abre uma janela com escolha explícita do formato: **Slides** (um slide por página, preservando composição, cores e proporção 16:9) ou **Documento** (conteúdo linear em A4).
+- **A impressão não altera mais o modo de visualização.** É possível imprimir nos dois formatos tanto no Modo slides quanto no Modo leitura; o modo, o slide atual, as notas e a preferência salva permanecem como estavam. Antes, toda impressão saía no formato de leitura.
+- **Notas opcionais em ambos os formatos:** em Slides, cada nota vira uma página logo após o slide; em Documento, a nota acompanha o conteúdo. Sem notas na apresentação, a opção fica oculta e a janela informa isso.
+- Janela acessível: foco inicial no título, foco preso na janela, Esc ou Cancelar fecham e devolvem o foco, opções descritas em texto, alvos de 44 px, alto contraste do sistema (forced-colors) e layout de folha inferior no celular.
+- **Correção da verificação automática (CI):** os nomes acessíveis da barra B+ não incluem mais o atalho entre parênteses (ex.: "Slide anterior (Seta para a esquerda)"); os atalhos passam a ser anunciados por `aria-keyshortcuts`. O teste de acessibilidade agora também verifica a barra B+ e a janela de impressão.
+- Impressão pelo menu do navegador, sem a janela, segue o formato da visualização atual sem mudá-la. Gerador v4.1.
 ## 1.67 - 03/11/2026
 - **Barra B+ nas apresentações HTML.** Controles principais mais limpos, recolhimento por inatividade e menu de opções secundárias, com densidade reduzida no celular e em orientação horizontal.
 - **Interação unificada por Pointer Events**, com estado centralizado da barra e adaptação independente por largura e método de entrada. Mouse, teclado, toque e caneta compartilham as mesmas ações; dispositivos híbridos alternam o comportamento conforme a entrada atual.

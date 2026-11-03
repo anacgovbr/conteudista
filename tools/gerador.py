@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# GERADOR PADRÃO DE CONTEÚDO v4.0 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX;
+# GERADOR PADRÃO DE CONTEÚDO v4.1 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX;
 #   leitura acessível: Verdana / Atkinson Hyperlegible Next / OpenDyslexic, modo leitura dos slides, EPUB) — Apostila (HTML + DOCX + EPUB)
 #   e Apresentação (HTML + PPTX) a partir de Markdown.
 # Requisitos: Python 3 + python-docx + python-pptx + lxml (+ Pillow). HTML usa só biblioteca padrão.
@@ -335,7 +335,7 @@ function ler(){return B.classList.contains('modo-leitura')}
 function setEntrada(v){UI.entrada=v||UI.entrada;H.dataset.entrada=UI.entrada}
 function setEstado(v){UI.estado=v;hud.dataset.estado=v;hud.classList.toggle('aberta',v!=='hidden');hud.classList.toggle('interagindo',v==='interacting'||v==='menu-open'||v==='a11y-open')}
 function cancelarInatividade(){clearTimeout(UI.inatividade);UI.inatividade=null}
-function programarInatividade(){cancelarInatividade();if(UI.entrada==='keyboard'||ler()||hud.matches(':focus-within')||UI.estado==='menu-open'||UI.estado==='a11y-open')return;UI.inatividade=setTimeout(function(){setEstado('hidden')},2600)}
+function programarInatividade(){cancelarInatividade();if(UI.entrada==='keyboard'||ler()||hud.matches(':focus-within')||UI.estado==='menu-open'||UI.estado==='a11y-open'||UI.estado==='dialog-open')return;UI.inatividade=setTimeout(function(){setEstado('hidden')},2600)}
 function mostrar(entrada){if(entrada)setEntrada(entrada);setEstado('visible');programarInatividade()}
 function fecharCamadas(foco){if(menu)menu.hidden=true;if(a11y)a11y.hidden=true;if(bmais)bmais.setAttribute('aria-expanded','false');if(ba11y)ba11y.setAttribute('aria-expanded','false');setEstado('visible');if(foco&&foco.focus)foco.focus();programarInatividade()}
 function f(){st.style.transform=ler()?'':'translate(-50%,-50%) scale('+Math.min(innerWidth/1280,innerHeight/720)*.98+')'}
@@ -343,22 +343,47 @@ function ajustar(s){if(!s)return;var c=s.querySelector('.conteudo'),n=s.querySel
 function marca(){S.forEach(function(x,k){var v=ler()||k===i;x.setAttribute('aria-hidden',v?'false':'true');if(v)x.removeAttribute('inert');else x.setAttribute('inert','')})}
 function g(n){i=Math.max(0,Math.min(N-1,n));S.forEach(function(x,k){x.classList.toggle('on',k===i)});marca();var c=$('c');if(c)c.textContent=(i+1)+' / '+N;var b=$('bar');if(b)b.style.width=(i+1)/N*100+'%';try{history.replaceState(null,'','#'+(i+1))}catch(e){}ajustar(S[i]);D.dispatchEvent(new CustomEvent('conteudista:slide',{detail:i}));mostrar(UI.entrada)}
 function fs(){if(D.fullscreenElement)D.exitFullscreen();else if(H.requestFullscreen)H.requestFullscreen().catch(function(){})}
-D.addEventListener('fullscreenchange',function(){if(b2){var on=!!D.fullscreenElement;b2.setAttribute('aria-pressed',on?'true':'false');b2.textContent=on?'Sair da tela cheia':'Tela cheia';b2.setAttribute('aria-label',(on?'Sair da':'Entrar em')+' tela cheia (F)')}});
+D.addEventListener('fullscreenchange',function(){if(b2){var on=!!D.fullscreenElement;b2.setAttribute('aria-pressed',on?'true':'false');b2.textContent=on?'Sair da tela cheia':'Tela cheia';b2.setAttribute('aria-label',(on?'Sair da':'Entrar em')+' tela cheia')}});
 function nt(){var on=B.classList.toggle('sn');if(b1){b1.setAttribute('aria-pressed',on?'true':'false');b1.textContent=on?'Ocultar notas':'Mostrar notas'}}
 function visivel(){for(var k=0;k<N;k++){if(S[k].getBoundingClientRect().bottom>90)return k}return i}
 function modo(on,salvar){var era=ler();if(era&&!on)i=visivel();B.classList.toggle('modo-leitura',on);H.classList.toggle('ml',on);if(bLer){bLer.setAttribute('aria-pressed',on?'true':'false');bLer.textContent=on?'Modo slides':'Modo leitura'}if(salvar)try{localStorage.setItem(K,on?'leitura':'slides')}catch(e){}if(on){parar();S.forEach(function(x){x.classList.add('on')});marca();requestAnimationFrame(function(){f()})}else{S.forEach(function(x,k){x.classList.toggle('on',k===i)});g(i);f()}D.dispatchEvent(new CustomEvent('conteudista:modo',{detail:on?'leitura':'slides'}))}
-function parar(){UI.reproduzindo=false;clearInterval(UI.relogio);UI.relogio=null;if(bp){bp.setAttribute('aria-pressed','false');bp.textContent='▶';bp.setAttribute('aria-label','Reproduzir apresentação (Espaço)')}}
-function reproduzir(){if(ler())return;if(UI.reproduzindo){parar();return}UI.reproduzindo=true;if(bp){bp.setAttribute('aria-pressed','true');bp.textContent='Ⅱ';bp.setAttribute('aria-label','Pausar apresentação (Espaço)')}UI.relogio=setInterval(function(){if(i>=N-1){parar()}else g(i+1)},5000)}
+function parar(){UI.reproduzindo=false;clearInterval(UI.relogio);UI.relogio=null;if(bp){bp.setAttribute('aria-pressed','false');bp.textContent='▶';bp.setAttribute('aria-label','Reproduzir apresentação')}}
+function reproduzir(){if(ler())return;if(UI.reproduzindo){parar();return}UI.reproduzindo=true;if(bp){bp.setAttribute('aria-pressed','true');bp.textContent='Ⅱ';bp.setAttribute('aria-label','Pausar apresentação')}UI.relogio=setInterval(function(){if(i>=N-1){parar()}else g(i+1)},5000)}
 function alternarMenu(){var abrir=menu&&menu.hidden;if(!menu)return;menu.hidden=!abrir;if(a11y)a11y.hidden=true;bmais.setAttribute('aria-expanded',abrir?'true':'false');if(ba11y)ba11y.setAttribute('aria-expanded','false');setEstado(abrir?'menu-open':'visible');cancelarInatividade();if(abrir){var q=menu.querySelector('button:not([hidden]),select');if(q)q.focus()}else{bmais.focus();programarInatividade()}}
 function alternarA11y(){if(!a11y)return;var abrir=a11y.hidden;a11y.hidden=!abrir;if(menu)menu.hidden=true;if(bmais)bmais.setAttribute('aria-expanded','false');ba11y.setAttribute('aria-expanded',abrir?'true':'false');setEstado(abrir?'a11y-open':'visible');cancelarInatividade();if(abrir){var q=a11y.querySelector('select,button');if(q)q.focus()}else{ba11y.focus();programarInatividade()}}
 function clique(id,fn){var b=$(id);if(b)b.addEventListener('click',function(e){setEstado('interacting');fn(e);mostrar(e.pointerType||UI.entrada)})}
-clique('p',function(){g(i-1)});clique('n',function(){g(i+1)});clique('bp',reproduzir);clique('b1',nt);clique('b2',fs);clique('bLer',function(){modo(!ler(),true)});clique('bLerM',function(){modo(!ler(),true)});clique('imp',function(){print()});clique('bmais',alternarMenu);clique('ba11y',alternarA11y);
-D.addEventListener('pointerdown',function(e){setEntrada(e.pointerType||'mouse');if(e.pointerType==='touch'||e.pointerType==='pen'){if(UI.estado==='hidden'){e.preventDefault();mostrar(e.pointerType);UI.ponteiro=null;return}UI.ponteiro={id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now(),ignorar:!!e.target.closest('#hud,button,a,input,select,textarea,[contenteditable],.rola')}}else mostrar('mouse')},{passive:false});
+clique('p',function(){g(i-1)});clique('n',function(){g(i+1)});clique('bp',reproduzir);clique('b1',nt);clique('b2',fs);clique('bLer',function(){modo(!ler(),true)});clique('bLerM',function(){modo(!ler(),true)});clique('imp',function(){abrirImp()});clique('bmais',alternarMenu);clique('ba11y',alternarA11y);
+D.addEventListener('pointerdown',function(e){if(aberta())return;setEntrada(e.pointerType||'mouse');if(e.pointerType==='touch'||e.pointerType==='pen'){if(UI.estado==='hidden'){e.preventDefault();mostrar(e.pointerType);UI.ponteiro=null;return}UI.ponteiro={id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now(),ignorar:!!e.target.closest('#hud,button,a,input,select,textarea,[contenteditable],.rola')}}else mostrar('mouse')},{passive:false});
 D.addEventListener('pointermove',function(e){if(e.pointerType==='mouse'){mostrar('mouse');return}if(UI.ponteiro&&UI.ponteiro.id===e.pointerId)UI.ponteiro.mx=e.clientX,UI.ponteiro.my=e.clientY},{passive:true});
-D.addEventListener('pointerup',function(e){var q=UI.ponteiro;UI.ponteiro=null;if(!q||q.id!==e.pointerId||q.ignorar||ler())return;var dx=e.clientX-q.x,dy=e.clientY-q.y;if(Math.abs(dx)>=50&&Math.abs(dx)>Math.abs(dy)*1.25){e.preventDefault();g(i+(dx<0?1:-1))}else if(e.target===st||e.target.closest('.s'))programarInatividade()},{passive:false});
+D.addEventListener('pointerup',function(e){if(aberta()){UI.ponteiro=null;return}var q=UI.ponteiro;UI.ponteiro=null;if(!q||q.id!==e.pointerId||q.ignorar||ler())return;var dx=e.clientX-q.x,dy=e.clientY-q.y;if(Math.abs(dx)>=50&&Math.abs(dx)>Math.abs(dy)*1.25){e.preventDefault();g(i+(dx<0?1:-1))}else if(e.target===st||e.target.closest('.s'))programarInatividade()},{passive:false});
 D.addEventListener('pointercancel',function(){UI.ponteiro=null});
 hud.addEventListener('pointerenter',cancelarInatividade);hud.addEventListener('pointerleave',programarInatividade);hud.addEventListener('focusin',function(){setEntrada('keyboard');setEstado(UI.estado==='menu-open'||UI.estado==='a11y-open'?UI.estado:'visible');cancelarInatividade()});hud.addEventListener('focusout',function(){setTimeout(programarInatividade,0)});
-addEventListener('keydown',function(e){if(e.ctrlKey||e.metaKey||e.altKey||e.defaultPrevented||$('ini')||campo(e.target))return;setEntrada('keyboard');mostrar('keyboard');var k=e.key,ctl=/^(button|a|summary)$/i.test(e.target.tagName||'');if(k==='Escape'){if(UI.estado==='menu-open'){e.preventDefault();fecharCamadas(bmais);return}if(UI.estado==='a11y-open'){e.preventDefault();fecharCamadas(ba11y);return}return}if(k==='?' ){e.preventDefault();alternarMenu();var hk=$('atalhosB');if(hk)hk.focus();return}if(k==='m'||k==='M'){e.preventDefault();alternarMenu();return}if(k==='a'||k==='A'){e.preventDefault();alternarA11y();return}if(k==='n'||k==='N'){e.preventDefault();if(!ler())nt();return}if(k==='s'||k==='S'){var bn=$('bn');if(bn&&!ler()){e.preventDefault();bn.click()}return}if(k==='l'||k==='L'){e.preventDefault();modo(!ler(),true);return}if(k==='f'||k==='F'){e.preventDefault();fs();return}if(ler())return;if(k===' '&&!ctl){e.preventDefault();reproduzir();return}if(k==='ArrowRight'||k==='PageDown'){e.preventDefault();g(i+1)}else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();g(i-1)}else if(k==='Home'){e.preventDefault();g(0)}else if(k==='End'){e.preventDefault();g(N-1)}} ,true);
+var dlg=$('dimp'),IMP=null,impPg=null;
+function aberta(){return !!(dlg&&!dlg.hidden)}
+function focaveis(){return [].slice.call(dlg.querySelectorAll('input:not([disabled]),button:not([disabled])')).filter(function(x){return x.offsetParent!==null})}
+function abrirImp(){if(!dlg||aberta())return;if(menu)menu.hidden=true;if(a11y)a11y.hidden=true;if(bmais)bmais.setAttribute('aria-expanded','false');if(ba11y)ba11y.setAttribute('aria-expanded','false');
+var r=dlg.querySelector('input[value="slides"]');if(r)r.checked=true;var cn=$('dimpN'),tem=!!D.querySelector('#st .s .nt');if(cn){cn.checked=false;cn.disabled=!tem;cn.parentNode.hidden=!tem}var sem=$('dimpSem');if(sem)sem.hidden=tem;
+dlg.hidden=false;st.inert=true;hud.inert=true;var sk=D.querySelector('.skip');if(sk)sk.inert=true;setEstado('dialog-open');cancelarInatividade();var t=$('dimpT');if(t)t.focus()}
+function fecharImp(){if(!aberta())return;dlg.hidden=true;st.inert=false;hud.inert=false;var sk=D.querySelector('.skip');if(sk)sk.inert=false;setEstado('visible');if(bmais)bmais.focus();programarInatividade()}
+function ajustarImp(s){var c=s.querySelector('.conteudo'),n=s.querySelector('.in');if(!c||!n)return;c.style.transform='';c.style.width='';c.style.transformOrigin='';var a=n.clientHeight,h=c.scrollHeight;if(!a||h<=a+2)return;var k=Math.max(.5,a/h);c.style.transformOrigin='top left';c.style.width=(100/k)+'%';c.style.transform='scale('+k+')'}
+function limparEscala(){S.forEach(function(s){var c=s.querySelector('.conteudo');if(c){c.style.transform='';c.style.width='';c.style.transformOrigin=''}})}
+function prepararImp(fmt,notas){if(IMP)return;IMP={ler:B.classList.contains('modo-leitura'),ml:H.classList.contains('ml'),fmt:fmt};
+H.classList.add('imp',fmt==='doc'?'imp-doc':'imp-slides');H.classList.toggle('imp-notas',!!notas);
+impPg=D.createElement('style');impPg.id='imp-page';impPg.textContent=fmt==='doc'?'@page{size:A4;margin:18mm 16mm}':'@page{size:13.333in 7.5in;margin:0}';D.head.appendChild(impPg);
+if(fmt==='slides'){B.classList.remove('modo-leitura');H.classList.remove('ml');S.forEach(function(s){var v=s.style.display;s.style.display='block';ajustarImp(s);s.style.display=v});
+if(notas)S.forEach(function(s,k){var x=s.querySelector('.nt-x');if(!x||!x.textContent.trim())return;var pg=D.createElement('section');pg.className='imp-nota';pg.setAttribute('aria-hidden','true');pg.innerHTML='<p class="imp-nota-t"></p><p class="imp-nota-x"></p>';pg.firstChild.textContent='Notas do apresentador · slide '+(k+1);pg.lastChild.textContent=x.textContent;s.parentNode.insertBefore(pg,s.nextSibling)})}
+else limparEscala()}
+function restaurarImp(){if(!IMP)return;H.classList.remove('imp','imp-doc','imp-slides','imp-notas');[].slice.call(D.querySelectorAll('.imp-nota')).forEach(function(x){x.remove()});if(impPg){impPg.remove();impPg=null}
+B.classList.toggle('modo-leitura',IMP.ler);H.classList.toggle('ml',IMP.ml);IMP=null;limparEscala();f();ajustar(S[i])}
+function imprimir(fmt,notas){prepararImp(fmt,notas);setTimeout(function(){try{print()}finally{setTimeout(function(){if(!(window.matchMedia&&matchMedia('print').matches))restaurarImp()},500)}},60)}
+addEventListener('beforeprint',function(){if(!IMP)prepararImp(ler()?'doc':'slides',ler()||B.classList.contains('sn'))});
+addEventListener('afterprint',restaurarImp);
+if(dlg){dlg.querySelector('form').addEventListener('submit',function(e){e.preventDefault();var r=dlg.querySelector('input[name="dimpF"]:checked'),cn=$('dimpN');var fmt=r?r.value:'slides',nt2=!!(cn&&cn.checked&&!cn.disabled);fecharImp();imprimir(fmt,nt2)});
+$('dimpC').addEventListener('click',fecharImp);
+dlg.addEventListener('pointerdown',function(e){if(e.target===dlg)fecharImp()});
+dlg.addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();e.stopPropagation();fecharImp();return}if(e.key==='Tab'){var q=focaveis();if(!q.length)return;var a=q[0],z=q[q.length-1];if(e.shiftKey&&(D.activeElement===a||D.activeElement===$('dimpT'))){e.preventDefault();z.focus()}else if(!e.shiftKey&&D.activeElement===z){e.preventDefault();a.focus()}}e.stopPropagation()})}
+addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&!e.altKey&&(e.key==='p'||e.key==='P')&&!$('ini')){e.preventDefault();e.stopPropagation();if(!aberta())abrirImp()}},true);
+addEventListener('keydown',function(e){if(aberta()||e.ctrlKey||e.metaKey||e.altKey||e.defaultPrevented||$('ini')||campo(e.target))return;setEntrada('keyboard');mostrar('keyboard');var k=e.key,ctl=/^(button|a|summary)$/i.test(e.target.tagName||'');if(k==='Escape'){if(UI.estado==='menu-open'){e.preventDefault();fecharCamadas(bmais);return}if(UI.estado==='a11y-open'){e.preventDefault();fecharCamadas(ba11y);return}return}if(k==='?' ){e.preventDefault();alternarMenu();var hk=$('atalhosB');if(hk)hk.focus();return}if(k==='m'||k==='M'){e.preventDefault();alternarMenu();return}if(k==='a'||k==='A'){e.preventDefault();alternarA11y();return}if(k==='n'||k==='N'){e.preventDefault();if(!ler())nt();return}if(k==='s'||k==='S'){var bn=$('bn');if(bn&&!ler()){e.preventDefault();bn.click()}return}if(k==='l'||k==='L'){e.preventDefault();modo(!ler(),true);return}if(k==='f'||k==='F'){e.preventDefault();fs();return}if(ler())return;if(k===' '&&!ctl){e.preventDefault();reproduzir();return}if(k==='ArrowRight'||k==='PageDown'){e.preventDefault();g(i+1)}else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();g(i-1)}else if(k==='Home'){e.preventDefault();g(0)}else if(k==='End'){e.preventDefault();g(N-1)}} ,true);
 addEventListener('resize',function(){f();ajustar(S[i]);mostrar(UI.entrada)});D.addEventListener('conteudista:leitura',function(){ajustar(S[i])});if(D.fonts&&D.fonts.ready)D.fonts.ready.then(function(){ajustar(S[i])});
 var h=parseInt(location.hash.slice(1));i=isNaN(h)?0:Math.max(0,Math.min(N-1,h-1));modo(ler(),false);if(ler()&&i>0)S[i].scrollIntoView();setEstado('visible');programarInatividade()})();"""
 # Modo dos slides: telas pequenas abrem no modo leitura, salvo escolha anterior. Aplicado antes da pintura (sem piscar os slides).
@@ -410,28 +435,38 @@ body.modo-leitura #hud button:focus-visible,body.modo-leitura #hud select:focus-
 body.modo-leitura #bar,body.modo-leitura #p,body.modo-leitura #n,body.modo-leitura #c,body.modo-leitura #b1,
 body.modo-leitura #bn,body.modo-leitura #ba,body.modo-leitura #ini{display:none!important}
 @media print{
-@page{size:A4;margin:18mm 16mm}
-html,body,html.ml,html.ml body,body.modo-leitura{overflow:visible!important;height:auto!important;background:#fff!important}
-#hud,#bar,#ini,.skip,.tem-som{display:none!important}
-#st{position:static!important;transform:none!important;width:auto!important;height:auto!important;max-width:none!important;margin:0!important;padding:0!important}
-#st .s{display:block!important;position:relative!important;inset:auto!important;width:auto!important;height:auto!important;min-height:0!important;overflow:visible!important;margin:0!important;padding:0 0 1.5rem!important;border:0!important;border-radius:0!important;background:#fff!important;color:#111!important;box-shadow:none!important;visibility:visible!important;break-after:page;page-break-after:always}
-#st .s:last-child{break-after:auto;page-break-after:auto}
-#st .s:before,#st .s:after{display:none!important}
-#st .s .in{position:static!important;display:block!important;height:auto!important;padding:0!important;margin:0!important;width:auto!important;overflow:visible!important}
-#st .s .conteudo{transform:none!important;width:auto!important}
-#st .s h1,#st .s h2,#st .s h3,#st .s p,#st .s li,#st .s td,#st .s th,#st .s strong{color:#111!important}
-#st .s h1{font-size:20pt!important;display:block!important}#st .s h2{font-size:15pt!important}
-#st .s p,#st .s li{font-size:12pt!important;line-height:1.5!important}
-#st .s th{background:#e8eef7!important}#st .s table{background:#fff!important}
-#st .s h1,#st .s h2{border-color:#111!important}
-#st .s a{color:#0b3d6e!important;text-decoration:underline!important}
-#st .s .nt{display:block!important;position:static!important;margin-top:1rem!important;padding:.75rem 1rem!important;background:#f4f4f4!important;border:1px solid #bbb!important;border-left:5px solid #555!important;color:#111!important;font-size:10pt!important;max-height:none!important;break-inside:auto}
-#st .s img{max-width:100%!important;max-height:none!important}
-#st .s table{font-size:10pt!important}
-#st .s figure,#st .s table,#st .s blockquote,#st .s pre{break-inside:avoid}
-#st .s pre{white-space:pre-wrap!important;overflow-wrap:anywhere!important}#st .s .mw{overflow:visible!important}
-#st .s .slide-num{display:block!important;color:#555!important;font-size:9pt}
-details.fluxo-tabela{display:none!important}.fluxo-print{display:block!important}
+#hud,#bar,#ini,.skip,.tem-som,#dimp{display:none!important}
+html.imp-doc,html.imp-doc body{overflow:visible!important;height:auto!important;background:#fff!important}
+html.imp-doc #st{position:static!important;transform:none!important;width:auto!important;height:auto!important;max-width:none!important;margin:0!important;padding:0!important}
+html.imp-doc #st .s{display:block!important;position:relative!important;inset:auto!important;width:auto!important;height:auto!important;min-height:0!important;overflow:visible!important;margin:0!important;padding:0 0 1.5rem!important;border:0!important;border-radius:0!important;background:#fff!important;color:#111!important;box-shadow:none!important;visibility:visible!important;break-after:page;page-break-after:always}
+html.imp-doc #st .s:last-child{break-after:auto;page-break-after:auto}
+html.imp-doc #st .s:before,html.imp-doc #st .s:after{display:none!important}
+html.imp-doc #st .s .in{position:static!important;display:block!important;height:auto!important;padding:0!important;margin:0!important;width:auto!important;overflow:visible!important}
+html.imp-doc #st .s .conteudo{transform:none!important;width:auto!important}
+html.imp-doc #st .s h1,html.imp-doc #st .s h2,html.imp-doc #st .s h3,html.imp-doc #st .s p,html.imp-doc #st .s li,html.imp-doc #st .s td,html.imp-doc #st .s th,html.imp-doc #st .s strong{color:#111!important}
+html.imp-doc #st .s h1{font-size:20pt!important;display:block!important}html.imp-doc #st .s h2{font-size:15pt!important}
+html.imp-doc #st .s p,html.imp-doc #st .s li{font-size:12pt!important;line-height:1.5!important}
+html.imp-doc #st .s th{background:#e8eef7!important}html.imp-doc #st .s table{background:#fff!important}
+html.imp-doc #st .s h1,html.imp-doc #st .s h2{border-color:#111!important}
+html.imp-doc #st .s a{color:#0b3d6e!important;text-decoration:underline!important}
+html.imp-doc #st .s .nt{display:block!important;position:static!important;margin-top:1rem!important;padding:.75rem 1rem!important;background:#f4f4f4!important;border:1px solid #bbb!important;border-left:5px solid #555!important;color:#111!important;font-size:10pt!important;max-height:none!important;break-inside:auto}
+html.imp-doc #st .s img{max-width:100%!important;max-height:none!important}
+html.imp-doc #st .s table{font-size:10pt!important}
+html.imp-doc #st .s figure,html.imp-doc #st .s table,html.imp-doc #st .s blockquote,html.imp-doc #st .s pre{break-inside:avoid}
+html.imp-doc #st .s pre{white-space:pre-wrap!important;overflow-wrap:anywhere!important}html.imp-doc #st .s .mw{overflow:visible!important}
+html.imp-doc #st .s .slide-num{display:block!important;color:#555!important;font-size:9pt}
+html.imp-doc details.fluxo-tabela{display:none!important}html.imp-doc .fluxo-print{display:block!important}
+html.imp-doc:not(.imp-notas) #st .s .nt{display:none!important}
+html.imp-slides{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+html.imp-slides,html.imp-slides body{overflow:visible!important;height:auto!important;margin:0!important;background:#fff!important}
+html.imp-slides #st{position:static!important;transform:none!important;width:1280px!important;height:auto!important;max-width:none!important;margin:0!important;padding:0!important}
+html.imp-slides #st .s{display:block!important;position:relative!important;inset:auto!important;width:1280px!important;height:720px!important;min-height:0!important;margin:0!important;overflow:hidden!important;box-shadow:none!important;border-radius:0!important;break-inside:avoid;break-after:page;page-break-after:always}
+html.imp-slides #st .s .nt,html.imp-slides #st .s .slide-num,html.imp-slides #st .s .tem-som{display:none!important}
+html.imp-slides #st .s .in{overflow:hidden!important}
+html.imp-slides #st .imp-nota{display:block;width:1280px;min-height:720px;margin:0;padding:64px 88px;box-sizing:border-box;background:#fff;color:#111;break-after:page;page-break-after:always}
+html.imp-slides #st .imp-nota-t{margin:0 0 24px;padding-bottom:12px;border-bottom:3px solid #1351b4;font-size:28px;font-weight:700;color:#0c326f}
+html.imp-slides #st .imp-nota-x{margin:0;font-size:24px;line-height:1.6;white-space:pre-wrap}
+html.imp-slides #st>:last-child{break-after:auto!important;page-break-after:auto!important}
 }
 """
 # Leitura acessível da apostila (1.66): vem depois do CSS do tema; não muda cores de identidade, só texto/foco/contraste.
@@ -544,6 +579,23 @@ CSS_BPLUS="""
 @media(max-width:700px),(pointer:coarse){#hud{bottom:max(8px,env(safe-area-inset-bottom));gap:2px;padding:4px 6px}#hud button{min-width:48px;min-height:48px;padding:0 11px}#hud .bplus-sec,#hud #ba11y{display:none}#hud .so-mobile{display:block}#hud #c{position:absolute;bottom:calc(100% + 7px);left:50%;transform:translateX(-50%);background:rgba(7,29,65,.88);border-radius:999px;padding:3px 9px;min-width:auto}}
 @media(max-height:500px) and (orientation:landscape){#hud{bottom:4px;padding:2px 5px}#hud button{min-width:44px;min-height:44px}#hud #c{display:none}}
 @media(prefers-reduced-motion:reduce){#hud{transition:none}}
+#dimp{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(7,29,65,.72)}
+#dimp[hidden]{display:none}
+#dimp .dimp-w{width:min(520px,100%);max-height:calc(100vh - 32px);overflow:auto;margin:0;padding:24px;border-radius:12px;background:#fff;color:#333;font-family:inherit;box-shadow:0 10px 32px rgba(0,0,0,.4)}
+#dimp h2{margin:0 0 8px;font-size:22px;color:#0c326f}#dimp h2:focus{outline:none}#dimp h2:focus-visible{outline:3px solid #ffcd07;outline-offset:3px}
+#dimp p{margin:0 0 14px;font-size:16px;line-height:1.5}
+#dimp fieldset{border:0;margin:0 0 12px;padding:0;display:grid;gap:10px}#dimp legend{font-weight:700;margin-bottom:8px;font-size:16px}
+#dimp .dimp-op{display:flex;gap:12px;align-items:flex-start;min-height:44px;padding:12px;border:2px solid #888;border-radius:8px;cursor:pointer}
+#dimp .dimp-op:has(input:checked){border-color:#1351b4;background:#edf5ff}
+#dimp .dimp-op b{display:block;color:#0c326f;font-size:16px}#dimp .dimp-op span span{display:block;font-size:14px;line-height:1.45;color:#333}
+#dimp input[type=radio],#dimp input[type=checkbox]{width:22px;height:22px;margin:1px 0 0;flex:none;accent-color:#1351b4}
+#dimp .dimp-nt{display:flex;gap:10px;align-items:center;min-height:44px;font-size:16px;cursor:pointer}#dimp .dimp-nt[hidden],#dimp .dimp-sem[hidden]{display:none}
+#dimp .dimp-ac{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;margin-top:16px}
+#dimp .dimp-ac button{min-height:44px;min-width:44px;padding:0 20px;border:2px solid #1351b4;border-radius:999px;background:#fff;color:#1351b4;font:700 16px/1 inherit;cursor:pointer}
+#dimp .dimp-ac .pri{background:#1351b4;color:#fff}
+#dimp input:focus-visible,#dimp button:focus-visible{outline:3px solid #ffcd07;outline-offset:2px}
+@media(max-width:480px){#dimp{align-items:flex-end;padding:0}#dimp .dimp-w{border-radius:12px 12px 0 0;max-height:92vh;padding:20px 16px max(16px,env(safe-area-inset-bottom))}#dimp .dimp-ac button{flex:1}}
+@media(forced-colors:active){#dimp .dimp-w,#dimp .dimp-op{border:2px solid CanvasText}#dimp .dimp-op:has(input:checked){outline:3px solid Highlight}}
 """
 CSS_NARR="""#ini{position:fixed;inset:0;z-index:20;background:rgba(7,29,65,.82);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#fff;font-family:inherit}
 #ini .it{font-size:22px;font-weight:700;margin:0}
@@ -618,6 +670,18 @@ def _fluxos_img(o,fluxos):
         if not img:return m.group(0)
         return '<figure class="mw fx fluxo"><img class="fxi" alt="%s" src="%s"><figcaption>Fluxo</figcaption></figure>'%(E(_fluxo_alt(cod)),img)
     return re.sub(r'<div class="mw"[^>]*><pre class="mermaid">(.*?)</pre></div>',rep,o,flags=re.S)
+# Janela "Imprimir apresentação" (1.68): a impressão tem formato próprio e nunca altera o modo de visualização.
+IMP_DLG=('<div id="dimp" class="dimp" hidden><form class="dimp-w" role="dialog" aria-modal="true" aria-labelledby="dimpT" aria-describedby="dimpD">'
+ '<h2 id="dimpT" tabindex="-1">Imprimir apresentação</h2>'
+ '<p id="dimpD">Escolha o formato da impressão ou do PDF. A visualização atual não será alterada.</p>'
+ '<fieldset><legend>Formato</legend>'
+ '<label class="dimp-op"><input type="radio" name="dimpF" value="slides" checked aria-describedby="dimpS"><span><b>Slides</b><span id="dimpS">Um slide por página, preservando composição, cores e proporção.</span></span></label>'
+ '<label class="dimp-op"><input type="radio" name="dimpF" value="doc" aria-describedby="dimpL"><span><b>Documento</b><span id="dimpL">Conteúdo linear em A4, com texto ajustado à página.</span></span></label>'
+ '</fieldset>'
+ '<label class="dimp-nt"><input type="checkbox" id="dimpN"> Incluir notas do apresentador</label>'
+ '<p class="dimp-sem" id="dimpSem" hidden>Esta apresentação não tem notas do apresentador.</p>'
+ '<div class="dimp-ac"><button type="button" id="dimpC">Cancelar</button><button type="submit" id="dimpOk" class="pri">Continuar</button></div>'
+ '</form></div>')
 def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
     """Monta o HTML da apresentação (com ou sem narração): ARIA, leitura, modo leitura, auto-ajuste e impressão A4."""
     T=tema_de(tema);n=len(sl);secs=[]
@@ -636,18 +700,19 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
                 aud+='<audio class="narr" data-s="%d" preload="auto" src="data:%s;base64,%s"></audio>'%(k,mime,base64.b64encode(open(cam,'rb').read()).decode())
     css+=CSS_S_A11Y+CSS_BPLUS
     hud=('<div id="hud" role="toolbar" aria-label="Controles da apresentação" data-estado="visible">'
-         '<button id="p" type="button" aria-label="Slide anterior (Seta para a esquerda)">◀</button>'
-         '<button id="bp" type="button" aria-label="Reproduzir apresentação (Espaço)" aria-pressed="false">▶</button>'
-         '<button id="n" type="button" aria-label="Próximo slide (Seta para a direita)">▶</button>'
+         '<button id="p" type="button" aria-label="Slide anterior" aria-keyshortcuts="ArrowLeft">◀</button>'
+         '<button id="bp" type="button" aria-label="Reproduzir apresentação" aria-keyshortcuts="Space" aria-pressed="false">▶</button>'
+         '<button id="n" type="button" aria-label="Próximo slide" aria-keyshortcuts="ArrowRight">▶</button>'
          '<span id="c" role="status" aria-live="polite" aria-atomic="true"></span>'
-         '<button id="ba11y" class="bplus-sec" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="a11y">Acessibilidade</button>'
-         '<button id="bmais" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="bmais-menu" aria-label="Mais opções (M)">⋯</button>'
+         '<button id="ba11y" class="bplus-sec" type="button" aria-keyshortcuts="A" aria-haspopup="true" aria-expanded="false" aria-controls="a11y">Acessibilidade</button>'
+         '<button id="bmais" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="bmais-menu" aria-label="Mais opções" aria-keyshortcuts="M">⋯</button>'
          '<div id="a11y" class="bplus-pop" hidden><label for="leitura">Leitura</label>'+LEITURA_SEL.replace('<label for="leitura" class="lt">Leitura</label>','')+'<button id="bLer" type="button" aria-pressed="false">Modo leitura</button></div>'
          '<div id="bmais-menu" class="bplus-pop" hidden>'
-         +('<button id="bn" type="button" aria-pressed="false">🔇 Som da narração (S)</button><button id="ba" type="button" aria-pressed="false">Avanço automático</button>' if narr else '')
-         +'<button id="b1" type="button" aria-pressed="false">Mostrar notas (N)</button><button id="bLerM" class="so-mobile" type="button">Modo leitura</button>'
-         '<button id="imp" type="button">Imprimir / PDF</button><button id="b2" type="button" aria-pressed="false">Tela cheia</button>'
+         +('<button id="bn" type="button" aria-pressed="false" aria-keyshortcuts="S">🔇 Som da narração (S)</button><button id="ba" type="button" aria-pressed="false">Avanço automático</button>' if narr else '')
+         +'<button id="b1" type="button" aria-pressed="false" aria-keyshortcuts="N">Mostrar notas (N)</button><button id="bLerM" class="so-mobile" type="button">Modo leitura</button>'
+         '<button id="imp" type="button" aria-haspopup="dialog" aria-keyshortcuts="Control+P" aria-controls="dimp">Imprimir / PDF…</button><button id="b2" type="button" aria-pressed="false" aria-keyshortcuts="F">Tela cheia</button>'
          '<div class="atalhos" id="atalhosB" tabindex="-1"><strong>Atalhos</strong><br><kbd>←/→</kbd> slides · <kbd>Espaço</kbd> reproduzir/pausar · <kbd>A</kbd> acessibilidade · <kbd>S</kbd> som · <kbd>N</kbd> notas · <kbd>F</kbd> tela cheia · <kbd>M</kbd> opções · <kbd>?</kbd> ajuda · <kbd>Esc</kbd> fechar</div></div></div>')
+    hud+=IMP_DLG
     ini=('<div id="ini" role="dialog" aria-modal="true" aria-labelledby="iniT"><p id="iniT" class="it">Iniciar a apresentação</p>'
          '<button id="ini1" type="button">▶ Iniciar com narração</button><button id="ini0" type="button" class="ini0">Iniciar sem som</button></div>') if narr else ''
     js='<script>'+LEITURA_JS+JS_S+'</script>'+('<script>'+JS_NARR.replace('__AUTO__','true' if avancar else 'false')+'</script>' if narr else '')
