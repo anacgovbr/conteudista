@@ -1,4 +1,8 @@
 # Novidades do Conteudista
+## 1.73 - 03/11/2026
+- **O avanço automático da apresentação HTML espera a leitura terminar.** Causa: desde a 1.67, o botão **Reproduzir** (e a tecla Espaço) trocava de slide a cada 5 segundos fixos, sem considerar a narração, e corria em paralelo ao avanço da própria narração. Narrações com mais de 5 s eram cortadas no meio.
+- Agora existe um único avanço automático. Em slides com narração e som ligado, o próximo slide só vem **0,7 s depois que o áudio termina**. Em slides sem narração (ou com o som desligado), o tempo é calculado pelo texto visível do slide (cerca de 160 palavras por minuto, mais 3 s por imagem, tabela, código ou fluxo; de 5 s a 2 min).
+- Ligar ou desligar o som no meio de um slide recalcula a espera; pausar interrompe o avanço sem cortar o áudio; se o áudio falhar ao tocar, vale o tempo de leitura. **Avanço automático** (menu Mais opções) e **Reproduzir** passam a ser o mesmo controle. Apresentações geradas com avanço automático começam a avançar ao escolher "Iniciar com narração".
 ## 1.72 - 03/11/2026
 - **A apresentação não abre mais em Modo leitura automaticamente.** Antes, telas de até 900 px abriam em Modo leitura. Agora ela sempre abre em slides; o Modo leitura só é usado quando a pessoa escolhe (botão **Leitura** ou tecla `L`), e a escolha fica salva.
 - **Celular em Modo slides corrigido.** Causa: o palco de 1280 px alargava a página, e o navegador do celular ampliava a janela (360 → 886 px de largura), deixando tudo minúsculo e fora do centro. O palco agora é fixo e não alarga a página. Em retrato (até 700 px) o slide usa um palco de 480 px de largura que preenche a tela, com texto de cerca de 15 px na tela (antes, cerca de 6 px). Em paisagem e em telas maiores, nada muda.
