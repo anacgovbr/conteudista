@@ -9,3 +9,5 @@ site/
 /limpar-conteudista.ps1
 /limpar-repositorio.ps1
 /atualizar-conteudista.ps1
+# relatórios dos testes de navegador
+tools/testes/relatorio/

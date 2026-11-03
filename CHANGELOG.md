@@ -6,6 +6,7 @@
 - **Botão Pausar/Reproduzir coerente com o som.** Ao sair de um slide narrado para outro sem narração (ou pausado), o botão passa a mostrar **Reproduzir**, em vez de continuar em **Pausar** sem som.
 - **Reproduzir no último slide:** se a narração do último slide ainda não tinha tocado (por exemplo, depois de pausar e ir ao fim), ela toca em vez de a apresentação voltar ao slide 1; a volta ao início só ocorre depois que a narração termina.
 - README, ajuda, apostila e apresentação de exemplo atualizados (no README, o atalho do botão de narração passa a `S`).
+- **Botões da barra com 44 × 44 px no celular.** Na apresentação HTML, em telas até 700 px ou de toque, os botões da barra tinham 40 px de largura; agora têm 44 px (WCAG 2.2, critério 2.5.5). A barra continua cabendo em telas de 320 px, com margem dos dois lados e sem rolagem horizontal.
 ## 1.75 - 03/11/2026
 - **Pausar também pausa a narração.** Na apresentação HTML, o botão **Pausar** (e a tecla Espaço) agora para o áudio da narração no ponto exato, além do avanço automático. **Reproduzir** continua o áudio do mesmo ponto e, quando ele termina, passa ao próximo slide. Antes, a pausa parava só a troca de slides e o áudio continuava tocando.
 - O botão mostra **Pausar** sempre que a narração está tocando, inclusive quando você navega pelos slides sem o avanço automático; pausado no último slide, Reproduzir retoma o áudio em vez de voltar ao início.

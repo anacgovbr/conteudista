@@ -113,6 +113,10 @@ No celular em retrato (até 700 px), o Modo slides usa um palco de 480 px de lar
 
 **Imprimir / PDF…** (menu Mais opções ou Ctrl+P) abre a janela *Imprimir apresentação*, com os formatos **Slides** (um slide por página, 16:9) e **Documento** (linear, A4), notas opcionais. A impressão nunca altera o Modo slides/Modo leitura.
 
+## Testes automatizados
+
+O roteiro de validação roda em código no **Google Chrome** (Playwright): pausa e narração, último slide, navegação rápida, Modo leitura e tela cheia, celular (toque emulado), versão/documentação e geração dos arquivos. Ele roda **antes de cada publicação** (se o Chrome falhar, a página não é publicada), em pull requests, toda segunda-feira e sob demanda; Edge, Firefox e WebKit (Safari) rodam em paralelo, só como informação. No computador: `powershell -ExecutionPolicy Bypass -File .\tools\testes\executar-testes.ps1` (usa o Chrome instalado). Detalhes, casos cobertos e pendências manuais em `tools/testes/LEIA-ME.md`.
+
 ## Atalhos da aplicação
 
 `Alt+Shift` + tecla (no Mac, `Option+Shift`): **G** gerar · **E** exemplo · **D** baixar .md · **P** salvar em pasta · **S** salvar versão · **A** ligar/desligar autossalvamento · **L** criar link · **O** abrir link · **V** versões do texto · **1/2** abas · **M** modo do editor · **F** tela cheia · **T** tutorial · **R** reiniciar tutorial · **H** ajuda · **K** lista de atalhos · **F1** ajuda.

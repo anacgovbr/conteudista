@@ -7,6 +7,14 @@ import sys, os, re, zipfile, argparse, posixpath
 from urllib.parse import unquote
 from lxml import etree
 
+
+# Windows: com a saída redirecionada o Python usa cp1252 e quebra ao imprimir ☐/☒ (UnicodeEncodeError).
+for _f in (sys.stdout, sys.stderr):
+    try:
+        _f.reconfigure(encoding='utf-8', errors='replace')
+    except Exception:
+        pass
+
 FALHAS = []
 def ok(c, m):
     print(('PASS ' if c else 'FAIL ') + m)

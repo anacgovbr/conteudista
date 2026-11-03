@@ -707,7 +707,7 @@ html[data-barra="hidden"] #b2{opacity:0;pointer-events:none}
 #hud #irpara .ir-lst button{display:flex;gap:8px;align-items:center;font-weight:400;font-size:14px}
 #hud #irpara .ir-lst button[aria-current="true"]{font-weight:700;background:#edf5ff}
 #hud #irpara .ir-lst .num{min-width:2.2em;color:#555;font-variant-numeric:tabular-nums}
-@media(max-width:700px),(pointer:coarse){#hud.bplus{bottom:max(10px,env(safe-area-inset-bottom));gap:0;padding:4px}#hud.bplus>button{padding:0 6px;min-width:40px;min-height:44px}#hud.bplus>.cnt{padding:0 8px}#hud.bplus>.md{padding:0 8px}body:not(.modo-leitura) #hud .md .t-lt{display:none}#hud.bplus>.bplus-sec,#hud.bplus>.sep{display:none}#hud .so-mobile{display:block}#b2{top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right))}}
+@media(max-width:700px),(pointer:coarse){#hud.bplus{bottom:max(10px,env(safe-area-inset-bottom));gap:0;padding:4px}#hud.bplus>button{padding:0 6px;min-width:44px;min-height:44px}#hud.bplus>.cnt{padding:0 8px}#hud.bplus>.md{padding:0 8px}body:not(.modo-leitura) #hud .md .t-lt{display:none}#hud.bplus>.bplus-sec,#hud.bplus>.sep{display:none}#hud .so-mobile{display:block}#b2{top:max(10px,env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right))}}
 @media(max-height:500px) and (orientation:landscape){#hud.bplus{bottom:4px;padding:3px}}
 @media(prefers-reduced-motion:reduce){#hud.bplus,#b2{transition:none}}
 @media(forced-colors:active){#hud.bplus,#b2,#dica,#hud .bplus-pop{border:1px solid CanvasText}#hud.bplus button:focus-visible,#b2:focus-visible{outline:3px solid Highlight}}

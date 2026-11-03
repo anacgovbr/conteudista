@@ -1,0 +1,92 @@
+name: Testes de navegador
+
+# Executa o roteiro de validação (tools/testes/testar_apresentacao.py) num navegador real.
+# - O navegador PRINCIPAL é o Google Chrome (estável): só ele bloqueia a publicação.
+# - Firefox, WebKit (Safari) e Edge são complementares e apenas informativos.
+# - É chamado pelo fluxo de publicação (publicar-pagina.yml): se o Chrome falhar, a página NÃO é publicada.
+# - Também roda em pull requests, toda segunda-feira (pega regressões causadas por atualização
+#   do Chrome) e manualmente (Actions > Testes de navegador > Run workflow).
+on:
+  workflow_call:
+    inputs:
+      navegadores:
+        description: 'Lista JSON de navegadores'
+        type: string
+        default: '["chrome"]'
+  workflow_dispatch:
+    inputs:
+      navegadores:
+        description: 'Lista JSON de navegadores (chrome, msedge, firefox, webkit, chromium)'
+        type: string
+        default: '["chrome","msedge","firefox","webkit"]'
+  pull_request:
+    paths:
+      - "web/**"
+      - "tools/**"
+      - "CHANGELOG.md"
+      - "README.md"
+      - ".github/workflows/**"
+  schedule:
+    - cron: "0 9 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  testes:
+    name: Testes (${{ matrix.navegador }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        navegador: ${{ fromJSON(inputs.navegadores || '["chrome","msedge","firefox","webkit"]') }}
+    # Só o Google Chrome bloqueia; os demais são informativos.
+    continue-on-error: ${{ matrix.navegador != 'chrome' }}
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v5
+
+      - name: Configurar Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            tools/requirements.txt
+            tools/testes/requirements.txt
+
+      - name: Instalar dependências
+        run: |
+          pip install -r tools/requirements.txt -r tools/testes/requirements.txt
+          python -m playwright install --with-deps ${{ matrix.navegador }}
+
+      - name: Mostrar a versão do navegador
+        run: |
+          python - <<'PY'
+          from playwright.sync_api import sync_playwright
+          n = '${{ matrix.navegador }}'
+          with sync_playwright() as p:
+              tipo = {'chrome': p.chromium, 'msedge': p.chromium, 'chromium': p.chromium, 'firefox': p.firefox, 'webkit': p.webkit}[n]
+              kw = {'channel': n} if n in ('chrome', 'msedge') else {}
+              b = tipo.launch(args=['--no-sandbox'] if tipo is p.chromium else [], **kw)
+              print(n, b.version); b.close()
+          PY
+
+      - name: Executar o roteiro automatizado
+        run: python tools/testes/testar_apresentacao.py --navegador ${{ matrix.navegador }} --saida relatorio-${{ matrix.navegador }}
+
+      - name: Publicar o relatório no resumo da execução
+        if: always()
+        run: |
+          if [ -f relatorio-${{ matrix.navegador }}/relatorio.md ]; then
+            cat relatorio-${{ matrix.navegador }}/relatorio.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Guardar relatório e capturas de tela
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: relatorio-testes-${{ matrix.navegador }}
+          path: relatorio-${{ matrix.navegador }}
+          if-no-files-found: ignore

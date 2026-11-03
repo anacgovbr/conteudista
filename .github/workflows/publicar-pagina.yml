@@ -121,8 +121,14 @@ jobs:
         with:
           path: site
 
+  # Roteiro de validação no Google Chrome (tools/testes). Se falhar, a página não é publicada.
+  testes:
+    uses: ./.github/workflows/testes-navegador.yml
+    with:
+      navegadores: '["chrome"]'
+
   deploy:
-    needs: build
+    needs: [build, testes]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
