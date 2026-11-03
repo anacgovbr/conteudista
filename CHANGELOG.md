@@ -1,4 +1,7 @@
 # Novidades do Conteudista
+## 1.70 - 03/11/2026
+- **Confirmação de ação mais rápida.** O botão fica verde **no instante do clique** (antes havia um atraso de 80 ms), permanece verde por **1 s** e esmaece em 0,2 s, num total de **1,2 s** (antes, 2,6 s). Com a preferência do sistema por menos movimento, não há esmaecimento: o verde sai ao fim de 1,2 s. Leitores de tela continuam recebendo a mensagem pela região oculta, independentemente do tempo visual.
+- **Tick alinhado.** O "✓" (caractere, que variava com a fonte e ficava mais perto da borda) foi substituído por um ícone SVG simétrico, posicionado **equidistante da borda do botão e do início do texto**, a partir da medida real do botão. Em botões estreitos o ícone encolhe (mínimo de 10 px) para manter folga dos dois lados; em botões largos com texto centralizado, o tick acompanha o texto (folga máxima de 12 px). A largura do botão não muda.
 ## 1.69 - 03/11/2026
 - **Barra B+ redesenhada (pílula branca).** Fundo branco com borda e sombra: a barra se destaca tanto sobre o slide quanto sobre a área escura. Ícones em SVG no estilo Material (sem emoji), em azul gov.br.
 - **A barra agora some por completo** após 2,5 s sem interação (antes ficava sempre visível) e reaparece ao mover o mouse, tocar ou usar o teclado. Permanece aberta com o mouse sobre ela, com foco de teclado nela ou com um menu aberto. Recolhida, não intercepta cliques nem toques.
