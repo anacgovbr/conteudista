@@ -176,6 +176,8 @@ def testar_slides_html(cam, exigir_fontes):
     ok('id="hud" role="toolbar"' in h and 'aria-label="Controles da apresentação"' in h, n + ': barra B+ como toolbar rotulada')
     ok('pointerdown' in h and 'pointercancel' in h, n + ': B+ sobre Pointer Events')
     ok('conteudista:narrfim' in h and 'function tempoLeitura(' in h and ',5000)}' not in h, n + ': avanço automático espera a narração ou o tempo de leitura (sem tempo fixo de 5 s)')
+    ok('conteudista:retomar' in h and "if(ativo()){parar();return}" in h, n + ': Pausar também pausa a narração e Reproduzir retoma do mesmo ponto')
+    ok(not re.search(r'body\.modo-leitura[^{]*#b2[,{]', h) and 'id="b2m"' not in h, n + ': tela cheia no mesmo lugar (canto superior direito) no Modo leitura')
     hud = re.search(r'<div id="hud".*?<button id="b2"', h, re.S)
     hud = hud.group(0) if hud else ''
     ok('<svg class="ic' in hud and not re.search(r'<svg(?![^>]*aria-hidden="true")[^>]*class="ic', hud), n + ': ícones SVG decorativos (aria-hidden) na barra B+')

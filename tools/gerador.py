@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# GERADOR PADRÃO DE CONTEÚDO v4.5 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX;
+# GERADOR PADRÃO DE CONTEÚDO v4.6 (imagens em base64; temas: govbr [padrão] e classico; narração das notas no HTML e no PPTX;
 #   leitura acessível: Verdana / Atkinson Hyperlegible Next / OpenDyslexic, modo leitura dos slides, EPUB) — Apostila (HTML + DOCX + EPUB)
 #   e Apresentação (HTML + PPTX) a partir de Markdown.
 # Requisitos: Python 3 + python-docx + python-pptx + lxml (+ Pillow). HTML usa só biblioteca padrão.
@@ -365,9 +365,11 @@ function nt(){var on=B.classList.toggle('sn');if(b1){b1.setAttribute('aria-press
 function marcaModo(on){if(!bLer)return;bLer.setAttribute('aria-label',on?'Modo slides':'Modo leitura');bLer.setAttribute('data-dica',(on?'Modo slides':'Modo leitura')+' · L');atualizarDica()}
 function modo(on,salvar){var era=ler();if(era&&!on)i=slideLeitura();B.classList.toggle('modo-leitura',on);H.classList.toggle('ml',on);marcaModo(on);if(salvar)try{localStorage.setItem(K,on?'leitura':'slides')}catch(e){}if(on){parar();S.forEach(function(x){x.classList.add('on')});marca();contador();requestAnimationFrame(function(){f();if(salvar){UI.travaL=Date.now()+700;S[i].scrollIntoView({block:'start'})}})}else{S.forEach(function(x,k){x.classList.toggle('on',k===i)});f();g(i)}D.dispatchEvent(new CustomEvent('conteudista:modo',{detail:on?'leitura':'slides'}))}
 addEventListener('scroll',function(){if(!ler()||UI.rafL)return;UI.rafL=requestAnimationFrame(function(){UI.rafL=0;if(Date.now()<(UI.travaL||0))return;var k=slideLeitura();if(k!==i){i=k;contador()}})},{passive:true});
-function marcaPlay(){if(!bp)return;bp.setAttribute('data-on',UI.reproduzindo?'true':'false');bp.setAttribute('aria-label',UI.reproduzindo?'Pausar apresentação':'Reproduzir apresentação');bp.setAttribute('data-dica',(UI.reproduzindo?'Pausar':'Reproduzir')+' · Espaço');atualizarDica()}
-function parar(){var era=UI.reproduzindo;UI.reproduzindo=false;clearTimeout(UI.relogio);UI.relogio=null;marcaPlay();if(era)D.dispatchEvent(new CustomEvent('conteudista:play',{detail:false}))}
-function reproduzir(){if(ler())return;if(UI.reproduzindo){parar();return}UI.reproduzindo=true;marcaPlay();D.dispatchEvent(new CustomEvent('conteudista:play',{detail:true}));if(i>=N-1)g(0);else agendar()}
+function ativo(){return UI.reproduzindo||UI.audio}
+function marcaPlay(){if(!bp)return;var a=ativo();bp.setAttribute('data-on',a?'true':'false');bp.setAttribute('aria-label',a?'Pausar apresentação':'Reproduzir apresentação');bp.setAttribute('data-dica',(a?'Pausar':'Reproduzir')+' · Espaço');atualizarDica()}
+function parar(){UI.reproduzindo=false;clearTimeout(UI.relogio);UI.relogio=null;marcaPlay();D.dispatchEvent(new CustomEvent('conteudista:play',{detail:false}))}
+function reproduzir(){if(ler())return;if(ativo()){parar();return}UI.reproduzindo=true;marcaPlay();var q={retomou:false};D.dispatchEvent(new CustomEvent('conteudista:retomar',{detail:q}));D.dispatchEvent(new CustomEvent('conteudista:play',{detail:true}));if(i>=N-1&&!q.retomou)g(0);else agendar()}
+D.addEventListener('conteudista:audio',function(e){UI.audio=!!e.detail;marcaPlay()});
 function palavras(s){var c=s.cloneNode(true);[].forEach.call(c.querySelectorAll('.nt,.slide-num,.tem-som,details,script,style,pre.mermaid,.fluxo-print,svg'),function(x){x.parentNode.removeChild(x)});var t=(c.textContent||'').replace(/\\s+/g,' ').trim();return t?t.split(' ').length:0}
 function tempoLeitura(s){var w=palavras(s),v=s.querySelectorAll('img,table,pre,.mw').length;return Math.min(120000,Math.max(5000,Math.round(w/160*60000)+v*3000+1500))}
 function agendar(){clearTimeout(UI.relogio);UI.relogio=null;if(!UI.reproduzindo||ler())return;var q={i:i,narrado:false};D.dispatchEvent(new CustomEvent('conteudista:quanto',{detail:q}));if(q.narrado)return;UI.relogio=setTimeout(passo,tempoLeitura(S[i]))}
@@ -491,7 +493,7 @@ body.modo-leitura .s .conteudo{transform:none!important;width:auto!important}
 body.modo-leitura .s .nt{display:block!important;position:static!important;margin-top:1.25rem;padding:1rem 1.1rem;background:#f4f4f4!important;border:1px solid #bbb;border-left:5px solid #555;border-radius:6px;color:#111!important;font-size:calc(var(--s-n)*var(--lt))!important;line-height:1.55!important;max-height:none!important}
 body.modo-leitura .s pre.code{font-size:calc(var(--s-t)*var(--lt))!important}
 body.modo-leitura .slide-num{display:block!important;margin:0 0 .75rem;color:#555!important;font-size:calc(var(--s-num)*var(--lt));text-transform:uppercase;letter-spacing:.06em}
-body.modo-leitura #bar,body.modo-leitura #bp,body.modo-leitura #bn,body.modo-leitura #ba,body.modo-leitura #b1,body.modo-leitura #b2,body.modo-leitura #ini{display:none!important}
+body.modo-leitura #bar,body.modo-leitura #bp,body.modo-leitura #bn,body.modo-leitura #ba,body.modo-leitura #b1,body.modo-leitura #ini{display:none!important}
 @media print{
 #hud,#bar,#ini,.skip,.tem-som,#dimp,#b2,#dica{display:none!important}
 html.imp-doc,html.imp-doc body{overflow:visible!important;height:auto!important;background:#fff!important}
@@ -691,7 +693,7 @@ html[data-barra="hidden"] #b2{opacity:0;pointer-events:none}
 #hud .bplus-pop[hidden]{display:none}#hud .bplus-pop button,#hud .bplus-pop select{width:100%;min-height:44px;color:#1351b4;background:#fff;border:0;border-radius:8px;text-align:left;padding:0 10px;font:600 15px/1.2 inherit;cursor:pointer}
 #hud .bplus-pop button:hover{background:#edf5ff}#hud .bplus-pop label{display:block;padding:6px 8px 2px;font-weight:700;color:#333}#hud .bplus-pop select{border:1px solid #555}
 #hud .atalhos{margin:6px 8px;font-size:13px;line-height:1.55;color:#333}#hud .atalhos kbd{font:inherit;font-weight:700;color:#0c326f}
-#hud .so-mobile,#hud .so-leitura{display:none}body.modo-leitura #hud .so-leitura{display:block}
+#hud .so-mobile{display:none}
 #hud #irpara{left:50%;right:auto;transform:translateX(-50%);width:min(300px,calc(100vw - 24px));min-width:0}
 #hud #irpara .pop-t{margin:2px 4px 8px;font-weight:700;color:#0c326f;font-size:15px}
 #hud #irpara label{padding:0 4px 3px;font-size:13px}
@@ -741,7 +743,7 @@ CSS_NARR="""#ini{position:fixed;inset:0;z-index:20;background:rgba(7,29,65,.82);
 JS_NARR="""(function(){var D=document,S=[].slice.call(D.querySelectorAll('.s')),A={},F={},on=false,auto=__AUTO__,tocando=false,cur=-1,bn=D.getElementById('bn'),ba=D.getElementById('ba'),ini=D.getElementById('ini');
 function ler(){return D.body.classList.contains('modo-leitura')}
 function avisa(n,d){D.dispatchEvent(new CustomEvent(n,{detail:d}))}
-[].slice.call(D.querySelectorAll('audio.narr')).forEach(function(a){var k=+a.dataset.s;A[k]=a;a.addEventListener('ended',function(){if(k===cur)avisa('conteudista:narrfim',k)});a.addEventListener('error',function(){F[k]=true;if(k===cur)avisa('conteudista:narrmudou',k)})});
+[].slice.call(D.querySelectorAll('audio.narr')).forEach(function(a){var k=+a.dataset.s;A[k]=a;a.addEventListener('playing',function(){if(k===cur)avisa('conteudista:audio',true)});a.addEventListener('pause',function(){if(k===cur)avisa('conteudista:audio',false)});a.addEventListener('ended',function(){if(k===cur){avisa('conteudista:audio',false);avisa('conteudista:narrfim',k)}});a.addEventListener('error',function(){F[k]=true;if(k===cur)avisa('conteudista:narrmudou',k)})});
 function atual(){for(var k=0;k<S.length;k++)if(S[k].classList.contains('on'))return k;return 0}
 function parar(){Object.keys(A).forEach(function(x){A[x].pause()})}
 function tocar(k){parar();Object.keys(A).forEach(function(x){try{A[x].currentTime=0}catch(e){}});cur=k;if(!on||ler()||!A[k]||F[k])return;var p=A[k].play();if(p&&p.catch)p.catch(function(){F[k]=true;if(k===cur)avisa('conteudista:narrmudou',k)})}
@@ -751,7 +753,8 @@ if(ba){ba.setAttribute('aria-pressed',tocando?'true':'false');ba.textContent=toc
 function narr(v){on=v;marca();if(on)tocar(atual());else parar();avisa('conteudista:narrmudou',cur)}
 D.addEventListener('conteudista:slide',function(e){tocar(e.detail)});
 D.addEventListener('conteudista:modo',function(e){if(e.detail==='leitura')narr(false)});
-D.addEventListener('conteudista:play',function(e){tocando=!!e.detail;marca()});
+D.addEventListener('conteudista:play',function(e){tocando=!!e.detail;marca();var a=A[cur];if(!tocando&&a&&!a.paused)a.pause()});
+D.addEventListener('conteudista:retomar',function(e){var a=A[cur];if(!on||ler()||!a||F[cur]||!a.paused||a.ended)return;e.detail.retomou=a.currentTime>0;var p=a.play();if(p&&p.catch)p.catch(function(){F[cur]=true;avisa('conteudista:narrmudou',cur)})});
 if(bn)bn.addEventListener('click',function(){narr(!on)});
 if(ba)ba.addEventListener('click',function(){var p=D.getElementById('bp');if(p)p.click()});
 function fecharIni(som){if(!ini)return;var x=ini;ini=null;x.remove();narr(som);var st=D.getElementById('st');if(st)st.focus();if(som&&auto)avisa('conteudista:tocar')}
@@ -870,7 +873,6 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
          +('<button id="ba" type="button" aria-pressed="false">Avanço automático</button>' if narr else '')
          +'<button id="b1" type="button" aria-pressed="false" aria-keyshortcuts="N">Mostrar notas (N)</button>'
          '<button id="imp" type="button" aria-haspopup="dialog" aria-keyshortcuts="Control+P" aria-controls="dimp">Imprimir / PDF…</button>'
-         '<button id="b2m" class="so-leitura" type="button">Tela cheia (F)</button>'
          '<div class="atalhos" id="atalhosB" tabindex="-1"><strong>Atalhos</strong><br><kbd>←/→</kbd> slides · <kbd>Espaço</kbd> reproduzir/pausar · <kbd>G</kbd> ir para o slide · <kbd>L</kbd> modo leitura/slides · <kbd>A</kbd> acessibilidade · <kbd>S</kbd> som · <kbd>N</kbd> notas · <kbd>F</kbd> tela cheia · <kbd>M</kbd> opções · <kbd>?</kbd> ajuda · <kbd>Esc</kbd> fechar</div></div></div>'
          '<button id="b2" type="button" aria-pressed="false" aria-label="Tela cheia" aria-keyshortcuts="F" data-dica="Tela cheia · F">'+_ic('fs','i-off')+_ic('fsx','i-on')+'</button>'
          '<div id="dica" role="tooltip" hidden></div>')
