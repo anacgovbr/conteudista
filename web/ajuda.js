@@ -65,6 +65,7 @@
     { alvo: 'btnSalvar', t: '5. Guarde neste computador', d: 'O botão <b>Salvar ▾</b>, ao lado de <b>Gerar arquivos</b>, reúne <b>Guardar no navegador</b> (versão), <b>Baixar tudo (.zip)</b>, <b>Salvar na pasta</b> e <b>Baixar .md</b>. O <b>salvamento automático</b> recupera o último trabalho ao reabrir a página.' },
     { alvo: 'btnCompartilharAcao', t: '6. Guarde em um link', d: 'O botão <b>Compartilhar link</b> leva o texto-fonte, com as imagens, para um endereço que abre em qualquer computador. Ele também está ao lado de <b>Importar</b> e na barra do editor; os três abrem a mesma janela (<kbd>' + MOD + ' + L</kbd>).' },
     { alvo: 'btnImportar', t: '7. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. Use o campo <b>Buscar</b> para achar um item pelo nome, data, layout ou tipo de arquivo. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
+    { alvo: 'abasApp', t: '8. Revise a narração slide a slide', d: 'Na aba <b>Locução › Notas dos slides</b>, <b>Importar notas</b> traz a nota de cada slide para um rascunho. Edite, ouça e clique em <b>Aplicar à apresentação</b>. Os botões <b>Versões</b> e <b>Compartilhar link</b> da própria aba comparam as notas e as levam para outro computador.' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
@@ -178,9 +179,10 @@
 <ul>
 <li>Na aba <b>Apresentação</b>, marque <b>Narração dos slides</b> (acima de <b>Gerar arquivos</b>) para transformar as <b>notas do apresentador</b> (<code>&lt;!-- notas: … --&gt;</code>) em áudio dentro da apresentação. O painel só aparece com a aba Apresentação selecionada; a escolha continua valendo ao gerar os arquivos.</li>
 <li>Escolha idioma, voz (padrão: <b>Faber</b>), velocidade e formato do áudio: <b>MP3</b> (padrão), <b>OGG</b> (menor) ou <b>WAV</b> (sem compressão). No PowerPoint o áudio vai em MP3 (ou WAV, se escolhido).</li>
-<li><b>HTML</b>: a apresentação abre com “Iniciar com narração”; o botão <b>Narração</b> (<kbd>M</kbd>) liga/desliga o som e <b>Avanço automático</b> (<kbd>A</kbd>) passa ao próximo slide quando o áudio termina.</li>
+<li><b>HTML</b>: a apresentação abre com “Iniciar com narração”; o botão de <b>som</b> (<kbd>S</kbd>) liga/desliga a narração e <b>Reproduzir</b> (<kbd>Espaço</kbd>) avança os slides sozinho, sempre depois que a narração do slide termina.</li>
 <li><b>PPTX</b>: o áudio de cada slide começa sozinho na apresentação de slides. Com “Avançar os slides sozinho”, dá para usar <b>Arquivo → Exportar → Criar um vídeo</b> no PowerPoint.</li>
 <li>Para falar um texto diferente da nota, use <code>&lt;!-- narracao: texto --&gt;</code>; para um slide sem som, <code>&lt;!-- narracao: nao --&gt;</code>.</li>
+<li>Para revisar as notas slide a slide, use a aba <b>Locução › Notas dos slides</b>: importe, edite, ouça e <b>aplique à apresentação</b>. Os comentários acima são escritos por ela.</li>
 </ul>
 <h4>Guardar o conteúdo: arquivo ou link?</h4>
 <p>O Conteudista não guarda nenhum conteúdo no site. Você decide onde ele fica, e há dois tipos de saída:</p>
@@ -221,12 +223,13 @@
 <li>Escolha a <b>Versão A</b> (antes) e a <b>Versão B</b> (depois) — de qualquer sessão, arquivo ou link, ou “Atual” — e clique em <b>Comparar</b>. Use ⇄ para inverter.</li>
 <li><b>Importar link</b> traz o texto-fonte de um link do Conteudista (direto ou PrivateBin) como uma versão marcada <b>via link</b>, sem alterar os editores. Se o link tiver senha, ela é pedida antes de adicionar. A versão importada fica selecionada como A e é comparada com o texto atual; para comparar dois links, importe os dois e escolha A e B. Um conteúdo que já está nas versões não é duplicado.</li>
 <li>Leitura do resultado: linhas <span style="background:#fde0db">removidas</span> e <span style="background:#e8f5ec">incluídas</span>, com as palavras alteradas destacadas; imagens aparecem como miniaturas e as que mudaram são listadas em “Antes” e “Depois”.</li>
-<li>Opções: Apostila, Apresentação ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
+<li><b>Notas dos slides</b> (em Documento) compara só as notas e a narração de cada slide. Aberta pela aba <b>Locução</b> com alterações não aplicadas, a janela já compara o texto atual com o <b>Rascunho da Locução</b>.</li>
+<li>Opções: Apostila, Apresentação, Notas dos slides ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
 <li><b>Restaurar A/B</b> coloca a versão nos editores; <b>.MD A/B</b> salva os .md; <b>★ Salvar versão</b> cria um ponto nomeado (não é apagado automaticamente). O limite é de 120 versões.</li>
 </ul>
 <h4>Criar um link</h4>
 <ol>
-<li>Clique em <b>Compartilhar link</b>: ao lado de <b>Salvar ▾</b>, ao lado de <b>Importar</b> ou no ícone da barra do editor. Os três abrem a mesma janela (<kbd>Alt+Shift+L</kbd>).</li>
+<li>Clique em <b>Compartilhar link</b>: ao lado de <b>Salvar ▾</b>, ao lado de <b>Importar</b>, no ícone da barra do editor ou na aba <b>Locução › Notas dos slides</b>. Todos abrem a mesma janela (<kbd>Alt+Shift+L</kbd>). As notas dos slides vão no link; se houver notas editadas na Locução e ainda não aplicadas, você escolhe aplicá-las antes.</li>
 <li>Confira a opção sugerida para o tamanho do seu conteúdo. Você pode trocá-la.</li>
 <li>Se quiser, defina uma <b>senha</b> e envie-a por outro canal.</li>
 <li>Clique em <b>Criar link</b>. Ele é copiado automaticamente e aparece na janela, com o QR Code.</li>
@@ -329,7 +332,7 @@
     { g: 'Navegação', k: '1', d: 'Aba Apostila (foca o editor)', f: () => focarEditor('g') },
     { g: 'Navegação', k: '2', d: 'Aba Apresentação (foca o editor)', f: () => focarEditor('s') },
     { g: 'Navegação', k: 'M', d: 'Alternar modo do editor (Editar → Dividido → Prévia)', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); if (!vis) return; const ordem = ['e', 's', 'p'], i = (ordem.indexOf(vis.dataset.m) + 1) % 3; const b = vis.querySelector('.mde-tb [data-m="' + ordem[i] + '"]'); if (b) b.click(); toast(['Somente editor', 'Editor + prévia', 'Somente prévia'][i]); } },
-    { g: 'Navegação', k: 'V', d: 'Versões do texto (comparar antes e depois)', f: () => window.Hist && Hist.abrir() },
+    { g: 'Navegação', k: 'V', d: 'Versões do texto (comparar antes e depois)', f: () => { const ln = document.getElementById('locNotas'), sl = document.getElementById('secLoc'); if (ln && !ln.hidden && sl && !sl.hidden) { const b = document.getElementById('lnVer'); if (b) { b.click(); return; } } if (window.Hist) Hist.abrir(); } },
     
     { g: 'Navegação', k: 'F', d: 'Tela cheia do editor', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); const b = vis && [...vis.querySelectorAll('.mde-tb button')].pop(); if (b) b.click(); } },
     { g: 'Ajuda', k: 'T', d: 'Tutorial', f: iniciar },

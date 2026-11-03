@@ -701,12 +701,16 @@
     if (!(e.altKey && e.shiftKey) || e.ctrlKey || e.metaKey) return;
     if (e.code === 'Digit3') { e.preventDefault(); mostrarAba('locucao'); $('locTexto').focus(); }
     else if (e.code === 'Digit1' || e.code === 'Digit2') { if (!sec.hidden) mostrarAba('curso'); }
-    else if (e.code === 'KeyN' && !sec.hidden) { e.preventDefault(); if (!$('locGerar').disabled) $('locGerar').click(); }
+    else if (e.code === 'KeyN' && !sec.hidden) { e.preventDefault(); if (sec.classList.contains('ln-ativo')) return; if (!$('locGerar').disabled) $('locGerar').click(); }
   }, true);
   const AJUDA = '<h4>Locução (texto em fala)</h4><ul>' +
     '<li>Aba <b>Locução</b> (<kbd>Alt+Shift+3</kbd>): transforma texto em fala <b>no seu navegador</b>. O texto não sai do computador.</li>' +
     '<li>Para deixar a página leve, os <b>recursos de áudio</b> (vozes) só são baixados quando você clica em <b>Carregar áudio</b> (aba Locução) ou liga a <b>Narração dos slides</b>. Na primeira vez pode levar alguns minutos; depois ficam guardados no navegador.</li>' +
-    '<li><b>1. Texto</b>: digite, cole ou <b>importe</b> do conteúdo (notas do apresentador, texto dos slides ou apostila).</li>' +
+    '<li>A aba tem dois modos. <b>Notas dos slides</b> edita a narração de cada slide, ligada ao texto da aba Apresentação. <b>Texto livre</b> transforma qualquer texto em fala.</li>' +
+    '<li><b>Notas dos slides</b>: <b>Importar notas</b> cria um rascunho com um campo por slide. Edite, ouça cada slide (<b>▶ Ouvir</b>) e escolha onde gravar: <b>Nota do apresentador</b> (aparece no slide e é narrada), <b>Só narração</b> (fala diferente da nota) ou <b>Sem narração</b>. Nada muda nos slides até <b>Aplicar à apresentação</b>; antes de aplicar, uma versão é guardada.</li>' +
+    '<li>Se a nota mudar na aba Apresentação enquanto você edita, o slide mostra <b>Conflito</b>: escolha <b>Manter a minha</b> ou <b>Usar a da apresentação</b>. Slides que você não editou acompanham a apresentação sozinhos. O rascunho fica guardado neste navegador.</li>' +
+    '<li><b>Versões</b> abre a comparação no documento <b>Notas dos slides</b>; com alterações pendentes, compara o texto atual com o <b>Rascunho da Locução</b>. <b>Compartilhar link</b> leva as notas para outro computador; se houver alterações não aplicadas, pergunta antes se deve aplicá-las.</li>' +
+    '<li><b>Texto livre › 1. Texto</b>: digite, cole ou <b>importe</b> do conteúdo (notas do apresentador, texto dos slides ou apostila).</li>' +
     '<li><b>2. Voz</b>: escolha o <b>idioma</b>, a <b>voz</b> (as <b>Recomendadas</b> aparecem primeiro), a <b>velocidade</b> e a <b>pausa entre frases</b>. <kbd>Alt+Shift+N</kbd> gera.</li>' +
     '<li>Se uma voz não puder ser usada no momento, outra voz do mesmo idioma é usada automaticamente.</li>' +
     '<li><b>3. Ouvir e baixar</b>: escolha o formato do arquivo — <b>MP3</b> (padrão), <b>OGG</b> (menor) ou <b>WAV</b> (sem compressão).</li>' +

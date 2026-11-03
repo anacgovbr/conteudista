@@ -364,24 +364,24 @@ flowchart LR
 - Na aba Apresentação, marque Narração dos slides
 - As notas viram áudio dentro da apresentação
 - Formatos MP3, OGG ou WAV
-- No HTML: botões Narração e Avanço automático
+- No HTML: botões de som e Reproduzir
 - No PPTX: o áudio inicia sozinho em cada slide
 - No modo leitura, a narração não começa sozinha
 
-<!-- notas: A narração transforma as notas do apresentador em áudio. Na aba Apresentação, marque Narração dos slides e escolha idioma, voz, velocidade e formato de áudio. Na página web, há os botões Narração e Avanço automático, e o modo leitura não inicia o som. No PowerPoint, o áudio de cada slide inicia sozinho. Para falar um texto diferente da nota, usa-se o comentário narração, e, para um slide sem som, esse comentário com o valor não. -->
+<!-- notas: A narração transforma as notas do apresentador em áudio. Na aba Apresentação, marque Narração dos slides e escolha idioma, voz, velocidade e formato de áudio. Na página web, o botão de som liga e desliga a narração, e o botão Reproduzir troca os slides sozinho, sempre depois que a narração do slide termina. O modo leitura não inicia o som. No PowerPoint, o áudio de cada slide inicia sozinho. Para falar um texto diferente da nota, usa-se o comentário narração, e, para um slide sem som, esse comentário com o valor não. -->
 
 ---
 
 # Locução
 
-- A aba Locução converte qualquer texto em fala
-- Importa notas, slides ou apostila
-- Voz, velocidade e pausa ajustáveis
-- O áudio é gerado no seu computador
+- Notas dos slides: edite e ouça a narração de cada slide
+- Aplicar à apresentação devolve o texto aos slides
+- Versões e Compartilhar link também nas notas
+- Texto livre: qualquer texto em fala
 
 > [!info] Os recursos de voz são baixados na primeira vez.
 
-<!-- notas: A aba Locução converte qualquer texto em fala, sem relação com os slides. É possível importar as notas, o texto dos slides ou a apostila, escolher a voz e a velocidade e baixar o áudio. Os recursos de voz são carregados sob demanda, e a primeira vez pode levar alguns minutos. O áudio é gerado no seu computador, e o texto não é enviado a nenhum servidor. Os áudios ficam em um histórico, para ouvir de novo. -->
+<!-- notas: A aba Locução tem dois modos. Em Notas dos slides, o botão Importar notas traz a nota de cada slide para um rascunho. Você edita o texto, ouve cada slide e clica em Aplicar à apresentação; só os slides alterados mudam. Os botões Versões e Compartilhar link da própria aba comparam as notas com versões anteriores e as levam para outro computador. Em Texto livre, qualquer texto vira fala. Os recursos de voz são carregados sob demanda, e o áudio é gerado no seu computador. -->
 
 ---
 

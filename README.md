@@ -38,6 +38,7 @@ web/janelas.js           ← Importar, Salvar ▾ (menu), Compartilhar link e Hi
 web/colar.js             ← Importar > Colar: subabas Apostila, Apresentação e Link
 web/versoes.js           ← rascunhos e versões unificados (salvar, abrir, excluir e migração dos dados antigos)
 web/locucao.js           ← aba Locução
+web/notas-locucao.js     ← Locução › Notas dos slides (rascunho, aplicar, versões e link)
 web/locucao-worker.js    ← motor de voz Kokoro-82M (Web Worker)
 web/ptbr-g2p.js          ← fonemizador interno pt-BR
 web/changelog.js         ← botão Novidades (lê o CHANGELOG.md)
@@ -141,6 +142,8 @@ Manutenção do exemplo:
 ## Locução (texto em fala, no navegador)
 
 Aba **Locução** (`Alt+Shift+3`): gera áudio a partir de texto no navegador com **Piper** (padrão para português, voz `pt_BR-faber-medium`) ou **Kokoro-82M** (`onnx-community/Kokoro-82M-v1.0-ONNX`, `dtype: "q8"`, ~86 MB), 100% no navegador.
+
+A aba tem dois modos. **Notas dos slides** (`web/notas-locucao.js`) edita a narração slide a slide: **Importar notas** cria um rascunho (guardado em `localStorage['conteudista.locucao.notas']`) com um campo por slide; **Aplicar à apresentação** grava de volta, no Markdown da aba Apresentação, só os slides alterados (`<!-- notas: … -->`, `<!-- narracao: … -->` ou `<!-- narracao: nao -->`), depois de guardar uma versão "Antes de aplicar as notas da Locução". Conflitos (nota alterada nos dois lados) são resolvidos por slide. **Versões** abre a janela de comparação no documento **Notas dos slides** (e oferece a pseudo-versão "Rascunho da Locução"); **Compartilhar link** abre a mesma janela de link do editor e, se houver alterações não aplicadas, pergunta antes se deve aplicá-las. A leitura dos slides segue as mesmas regras de `split_slides`/`notas_para_narracao` do gerador. **Texto livre** é o modo anterior.
 
 | Item | Como funciona |
 |---|---|

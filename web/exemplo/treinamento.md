@@ -340,7 +340,7 @@ A narração transforma as **notas do apresentador** em áudio, dentro da própr
 
 | Saída | Como a narração funciona |
 |---|---|
-| **HTML** | A apresentação abre com “Iniciar com narração”. Os botões **Narração** (`M`) e **Avanço automático** (`A`) controlam o som e a troca de slides |
+| **HTML** | A apresentação abre com “Iniciar com narração”. O botão de **som** (`S`) liga e desliga a narração, e **Reproduzir** (`Espaço`) troca os slides sozinho, sempre depois que a narração do slide termina |
 | **PPTX** | O áudio de cada slide inicia sozinho. Com “Avançar os slides sozinho”, é possível exportar um vídeo pelo PowerPoint |
 
 Dois comentários controlam o que é falado:
@@ -357,13 +357,40 @@ O primeiro define a nota. O segundo substitui a nota no áudio. O terceiro deixa
 
 ### 9.2 Aba Locução
 
-A aba **Locução** converte qualquer texto em fala, sem relação com os slides.
+A aba **Locução** tem dois modos, escolhidos no alto da aba:
 
-- **Importar** traz o texto das notas, dos slides ou da apostila.
-- Escolha **idioma**, **voz**, **velocidade** e **pausa** entre frases, e clique em **Gerar locução**.
-- O áudio é gerado **no seu computador**: o texto não é enviado a nenhum servidor.
-- Os recursos de voz são baixados sob demanda, em **Carregar áudio**. Na primeira vez, o download pode levar alguns minutos.
-- Cada áudio fica guardado em um histórico, para ouvir e baixar de novo (**MP3**, **OGG** ou **WAV**).
+| Modo | Para que serve |
+|---|---|
+| **Notas dos slides** | Revisar e ouvir a narração de cada slide e devolver o texto para a apresentação |
+| **Texto livre** | Converter qualquer texto em fala, sem relação com os slides |
+
+Nos dois modos, escolha **idioma**, **voz**, **velocidade** e **pausa** entre frases. O áudio é gerado **no seu computador**: o texto não é enviado a nenhum servidor. Os recursos de voz são baixados sob demanda, em **Carregar áudio**; na primeira vez, o download pode levar alguns minutos.
+
+### 9.3 Editar as notas na Locução
+
+1. Na aba **Locução**, mantenha **Notas dos slides** selecionado e clique em **Importar notas**. Cada slide vira um campo, com o número e o título.
+2. Edite o texto. Em **Gravar em**, escolha **Nota do apresentador** (aparece no slide e é narrada), **Só narração** (fala diferente da nota) ou marque **Sem narração**.
+3. Clique em **▶ Ouvir** para escutar só aquele slide.
+4. Clique em **Aplicar à apresentação**. Só os slides alterados mudam, e uma versão do texto anterior é guardada.
+
+> [!info] Até você aplicar, as edições ficam num **rascunho** guardado neste navegador. Nada muda nos slides. **Descartar** volta às notas da apresentação.
+
+Cada slide mostra o seu estado:
+
+| Estado | O que significa |
+|---|---|
+| **Editada** ou **Nova nota** | Você alterou o texto e ainda não aplicou |
+| **Conflito** | A nota mudou também na aba Apresentação. Escolha **Manter a minha** ou **Usar a da apresentação** |
+| **Atualizada pela apresentação** | A nota mudou só na aba Apresentação; o rascunho acompanhou |
+
+Se você incluir, excluir ou mover slides depois de importar, a aba pede para **atualizar a lista**. As suas edições continuam nos slides de mesmo título.
+
+A barra das notas tem as mesmas ferramentas do editor:
+
+- **Versões** abre a comparação no documento **Notas dos slides**. Com alterações pendentes, compara o texto atual com o **Rascunho da Locução**, para você conferir o que vai mudar antes de aplicar.
+- **Compartilhar link** cria o link do conteúdo, com as notas, para continuar em outro computador. Se houver alterações não aplicadas, a aba pergunta antes se deve aplicá-las; sem aplicar, elas não vão no link.
+
+> [!tip] Para continuar a revisão em outro computador: aplique, crie o link, abra o link no outro computador e clique em **Importar notas** na aba Locução.
 
 ## 10. O que cabe no Markdown
 

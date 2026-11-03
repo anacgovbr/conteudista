@@ -250,7 +250,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     '<div class="hrow"><div class="lg"><label for="hA">Versão A (antes)</label><select id="hA"></select></div>' +
     '<div class="hrow troca" style="min-width:auto;margin:0"><button type="button" class="sec mini" id="hTroca" title="Trocar A e B">⇄</button></div>' +
     '<div class="lg"><label for="hB">Versão B (depois)</label><select id="hB"></select></div></div>' +
-    '<div class="hrow op"><div><label for="hDoc">Documento</label><select id="hDoc"><option value="g">Apostila</option><option value="s">Apresentação</option><option value="a">Ambos</option></select></div>' +
+    '<div class="hrow op"><div><label for="hDoc">Documento</label><select id="hDoc"><option value="g">Apostila</option><option value="s">Apresentação</option><option value="n">Notas dos slides</option><option value="a">Ambos</option></select></div>' +
     '<div><label for="hModo">Exibição</label><select id="hModo"><option value="l">Lado a lado</option><option value="u">Unificada</option></select></div>' +
     '<div><label for="hCtx">Mostrar</label><select id="hCtx"><option value="3">Só alterações (± 3 linhas)</option><option value="10">Alterações (± 10 linhas)</option><option value="-1">Texto completo</option></select></div>' +
     '<div class="go" style="min-width:auto"><button type="button" id="hGo">Comparar</button></div></div>' +
@@ -267,15 +267,21 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   // Janela sobreposta: só aparece quando o botão "Histórico" (barra do editor) é clicado
   const back = document.createElement('div'); back.className = 'hist-back'; back.hidden = true; back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true'); back.setAttribute('aria-label', 'Versões do texto');
   back.appendChild(sec); document.body.appendChild(back);
-  function abrir(doc) {
+  let voltarA = null;
+  function abrir(doc, op) {
+    op = op || {}; voltarA = op.foco || document.activeElement;
     if (doc) $('hDoc').value = doc;
     if (matchMedia('(max-width: 700px)').matches && !abrir.modoDefinido) { $('hModo').value = 'u'; abrir.modoDefinido = true; }  // celular: exibição unificada
     back.hidden = false; back.scrollTop = 0; document.body.style.overflow = 'hidden';
     $('hFeed').textContent = '';
-    montarSelects().then(async () => { const l = await lista(); if ($('hA').value === 'atual' && l[0]) $('hA').value = String(l[0].id); $('hB').value = 'atual'; executar(); });
+    montarSelects().then(async () => {
+      const l = await lista(), tem = v => [...$('hA').options].some(o => o.value === v);
+      if (op.a && tem(op.a)) $('hA').value = op.a; else if ($('hA').value === 'atual' && l[0]) $('hA').value = String(l[0].id);
+      $('hB').value = op.b && tem(op.b) ? op.b : 'atual'; executar();
+    });
     setTimeout(() => $('hA').focus(), 30);
   }
-  function fecharHist() { limparLinkBox(); back.hidden = true; document.body.style.overflow = ''; }
+  function fecharHist() { limparLinkBox(); back.hidden = true; document.body.style.overflow = ''; const v = voltarA; voltarA = null; if (v && v.focus && document.contains(v)) v.focus(); }
   back.addEventListener('click', e => { if (e.target === back) fecharHist(); });
   addEventListener('keydown', e => {
     if (e.key !== 'Escape' || back.hidden) return;
@@ -297,6 +303,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     const l = await lista(), selA = $('hA'), selB = $('hB'), va = selA.value, vb = selB.value;
     const opt = v => '<option value="' + v.id + '">' + dataCurta(v.data) + ' — ' + esc(v.rotulo) + (v.p ? ' · ' + esc(v.p) : '') + ' · ' + fmt(v.tam) + (v.origem === 'link' ? ' · via link' : '') + '</option>';
     let h = '<option value="atual">★ Atual (conteúdo dos editores)</option>';
+    try { if (window.NotasSlides && NotasSlides.temRascunho()) h += '<option value="rasc">✎ Rascunho da Locução (notas não aplicadas)</option>'; } catch (e) { /* sem rascunho */ }
     for (const [g, nome] of GRUPOS) { const it = l.filter(v => grupoDe(v) === g); if (it.length) h += '<optgroup label="' + esc(nome) + ' (' + it.length + ')">' + it.map(opt).join('') + '</optgroup>'; }
     selA.innerHTML = h; selB.innerHTML = h;
     const existe = (s, v) => v && [...s.options].some(o => o.value === v);
@@ -307,6 +314,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   }
   async function obter(id) {
     if (id === 'atual') { const d = pacote(); return { rotulo: 'Atual (editores)', data: Date.now(), g: d.g, s: d.s, p: d.p, r: d.r, b: d.b, atual: true }; }
+    if (id === 'rasc') { const d = pacote(); return { rotulo: 'Rascunho da Locução (não aplicado)', data: Date.now(), g: d.g, s: window.NotasSlides ? NotasSlides.sComRascunho() : d.s, p: d.p, r: d.r, b: d.b, atual: true, rasc: true }; }
     return (await lista()).find(v => String(v.id) === String(id));
   }
   async function executar() {
@@ -314,8 +322,9 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     const docs = $('hDoc').value === 'a' ? ['g', 's'] : [$('hDoc').value], modo = $('hModo').value, ctx = +$('hCtx').value;
     let out = '', mais = 0, menos = 0, ir = 0, inv = 0;
     for (const d of docs) {
-      const r = comparar(A[d] || '', B[d] || '', modo, ctx); mais += r.mais; menos += r.menos; ir += r.imgRem; inv += r.imgNov;
-      out += (docs.length > 1 ? '<h4>' + (d === 'g' ? 'Apostila' : 'Apresentação') + '</h4>' : '') + '<div class="dfwrap">' + r.html + '</div>' + r.imagens;
+      const txt = v => d === 'n' ? (window.NotasSlides ? NotasSlides.texto(v.s || '') : v.s || '') : v[d] || '';
+      const r = comparar(txt(A), txt(B), modo, ctx); mais += r.mais; menos += r.menos; ir += r.imgRem; inv += r.imgNov;
+      out += (docs.length > 1 ? '<h4>' + (d === 'g' ? 'Apostila' : d === 'n' ? 'Notas dos slides' : 'Apresentação') + '</h4>' : '') + '<div class="dfwrap">' + r.html + '</div>' + r.imagens;
     }
     $('hRes').innerHTML = '<div class="dfst"><span><b>A:</b> ' + esc(A.rotulo) + ' (' + dataCurta(A.data) + ')</span><span><b>B:</b> ' + esc(B.rotulo) + ' (' + dataCurta(B.data) + ')</span>' +
       '<span class="p">+' + mais + ' linha(s)</span><span class="m">−' + menos + ' linha(s)</span>' + (ir || inv ? '<span>Imagens: <span class="m">−' + ir + '</span> / <span class="p">+' + inv + '</span></span>' : '') + '</div>' + out;
@@ -324,7 +333,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     });
   }
   async function restaurar(id) {
-    const v = await obter(id); if (!v || v.atual) { log('Escolha uma versão guardada para restaurar.', 'wa'); return; }
+    const v = await obter(id); if (v && v.rasc) { log('Para levar o rascunho das notas à apresentação, use Aplicar à apresentação na aba Locução.', 'wa'); return; } if (!v || v.atual) { log('Escolha uma versão guardada para restaurar.', 'wa'); return; }
     if (!confirm('Substituir o conteúdo dos editores pela versão:\n' + v.rotulo + ' (' + dataCurta(v.data) + ')?\n\nO conteúdo atual será guardado no histórico antes.')) return;
     await registrar('antes', 'Antes de restaurar');
     aplicar(v); fecharHist(); log('Versão restaurada: ' + v.rotulo + ' (' + dataCurta(v.data) + '). Ctrl+Z no editor também desfaz.', 'ok');
@@ -407,6 +416,6 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
       msgLink((err && err.message) || String(err));
     }
   }
-  window.Hist = { registrar, sessao, atualizar: () => { invalidar(); agendarUI(); }, abrir: () => abrir($('ps') && !$('ps').hidden ? 's' : 'g'), fechar: fecharHist, comparar: executar, _myers: myers };
+  window.Hist = { registrar, sessao, atualizar: () => { invalidar(); agendarUI(); }, abrir: (doc, op) => abrir(doc || ($('ps') && !$('ps').hidden ? 's' : 'g'), op), fechar: fecharHist, comparar: executar, _myers: myers };
   montarSelects();
 })();
