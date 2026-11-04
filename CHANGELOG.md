@@ -1,4 +1,7 @@
 # Novidades do Conteudista
+## 1.77 - 04/11/2026
+- Ícones no menu Mais opções da apresentação HTML. Avanço automático, Notas (Mostrar/Ocultar) e Imprimir / PDF… ganham ícone à esquerda do texto; no celular, Acessibilidade também. Os ícones seguem o padrão da barra (SVG de 24 px, preenchidos, na cor do texto e ocultos para leitores de tela) e o Acessibilidade reaproveita o mesmo ícone da barra. O nome acessível continua sendo o texto do botão e, ao mostrar ou ocultar as notas, só o rótulo muda (o ícone permanece). Os ícones da barra B+ não mudam.
+
 ## 1.76 - 03/11/2026
 - **A pausa é respeitada ao mudar de slide.** Se você apertar **Pausar** (ou `Espaço`) e depois navegar, o slide novo não começa a narrar sozinho: o botão continua em **Reproduzir**, e a narração do slide em que você estiver só começa quando você apertar **Reproduzir**. Ligar o som de novo (`S`) também retoma a narração do slide atual. Sem pausa, a navegação continua narrando o slide novo, como antes.
 - **Próximo no último slide não reinicia mais a narração.** Antes, cada toque em Próximo (ou `→`, `End`, gesto de deslizar) no último slide recarregava o slide e reiniciava o áudio. Agora nada acontece quando o destino é o slide em que você já está.

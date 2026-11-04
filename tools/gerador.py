@@ -361,9 +361,9 @@ function marcaFs(){var on=!!telaCheia();if(b2){b2.setAttribute('aria-pressed',on
 D.addEventListener('fullscreenchange',marcaFs);D.addEventListener('webkitfullscreenchange',marcaFs);
 var podeFs=!!(H.requestFullscreen||H.webkitRequestFullscreen)&&(D.fullscreenEnabled!==false||D.webkitFullscreenEnabled===true);
 if(!podeFs){if(b2)b2.hidden=true;var m2=$('b2m');if(m2)m2.hidden=true}
-function nt(){var on=B.classList.toggle('sn');if(b1){b1.setAttribute('aria-pressed',on?'true':'false');b1.textContent=on?'Ocultar notas':'Mostrar notas'}}
+function nt(){var on=B.classList.toggle('sn');if(b1){b1.setAttribute('aria-pressed',on?'true':'false');(b1.querySelector('.mi-t')||b1).textContent=on?'Ocultar notas':'Mostrar notas'}}
 function marcaModo(on){if(!bLer)return;bLer.setAttribute('aria-label',on?'Modo slides':'Modo leitura');bLer.setAttribute('data-dica',(on?'Modo slides':'Modo leitura')+' · L');atualizarDica()}
-function modo(on,salvar){var era=ler();if(era&&!on)i=slideLeitura();B.classList.toggle('modo-leitura',on);H.classList.toggle('ml',on);marcaModo(on);if(salvar)try{localStorage.setItem(K,on?'leitura':'slides')}catch(e){}if(on){parar();S.forEach(function(x){x.classList.add('on')});marca();contador();requestAnimationFrame(function(){f();if(salvar){UI.travaL=Date.now()+700;S[i].scrollIntoView({block:'start'})}})}else{S.forEach(function(x,k){x.classList.toggle('on',k===i)});f();g(i,true)}D.dispatchEvent(new CustomEvent('conteudista:modo',{detail:on?'leitura':'slides'}))}
+function modo(on,salvar){var era=ler();if(era&&!on)i=slideLeitura();B.classList.toggle('modo-leitura',on);H.classList.toggle('ml',on);marcaModo(on);if(on){parar();S.forEach(function(x){x.classList.add('on')});marca();contador();requestAnimationFrame(function(){f();if(salvar){UI.travaL=Date.now()+700;S[i].scrollIntoView({block:'start'})}})}else{S.forEach(function(x,k){x.classList.toggle('on',k===i)});f();g(i,true)}D.dispatchEvent(new CustomEvent('conteudista:modo',{detail:on?'leitura':'slides'}))}
 addEventListener('scroll',function(){if(!ler()||UI.rafL)return;UI.rafL=requestAnimationFrame(function(){UI.rafL=0;if(Date.now()<(UI.travaL||0))return;var k=slideLeitura();if(k!==i){i=k;contador()}})},{passive:true});
 function ativo(){return UI.reproduzindo||UI.audio}
 function marcaPlay(){if(!bp)return;var a=ativo();bp.setAttribute('data-on',a?'true':'false');bp.setAttribute('aria-label',a?'Pausar apresentação':'Reproduzir apresentação');bp.setAttribute('data-dica',(a?'Pausar':'Reproduzir')+' · Espaço');atualizarDica()}
@@ -449,9 +449,9 @@ if(ler())return;if(k===' '&&!ctl){e.preventDefault();reproduzir();return}
 if(k==='ArrowRight'||k==='PageDown'){e.preventDefault();g(i+1)}else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();g(i-1)}else if(k==='Home'){e.preventDefault();g(0)}else if(k==='End'){e.preventDefault();g(N-1)}},true);
 addEventListener('resize',function(){f();ajustar(S[i]);posDica()});D.addEventListener('conteudista:leitura',function(){ajustar(S[i])});if(D.fonts&&D.fonts.ready)D.fonts.ready.then(function(){ajustar(S[i])});
 var h=parseInt(location.hash.slice(1));i=isNaN(h)?0:Math.max(0,Math.min(N-1,h-1));modo(ler(),false);if(ler()&&i>0)S[i].scrollIntoView();marcaFs();setEstado('visible');programarInatividade()})();"""
-# Modo dos slides: sempre abre em slides, salvo escolha explícita anterior da pessoa (1.72: não abre mais em Modo leitura por causa do tamanho da tela). Aplicado antes da pintura.
-SLIDES_MODO_HEAD='(function(){var m=null;try{m=localStorage.getItem("conteudista.apresentacao.modo")}catch(e){}if(m!=="leitura"&&m!=="slides")m="slides";if(m==="leitura")document.documentElement.classList.add("ml")})();'
-SLIDES_MODO_BODY='if(document.documentElement.classList.contains("ml"))document.body.classList.add("modo-leitura");'
+# Modo dos slides (1.76): a apresentação SEMPRE abre em slides, em qualquer dispositivo. O Modo leitura só vale na sessão atual (botão Leitura ou tecla L) e não é gravado.
+SLIDES_MODO_HEAD='(function(){var m="slides";try{localStorage.removeItem("conteudista.apresentacao.modo")}catch(e){}document.documentElement.classList.remove("ml")})();'
+SLIDES_MODO_BODY='document.body.classList.remove("modo-leitura");'
 CSS_S_A11Y="""
 .s{font-family:var(--leitura)}.slide-num{display:none}
 .nt-t{font-weight:700;margin:0 0 4px!important;font-size:inherit!important}.nt-x{margin:0!important;font-size:inherit!important;line-height:1.45!important;white-space:pre-line}
@@ -694,6 +694,10 @@ html[data-barra="hidden"] #b2{opacity:0;pointer-events:none}
 #hud .bplus-pop button:hover{background:#edf5ff}#hud .bplus-pop label{display:block;padding:6px 8px 2px;font-weight:700;color:#333}#hud .bplus-pop select{border:1px solid #555}
 #hud .atalhos{margin:6px 8px;font-size:13px;line-height:1.55;color:#333}#hud .atalhos kbd{font:inherit;font-weight:700;color:#0c326f}
 #hud .so-mobile{display:none}
+#hud .bplus-pop button.mi:not(.so-mobile){display:flex;align-items:center;gap:12px}
+#hud .bplus-pop .mi .ic{flex:none}#hud .bplus-pop .mi .mi-t{flex:1;min-width:0}
+@media(max-width:700px),(pointer:coarse){#hud .bplus-pop button.mi.so-mobile{display:flex;align-items:center;gap:12px}}
+#hud .bplus-pop button.mi[hidden]{display:none!important}
 #hud #irpara{left:50%;right:auto;transform:translateX(-50%);width:min(300px,calc(100vw - 24px));min-width:0}
 #hud #irpara .pop-t{margin:2px 4px 8px;font-weight:700;color:#0c326f;font-size:15px}
 #hud #irpara label{padding:0 4px 3px;font-size:13px}
@@ -832,6 +836,7 @@ ICO_B={'prev':'M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z','next':'M10 6 8.59
  'art':'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z',
  'sld':'M10 8v8l5-4-5-4zm9-5H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z',
  'more':'M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'}
+ICO_B.update({'nota':'M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 14H6v-2h2v2zm0-3H6V9h2v2zm0-3H6V6h2v2zm7 6h-5v-2h5v2zm3-3h-8V9h8v2zm0-3h-8V6h8v2z','print':'M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z','auto':'M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z'})
 def _ic(k,cls=''):
     return '<svg class="ic%s" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="%s"/></svg>'%((' '+cls) if cls else '',ICO_B[k])
 def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
@@ -870,10 +875,10 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
          '<button id="tamM" type="button" aria-label="A\u2212: diminuir texto">A\u2212</button><button id="tamR" type="button" aria-label="Tamanho do texto: 100%. Voltar a 100%">100%</button><button id="tamP" type="button" aria-label="A+: aumentar texto">A+</button></div>'
          '<span id="tamS" class="vh" role="status" aria-live="polite"></span></div></div>'
          '<div id="bmais-menu" class="bplus-pop" hidden>'
-         '<button id="ba11yM" class="so-mobile" type="button" aria-haspopup="true" aria-controls="a11y">Acessibilidade (A)</button>'
+         '<button id="ba11yM" class="so-mobile mi" type="button" aria-haspopup="true" aria-controls="a11y">'+_ic('a11y')+'<span class="mi-t">Acessibilidade (A)</span></button>'
          +('<button id="ba" type="button" aria-pressed="false">Avanço automático</button>' if narr else '')
-         +'<button id="b1" type="button" aria-pressed="false" aria-keyshortcuts="N">Mostrar notas (N)</button>'
-         '<button id="imp" type="button" aria-haspopup="dialog" aria-keyshortcuts="Control+P" aria-controls="dimp">Imprimir / PDF…</button>'
+         +'<button id="b1" type="button" aria-pressed="false" aria-keyshortcuts="N" class="mi">'+_ic('nota')+'<span class="mi-t">Mostrar notas (N)</span></button>'
+         '<button id="imp" type="button" aria-haspopup="dialog" aria-keyshortcuts="Control+P" aria-controls="dimp" class="mi">'+_ic('print')+'<span class="mi-t">Imprimir / PDF…</span></button>'
          '<div class="atalhos" id="atalhosB" tabindex="-1"><strong>Atalhos</strong><br><kbd>←/→</kbd> slides · <kbd>Espaço</kbd> reproduzir/pausar · <kbd>G</kbd> ir para o slide · <kbd>L</kbd> modo leitura/slides · <kbd>A</kbd> acessibilidade · <kbd>S</kbd> som · <kbd>N</kbd> notas · <kbd>F</kbd> tela cheia · <kbd>M</kbd> opções · <kbd>?</kbd> ajuda · <kbd>Esc</kbd> fechar</div></div></div>'
          '<button id="b2" type="button" aria-pressed="false" aria-label="Tela cheia" aria-keyshortcuts="F" data-dica="Tela cheia · F">'+_ic('fs','i-off')+_ic('fsx','i-on')+'</button>'
          '<div id="dica" role="tooltip" hidden></div>')
