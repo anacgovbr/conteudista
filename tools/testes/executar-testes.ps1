@@ -9,7 +9,7 @@
   Nao baixa navegador nenhum: usa o Chrome (ou o Edge, com -Navegador msedge) ja instalado.
 #>
 param(
-  [string]$Grupos = "1,2,3,4,5,6,7,8,9,10",
+  [string]$Grupos = "1,2,3,4,5,6,7,8,9,10,11",
   [ValidateSet("chrome", "msedge", "chromium", "firefox", "webkit")][string]$Navegador = "chrome",
   [switch]$ComJanela
 )

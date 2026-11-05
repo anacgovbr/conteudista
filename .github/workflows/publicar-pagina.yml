@@ -53,6 +53,10 @@ jobs:
           python tools/testar_acessibilidade.py /tmp/teste --prefixo Exemplo $EXIGIR
           python tools/testar_acessibilidade.py /tmp/teste2 --prefixo Exemplo --fonte-pptx "Segoe UI" $EXIGIR
 
+      - name: Testar a biblioteca Linguagem Acessível
+        run: |
+          node tools/linguagem-acessivel/testar.mjs
+
       - name: Verificar opções padrão (web/config/opcoes.yaml)
         run: |
           node --check web/opcoes.js
@@ -90,6 +94,7 @@ jobs:
           mkdir -p site/wheels
           cp web/index.html web/*.js web/*.css tools/gerador.py site/
           cp -r web/config site/config
+          cp -r web/lib site/lib
           cp -r tools/temas site/temas
           cp -r tools/fontes site/fontes
           cp -r web/exemplo site/exemplo

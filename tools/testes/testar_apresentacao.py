@@ -624,6 +624,33 @@ def grupo10(amb, ctx, G):
     pg.close(); a.close()
 
 
+# ----------------------------------------------------------------------------- GRUPO 11 — biblioteca Linguagem Acessível no navegador
+def grupo11(amb, ctx, G):
+    import shutil
+    d = amb.tmp / 'web_lib'
+    if not d.exists():
+        shutil.copytree(RAIZ / 'web' / 'lib', d / 'lib')
+        (d / 't.html').write_text("""<!doctype html><meta charset="utf-8"><title>t</title><script type="module">
+import { analisar, VERSAO } from './lib/linguagem-acessivel/index.js';
+window.r1 = { v: VERSAO, r: analisar('# A\\n\\n### B\\n\\n![](a.png) [aqui](x)').resumo };
+const w = new Worker('./w.js', { type: 'module' }); w.onmessage = e => { window.r2 = e.data; }; w.postMessage('[clique aqui](x)');
+</script>""", encoding='utf-8')
+        (d / 'w.js').write_text("import { criarSessao } from './lib/linguagem-acessivel/index.js';\nconst s = criarSessao();\nonmessage = e => postMessage(s.analisar(e.data).resumo);\n", encoding='utf-8')
+    srv, url = _servidor(d)
+    try:
+        pg = ctx.new_page(); erros = []
+        pg.on('pageerror', lambda e: erros.append(str(e)))
+        pg.goto(url.replace('index.html', 't.html'))
+        pg.wait_for_function('window.r1 && window.r2', timeout=10000)
+        r1, r2 = pg.evaluate('window.r1'), pg.evaluate('window.r2')
+        G.chk('11.1', 'Biblioteca carrega como módulo no navegador e analisa (3 itens para corrigir)', r1['r'].get('corrigir') == 3, r1)
+        G.chk('11.2', 'Biblioteca roda em Web Worker (módulo) com sessão e cache', r2.get('corrigir') == 1, r2)
+        G.chk('11.3', 'Nenhum erro de JavaScript', not erros, erros)
+        pg.close()
+    finally:
+        srv.shutdown()
+
+
 # navegador escolhido -> motor do Playwright (chrome e msedge usam o programa instalado no computador)
 MOTOR = {'chrome': 'chromium', 'msedge': 'chromium', 'chromium': 'chromium', 'firefox': 'firefox', 'webkit': 'webkit'}
 
@@ -638,6 +665,7 @@ GRUPOS = {
     '8': ('Opções padrão (opcoes.yaml)', grupo8, 'desktop'),
     '9': ('Celular: editor e Importar (1.79)', grupo9, 'movel'),
     '10': ('Zoom nos arquivos gerados (1.79)', grupo10, 'desktop'),
+    '11': ('Biblioteca Linguagem Acessível no navegador', grupo11, 'desktop'),
 }
 
 MANUAIS = [
@@ -652,7 +680,7 @@ MANUAIS = [
 # ----------------------------------------------------------------------------- execução
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10', help='lista de grupos (ex.: 1,2,5)')
+    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10,11', help='lista de grupos (ex.: 1,2,5)')
     ap.add_argument('--navegador', default='chrome', choices=list(MOTOR), help='padrão: chrome (Google Chrome instalado)')
     ap.add_argument('--saida', default=str(Path(__file__).parent / 'relatorio'), help='pasta do relatório')
     ap.add_argument('--tentativas', type=int, default=2, help='repete o grupo com falha até N vezes (passou na repetição = INSTAVEL)')

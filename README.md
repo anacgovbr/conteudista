@@ -33,6 +33,9 @@ web/opcoes.js            ← opções padrão (lê web/config/opcoes.yaml)
 web/config/opcoes.yaml   ← padrão de cada opção de ligar e desligar (edite aqui)
 docs/OPCOES.md           ← lista das opções (gerada)
 tools/opcoes/            ← verificação e testes das opções (Node, sem dependências)
+web/lib/linguagem-acessivel/ ← biblioteca de acessibilidade e linguagem simples (módulo ES, sem dependências)
+tools/linguagem-acessivel/   ← testes e geração da documentação da biblioteca
+docs/decisoes/           ← registro de decisões do projeto
 web/ajuda.js             ← tutorial guiado, ajuda e atalhos de teclado
 web/historico.js         ← histórico de versões, comparação (diff) e Importar link
 web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
@@ -96,6 +99,14 @@ Limitações conhecidas:
 - **Editor no celular (até 700 px):** barra em no máximo duas linhas, com menus no padrão Dropdown do gov.br (H: títulos, código e listas; +: Inserir; ⋯: Mais), contagem em uma linha e **Imagens do texto** recolhida, aberta como folha inferior por **Inserir**. Os botões originais continuam no lugar, escondidos, e os menus acionam esses botões. Liga e desliga em `celular` no `opcoes.yaml`.
 - **Importar:** **Link** é a primeira aba e abre selecionada (`importar.aba_inicial: link`; `ultima` volta ao comportamento anterior). Erros do link em linguagem simples.
 - **Zoom nos arquivos gerados:** a apostila aceita a pinça e o Ctrl + roda do navegador. Na apresentação, o palco se ajusta à tela, então o zoom é próprio: pinça nativa no celular, toque duplo, Ctrl + roda, teclas + − 0 e botão **100% ↺**; com zoom, as setas movem a visão e o deslizar não troca de slide. Imagens e fluxos têm o botão **Ampliar** (lupa), que abre a imagem em tela cheia com zoom (`ZOOM_JS` e `ZOOM_CSS` em `tools/gerador.py`).
+
+## Biblioteca Linguagem Acessível (`web/lib/linguagem-acessivel/`)
+
+Confere acessibilidade e linguagem simples em textos Markdown. É a base do verificador do editor (etapas 5 e 6), da linha de comando `lac` (etapa 4) e da API (etapa 11). Nesta versão (0.1.0) traz o núcleo e três regras: `i1` imagem sem descrição, `e1` título que pula nível e `k1` link que não diz aonde leva. Ainda não aparece na tela.
+
+- Uso, contrato e estrutura: `web/lib/linguagem-acessivel/README.md`. Regras e marcadores: `docs/linguagem-acessivel/`.
+- Testes (sem dependências): `node tools/linguagem-acessivel/testar.mjs`. Rodam antes de cada publicação; o conteúdo de exemplo não pode ter nenhum item "para corrigir".
+- Decisões de projeto: `docs/decisoes/`.
 
 ## Opções padrão (`web/config/opcoes.yaml`)
 

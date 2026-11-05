@@ -1,0 +1,81 @@
+{
+ "resumo": {
+  "corrigir": 6,
+  "sugestoes": 1,
+  "total": 7
+ },
+ "itens": [
+  [
+   "e1",
+   "corrigir",
+   3,
+   1,
+   "Este título pulou um nível. Depois de um título de nível 1, use no máximo o nível 2.",
+   [
+    "ajustar*"
+   ]
+  ],
+  [
+   "k1",
+   "corrigir",
+   5,
+   49,
+   "Troque \"clique aqui\" por um texto que diga aonde o link leva",
+   [
+    "editar"
+   ]
+  ],
+  [
+   "i1",
+   "corrigir",
+   7,
+   1,
+   "Descreva esta imagem para quem não pode vê-la",
+   [
+    "descrever",
+    "decorativa"
+   ]
+  ],
+  [
+   "k1",
+   "sugestao",
+   11,
+   17,
+   "Troque o endereço por um texto que diga aonde o link leva",
+   [
+    "editar"
+   ]
+  ],
+  [
+   "k1",
+   "corrigir",
+   11,
+   94,
+   "Este link não tem texto. Escreva aonde ele leva",
+   [
+    "editar"
+   ]
+  ],
+  [
+   "e1",
+   "corrigir",
+   26,
+   1,
+   "Este título pulou um nível. Depois de um título de nível 2, use no máximo o nível 3.",
+   [
+    "ajustar*"
+   ]
+  ],
+  [
+   "i1",
+   "corrigir",
+   28,
+   6,
+   "Descreva esta imagem para quem não pode vê-la",
+   [
+    "descrever",
+    "decorativa"
+   ]
+  ]
+ ]
+}

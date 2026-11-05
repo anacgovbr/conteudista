@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://anacgovbr.github.io/conteudista/lib/linguagem-acessivel/esquema/diagnostico.schema.json",
+  "title": "Linguagem Acessível · diagnóstico",
+  "description": "Um problema encontrado no texto. Mesmo formato na biblioteca, na linha de comando (lac) e na API. inicio/fim: índices UTF-16 do texto (fim exclusivo). linha/coluna: começam em 1; a coluna conta pontos de código Unicode.",
+  "type": "object",
+  "required": ["regra", "codigo", "area", "grupo", "nivel", "inicio", "fim", "linha", "coluna", "linhaFim", "colunaFim", "mensagem", "trecho", "referencia", "correcoes"],
+  "additionalProperties": false,
+  "properties": {
+    "regra": { "type": "string", "pattern": "^[a-z]+(-[a-z]+)*$", "description": "Id estável da regra (nunca muda)." },
+    "codigo": { "type": "string", "pattern": "^[a-z][0-9]+$", "description": "Código curto: letra do grupo + número." },
+    "area": { "enum": ["acessibilidade", "linguagem"] },
+    "grupo": { "enum": ["imagens", "estrutura", "links", "frases", "siglas", "narracao"] },
+    "nivel": { "enum": ["corrigir", "sugestao"] },
+    "variante": { "type": "string" },
+    "inicio": { "type": "integer", "minimum": 0 },
+    "fim": { "type": "integer", "minimum": 0 },
+    "linha": { "type": "integer", "minimum": 1 },
+    "coluna": { "type": "integer", "minimum": 1 },
+    "linhaFim": { "type": "integer", "minimum": 1 },
+    "colunaFim": { "type": "integer", "minimum": 1 },
+    "slide": { "type": "integer", "minimum": 1, "description": "Só em apresentações." },
+    "mensagem": { "type": "string", "minLength": 1, "description": "Texto para quem escreve, em linguagem simples." },
+    "trecho": { "type": "string", "description": "Começo do trecho marcado (até 120 caracteres)." },
+    "referencia": {
+      "type": "object", "additionalProperties": false,
+      "properties": { "wcag": { "type": "array", "items": { "type": "string" } }, "emag": { "type": "array", "items": { "type": "string" } }, "lei": { "type": "array", "items": { "type": "string" } } }
+    },
+    "correcoes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "rotulo", "segura"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "rotulo": { "type": "string" },
+          "segura": { "type": "boolean", "description": "true: não muda o sentido e pode ser aplicada automaticamente (lac ajustar)." },
+          "edicoes": {
+            "type": "array", "minItems": 1,
+            "items": { "type": "object", "required": ["inicio", "fim", "texto"], "additionalProperties": false,
+              "properties": { "inicio": { "type": "integer", "minimum": 0 }, "fim": { "type": "integer", "minimum": 0 }, "texto": { "type": "string" } } }
+          },
+          "acao": { "type": "string", "description": "Correção que precisa de uma pessoa (ex.: descrever-imagem)." },
+          "alvo": { "type": "object", "required": ["inicio", "fim"], "additionalProperties": false,
+            "properties": { "inicio": { "type": "integer", "minimum": 0 }, "fim": { "type": "integer", "minimum": 0 } } }
+        }
+      }
+    }
+  }
+}

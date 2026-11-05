@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://anacgovbr.github.io/conteudista/lib/linguagem-acessivel/esquema/resultado.schema.json",
+  "title": "Linguagem Acessível · resultado de analisar()",
+  "type": "object",
+  "required": ["versao", "tipo", "resumo", "diagnosticos"],
+  "additionalProperties": false,
+  "properties": {
+    "versao": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "tipo": { "enum": ["apostila", "apresentacao", "narracao"] },
+    "resumo": {
+      "type": "object", "required": ["corrigir", "sugestoes", "total"], "additionalProperties": false,
+      "properties": { "corrigir": { "type": "integer", "minimum": 0 }, "sugestoes": { "type": "integer", "minimum": 0 }, "total": { "type": "integer", "minimum": 0 } }
+    },
+    "diagnosticos": { "type": "array", "items": { "$ref": "diagnostico.schema.json" } }
+  }
+}
