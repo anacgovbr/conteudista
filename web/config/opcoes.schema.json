@@ -262,6 +262,19 @@
             false
           ]
         },
+        "ajuda_ia": {
+          "description": "Acessibilidade do texto: aba \"Pedir ajuda a uma IA\" nas janelas Descrever imagem e Simplificar trecho (desligado: só escrever)",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
         "marcas_no_texto": {
           "description": "Acessibilidade do texto: sublinhar no editor os trechos para corrigir",
           "default": "ligado",

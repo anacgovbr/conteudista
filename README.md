@@ -46,6 +46,7 @@ web/janelas.js           ← Importar, Salvar ▾ (menu), Compartilhar link e Hi
 web/colar.js             ← Importar > Link (primeira aba) e Importar > Colar (subabas Apostila e Apresentação)
 web/acessibilidade.js    ← painel Acessibilidade do texto (usa web/acessibilidade-worker.js e a biblioteca)
 web/acessibilidade-marcas.js ← marcas no texto e balão de correções (1.81)
+web/acessibilidade-janelas.js ← janelas Descrever imagem, Simplificar trecho e Explicar sigla, com pedido para IA (1.82)
 web/celular.js           ← editor no celular: barra em até duas linhas, contagem em uma linha, Imagens do texto em folha inferior
 web/versoes.js           ← rascunhos e versões unificados (salvar, abrir, excluir e migração dos dados antigos)
 web/locucao.js           ← aba Locução
@@ -103,6 +104,8 @@ Limitações conhecidas:
 - Usa a biblioteca `web/lib/linguagem-acessivel` em um Web Worker (`web/acessibilidade-worker.js`), 1 s depois da última tecla; sem Worker, roda na página. Nada sai do navegador. As correções usam `aplicarEdicoes` do editor (um passo no Ctrl+Z).
 - Aviso perto de **Gerar arquivos** quando há itens para corrigir; nunca bloqueia. No celular, o painel é uma folha inferior modal e o botão fica no menu ⋯.
 - Opções: `acessibilidade_texto` no `opcoes.yaml` (mostrar sugestões, limite de palavras por frase, aviso perto de Gerar arquivos). Código: `web/acessibilidade.js`. Testes: grupo 12 do roteiro do navegador.
+- **Janelas de apoio (1.82):** `web/acessibilidade-janelas.js` abre Descrever imagem, Simplificar trecho e Explicar sigla quando a correção tem `acao`. Descrever e Simplificar têm a aba **Pedir ajuda a uma IA**, que usa `montarPedido` e `lerResposta*` da biblioteca (pedidos versão 1.0). A IA fica fora do Conteudista. Opção `acessibilidade_texto.ajuda_ia`. Testes: grupo 14.
+- **Imagens decorativas:** o gerador lê `<!-- linguagem-acessivel: decorativa -->` antes da imagem (`DECORATIVAS` em `tools/gerador.py`): texto alternativo vazio sem aviso e, no PPTX, a marca de imagem decorativa.
 - **Marcas no texto (1.81):** `web/acessibilidade-marcas.js` desenha, numa camada transparente sobre o campo (mesma fonte, recuo e quebra de linha), sublinhado ondulado vermelho para o que é para corrigir e pontilhado âmbar para sugestões. Clique numa marca abre o balão com as correções; Alt+Shift+I leva o foco a ele. As marcas somem ao digitar e voltam com a próxima conferência. Resumo no rodapé do editor. Opções `marcas_no_texto` e `marcas_sugestoes`. Testes: grupo 13.
 
 ## Celular e zoom

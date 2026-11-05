@@ -90,7 +90,7 @@
   }
 
   /* Feedback padrao: confirma apos o clique. Acoes longas (gerar, criar link...) confirmam ao terminar. */
-  const SEM_CONFIRMACAO = '[data-c],summary *,#tg,#ts,#abasApp *,[data-aba],.tabs *,.mde-tb *,.hb *,[role=tab],#share,#go,#locCarregar,#locGerar,#narrHist,.jn-win *,[download],.file-link,.btn-exibir,.ger-top *,.ah-top *,.htop *,.md-hd *,.tr-pop *,.mde-dlg .ft *';
+  const SEM_CONFIRMACAO = '[data-c],summary *,#tg,#ts,#abasApp *,[data-aba],.tabs *,.mde-tb *,.hb *,[role=tab],#share,#go,#locCarregar,#locGerar,#narrHist,.jn-win *,[download],.file-link,.btn-exibir,.ger-top *,.ah-top *,.htop *,.md-hd *,.tr-pop *,.mde-dlg .ft *,.lj-jan *,.la-painel *,.la-balao *,#laAviso *';  // acessibilidade do texto: confirma pelo aviso próprio
   document.addEventListener('click', e => {
     const b = e.target.closest('button:not(.dan),a.btn:not(.dan)');
     if (!b || b.matches(SEM_CONFIRMACAO)) return;

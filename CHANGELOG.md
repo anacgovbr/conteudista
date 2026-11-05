@@ -1,4 +1,14 @@
 # Novidades do Conteudista
+## 1.82 - 05/11/2026
+- **Janelas de apoio.** As correções **Descrever**, **Simplificar** e **Explicar** abrem uma janela:
+  - **Descrever imagem:** mostra a imagem, a descrição curta (até 150 caracteres, com contagem) e a detalhada, opcional, que entra como texto abaixo da imagem. Também dá para marcar a imagem como decorativa.
+  - **Simplificar trecho:** mostra **Antes** e **Depois**, lado a lado, com a contagem de palavras e frases.
+  - **Explicar sigla:** pede o nome completo e mostra como o texto fica.
+- **Pedir ajuda a uma IA** (Descrever e Simplificar): copie o pedido padronizado (versão 1.0) e a imagem, cole na IA autorizada, traga a resposta de volta e confira antes de aplicar. A resposta é separada sozinha em descrição curta e detalhada, com avisos quando passa de 150 caracteres ou tem pontos a confirmar. O Conteudista não envia nada sozinho.
+- **Imagens decorativas nos arquivos gerados:** a imagem marcada como decorativa sai sem descrição e sem aviso; no PPTX, fica marcada como decorativa.
+- Os botões das janelas e do painel de acessibilidade não ficam mais verdes sozinhos ao clicar (a confirmação vem do próprio aviso).
+- Opção nova em `web/config/opcoes.yaml`: `acessibilidade_texto.ajuda_ia` (desligado: as janelas não mostram a aba de IA).
+
 ## 1.81.1 - 05/11/2026
 - **Correção:** o balão das marcas de acessibilidade fechava sozinho logo depois de abrir quando a página ou o editor rolavam (ao clicar numa marca ou com Alt+Shift+N). Agora ele só fecha com Esc, ao digitar, ao clicar fora ou ao corrigir; com o trecho fora da vista, o balão fica preso ao topo do campo.
 - Testes do navegador (grupo 13) passam a esperar o balão abrir, em vez de um tempo fixo.

@@ -65,6 +65,8 @@
       chave: 'conteudista.acessibilidade.limite', controles: [], rotulo: 'Acessibilidade do texto: palavras por frase antes da sugestão "frase longa"' },
     { caminho: 'acessibilidade_texto.aviso_ao_gerar', tipo: 'chave', padrao: 'ligado', valores: LIG,
       chave: null, controles: [], rotulo: 'Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia)' },
+    { caminho: 'acessibilidade_texto.ajuda_ia', tipo: 'chave', padrao: 'ligado', valores: LIG,
+      chave: null, controles: [], rotulo: 'Acessibilidade do texto: aba "Pedir ajuda a uma IA" nas janelas Descrever imagem e Simplificar trecho (desligado: só escrever)' },
     { caminho: 'acessibilidade_texto.marcas_no_texto', tipo: 'chave', padrao: 'ligado', valores: LIG,
       chave: 'conteudista.acessibilidade.marcas', controles: ['data-la-marcas'], rotulo: 'Acessibilidade do texto: sublinhar no editor os trechos para corrigir' },
     { caminho: 'acessibilidade_texto.marcas_sugestoes', tipo: 'chave', padrao: 'desligado', valores: LIG,

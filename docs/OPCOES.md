@@ -63,6 +63,7 @@ Arquivo: `web/config/opcoes.yaml`. Ele define como cada opção **começa**. Se 
 | `mostrar_sugestoes` | Acessibilidade do texto: mostrar também as sugestões de linguagem simples (desligado: só o que é para corrigir) | ligado · desligado | `ligado` | não (vale ao abrir) |
 | `limite_frase_longa` | Acessibilidade do texto: palavras por frase antes da sugestão "frase longa" | 10 a 60 | `25` | sim |
 | `aviso_ao_gerar` | Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia) | ligado · desligado | `ligado` | não (vale ao abrir) |
+| `ajuda_ia` | Acessibilidade do texto: aba "Pedir ajuda a uma IA" nas janelas Descrever imagem e Simplificar trecho (desligado: só escrever) | ligado · desligado | `ligado` | não (vale ao abrir) |
 | `marcas_no_texto` | Acessibilidade do texto: sublinhar no editor os trechos para corrigir | ligado · desligado | `ligado` | sim |
 | `marcas_sugestoes` | Acessibilidade do texto: sublinhar também as sugestões (linha pontilhada) | ligado · desligado | `desligado` | sim |
 

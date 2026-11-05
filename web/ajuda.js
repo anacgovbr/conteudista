@@ -282,7 +282,9 @@
 <ul><li><b>Para corrigir</b>: impedem alguém de ler, como imagem sem descrição, título que pula nível, link "clique aqui", slide sem título e tabela sem cabeçalho.</li>
 <li><b>Sugestões</b>: deixam o texto mais fácil, como frase longa, sigla sem explicação e texto em maiúsculas. Não contam como erro.</li>
 <li>Botões de cada item: a correção (por exemplo, <b>Ajustar nível</b> ou <b>É decorativa</b>), <b>Ir para</b> (seleciona o trecho no editor), <b>Por quê?</b> e, nas sugestões, <b>Ignorar</b>. Toda correção pode ser desfeita com <kbd>Ctrl+Z</kbd>.</li>
-<li>Quando a correção depende de você (descrever uma imagem, simplificar uma frase), o trecho fica selecionado e uma dica diz o que escrever.</li>
+<li><b>Descrever</b>, <b>Simplificar</b> e <b>Explicar</b> abrem uma janela de apoio. Em <b>Descrever imagem</b>, escreva a descrição curta (até 150 caracteres) e, para gráficos e fluxos, a detalhada, que entra como texto abaixo da imagem. Em <b>Simplificar trecho</b>, edite o texto em <b>Depois</b> e confira a contagem de palavras. Em <b>Explicar sigla</b>, escreva o nome completo.</li>
+<li><b>Pedir ajuda a uma IA</b> (aba das janelas Descrever e Simplificar): copie o pedido padronizado (e a imagem, se for o caso), cole na IA autorizada pela instituição, traga a resposta de volta e confira antes de aplicar. O Conteudista não envia nada sozinho. Não use imagens ou textos com dados pessoais ou informação restrita.</li>
+<li>Nas demais correções que dependem de você (texto do link, título do slide, cabeçalho da tabela), o trecho fica selecionado e uma dica diz o que escrever.</li>
 <li><b>Ignorar</b> grava um comentário no texto, que não aparece nos arquivos gerados. A sugestão some só naquele trecho.</li>
 <li><kbd>Alt+Shift+N</kbd> vai ao próximo item a partir do cursor. A conferência roda 1 segundo depois que você para de digitar e não envia o texto para fora do navegador.</li>
 <li>Se houver itens para corrigir, um aviso aparece perto de <b>Gerar arquivos</b>. Você pode gerar os arquivos assim mesmo.</li>

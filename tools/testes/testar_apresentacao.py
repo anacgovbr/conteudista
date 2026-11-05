@@ -688,9 +688,9 @@ def grupo12(amb, ctx, G):
         pg.locator('#laP-g .la-it', has_text='não diz o que').locator('button', has_text='Ir para').click(); pg.wait_for_timeout(200)
         e = pg.evaluate("(() => { const t = ED.g.textarea; return [t.value.slice(t.selectionStart, t.selectionEnd), t.scrollTop > 0, document.activeElement === t]; })()")
         G.chk('12.7', '"Ir para" seleciona o trecho no editor e rola até ele', e == ['![Imagem](x.png)', True, True], e)
-        pg.locator('#laP-g .la-it', has_text='não diz o que').locator('button', has_text='Descrever').click(); pg.wait_for_timeout(200)
+        pg.locator('#laP-g .la-it', has_text='clique aqui').locator('button', has_text='Editar o texto do link').click(); pg.wait_for_timeout(200)
         e = pg.evaluate("(() => { const t = ED.g.textarea; return t.value.slice(t.selectionStart, t.selectionEnd); })()")
-        G.chk('12.8', 'Correção que precisa de uma pessoa seleciona o texto a reescrever e mostra a dica', e == 'Imagem' and 'colchetes' in pg.inner_text('.la-toast'), e)
+        G.chk('12.8', 'Correção que precisa de uma pessoa (sem janela própria) seleciona o texto a reescrever e mostra a dica', e == 'clique aqui' and 'colchetes' in pg.inner_text('.la-toast'), e)
         pg.locator('#laP-g .la-abre').click(); pg.wait_for_timeout(100)
         pg.locator('#laP-g .la-it', has_text='RBAC').locator('button', has_text='Ignorar').click(); pg.wait_for_timeout(900)
         G.chk('12.9', 'Ignorar grava o comentário no texto e a sugestão some',
@@ -833,6 +833,88 @@ def grupo13(amb, ctx, G):
         srv.shutdown()
 
 
+# ----------------------------------------------------------------------------- GRUPO 14 — janelas de apoio e imagens decorativas (1.82)
+PNG_1PX = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+TEXTO_JANELAS = ('# Processo\n\n## Etapas\n\nO pedido chega pelo sistema.\n\n![](' + PNG_1PX + ')\n\nO QWER aprova o pedido.\n\n'
+                 'A solicitação deverá ser instruída pelo interessado com a documentação comprobatória prevista no regulamento, '
+                 'sendo encaminhada à área técnica competente, que procederá à análise no prazo regulamentar.\n')
+
+
+def grupo14(amb, ctx, G):
+    srv, url = _servidor(RAIZ / 'web')
+    try:
+        try: ctx.grant_permissions(['clipboard-read', 'clipboard-write'])
+        except Exception: pass
+        pg = ctx.new_page(); erros = []
+        pg.on('pageerror', lambda e: erros.append(str(e)))
+        pg.add_init_script("try { localStorage.setItem('conteudista.tour', '1'); } catch (e) {}")
+        pg.goto(url); pg.wait_for_selector('#pg .la-btn', state='attached', timeout=15000); pg.wait_for_timeout(300)
+        pg.evaluate("t => { document.getElementById('g').value = t; ED.g.refresh(); }", TEXTO_JANELAS)
+        pg.wait_for_function("(AcessibilidadeTexto.resultado('g') || { resumo: {} }).resumo.corrigir === 1", timeout=8000)
+        pg.evaluate("AcessibilidadeTexto.abrir('g')"); pg.wait_for_timeout(300)
+        pg.locator('#laP-g .la-it', has_text='Descreva').locator('button', has_text='Descrever').click()
+        pg.wait_for_selector('.lj-jan', timeout=5000); pg.wait_for_timeout(200)
+        e = pg.evaluate("(() => { const j = document.querySelector('.lj-jan'); return [!!j, j && j.getAttribute('role'), j && j.getAttribute('aria-modal'), document.activeElement.id, !!document.querySelector('.lj-mini img')]; })()")
+        G.chk('14.1', 'Descrever abre janela modal com a miniatura e o foco no título', e == [True, 'dialog', 'true', 'ljT', True], e)
+        pg.click('.lj-jan [data-ok]'); pg.wait_for_timeout(100)
+        G.chk('14.2', 'Aplicar sem descrição mostra o erro no campo, em linguagem simples', 'Escreva a descrição curta' in pg.inner_text('#ljdErro') and pg.evaluate("document.activeElement.id") == 'ljdCurta' and pg.get_attribute('#ljdCurta', 'aria-invalid') == 'true')
+        pg.fill('#ljdCurta', 'x' * 160); pg.wait_for_timeout(50)
+        G.chk('14.3', 'Contagem de caracteres avisa quando passa de 150', 'encurte' in pg.inner_text('#ljdCont'))
+        pg.click('#ljdTb'); pg.wait_for_timeout(100)
+        G.chk('14.4', 'Aba "Pedir ajuda a uma IA" (padrão Tab) com o aviso de uso autorizado', pg.get_attribute('#ljdTb', 'aria-selected') == 'true' and pg.is_visible('#ljdPb .lj-msg.aten') and not pg.is_visible('#ljdPa'))
+        pg.click('[data-c=pedido]'); pg.wait_for_timeout(300)
+        try: clip = pg.evaluate('navigator.clipboard.readText()')
+        except Exception: clip = pg.inner_text('#ljdPed')
+        if 'DESCREVER' not in clip: clip = pg.evaluate("document.getElementById('ljdPed').textContent")
+        G.chk('14.5', 'Copiar pedido: pedido padronizado com o texto perto da imagem', 'DESCREVER IMAGEM (versão 1.0)' in clip and 'O pedido chega pelo sistema' in clip, clip[:80])
+        pg.fill('#ljdResp', 'DESCRIÇÃO CURTA: Fluxo de aprovação em três etapas.\nDESCRIÇÃO DETALHADA: 1. Pedido. 2. Análise. 3. Decisão.')
+        G.chk('14.6', 'A resposta da IA é separada em descrição curta e detalhada', pg.input_value('#ljdCurta') == 'Fluxo de aprovação em três etapas.' and pg.input_value('#ljdDet').startswith('1. Pedido.'))
+        pg.click('.lj-jan [data-ok]')
+        pg.wait_for_function("ED.g.textarea.value.includes('![Fluxo de aprovação em três etapas.](img:1)')", timeout=5000); pg.wait_for_timeout(300)
+        v = pg.evaluate('ED.g.textarea.value')
+        G.chk('14.7', 'Aplicar grava a descrição e a detalhada abaixo da imagem; a janela fecha e o foco volta ao texto',
+              '![Fluxo de aprovação em três etapas.](img:1)\n\n1. Pedido.' in v and not pg.is_visible('.lj-fundo') and pg.evaluate('document.activeElement === ED.g.textarea'))
+        pg.evaluate('ED.g.desfazer()')
+        G.chk('14.8', 'Um Ctrl+Z desfaz a descrição inteira', '![](img:1)' in pg.evaluate('ED.g.textarea.value') and '1. Pedido.' not in pg.evaluate('ED.g.textarea.value'))
+        pg.wait_for_function("(AcessibilidadeTexto.resultado('g') || { resumo: {} }).resumo.corrigir === 1", timeout=8000); pg.wait_for_timeout(200)
+        pg.locator('#laP-g .la-it', has_text='Descreva').locator('button', has_text='Descrever').click()
+        pg.wait_for_selector('.lj-jan', timeout=5000); pg.wait_for_timeout(100)
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
+        G.chk('14.9', 'Esc fecha sem aplicar e devolve o foco ao botão que abriu', not pg.is_visible('.lj-fundo') and pg.evaluate('document.activeElement.textContent') == 'Descrever')
+        if pg.locator('#laP-g .la-abre[aria-expanded=false]').count(): pg.locator('#laP-g .la-abre').click()
+        pg.locator('#laP-g .la-it', has_text='Frase longa').locator('button', has_text='Simplificar').click()
+        pg.wait_for_selector('#ljsCont', timeout=5000); pg.wait_for_timeout(100)
+        G.chk('14.10', 'Simplificar mostra Antes e Depois com a contagem', pg.inner_text('#ljsCont').startswith('27 palavras · 1 frase'))
+        pg.fill('#ljsDepois', 'Envie o pedido com os documentos. A área técnica analisa no prazo.')
+        G.chk('14.11', 'A contagem acompanha a edição', 'todas com até 25 palavras' in pg.inner_text('#ljsCont'))
+        pg.click('.lj-jan [data-ok]')
+        pg.wait_for_function("ED.g.textarea.value.includes('Envie o pedido com os documentos.')", timeout=5000); pg.wait_for_timeout(1200)
+        G.chk('14.12', '"Trocar no texto" substitui o trecho', 'Envie o pedido com os documentos.' in pg.evaluate('ED.g.textarea.value') and 'solicitação deverá' not in pg.evaluate('ED.g.textarea.value'))
+        if pg.locator('#laP-g .la-abre[aria-expanded=false]').count(): pg.locator('#laP-g .la-abre').click()
+        pg.locator('#laP-g .la-it', has_text='QWER').locator('button', has_text='Explicar').click()
+        pg.wait_for_selector('#ljxNome', timeout=5000)
+        pg.fill('#ljxNome', 'Quadro de Registro')
+        G.chk('14.13', 'Explicar sigla mostra a prévia', 'Quadro de Registro (QWER) aprova' in pg.inner_text('#ljxPrev'))
+        pg.keyboard.press('Enter')
+        pg.wait_for_function("ED.g.textarea.value.includes('O Quadro de Registro (QWER) aprova')", timeout=5000)
+        G.chk('14.14', 'Enter aplica a explicação', True)
+        G.chk('14.15', 'Nenhum erro de JavaScript nas janelas', not erros, erros)
+        pg.close()
+    finally:
+        srv.shutdown()
+    d = amb.tmp / 'decorativa'; d.mkdir(exist_ok=True)
+    (d / 'a.md').write_text('# T\n\n## A\n\nTexto.\n\n<!-- linguagem-acessivel: decorativa -->\n![](' + PNG_1PX + ')\n', encoding='utf-8')
+    (d / 'b.md').write_text('---\ntitle: X\n---\n\n# S\n\n<!-- linguagem-acessivel: decorativa -->\n![](' + PNG_1PX + ')\n', encoding='utf-8')
+    r = rodar([sys.executable, str(GERADOR), str(d / 'a.md'), str(d / 'b.md'), '--prefixo', 'D', '--saida', str(d / 'o')], cwd=RAIZ)
+    saida = (r.stdout or '') + (r.stderr or '')
+    G.chk('14.16', 'Gerador: imagem decorativa não gera aviso de "sem descrição"', r.returncode == 0 and 'sem descrição' not in saida and 'sem texto alternativo' not in saida, saida[-300:])
+    xml = ''
+    try:
+        with zipfile.ZipFile(d / 'o' / 'Apresentacao_D.pptx') as z: xml = ''.join(z.read(n).decode('utf-8', 'ignore') for n in z.namelist() if n.startswith('ppt/slides/slide'))
+    except Exception as ex: xml = str(ex)
+    G.chk('14.17', 'Gerador: no PPTX, a imagem fica marcada como decorativa', 'adec:decorative' in xml)
+
+
 # navegador escolhido -> motor do Playwright (chrome e msedge usam o programa instalado no computador)
 MOTOR = {'chrome': 'chromium', 'msedge': 'chromium', 'chromium': 'chromium', 'firefox': 'firefox', 'webkit': 'webkit'}
 
@@ -850,6 +932,7 @@ GRUPOS = {
     '11': ('Biblioteca Linguagem Acessível no navegador', grupo11, 'desktop'),
     '12': ('Painel Acessibilidade do texto (1.80)', grupo12, 'desktop'),
     '13': ('Marcas no texto e balão (1.81)', grupo13, 'desktop'),
+    '14': ('Janelas de apoio e imagens decorativas (1.82)', grupo14, 'desktop'),
 }
 
 MANUAIS = [
@@ -864,7 +947,7 @@ MANUAIS = [
 # ----------------------------------------------------------------------------- execução
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10,11,12,13', help='lista de grupos (ex.: 1,2,5)')
+    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10,11,12,13,14', help='lista de grupos (ex.: 1,2,5)')
     ap.add_argument('--navegador', default='chrome', choices=list(MOTOR), help='padrão: chrome (Google Chrome instalado)')
     ap.add_argument('--saida', default=str(Path(__file__).parent / 'relatorio'), help='pasta do relatório')
     ap.add_argument('--tentativas', type=int, default=2, help='repete o grupo com falha até N vezes (passou na repetição = INSTAVEL)')

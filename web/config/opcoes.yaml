@@ -64,6 +64,8 @@ acessibilidade_texto:  # Acessibilidade do texto
   limite_frase_longa: 25
   # Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia) [ligado | desligado]
   aviso_ao_gerar: ligado
+  # Acessibilidade do texto: aba "Pedir ajuda a uma IA" nas janelas Descrever imagem e Simplificar trecho (desligado: só escrever) [ligado | desligado]
+  ajuda_ia: ligado
   # Acessibilidade do texto: sublinhar no editor os trechos para corrigir [ligado | desligado]
   marcas_no_texto: ligado
   # Acessibilidade do texto: sublinhar também as sugestões (linha pontilhada) [ligado | desligado]

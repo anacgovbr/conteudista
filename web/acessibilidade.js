@@ -361,6 +361,12 @@ setInterval(() => Object.values(E).forEach(st => { if (st.analisado !== null && 
         dica('Correção aplicada: ' + c.rotulo + '.' + (r ? ' ' + plural(r.resumo.corrigir, 'item para corrigir', 'itens para corrigir') + '.' : ''));
         return true;
       }
+      if (c.acao && window.JanelasAcessibilidade && JanelasAcessibilidade.trata(c.acao)) {   // 1.82: janela de apoio (com pedido para IA)
+        if (st.painel.classList.contains('folha')) fechar(k, true);
+        st.atual = st.resultado.diagnosticos.indexOf(d);
+        await JanelasAcessibilidade.abrir(c.acao, { k, d, c });
+        return true;
+      }
       const alvo = c.alvo || { inicio: d.inicio, fim: d.fim };
       irPara(k, d, alvo); dica(DICA[c.acao] || 'Ajuste o trecho selecionado.');
       return true;

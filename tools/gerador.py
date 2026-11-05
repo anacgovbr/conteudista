@@ -99,6 +99,13 @@ def slug(s):
     return re.sub(r'[^a-z0-9]+','-',s).strip('-')
 LI=re.compile(r'^(\s*)([-*]|\d+\.)\s+(.*)$')
 CODIGO_RX=re.compile(r'(?ms)(^```[^\n]*\n.*?^```[ \t]*$|`[^`\n]+`)')
+# Imagens marcadas como decorativas no texto (<!-- linguagem-acessivel: decorativa --> logo antes da imagem; 1.82).
+# Saem com texto alternativo vazio, sem aviso; no PPTX, ficam marcadas como decorativas.
+DECORATIVAS=set()
+DECOR_RX=re.compile(r'<!--\s*linguagem-acessivel\s*:\s*decorativa\s*-->\s*!\[[^\]\n]*\]\(([^)\s]+)\)')
+def registrar_decorativas(md):
+    "Guarda o destino das imagens marcadas como decorativas (fora de blocos de código)."
+    for m in DECOR_RX.finditer(CODIGO_RX.sub('',md or '')):DECORATIVAS.add(m.group(1))
 def sem_comentarios(md):
     """Remove comentarios HTML (<!-- -->) do texto, preservando os que aparecem em blocos de codigo e em codigo em linha."""
     out=[];p=0
@@ -258,7 +265,7 @@ def html_of(bl,toc=None):
             o.append('<h%d id="%s">%s</h%d>'%(b[1],sid,inl(b[2]),b[1]))
         elif k=='p':o.append('<p>'+inl(b[1])+'</p>')
         elif k=='img':
-            if not b[1].strip():aviso('Imagem sem descrição (texto alternativo vazio): %s'%(b[2][:60]+'…' if len(b[2])>60 else b[2]))
+            if not b[1].strip() and b[2] not in DECORATIVAS:aviso('Imagem sem descrição (texto alternativo vazio): %s'%(b[2][:60]+'…' if len(b[2])>60 else b[2]))
             o.append('<figure><img src="%s" alt="%s">%s</figure>'%(E(b[2]),E(b[1]),'<figcaption>%s</figcaption>'%E(b[1]) if b[1] else ''))
         elif k=='table':
             r=b[1];t='<div class="tbl" role="region" aria-label="Tabela" tabindex="0"><table><thead><tr>'+''.join('<th scope="col">%s</th>'%inl(c) for c in r[0])+'</tr></thead><tbody>'
@@ -1127,7 +1134,7 @@ def treinamento_docx(md,path,foot,tema=None):
         if size:
             z=OxmlElement('w:sz');z.set(qn('w:val'),str(int(size*2)));rp.append(z)
         r.append(rp);t=OxmlElement('w:t');t.text=text;t.set(qn('xml:space'),'preserve');r.append(t);h.append(r);p._p.append(h)
-    def pic(run,src,maxcm=16.0,hcm=None,alt=''):
+    def pic(run,src,maxcm=16.0,hcm=None,alt='',decor=False):
         raw=img_bytes(src)
         if raw is None:run.text='[imagem%s]'%(': '+alt if alt else '');return False
         w,h=img_size(raw)
@@ -1136,7 +1143,7 @@ def treinamento_docx(md,path,foot,tema=None):
             else:shp=run.add_picture(io.BytesIO(raw),width=Cm(min(maxcm,w/96*2.54)))
             # texto alternativo: vem do Markdown; vazio continua vazio (não se inventa descrição) e gera aviso
             dp=shp._inline.docPr;dp.set('descr',alt or '');dp.set('title',alt or '')
-            if not alt:aviso('Imagem sem descrição (texto alternativo vazio) na apostila DOCX.')
+            if not alt and not decor:aviso('Imagem sem descrição (texto alternativo vazio) na apostila DOCX.')
             return True
         except Exception:run.text='[imagem]';return False
     def fill(p,t,color=None,size=None,bold=False):
@@ -1171,7 +1178,7 @@ def treinamento_docx(md,path,foot,tema=None):
                 p=d.add_paragraph();fill(p,b[1])
                 if inq:shade(p._p,inq[0]);lborder(p,inq[1])
             elif k=='img':
-                p=d.add_paragraph();p.alignment=1;pic(p.add_run(),b[2],alt=b[1])
+                p=d.add_paragraph();p.alignment=1;pic(p.add_run(),b[2],alt=b[1],decor=b[2] in DECORATIVAS)
                 if b[1]:
                     c=d.add_paragraph();c.alignment=1;r=c.add_run(b[1]);r.italic=True;r.font.size=Pt(9)
             elif k=='table':table(b[1])
@@ -1317,7 +1324,7 @@ def _ep_blocks(bl,cx,toc=None):
         elif k=='p':o.append('<p>'+_ep_inl(b[1],cx)+'</p>')
         elif k=='img':
             src=cx.img(b[2]);cx.n_img+=1
-            if not b[1].strip():cx.sem_alt+=1
+            if not b[1].strip() and b[2] not in DECORATIVAS:cx.sem_alt+=1
             if src:o.append('<figure><img src="%s" alt="%s"/>%s</figure>'%(E(src),E(b[1]),'<figcaption>%s</figcaption>'%E(b[1]) if b[1] else ''))
             else:o.append('<p>%s</p>'%E('[Imagem não incluída%s]'%(': '+b[1] if b[1] else ''),quote=False));aviso('Imagem remota ou ilegível não incluída no EPUB: %s'%b[2][:60])
         elif k=='table':o.append(_ep_tabela(b[1],cx))
@@ -1536,7 +1543,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                 tb,tf=tbox(s,x,y,w,0.4);addruns(tf.paragraphs[0],'[imagem: %s]'%(b[1] or 'sem descrição'),size,col)
             else:
                 iw,ih=img_size(raw);hh=min(4.6,w*ih/max(iw,1),ih/96);ww=hh*iw/max(ih,1)
-                alt_pic(s.shapes.add_picture(io.BytesIO(raw),Inches(x+(w-ww)/2),Inches(y),Inches(ww),Inches(hh)),b[1])
+                alt_pic(s.shapes.add_picture(io.BytesIO(raw),Inches(x+(w-ww)/2),Inches(y),Inches(ww),Inches(hh)),b[1],b[2] in DECORATIVAS)
                 if b[1]:
                     tb,tf=tbox(s,x,y+hh+0.03,w,0.32);tf.paragraphs[0].alignment=2;addruns(tf.paragraphs[0],b[1],12,MU)
         elif k=='code':
@@ -1668,6 +1675,7 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
     global _FONTES_CSS
     del AVISOS[:];_FONTES_CSS=None  # relê as fontes a cada geração (o app mantém o módulo carregado)
     gm=gm or '';sm=sm or ''
+    DECORATIVAS.clear();registrar_decorativas(gm);registrar_decorativas(sm)
     tem_g,tem_s=bool(gm.strip()),bool(sm.strip())
     if not tem_g and not tem_s:raise ValueError('Nada para gerar: a apostila e a apresentação estão vazias.')
     os.makedirs(saida,exist_ok=True)

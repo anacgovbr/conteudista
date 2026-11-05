@@ -795,7 +795,7 @@
       m.textContent = ta.value.slice(0, pos); const sp = document.createElement('span'); sp.textContent = '\u200b'; m.appendChild(sp);
       document.body.appendChild(m); const y = sp.offsetTop - (parseFloat(cs.paddingTop) || 0); m.remove(); return y;
     }
-    return { refresh: pull, textarea: ta, element: box, render: () => preview(), desfazer, refazer, inserirImagens, ehImagem, aplicarEdicoes, selecionar, tipo };
+    return { refresh: pull, textarea: ta, element: box, render: () => preview(), desfazer, refazer, inserirImagens, ehImagem, aplicarEdicoes, selecionar, tipo, imagem: n => imgs[(n | 0) - 1] || null };
   }
 
   const ATALHOS = [

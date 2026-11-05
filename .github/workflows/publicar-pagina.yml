@@ -101,6 +101,7 @@ jobs:
           node --check web/versoes.js
           node --check web/acessibilidade.js
           node --check web/acessibilidade-marcas.js
+          node --check web/acessibilidade-janelas.js
           cp web/acessibilidade-worker.js /tmp/acessibilidade-worker.mjs && node --check /tmp/acessibilidade-worker.mjs
           cp web/ptbr-g2p.js /tmp/ptbr-g2p.mjs && node --check /tmp/ptbr-g2p.mjs
           node -e "import('/tmp/ptbr-g2p.mjs').then(m=>{const r=m.phonemizePTBR('Olá, mundo. A gestão de processos.');console.log(r);if(!/ˈ/.test(r))process.exit(1)})"
