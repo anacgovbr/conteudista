@@ -740,6 +740,23 @@ ALINHAMENTO_JS = """() => { const ta = ED.g.textarea, c = document.querySelector
 
 
 BALAO_ABERTO = "(() => { const b = document.querySelector('.la-balao'); return !!b && !b.hidden; })()"
+# 13.5: ponto do clique na marca "[clique aqui]", medido depois de 2 quadros e com a camada alinhada ao campo.
+PONTO_MARCA_JS = """() => new Promise(ok => {
+  const ta0 = ED.g.textarea;                                   // 13.4 deixa o campo rolado (scrollTop 400): volta ao topo
+  ta0.scrollTop = 0; ta0.dispatchEvent(new Event('scroll'));
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+  const ta = ED.g.textarea, cam = document.querySelector('#pg .la-camada');
+  cam.scrollTop = ta.scrollTop; cam.scrollLeft = ta.scrollLeft;
+  const s = [...cam.querySelectorAll('.la-m')].find(x => x.textContent.startsWith('[clique'));
+  const rt = ta.getBoundingClientRect();
+  const q = [...s.getClientRects()].find(r => r.width >= 6 && r.top >= rt.top && r.bottom <= rt.bottom) || s.getClientRects()[0];
+  const x = q.left + Math.min(q.width / 2, 12), y = q.top + q.height / 2, e = document.elementFromPoint(x, y);
+  const d = el => !el ? 'null' : el.tagName + (el.id ? '#' + el.id : '') + (typeof el.className === 'string' && el.className ? '.' + el.className.trim().split(/\\s+/).join('.') : '');
+  ok({ x, y, alvo: d(e), noCampo: e === ta, campo: [rt.left, rt.top, rt.right, rt.bottom].map(Math.round), rolagem: [ta.scrollTop, cam.scrollTop], janela: [innerWidth, innerHeight, Math.round(scrollY)] });
+}))}) """
+ESTADO_BALAO_JS = """(() => { const b = document.querySelector('.la-balao'), a = document.activeElement;
+  return { balao: !!b && !b.hidden, msg: b ? ((b.querySelector('.lb-msg') || {}).textContent || '') : '', focoNoCampo: a === ED.g.textarea,
+    foco: a ? a.tagName + (a.id ? '#' + a.id : '') : 'null', cursor: ED.g.textarea.selectionStart }; })()"""
 def _esperar(pg, js, ms=2000):
     """Espera uma condicao da pagina ficar verdadeira (sem falhar aqui: quem decide e o G.chk)."""
     fim = time.time() + ms / 1000
@@ -766,13 +783,25 @@ def grupo13(amb, ctx, G):
         G.chk('13.4', 'A camada acompanha a rolagem do campo', pg.evaluate(ED_SCROLL))
         pg.evaluate("ED.g.textarea.scrollTop = 0; ED.g.element.scrollIntoView({ block: 'start', behavior: 'instant' })"); pg.wait_for_timeout(300)
         r = pg.evaluate("(() => { const s = [...document.querySelectorAll('#pg .la-camada .la-m')].find(x => x.textContent.startsWith('[clique')); const q = s.getClientRects()[0]; return { x: q.left + q.width / 2, y: q.top + q.height / 2 }; })()")
-        pg.mouse.click(r['x'], r['y']); _esperar(pg, BALAO_ABERTO); pg.wait_for_timeout(100)
+        p135 = pg.evaluate(PONTO_MARCA_JS)
+        if not p135['noCampo']:                                       # algo cobre o ponto: centraliza o editor e mede de novo
+            pg.evaluate("ED.g.element.scrollIntoView({ block: 'center', behavior: 'instant' })"); pg.wait_for_timeout(200)
+            p135 = pg.evaluate(PONTO_MARCA_JS)
+        pg.mouse.click(p135['x'], p135['y']); _esperar(pg, BALAO_ABERTO); pg.wait_for_timeout(100)
+        e135 = pg.evaluate(ESTADO_BALAO_JS)
+        ok135 = e135['balao'] and 'clique aqui' in e135['msg'] and e135['focoNoCampo']
+        if not ok135:
+            try:
+                pg.screenshot(path=str(Path(amb.args.saida) / 'falha-13.5.png'))
+            except Exception:
+                pass
         G.chk('13.5', 'Clique na marca abre o balão com a mensagem, sem tirar o foco do texto',
-              pg.is_visible('.la-balao') and 'clique aqui' in pg.inner_text('.la-balao .lb-msg') and pg.evaluate('document.activeElement === ED.g.textarea'))
+              ok135, {'ponto': p135, 'depois': e135})
         pg.keyboard.press('Escape')
         G.chk('13.6', 'Esc fecha o balão', not pg.is_visible('.la-balao'))
-        pg.keyboard.type('x')
-        G.chk('13.7', 'Ao digitar, as marcas somem (não ficam fora do lugar)', pg.evaluate("document.querySelectorAll('#pg .la-camada .la-m').length") == 0)
+        pg.evaluate('ED.g.textarea.focus()'); pg.keyboard.type('x')                # 13.7 nao depende do 13.5
+        G.chk('13.7', 'Ao digitar, as marcas somem (não ficam fora do lugar)', pg.evaluate("document.querySelectorAll('#pg .la-camada .la-m').length") == 0,
+              pg.evaluate("({ marcas: document.querySelectorAll('#pg .la-camada .la-m').length, focoNoCampo: document.activeElement === ED.g.textarea })"))
         pg.wait_for_function("document.querySelectorAll('#pg .la-camada .la-m').length > 0", timeout=6000)
         G.chk('13.8', 'E voltam depois da conferência', True)
         pg.evaluate("t => { document.getElementById('g').value = t; ED.g.refresh(); }", TEXTO_MARCAS); pg.wait_for_timeout(1500)

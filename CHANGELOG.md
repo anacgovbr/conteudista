@@ -1,7 +1,7 @@
 # Novidades do Conteudista
 ## 1.81.1 - 05/11/2026
-- **CorreÃ§Ã£o:** o balÃ£o das marcas de acessibilidade fechava sozinho logo depois de abrir quando a pÃ¡gina ou o editor rolavam (ao clicar numa marca ou com Alt+Shift+N). Agora ele sÃ³ fecha com Esc, ao digitar, ao clicar fora ou ao corrigir; com o trecho fora da vista, o balÃ£o fica preso ao topo do campo.
-- Testes do navegador (grupo 13) passam a esperar o balÃ£o abrir, em vez de um tempo fixo.
+- **Correção:** o balão das marcas de acessibilidade fechava sozinho logo depois de abrir quando a página ou o editor rolavam (ao clicar numa marca ou com Alt+Shift+N). Agora ele só fecha com Esc, ao digitar, ao clicar fora ou ao corrigir; com o trecho fora da vista, o balão fica preso ao topo do campo.
+- Testes do navegador (grupo 13) passam a esperar o balão abrir, em vez de um tempo fixo.
 ## 1.81 - 05/11/2026
 - **Marcas no texto.** O editor sublinha os trechos para corrigir com uma linha ondulada vermelha, como um corretor ortográfico. As sugestões podem ser sublinhadas com uma linha pontilhada (desligado por padrão). A cor nunca vem sozinha: o tipo de linha também muda.
 - **Clique numa marca** para ver a mensagem e as correções num balão, com **Por quê?**, **Ignorar** (nas sugestões) e **Ver no painel**. Pelo teclado: Alt+Shift+N vai ao próximo item e mostra o balão; o novo **Alt+Shift+I** leva o foco às correções do item no cursor; Esc volta ao texto.
