@@ -1,6 +1,6 @@
 {
   "name": "linguagem-acessivel",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Confere acessibilidade e linguagem simples em textos Markdown. Sem dependências; roda no navegador, em Web Worker e no Node.",
   "type": "module",
   "main": "index.js",

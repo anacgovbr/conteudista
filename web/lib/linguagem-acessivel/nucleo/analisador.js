@@ -14,8 +14,6 @@ const RE_TITULO = /^ {0,3}(#{1,6})(?=[ \t\r]|$)/;
 const RE_SEP = /^ {0,3}---[ \t\r]*$/;
 const RE_HR = /^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t\r]*$/;
 
-const espacos = (s) => s.replace(/[^\n]/g, ' ');
-
 /** Detecta se o texto é uma apresentação (mesmos sinais usados ao importar). */
 export function detectarTipo(texto) {
   if (/^---\s*\n[\s\S]*?\n---/.test(texto) || /<!--\s*(class|notas):/.test(texto) || (texto.match(/\n---\s*\n/g) || []).length >= 2) return 'apresentacao';
@@ -26,17 +24,25 @@ export function detectarTipo(texto) {
 export function analisarEstrutura(texto, tipo = 'auto') {
   texto = String(texto == null ? '' : texto);
   if (tipo === 'auto' || !tipo) tipo = detectarTipo(texto);
-  const m = texto.split('');                                  // máscara (vira string no fim)
-  const pinta = (a, b) => { for (let i = a; i < b; i++) if (m[i] !== '\n') m[i] = ' '; };
+  const faixas = [];                                           // trechos mascarados [inicio, fim)
   const loc = criarLocalizador(texto);
   const L = loc.inicios, nL = L.length;
   const fimLinha = (k) => (k + 1 < nL ? L[k + 1] - 1 : texto.length);
   const linha = (k) => texto.slice(L[k], fimLinha(k));
+  const montar = (lista) => {                                  // texto com as faixas trocadas por espaços (quebras de linha ficam)
+    if (!lista.length) return texto;
+    const o = []; let p = 0;
+    for (const [a, b] of lista.slice().sort((x, y) => x[0] - y[0])) {
+      if (b <= p) continue; const ia = Math.max(a, p);
+      o.push(texto.slice(p, ia), texto.slice(ia, b).replace(/[^\n]/g, ' ')); p = b;
+    }
+    o.push(texto.slice(p)); return o.join('');
+  };
 
   /* 1. cabeçalho (front matter) da apresentação */
   let k0 = 0, cabecalho = null;
   if (tipo === 'apresentacao' && /^---[ \t\r]*$/.test(linha(0))) {
-    for (let k = 1; k < nL && k < 200; k++) if (/^---[ \t\r]*$/.test(linha(k))) { cabecalho = { inicio: 0, fim: fimLinha(k) }; pinta(0, fimLinha(k)); k0 = k + 1; break; }
+    for (let k = 1; k < nL && k < 200; k++) if (/^---[ \t\r]*$/.test(linha(k))) { cabecalho = { inicio: 0, fim: fimLinha(k) }; faixas.push([0, fimLinha(k)]); k0 = k + 1; break; }
   }
 
   /* 2. cercas de código */
@@ -46,20 +52,23 @@ export function analisarEstrutura(texto, tipo = 'auto') {
     const ch = c[1][0], n = c[1].length; let f = nL - 1;
     for (let j = k + 1; j < nL; j++) { const d = RE_CERCA.exec(linha(j)); if (d && d[1][0] === ch && d[1].length >= n && /^\s*$/.test(linha(j).slice(d[0].length))) { f = j; break; } }
     codigos.push({ k, f, inicio: L[k], fim: fimLinha(f), lingua: linha(k).slice(c[0].length).trim().split(/\s+/)[0] || '' });
-    pinta(L[k], fimLinha(f)); k = f;
+    faixas.push([L[k], fimLinha(f)]); k = f;
   }
   const emCodigo = new Uint8Array(nL); codigos.forEach(c => { for (let k = c.k; k <= c.f; k++) emCodigo[k] = 1; });
+  const dentroDeFaixa = (() => { const fx = faixas.slice().sort((x, y) => x[0] - y[0]); return (i) => { let a = 0, b = fx.length - 1; while (a <= b) { const m2 = (a + b) >> 1; if (fx[m2][1] <= i) a = m2 + 1; else if (fx[m2][0] > i) b = m2 - 1; else return fx[m2][1]; } return 0; }; })();
 
   /* 3. comentários HTML fora do código */
   const comentarios = [];
-  let ms = m.join('');
-  for (let i = ms.indexOf('<!--'); i >= 0; i = ms.indexOf('<!--', i)) {
+  for (let i = texto.indexOf('<!--'); i >= 0; i = texto.indexOf('<!--', i)) {
+    const pula = dentroDeFaixa(i); if (pula) { i = pula; continue; }
     let f = texto.indexOf('-->', i + 4); f = f < 0 ? texto.length : f + 3;
     const corpo = texto.slice(i + 4, Math.max(i + 4, f - 3)), t = /^\s*([a-zçãõáéíóú-]+)\s*:/i.exec(corpo);
-    comentarios.push({ inicio: i, fim: f, tipo: t ? t[1].toLowerCase() : '', conteudo: t ? corpo.slice(t[0].length).trim() : corpo.trim() });
-    pinta(i, f); i = f;                                       // o que está dentro de um comentário não abre outro
+    comentarios.push({ inicio: i, fim: f, tipo: t ? t[1].toLowerCase() : '', conteudo: t ? corpo.slice(t[0].length).trim() : corpo.trim(),
+      conteudoInicio: i + 4 + (t ? t[0].length : 0) });
+    i = f;                                                     // o que está dentro de um comentário não abre outro
   }
-  ms = m.join('');
+  comentarios.forEach(c => faixas.push([c.inicio, c.fim]));
+  const ms = montar(faixas);
 
   /* 4. blocos, títulos e slides */
   const blocos = [], titulos = [], slides = [{ inicio: cabecalho ? cabecalho.fim : 0, fim: texto.length }];
@@ -105,9 +114,9 @@ export function analisarEstrutura(texto, tipo = 'auto') {
     const s = ms.slice(b.inicio, b.fim);
     if (s.indexOf('`') < 0) continue;
     const re = /(`+)([\s\S]*?[^`])\1(?!`)/g;
-    for (let x; (x = re.exec(s));) pinta(b.inicio + x.index, b.inicio + x.index + x[0].length);
+    for (let x; (x = re.exec(s));) faixas.push([b.inicio + x.index, b.inicio + x.index + x[0].length]);
   }
-  const mascara = m.join('');
+  const mascara = montar(faixas);
   blocos.forEach(b => { b.mascara = mascara.slice(b.inicio, b.fim); });
   titulos.forEach(b => { b.texto = mascara.slice(b.marcaFim, b.fim).replace(/[ \t]+#+[ \t\r]*$/, '').trim(); });
 

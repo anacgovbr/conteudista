@@ -26,3 +26,25 @@ Exemplo de sintaxe: `![](figura.png)` e `[aqui](endereço)`.
 ###### Anexo
 
 Fim. ![ ](icone.png) no meio do texto.
+
+## Linguagem
+
+O pedido segue o RBAC 145. Depois, o Regulamento Brasileiro da Aviação Civil (RBAC) define os prazos. O arquivo vem em PDF.
+
+A solicitação deverá ser instruída pelo interessado com a documentação comprobatória prevista no regulamento, sendo encaminhada à área técnica competente, que procederá à análise no prazo regulamentar.
+
+ATENÇÃO: O PRAZO TERMINA NA SEXTA-FEIRA.
+
+![Imagem](tela.png) e ![tela.png](tela.png)
+
+|  |  |
+|---|---|
+| Análise | 10 dias |
+
+| Etapa |  |
+|---|---|
+| Análise | 10 dias |
+
+O processo começa com o pedido. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. 
+
+<!-- notas: Nesta etapa, depois de receber o pedido com todos os documentos exigidos pelo regulamento, a área técnica faz a análise completa e, em seguida, encaminha o processo à coordenação. -->

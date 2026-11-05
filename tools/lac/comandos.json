@@ -1,0 +1,370 @@
+{
+  "$comentario": "Fonte única dos comandos, opções e atalhos da linha de comando (lac) e da API. Gera a ajuda do terminal, o manual (man), o autocompletar, docs/lac.md e, na etapa 11, o OpenAPI. Não duplique estes textos em outro lugar.",
+  "programa": {
+    "nome": "linguagem-acessivel",
+    "atalho": "lac",
+    "titulo": "Linguagem Acessível",
+    "descricao": "Confere acessibilidade e linguagem simples em textos Markdown.",
+    "uso": "lac <comando> [opções] [arquivo...]",
+    "entrada": "Sem arquivo, lê da entrada (pipe). Use - para a entrada."
+  },
+  "comandos": [
+    {
+      "id": "conferir",
+      "atalho": "c",
+      "resumo": "Mostra o que corrigir e as sugestões",
+      "descricao": "Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir.",
+      "argumentos": "[arquivo...]",
+      "opcoes": [
+        "grupo",
+        "regra",
+        "nivel",
+        "formato",
+        "tipo",
+        "limite",
+        "agrupar",
+        "saida",
+        "quieto"
+      ],
+      "formatos": [
+        "texto",
+        "json",
+        "jsonl",
+        "sarif",
+        "resumo"
+      ],
+      "api": {
+        "metodo": "POST",
+        "caminho": "/v1/conferir[/{selecao}]"
+      },
+      "exemplos": [
+        [
+          "cat apostila.md | lac c",
+          "tudo, para ler"
+        ],
+        [
+          "lac c -g f -f jsonl apostila.md",
+          "só frases, um item por linha"
+        ],
+        [
+          "lac c -n c -q *.md",
+          "nada para corrigir? (código de saída)"
+        ],
+        [
+          "lac c -f sarif *.md -o achados.sarif",
+          "para o GitHub"
+        ]
+      ]
+    },
+    {
+      "id": "ajustar",
+      "atalho": "a",
+      "resumo": "Aplica as correções seguras e devolve o texto",
+      "descricao": "Aplica só as correções que não mudam o sentido (por exemplo, o nível de um título) e devolve o texto corrigido. Descrever imagens e simplificar frases sempre precisam de uma pessoa.",
+      "argumentos": "[arquivo]",
+      "opcoes": [
+        "grupo",
+        "regra",
+        "tipo",
+        "diferenca",
+        "saida",
+        "quieto"
+      ],
+      "formatos": [],
+      "api": {
+        "metodo": "POST",
+        "caminho": "/v1/ajustar"
+      },
+      "exemplos": [
+        [
+          "lac a < rascunho.md > revisado.md",
+          "aplica e grava em outro arquivo"
+        ],
+        [
+          "lac a -d apostila.md",
+          "mostra só o que mudaria"
+        ]
+      ]
+    },
+    {
+      "id": "regras",
+      "atalho": "r",
+      "resumo": "Lista as regras",
+      "descricao": "Lista as regras com código, nome, grupo e nível.",
+      "argumentos": "",
+      "opcoes": [
+        "grupo",
+        "formato"
+      ],
+      "formatos": [
+        "texto",
+        "json"
+      ],
+      "api": {
+        "metodo": "GET",
+        "caminho": "/v1/regras"
+      },
+      "exemplos": [
+        [
+          "lac r",
+          "todas"
+        ],
+        [
+          "lac r -g l",
+          "só linguagem simples"
+        ]
+      ]
+    },
+    {
+      "id": "explicar",
+      "atalho": "e",
+      "resumo": "Explica uma regra",
+      "descricao": "Mostra o que a regra confere, por que importa, as correções e exemplos.",
+      "argumentos": "<código ou nome>",
+      "opcoes": [
+        "formato"
+      ],
+      "formatos": [
+        "texto",
+        "json"
+      ],
+      "api": {
+        "metodo": "GET",
+        "caminho": "/v1/regras/{codigo}"
+      },
+      "exemplos": [
+        [
+          "lac e f1",
+          "frase longa"
+        ],
+        [
+          "lac e link-vago",
+          "pelo nome"
+        ]
+      ],
+      "curto": "lac e f1"
+    },
+    {
+      "id": "pedido",
+      "atalho": "p",
+      "resumo": "Monta o pedido para IA",
+      "descricao": "Monta o pedido padronizado (linguagem simples e boas práticas de acessibilidade) para colar na IA autorizada. simplificar: o trecho vem da entrada. descrever: a entrada, se houver, é o texto perto da imagem.",
+      "argumentos": "<descrever|simplificar>",
+      "opcoes": [
+        "nome",
+        "legenda",
+        "saida"
+      ],
+      "formatos": [],
+      "api": {
+        "metodo": "POST",
+        "caminho": "/v1/pedidos/{tipo}"
+      },
+      "exemplos": [
+        [
+          "lac p simplificar --nome \"Curso X\" < trecho.txt",
+          "pedido para simplificar"
+        ],
+        [
+          "lac p descrever --legenda \"Fluxo\" < contexto.txt",
+          "pedido para descrever imagem"
+        ]
+      ],
+      "curto": "lac p simplificar"
+    },
+    {
+      "id": "servir",
+      "atalho": "s",
+      "resumo": "Abre a API neste computador",
+      "disponivel": false,
+      "descricao": "Abre a API neste computador. Em breve.",
+      "argumentos": "",
+      "opcoes": [],
+      "formatos": [],
+      "exemplos": []
+    },
+    {
+      "id": "ajuda",
+      "atalho": "h",
+      "resumo": "Ajuda de um comando",
+      "descricao": "Mostra a ajuda geral ou a de um comando.",
+      "argumentos": "[comando]",
+      "opcoes": [],
+      "formatos": [],
+      "api": {
+        "metodo": "GET",
+        "caminho": "/v1/ajuda[/{comando}]"
+      },
+      "exemplos": [
+        [
+          "lac h c",
+          "ajuda do conferir"
+        ]
+      ],
+      "curto": "lac h c"
+    },
+    {
+      "id": "completar",
+      "atalho": "",
+      "resumo": "Autocompletar para bash ou zsh",
+      "descricao": "Mostra o script de autocompletar. No bash: source <(lac completar bash).",
+      "argumentos": "<bash|zsh>",
+      "opcoes": [],
+      "formatos": [],
+      "exemplos": [
+        [
+          "source <(lac completar bash)",
+          "ativa no bash"
+        ]
+      ]
+    }
+  ],
+  "opcoes": [
+    {
+      "id": "grupo",
+      "curta": "g",
+      "valor": "lista",
+      "descricao": "O que conferir: área, grupo ou regra",
+      "valores": "a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração",
+      "api": "grupo / g"
+    },
+    {
+      "id": "regra",
+      "curta": "r",
+      "valor": "lista",
+      "descricao": "Regra: código ou nome",
+      "valores": "f1, frase-longa…",
+      "api": "regra / r"
+    },
+    {
+      "id": "nivel",
+      "curta": "n",
+      "valor": "c|s",
+      "descricao": "Só um nível",
+      "valores": "c corrigir · s sugestão",
+      "api": "nivel / n"
+    },
+    {
+      "id": "formato",
+      "curta": "f",
+      "valor": "formato",
+      "descricao": "Formato da saída",
+      "valores": "texto json jsonl sarif resumo",
+      "api": "formato / f ou cabeçalho Accept"
+    },
+    {
+      "id": "tipo",
+      "curta": "t",
+      "valor": "tipo",
+      "descricao": "Tipo do texto",
+      "valores": "auto apostila apresentacao",
+      "api": "tipo / t"
+    },
+    {
+      "id": "limite",
+      "curta": "l",
+      "valor": "número",
+      "descricao": "Palavras por frase",
+      "valores": "10 a 60; padrão 25",
+      "api": "limite / l"
+    },
+    {
+      "id": "agrupar",
+      "curta": "",
+      "valor": "modo",
+      "descricao": "Agrupamento do json",
+      "valores": "grupo regra nenhum",
+      "api": "agrupar"
+    },
+    {
+      "id": "diferenca",
+      "curta": "d",
+      "valor": "",
+      "descricao": "Com ajustar, mostra só o que mudou",
+      "valores": "",
+      "api": "diferenca"
+    },
+    {
+      "id": "saida",
+      "curta": "o",
+      "valor": "arquivo",
+      "descricao": "Grava a saída num arquivo",
+      "valores": "",
+      "api": ""
+    },
+    {
+      "id": "quieto",
+      "curta": "q",
+      "valor": "",
+      "descricao": "Não escreve nada; só o código de saída",
+      "valores": "",
+      "api": ""
+    },
+    {
+      "id": "nome",
+      "curta": "",
+      "valor": "texto",
+      "descricao": "Nome do conteúdo (pedido)",
+      "valores": "",
+      "api": "nome"
+    },
+    {
+      "id": "legenda",
+      "curta": "",
+      "valor": "texto",
+      "descricao": "Legenda atual da imagem (pedido descrever)",
+      "valores": "",
+      "api": "legenda"
+    },
+    {
+      "id": "ajuda",
+      "curta": "h",
+      "valor": "",
+      "descricao": "Ajuda",
+      "valores": "",
+      "api": "/v1/ajuda",
+      "global": true
+    },
+    {
+      "id": "versao",
+      "curta": "v",
+      "valor": "",
+      "descricao": "Versão",
+      "valores": "",
+      "api": "/v1/saude",
+      "global": true
+    }
+  ],
+  "saida": [
+    {
+      "codigo": 0,
+      "descricao": "nada a corrigir"
+    },
+    {
+      "codigo": 1,
+      "descricao": "há itens para corrigir"
+    },
+    {
+      "codigo": 2,
+      "descricao": "erro de uso"
+    },
+    {
+      "codigo": 3,
+      "descricao": "erro interno"
+    }
+  ],
+  "exemplosGerais": [
+    [
+      "cat apostila.md | lac c",
+      ""
+    ],
+    [
+      "lac c -g f -f jsonl apostila.md",
+      ""
+    ],
+    [
+      "lac a < rascunho.md > revisado.md",
+      ""
+    ]
+  ]
+}

@@ -18,6 +18,8 @@ export function palavras(t) {
   return s.match(/[\p{L}\p{N}]+(?:[-'’.,][\p{L}\p{N}]+)*/gu) || [];
 }
 export const contarPalavras = t => palavras(t).length;
+/** Texto visível de um bloco (limparMarkdown da máscara), calculado uma vez por análise. */
+export const visivel = b => (b._vis === undefined ? (b._vis = limparMarkdown(b.mascara)) : b._vis);
 
 /** Troca a sintaxe Markdown por espaços do mesmo tamanho (as posições continuam valendo). */
 export function limparMarkdown(t) {
@@ -38,8 +40,7 @@ export function limparMarkdown(t) {
 export function dividirFrases(t, base = 0) {
   t = String(t);
   const vis = limparMarkdown(t), r = [];
-  // trechos: linhas de lista/tabela separadas; demais linhas juntas
-  const trechos = []; let ini = 0;
+  const trechos = [];
   const linhas = t.split('\n'); let pos = 0, acum = null;
   for (const l of linhas) {
     const a = pos, f = pos + l.length; pos = f + 1;
@@ -48,13 +49,11 @@ export function dividirFrases(t, base = 0) {
     else if (acum) acum[1] = f; else acum = [a, f];
   }
   if (acum) trechos.push(acum);
-  void ini;
   for (const [a, f] of trechos) {
     let i0 = a;
     for (let i = a; i < f; i++) {
       const c = vis[i];
-      if (c !== '.' && c !== '!' && c !== '?' && c !== '…' && c !== ';' && c !== ':') continue;
-      if ((c === ';' || c === ':') ) continue;                          // ; e : não encerram a frase
+      if (c !== '.' && c !== '!' && c !== '?' && c !== '…') continue;   // ; e : não encerram a frase
       let j = i; while (j + 1 < f && /[.!?…]/.test(vis[j + 1])) j++;     // "?!" "..."
       let k = j + 1; while (k < f && /["'”’»)\]*_]/.test(vis[k])) k++;    // aspas e parênteses de fechamento
       if (k < f && !/\s/.test(vis[k])) { i = j; continue; }               // "3.5", "S.A.", "gov.br"

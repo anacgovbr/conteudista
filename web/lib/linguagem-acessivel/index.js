@@ -6,16 +6,19 @@
      aplicarSeguras(texto, opcoes)    -> { texto, aplicadas }   (só correções que não mudam o sentido)
      criarSessao(opcoes)              -> { analisar(texto) }   (reanalisa só os blocos que mudaram)
      regras(), selecionar(lista), agrupar(resultado), VERSAO
+     montarPedido(tipo, dados), lerRespostaDescricao(texto), lerRespostaSimplificar(texto)
    Sem dependências. Funciona no navegador (módulo), em Web Worker e no Node 18+.
    ===================================================================================== */
 import { analisarEstrutura, detectarTipo } from './nucleo/analisador.js';
 import { REGRAS, AREAS, GRUPOS } from './regras/index.js';
 import MSG from './mensagens/pt-BR.js';
 import PADRAO from './config/padrao.js';
+import SIGLAS from './dados/siglas.js';
 
-export const VERSAO = '0.1.0';
+export const VERSAO = '0.2.0';
 export { detectarTipo };
 export { dividirFrases, contarPalavras } from './nucleo/frases.js';
+export { montarPedido, lerRespostaDescricao, lerRespostaSimplificar, PEDIDOS, VERSAO_PEDIDOS } from './pedidos.js';
 
 const POR_ID = new Map(REGRAS.map(r => [r.id, r]));
 const POR_COD = new Map(REGRAS.map(r => [r.codigo, r]));
@@ -24,8 +27,11 @@ const GRUPO_POR_ID = new Map(Object.entries(GRUPOS).map(([l, g]) => [g.id, l]));
 /** Metadados das regras (sem a função). */
 export function regras() {
   return REGRAS.map(r => ({ id: r.id, codigo: r.codigo, area: r.area, grupo: r.grupo, nivel: r.nivel, titulo: MSG.regras[r.id].titulo,
-    mensagem: MSG.regras[r.id].mensagem, porque: MSG.regras[r.id].porque, referencia: r.referencia, exemplos: r.exemplos }));
+    mensagem: MSG.regras[r.id].mensagem, porque: MSG.regras[r.id].porque, referencia: r.referencia, exemplos: r.exemplos,
+    tipos: r.tipos || ['apostila', 'apresentacao'] }));
 }
+/** Textos para quem escreve (níveis, grupos, áreas). */
+export const textos = () => ({ niveis: MSG.niveis, grupos: MSG.grupos, areas: MSG.areas });
 
 /** Converte uma lista de seleção em ids de regra. Aceita: área (a, l, acessibilidade, linguagem), grupo (i, e, k, f, s, n
     ou o nome), código (i1) ou nome da regra (imagem-sem-descricao). Vazio = todas. Desconhecido: erro com a lista válida. */
@@ -53,7 +59,15 @@ const preencher = (t, d) => String(t).replace(/\{(\w+)\}/g, (m, k) => (d && d[k]
 function montarConfig(o) {
   const c = Object.assign({}, PADRAO, o && o.config);
   c.regras = Object.assign({}, PADRAO.regras, o && o.config && o.config.regras);
+  ['limiteFraseLonga', 'limiteFraseNarracao', 'limiteParagrafo'].forEach(k => {
+    const v = Number(c[k]); if (!Number.isInteger(v) || v < 3 || v > 1000) { const e = new Error(k + ' inválido: ' + c[k]); e.codigo = 'config-invalida'; throw e; }
+  });
   return c;
+}
+function criarSiglas(cfg) {
+  const glo = Object.assign({}, SIGLAS.glossario, cfg.siglas || {});
+  const con = new Set([...SIGLAS.conhecidas, ...(cfg.siglasConhecidas || [])].map(s => String(s).toUpperCase()));
+  return { nome: s => glo[s] || null, conhecida: s => con.has(String(s).toUpperCase()) };
 }
 function regrasAtivas(o, cfg) {
   const sel = new Set(selecionar(o && o.regras));
@@ -63,12 +77,13 @@ function nivelDe(r, cfg, d) { const n = cfg.regras[r.id]; return (n === 'corrigi
 const ignorada = (r, lista) => lista && (lista.includes(r.id) || lista.includes(r.codigo) || lista.includes('tudo'));
 
 /* Executa as regras de um bloco e devolve diagnósticos com posições relativas ao bloco (para o cache). */
-function rodarBloco(regs, bloco, doc, cfg) {
+function rodarBloco(regs, bloco, doc, cfg, siglas) {
   const out = [];
   for (const r of regs) {
-    if (r.escopo !== 'bloco' || bloco.tipo !== 'paragrafo' && bloco.tipo !== 'titulo') continue;
+    if (bloco.tipo !== 'paragrafo' && bloco.tipo !== 'titulo') continue;
     if (ignorada(r, bloco.ignorar)) continue;
-    r.verificar({ bloco, tipo: doc.tipo, config: cfg, decorativa: abs => doc.decorativas.has(abs), relatar: (inicio, fim, x) => out.push(Object.assign({ regra: r, inicio, fim }, x)) });
+    r.verificar({ bloco, tipo: doc.tipo, texto: doc.texto, config: cfg, siglas, decorativa: abs => doc.decorativas.has(abs),
+      relatar: (inicio, fim, x) => out.push(Object.assign({ regra: r, inicio, fim }, x)) });
   }
   return out;
 }
@@ -98,32 +113,39 @@ function publicar(d, rel, doc, cfg) {
 }
 
 function executar(texto, opcoes, cache) {
-  const cfg = montarConfig(opcoes), regs = regrasAtivas(opcoes, cfg);
+  const cfg = montarConfig(opcoes), regs = regrasAtivas(opcoes, cfg), siglas = criarSiglas(cfg);
   const doc = analisarEstrutura(texto, (opcoes && opcoes.tipo) || 'auto');
-  const blocoRegs = regs.filter(r => r.escopo === 'bloco' && !ignorada(r, [...doc.ignorarDoc]));
-  const docRegs = regs.filter(r => r.escopo === 'documento' && !ignorada(r, [...doc.ignorarDoc]));
+  const valeTipo = r => !r.tipos || r.tipos.includes(doc.tipo);
+  const ignDoc = [...doc.ignorarDoc];
+  const blocoRegs = regs.filter(r => r.escopo === 'bloco' && valeTipo(r) && !ignorada(r, ignDoc));
+  const docRegs = regs.filter(r => r.escopo === 'documento' && valeTipo(r) && !ignorada(r, ignDoc));
   const chaveRegras = blocoRegs.map(r => r.id).join(',') + '|' + JSON.stringify(cfg) + '|' + doc.tipo;
   const novoCache = new Map(), lista = [];
   let reaproveitados = 0;
   for (const b of doc.blocos) {
     if (b.tipo !== 'paragrafo' && b.tipo !== 'titulo') continue;
     const dec = []; for (const x of doc.decorativas) if (x >= b.inicio && x < b.fim) dec.push(x - b.inicio);
-    const chave = chaveRegras + '\u0001' + (b.ignorar || []).join(',') + '\u0001' + dec.join(',') + '\u0001' + b.tipo + '\u0001' + b.mascara;
+    // fora das faixas mascaradas, a máscara é igual ao texto: ela basta como chave do bloco
+    const chave = chaveRegras + '\u0001' + (b.ignorar || []).join(',') + '\u0001' + dec.join(',') + '\u0001' + b.tipo + '\u0001' + (b.sub || '') + '\u0001' + b.mascara;
     let ds = cache && cache.get(chave);
-    if (ds) reaproveitados++; else ds = rodarBloco(blocoRegs, b, doc, cfg);
+    if (ds) reaproveitados++; else ds = rodarBloco(blocoRegs, b, doc, cfg, siglas);
     novoCache.set(chave, ds);
     ds.forEach(d => lista.push([d, b.inicio]));
   }
   for (const r of docRegs) {
-    r.verificar({ doc, tipo: doc.tipo, config: cfg, relatar: (inicio, fim, x) => {
-      const bl = doc.blocos.find(b => inicio >= b.inicio && inicio <= b.fim);
+    r.verificar({ doc, tipo: doc.tipo, texto: doc.texto, config: cfg, siglas, relatar: (inicio, fim, x) => {
+      const bl = doc.blocos.find(b => inicio >= b.inicio && inicio <= b.fim && b.tipo !== 'comentario');
       if (bl && ignorada(r, bl.ignorar)) return;
       lista.push([Object.assign({ regra: r, inicio, fim }, x), 0]);
     } });
   }
   let ds = lista.map(([d, rel]) => publicar(d, rel, doc, cfg));
   if (cfg.sugestoes === false) ds = ds.filter(d => d.nivel !== 'sugestao');
-  if (opcoes && opcoes.nivel) { const n = String(opcoes.nivel).toLowerCase(); const alvo = n === 'c' ? 'corrigir' : n === 's' ? 'sugestao' : n; ds = ds.filter(d => d.nivel === alvo); }
+  if (opcoes && opcoes.nivel) {
+    const n = String(opcoes.nivel).toLowerCase(), alvo = n === 'c' ? 'corrigir' : n === 's' ? 'sugestao' : n;
+    if (alvo !== 'corrigir' && alvo !== 'sugestao') { const e = new Error('Nível desconhecido: "' + opcoes.nivel + '". Use c (corrigir) ou s (sugestão).'); e.codigo = 'nivel-desconhecido'; throw e; }
+    ds = ds.filter(d => d.nivel === alvo);
+  }
   ds.sort((x, y) => x.inicio - y.inicio || x.fim - y.fim || x.codigo.localeCompare(y.codigo));
   const resumo = { corrigir: ds.filter(d => d.nivel === 'corrigir').length, sugestoes: ds.filter(d => d.nivel === 'sugestao').length, total: ds.length };
   return { resultado: { versao: VERSAO, tipo: doc.tipo, resumo, diagnosticos: ds }, cache: novoCache, reaproveitados };
@@ -132,7 +154,7 @@ function executar(texto, opcoes, cache) {
 /** Analisa um texto Markdown. opcoes: { tipo: 'auto'|'apostila'|'apresentacao', regras: [...], nivel: 'corrigir'|'sugestao'|'c'|'s', config: {...} } */
 export function analisar(texto, opcoes) { return executar(texto, opcoes, null).resultado; }
 
-/** Sessão com cache: em edições seguidas, só os blocos alterados são reanalisados. */
+/** Sessão com cache: em edições seguidas, as regras de bloco só rodam nos blocos alterados. */
 export function criarSessao(opcoes) {
   let cache = new Map(), ultimo = null;
   return {
@@ -165,21 +187,22 @@ export function aplicar(texto, alvo) {
 /** Aplica todas as correções seguras, repetindo até não haver mais (no máximo 10 rodadas). */
 export function aplicarSeguras(texto, opcoes) {
   let aplicadas = 0;
+  const lista = [];
   for (let rodada = 0; rodada < 10; rodada++) {
     const r = analisar(texto, opcoes), eds = []; let limite = Infinity;
     for (const d of r.diagnosticos.slice().reverse()) {
       const c = d.correcoes.find(x => x.segura && x.edicoes); if (!c) continue;
       const a = Math.min(...c.edicoes.map(e => e.inicio)), b = Math.max(...c.edicoes.map(e => e.fim));
       if (b > limite) continue;                       // sobrepõe outra correção: fica para a próxima rodada
-      eds.push(...c.edicoes); limite = a; aplicadas++;
+      eds.push(...c.edicoes); limite = a; aplicadas++; lista.push({ codigo: d.codigo, linha: d.linha, correcao: c.rotulo });
     }
     if (!eds.length) break;
     texto = aplicar(texto, eds);
   }
-  return { texto, aplicadas };
+  return { texto, aplicadas, lista };
 }
 
-/** Agrupa um resultado por área e grupo (resposta "completa, agrupada"). */
+/** Agrupa um resultado por grupo (resposta "completa, agrupada"). */
 export function agrupar(resultado) {
   const grupos = {};
   for (const d of resultado.diagnosticos) {

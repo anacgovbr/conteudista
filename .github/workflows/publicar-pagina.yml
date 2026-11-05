@@ -57,6 +57,21 @@ jobs:
         run: |
           node tools/linguagem-acessivel/testar.mjs
 
+      - name: Testar a linha de comando lac
+        run: |
+          node tools/lac/testar_lac.mjs
+
+      - name: Conferir o conteúdo de exemplo (nada para corrigir)
+        run: |
+          node tools/lac/lac.mjs c -n c web/exemplo/treinamento.md web/exemplo/apresentacao.md
+          node tools/lac/lac.mjs c -f sarif -o linguagem-acessivel.sarif web/exemplo/treinamento.md web/exemplo/apresentacao.md
+
+      - name: Guardar o relatório SARIF do conteúdo de exemplo
+        uses: actions/upload-artifact@v4
+        with:
+          name: linguagem-acessivel-sarif
+          path: linguagem-acessivel.sarif
+
       - name: Verificar opções padrão (web/config/opcoes.yaml)
         run: |
           node --check web/opcoes.js

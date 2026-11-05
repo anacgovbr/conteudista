@@ -1,6 +1,6 @@
 /* Textos para quem escreve. Ficam separados do código para que a equipe de linguagem simples possa revisá-los.
    Regras de escrita destes textos: frases curtas, verbo no imperativo, sem jargão técnico; a referência
-   técnica (WCAG, eMAG) fica só em "porque". Use {nome} para inserir dados. */
+   técnica (WCAG, eMAG, lei) fica só em "porque". Use {nome} para inserir dados. */
 export default {
   niveis: { corrigir: 'Para corrigir', sugestao: 'Sugestão' },
   grupos: { imagens: 'Imagens', estrutura: 'Estrutura', links: 'Links', frases: 'Frases', siglas: 'Siglas', narracao: 'Narração' },
@@ -12,6 +12,17 @@ export default {
       porque: 'Quem usa leitor de tela ouve a descrição no lugar da imagem. Sem ela, a pessoa perde a informação. (WCAG 1.1.1, eMAG 3.6)',
       correcoes: { descrever: 'Descrever', decorativa: 'É decorativa' },
     },
+    'descricao-vaga': {
+      titulo: 'Descrição que não descreve',
+      mensagem: 'Esta descrição não diz o que a imagem mostra',
+      variantes: {
+        generica: 'A descrição "{texto}" não diz o que a imagem mostra. Escreva o que ela mostra e por que está aqui',
+        arquivo: 'A descrição é o nome do arquivo. Escreva o que a imagem mostra',
+        curta: 'A descrição "{texto}" é curta demais. Escreva o que a imagem mostra',
+      },
+      porque: 'Palavras como "imagem" ou o nome do arquivo não ajudam quem não vê a imagem. (WCAG 1.1.1, eMAG 3.6)',
+      correcoes: { descrever: 'Descrever' },
+    },
     'titulo-pula-nivel': {
       titulo: 'Título que pula nível',
       mensagem: 'Este título pulou um nível',
@@ -21,6 +32,23 @@ export default {
       },
       porque: 'Os níveis dos títulos formam o sumário e a navegação por leitor de tela. Pular um nível dá a impressão de que falta uma parte. (WCAG 1.3.1, eMAG 1.3)',
       correcoes: { ajustar: 'Ajustar nível' },
+    },
+    'slide-sem-titulo': {
+      titulo: 'Slide sem título',
+      mensagem: 'Dê um título a este slide',
+      variantes: { numero: 'Dê um título ao slide {slide}' },
+      porque: 'O título identifica o slide no sumário, no seletor de slides e para quem usa leitor de tela. (WCAG 2.4.6, eMAG 1.3)',
+      correcoes: { escrever: 'Escrever título' },
+    },
+    'tabela-sem-cabecalho': {
+      titulo: 'Tabela sem cabeçalho',
+      mensagem: 'Diga o que cada coluna mostra',
+      variantes: {
+        vazio: 'A primeira linha da tabela está vazia. Diga o que cada coluna mostra',
+        parcial: 'Dê nome a todas as colunas desta tabela',
+      },
+      porque: 'O leitor de tela lê o nome da coluna junto com cada valor. Sem cabeçalho, os números e textos perdem o sentido. (WCAG 1.3.1, eMAG 3.10)',
+      correcoes: { 'primeira-linha': 'Usar a primeira linha', editar: 'Dar nome às colunas' },
     },
     'link-vago': {
       titulo: 'Link que não diz aonde leva',
@@ -32,6 +60,43 @@ export default {
       },
       porque: 'Quem usa leitor de tela costuma ouvir a lista de links fora do texto. "Clique aqui" ou um endereço longo não dizem o destino. (WCAG 2.4.4, eMAG 3.5)',
       correcoes: { editar: 'Editar o texto do link' },
+    },
+    'frase-longa': {
+      titulo: 'Frase longa',
+      mensagem: 'Frase longa. Tente dividir',
+      variantes: { palavras: 'Frase longa ({palavras} palavras). Tente dividir em duas ou mais' },
+      porque: 'Frases curtas, com uma ideia cada, são mais fáceis de ler e de entender. (Lei 15.263/2025, art. 5º; WCAG 3.1.5)',
+      correcoes: { simplificar: 'Simplificar' },
+    },
+    'paragrafo-longo': {
+      titulo: 'Parágrafo longo',
+      mensagem: 'Parágrafo longo. Tente dividir',
+      variantes: { palavras: 'Parágrafo longo ({palavras} palavras). Tente dividir em dois ou mais' },
+      porque: 'Parágrafos curtos ajudam a pessoa a encontrar a informação e a não se perder na leitura. (Lei 15.263/2025)',
+      correcoes: { simplificar: 'Simplificar' },
+    },
+    'texto-em-maiusculas': {
+      titulo: 'Texto em maiúsculas',
+      mensagem: 'Texto todo em maiúsculas é mais difícil de ler',
+      porque: 'Palavras em maiúsculas perdem o formato que ajuda a reconhecê-las, e alguns leitores de tela soletram as letras. Para destacar, use negrito. (WCAG 1.4.8)',
+      correcoes: { converter: 'Converter' },
+    },
+    'sigla-sem-explicacao': {
+      titulo: 'Sigla sem explicação',
+      mensagem: 'Explique a sigla na primeira vez',
+      variantes: {
+        nunca: 'Explique a sigla {sigla} na primeira vez em que ela aparece',
+        depois: 'A sigla {sigla} só é explicada mais adiante (linha {linha}). Explique na primeira vez',
+      },
+      porque: 'Na primeira vez, escreva o nome completo e a sigla entre parênteses. Assim, quem não conhece a sigla entende o texto. (Lei 15.263/2025, art. 5º; WCAG 3.1.4)',
+      correcoes: { explicar: 'Explicar' },
+    },
+    'narracao-frase-longa': {
+      titulo: 'Frase longa na narração',
+      mensagem: 'Frase longa na narração',
+      variantes: { palavras: 'Frase longa na narração ({palavras} palavras). A legenda fica difícil de ler' },
+      porque: 'Na narração, a pessoa ouve uma vez só e lê a legenda enquanto o áudio toca. Frases curtas são mais fáceis de acompanhar. (WCAG 1.2.2; Lei 15.263/2025)',
+      correcoes: { simplificar: 'Simplificar' },
     },
   },
 };

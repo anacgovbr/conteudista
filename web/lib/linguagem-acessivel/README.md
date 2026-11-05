@@ -1,11 +1,11 @@
 # Linguagem Acessível
 
-Biblioteca que confere **acessibilidade** e **linguagem simples** em textos Markdown. É usada pelo Conteudista e, nas próximas etapas, pela linha de comando `lac` e pela API. Sem dependências: roda no navegador (como módulo), em Web Worker e no Node 18 ou mais novo.
+Biblioteca que confere **acessibilidade** e **linguagem simples** em textos Markdown. É usada pelo Conteudista, pela linha de comando `lac` (`tools/lac/`) e, na etapa 11, pela API. Sem dependências: roda no navegador (como módulo), em Web Worker e no Node 18 ou mais novo.
 
 ## Uso
 
 ```js
-import { analisar, aplicar, aplicarSeguras, criarSessao } from './lib/linguagem-acessivel/index.js';
+import { analisar, aplicar, aplicarSeguras, criarSessao, montarPedido } from './lib/linguagem-acessivel/index.js';
 
 const r = analisar(texto, { tipo: 'auto', regras: ['a'], nivel: 'c' });
 // r = { versao, tipo, resumo: { corrigir, sugestoes, total }, diagnosticos: [...] }
@@ -14,8 +14,10 @@ const d = r.diagnosticos[0];
 const c = d.correcoes.find(x => x.edicoes);   // correção em um clique
 if (c) texto = aplicar(texto, c);
 
-const s = criarSessao();                       // no editor: reanalisa só o parágrafo que mudou
+const s = criarSessao();                       // no editor: as regras de bloco só rodam no que mudou
 s.analisar(texto);
+
+const pedido = montarPedido('simplificar', { nome: 'Curso X', trecho: '...' });   // para colar na IA
 ```
 
 | Opção | Valores |
@@ -23,7 +25,25 @@ s.analisar(texto);
 | `tipo` | `auto` (padrão), `apostila`, `apresentacao` |
 | `regras` | área (`a`, `l`), grupo (`i`, `e`, `k`, `f`, `s`, `n`), código (`i1`) ou nome (`link-vago`); vazio = todas |
 | `nivel` | `corrigir` / `c` ou `sugestao` / `s` |
-| `config` | `{ limiteFraseLonga, sugestoes, regras: { 'link-vago': false \| 'sugestao' } }` |
+| `config` | `{ limiteFraseLonga, limiteFraseNarracao, limiteParagrafo, sugestoes, regras, siglas, siglasConhecidas }` |
+
+## Regras
+
+| Código | Regra | Nível |
+|---|---|---|
+| `i1` | Imagem sem descrição | Para corrigir |
+| `i2` | Descrição que não descreve | Para corrigir |
+| `e1` | Título que pula nível | Para corrigir |
+| `e2` | Slide sem título (só apresentação) | Para corrigir |
+| `e3` | Tabela sem cabeçalho | Para corrigir |
+| `k1` | Link que não diz aonde leva | Para corrigir |
+| `f1` | Frase longa | Sugestão |
+| `f2` | Parágrafo longo | Sugestão |
+| `f3` | Texto em maiúsculas | Sugestão |
+| `s1` | Sigla sem explicação | Sugestão |
+| `n1` | Frase longa na narração | Sugestão |
+
+Detalhes e exemplos: `docs/linguagem-acessivel/`.
 
 ## Contrato
 
@@ -40,11 +60,13 @@ index.js            API pública
 nucleo/             analisador (Markdown -> blocos), frases, posições, marcadores
 regras/             uma regra por arquivo + registro (regras/index.js)
 mensagens/pt-BR.js  textos para quem escreve (revisáveis sem mexer no código)
+dados/siglas.js     glossário de siglas e siglas conhecidas
+pedidos.js          pedidos padronizados para IA e leitura das respostas
 config/padrao.js    limites e regras ligadas
 esquema/            JSON Schema do diagnóstico e do resultado
 ```
 
-Regras e marcadores: `docs/linguagem-acessivel/`. Decisões de projeto: `docs/decisoes/`. Testes: `node tools/linguagem-acessivel/testar.mjs`.
+Testes: `node tools/linguagem-acessivel/testar.mjs`. Decisões de projeto: `docs/decisoes/`.
 
 ## Regra nova
 

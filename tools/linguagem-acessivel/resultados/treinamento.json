@@ -1,8 +1,136 @@
 {
+ "versao": "0.2.0",
  "resumo": {
   "corrigir": 0,
-  "sugestoes": 0,
-  "total": 0
+  "sugestoes": 18,
+  "total": 18
  },
- "itens": []
+ "itens": [
+  [
+   "s1",
+   "sugestao",
+   3,
+   83,
+   "A sigla IA só é explicada mais adiante (linha 210). Explique na primeira vez"
+  ],
+  [
+   "f1",
+   "sugestao",
+   7,
+   1,
+   "Frase longa (36 palavras). Tente dividir em duas ou mais"
+  ],
+  [
+   "f1",
+   "sugestao",
+   58,
+   1,
+   "Frase longa (28 palavras). Tente dividir em duas ou mais"
+  ],
+  [
+   "f3",
+   "sugestao",
+   75,
+   24,
+   "Texto todo em maiúsculas é mais difícil de ler"
+  ],
+  [
+   "f1",
+   "sugestao",
+   176,
+   1,
+   "Frase longa (27 palavras). Tente dividir em duas ou mais"
+  ],
+  [
+   "s1",
+   "sugestao",
+   183,
+   112,
+   "Explique a sigla MB na primeira vez em que ela aparece"
+  ],
+  [
+   "f1",
+   "sugestao",
+   192,
+   200,
+   "Frase longa (28 palavras). Tente dividir em duas ou mais"
+  ],
+  [
+   "f1",
+   "sugestao",
+   215,
+   73,
+   "Frase longa (31 palavras). Tente dividir em duas ou mais"
+  ],
+  [
+   "f1",
+   "sugestao",
+   236,
+   189,
+   "Frase longa (27 palavras). Tente dividir em duas ou mais"
+  ],
+  [
+   "f1",
+   "sugestao",
+   252,
+   1,
+   "Frase longa (35 palavras). Tente dividir em duas ou mais"
+  ],
+  [
+   "e3",
+   "sugestao",
+   254,
+   1,
+   "Dê nome a todas as colunas desta tabela"
+  ],
+  [
+   "s1",
+   "sugestao",
+   263,
+   7,
+   "Explique a sigla QR na primeira vez em que ela aparece"
+  ],
+  [
+   "s1",
+   "sugestao",
+   280,
+   5,
+   "Explique a sigla ANAC na primeira vez em que ela aparece"
+  ],
+  [
+   "f1",
+   "sugestao",
+   298,
+   1,
+   "Frase longa (31 palavras). Tente dividir em duas ou mais"
+  ],
+  [
+   "s1",
+   "sugestao",
+   330,
+   147,
+   "Explique a sigla UA na primeira vez em que ela aparece"
+  ],
+  [
+   "f1",
+   "sugestao",
+   455,
+   1,
+   "Frase longa (35 palavras). Tente dividir em duas ou mais"
+  ],
+  [
+   "f1",
+   "sugestao",
+   473,
+   57,
+   "Frase longa (26 palavras). Tente dividir em duas ou mais"
+  ],
+  [
+   "s1",
+   "sugestao",
+   477,
+   11,
+   "Explique a sigla OM na primeira vez em que ela aparece"
+  ]
+ ]
 }

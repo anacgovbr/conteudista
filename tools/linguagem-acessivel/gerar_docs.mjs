@@ -23,8 +23,9 @@ export function gerarDocs() {
     const m = MSG.regras[r.id];
     idx.push('| `' + r.codigo + '` | [' + m.titulo + '](regras/' + nomeArq(r) + ') | ' + (MSG.grupos[r.grupo] || r.grupo) + ' | ' + MSG.niveis[r.nivel] + ' | ' + ref(r) + ' |');
     const p = ['# ' + m.titulo + ' (`' + r.codigo + '`)', '', AVISO,
-      '- **Nome:** `' + r.id + '`', '- **Área e grupo:** ' + MSG.areas[r.area] + ' › ' + (MSG.grupos[r.grupo] || r.grupo), '- **Nível:** ' + MSG.niveis[r.nivel], '- **Referência:** ' + ref(r), '',
-      '## O que aparece para quem escreve', '', '> ' + m.mensagem, ''];
+      '- **Nome:** `' + r.id + '`', '- **Área e grupo:** ' + MSG.areas[r.area] + ' › ' + (MSG.grupos[r.grupo] || r.grupo), '- **Nível:** ' + MSG.niveis[r.nivel], '- **Referência:** ' + ref(r)];
+    if (r.tipos) p.push('- **Vale para:** ' + r.tipos.map(t => t === 'apresentacao' ? 'apresentação' : t).join(', '));
+    p.push('', '## O que aparece para quem escreve', '', '> ' + m.mensagem, '');
     if (m.variantes) { p.push('Variações:', ''); Object.entries(m.variantes).forEach(([k, v]) => p.push('- `' + k + '`: ' + v)); p.push(''); }
     p.push('## Por que importa', '', m.porque, '');
     if (m.correcoes) { p.push('## Correções', ''); Object.entries(m.correcoes).forEach(([k, v]) => p.push('- **' + v + '** (`' + k + '`)')); p.push(''); }
@@ -40,7 +41,8 @@ export function gerarDocs() {
     '| `<!-- linguagem-acessivel: ignorar i1 k1 -->` | Ignora essas regras no bloco seguinte (aceita código ou nome). |',
     '| `<!-- linguagem-acessivel: ignorar-documento i1 -->` | Ignora em todo o texto. |',
     '| `<!-- linguagem-acessivel: decorativa -->` | A imagem logo a seguir é decorativa: não precisa de descrição. |', '',
-    'Os marcadores são comentários HTML: não aparecem na apostila, na apresentação nem nos demais arquivos gerados.', '');
+    'Os marcadores são comentários HTML: não aparecem na apostila, na apresentação nem nos demais arquivos gerados.', '',
+    '## Glossário de siglas', '', 'O arquivo `web/lib/linguagem-acessivel/dados/siglas.js` traz o nome completo das siglas da área (usado em **Explicar**) e as siglas que dispensam explicação (formatos de arquivo e documentos comuns). Para incluir uma sigla, acrescente uma linha `SIGLA: \'Nome completo\',` em ordem alfabética.', '');
   out.push([path.join(DOCS, 'README.md'), idx.join('\n')]);
   return out;
 }

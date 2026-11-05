@@ -1,0 +1,138 @@
+.TH LAC 1 "" "lac 0.2.0" "Linguagem Acessível"
+.SH NOME
+lac, linguagem-acessivel \- Confere acessibilidade e linguagem simples em textos Markdown.
+.SH SINOPSE
+.B lac
+ <comando> [opções] [arquivo...]
+.SH DESCRIÇÃO
+Sem arquivo, lê da entrada (pipe). Use \- para a entrada.
+.SH COMANDOS
+.TP
+.B c, conferir [arquivo...]
+Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir.
+.TP
+.B a, ajustar [arquivo]
+Aplica só as correções que não mudam o sentido (por exemplo, o nível de um título) e devolve o texto corrigido. Descrever imagens e simplificar frases sempre precisam de uma pessoa.
+.TP
+.B r, regras
+Lista as regras com código, nome, grupo e nível.
+.TP
+.B e, explicar <código ou nome>
+Mostra o que a regra confere, por que importa, as correções e exemplos.
+.TP
+.B p, pedido <descrever|simplificar>
+Monta o pedido padronizado (linguagem simples e boas práticas de acessibilidade) para colar na IA autorizada. simplificar: o trecho vem da entrada. descrever: a entrada, se houver, é o texto perto da imagem.
+.TP
+.B s, servir
+Abre a API neste computador. Em breve.
+.TP
+.B h, ajuda [comando]
+Mostra a ajuda geral ou a de um comando.
+.TP
+.B completar <bash|zsh>
+Mostra o script de autocompletar. No bash: source <(lac completar bash).
+.SH OPÇÕES
+.TP
+.B \-g \-\-grupo <lista>
+O que conferir: área, grupo ou regra (a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração).
+.TP
+.B \-r \-\-regra <lista>
+Regra: código ou nome (f1, frase\-longa…).
+.TP
+.B \-n \-\-nivel <c|s>
+Só um nível (c corrigir · s sugestão).
+.TP
+.B \-f \-\-formato <formato>
+Formato da saída (texto json jsonl sarif resumo).
+.TP
+.B \-t \-\-tipo <tipo>
+Tipo do texto (auto apostila apresentacao).
+.TP
+.B \-l \-\-limite <número>
+Palavras por frase (10 a 60; padrão 25).
+.TP
+.B \-\-agrupar <modo>
+Agrupamento do json (grupo regra nenhum).
+.TP
+.B \-d \-\-diferenca
+Com ajustar, mostra só o que mudou.
+.TP
+.B \-o \-\-saida <arquivo>
+Grava a saída num arquivo.
+.TP
+.B \-q \-\-quieto
+Não escreve nada; só o código de saída.
+.TP
+.B \-\-nome <texto>
+Nome do conteúdo (pedido).
+.TP
+.B \-\-legenda <texto>
+Legenda atual da imagem (pedido descrever).
+.TP
+.B \-h \-\-ajuda
+Ajuda.
+.TP
+.B \-v \-\-versao
+Versão.
+.SH CÓDIGOS DE SAÍDA
+.TP
+.B 0
+nada a corrigir
+.TP
+.B 1
+há itens para corrigir
+.TP
+.B 2
+erro de uso
+.TP
+.B 3
+erro interno
+.SH EXEMPLOS
+.TP
+.B cat apostila.md | lac c
+tudo, para ler
+.TP
+.B lac c \-g f \-f jsonl apostila.md
+só frases, um item por linha
+.TP
+.B lac c \-n c \-q *.md
+nada para corrigir? (código de saída)
+.TP
+.B lac c \-f sarif *.md \-o achados.sarif
+para o GitHub
+.TP
+.B lac a < rascunho.md > revisado.md
+aplica e grava em outro arquivo
+.TP
+.B lac a \-d apostila.md
+mostra só o que mudaria
+.TP
+.B lac r
+todas
+.TP
+.B lac r \-g l
+só linguagem simples
+.TP
+.B lac e f1
+frase longa
+.TP
+.B lac e link\-vago
+pelo nome
+.TP
+.B lac p simplificar \-\-nome "Curso X" < trecho.txt
+pedido para simplificar
+.TP
+.B lac p descrever \-\-legenda "Fluxo" < contexto.txt
+pedido para descrever imagem
+.TP
+.B lac h c
+ajuda do conferir
+.TP
+.B source <(lac completar bash)
+ativa no bash
+.SH AMBIENTE
+.TP
+.B NO_COLOR
+Sem cores na saída.
+.SH VEJA TAMBÉM
+docs/lac.md, docs/linguagem\-acessivel/

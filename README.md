@@ -35,6 +35,7 @@ docs/OPCOES.md           ← lista das opções (gerada)
 tools/opcoes/            ← verificação e testes das opções (Node, sem dependências)
 web/lib/linguagem-acessivel/ ← biblioteca de acessibilidade e linguagem simples (módulo ES, sem dependências)
 tools/linguagem-acessivel/   ← testes e geração da documentação da biblioteca
+tools/lac/               ← linha de comando lac (comandos.json é a fonte única da ajuda e da futura API)
 docs/decisoes/           ← registro de decisões do projeto
 web/ajuda.js             ← tutorial guiado, ajuda e atalhos de teclado
 web/historico.js         ← histórico de versões, comparação (diff) e Importar link
@@ -102,7 +103,9 @@ Limitações conhecidas:
 
 ## Biblioteca Linguagem Acessível (`web/lib/linguagem-acessivel/`)
 
-Confere acessibilidade e linguagem simples em textos Markdown. É a base do verificador do editor (etapas 5 e 6), da linha de comando `lac` (etapa 4) e da API (etapa 11). Nesta versão (0.1.0) traz o núcleo e três regras: `i1` imagem sem descrição, `e1` título que pula nível e `k1` link que não diz aonde leva. Ainda não aparece na tela.
+Confere acessibilidade e linguagem simples em textos Markdown. É a base do verificador do editor (etapas 5 e 6), da linha de comando `lac` (etapa 4) e da API (etapa 11). Nesta versão (0.2.0) traz 11 regras. Para corrigir: `i1` imagem sem descrição, `i2` descrição que não descreve, `e1` título que pula nível, `e2` slide sem título, `e3` tabela sem cabeçalho e `k1` link que não diz aonde leva. Sugestões de linguagem simples: `f1` frase longa, `f2` parágrafo longo, `f3` texto em maiúsculas, `s1` sigla sem explicação e `n1` frase longa na narração. Também traz o glossário de siglas e os pedidos padronizados para IA. Ainda não aparece na tela do editor.
+
+- **Linha de comando `lac`** (`tools/lac/`): `lac c apostila.md`, `cat apostila.md | lac c -g f`, `lac a -d apostila.md`, `lac p simplificar < trecho.txt`. No Windows: `tools\lac\lac.cmd`. Ajuda: `lac h` ou `docs/lac.md`. Antes de cada publicação, o GitHub confere que o conteúdo de exemplo não tem nada para corrigir e guarda um relatório SARIF.
 
 - Uso, contrato e estrutura: `web/lib/linguagem-acessivel/README.md`. Regras e marcadores: `docs/linguagem-acessivel/`.
 - Testes (sem dependências): `node tools/linguagem-acessivel/testar.mjs`. Rodam antes de cada publicação; o conteúdo de exemplo não pode ter nenhum item "para corrigir".

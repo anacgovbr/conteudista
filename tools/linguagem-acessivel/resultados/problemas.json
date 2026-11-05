@@ -1,8 +1,8 @@
 {
  "resumo": {
-  "corrigir": 6,
-  "sugestoes": 1,
-  "total": 7
+  "corrigir": 9,
+  "sugestoes": 7,
+  "total": 16
  },
  "itens": [
   [
@@ -75,6 +75,97 @@
    [
     "descrever",
     "decorativa"
+   ]
+  ],
+  [
+   "s1",
+   "sugestao",
+   32,
+   18,
+   "A sigla RBAC só é explicada mais adiante (linha 32). Explique na primeira vez",
+   [
+    "explicar"
+   ]
+  ],
+  [
+   "f1",
+   "sugestao",
+   34,
+   1,
+   "Frase longa (27 palavras). Tente dividir em duas ou mais",
+   [
+    "simplificar"
+   ]
+  ],
+  [
+   "f3",
+   "sugestao",
+   36,
+   1,
+   "Texto todo em maiúsculas é mais difícil de ler",
+   [
+    "converter"
+   ]
+  ],
+  [
+   "i2",
+   "corrigir",
+   38,
+   1,
+   "A descrição \"Imagem\" não diz o que a imagem mostra. Escreva o que ela mostra e por que está aqui",
+   [
+    "descrever"
+   ]
+  ],
+  [
+   "i2",
+   "corrigir",
+   38,
+   23,
+   "A descrição é o nome do arquivo. Escreva o que a imagem mostra",
+   [
+    "descrever"
+   ]
+  ],
+  [
+   "e3",
+   "corrigir",
+   40,
+   1,
+   "A primeira linha da tabela está vazia. Diga o que cada coluna mostra",
+   [
+    "primeira-linha",
+    "editar"
+   ]
+  ],
+  [
+   "e3",
+   "sugestao",
+   44,
+   1,
+   "Dê nome a todas as colunas desta tabela",
+   [
+    "editar"
+   ]
+  ],
+  [
+   "f2",
+   "sugestao",
+   48,
+   1,
+   "Parágrafo longo (111 palavras). Tente dividir em dois ou mais",
+   [
+    "simplificar"
+   ]
+  ],
+  [
+   "n1",
+   "sugestao",
+   50,
+   13,
+   "Frase longa na narração (29 palavras). A legenda fica difícil de ler",
+   [
+    "simplificar"
    ]
   ]
  ]
