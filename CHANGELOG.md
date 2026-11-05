@@ -1,4 +1,11 @@
 # Novidades do Conteudista
+## 1.78 - 05/11/2026
+- **Opções padrão em um arquivo YAML.** As opções de ligar e desligar da página começam como define `web/config/opcoes.yaml`: salvar automático, lembrar links, guardar cada geração e o limite do Histórico, narração dos slides e avanço automático, formato do áudio, recursos de áudio ao abrir, modo inicial do editor, Notas dos slides na Locução, opções do link (autocontido ou PrivateBin, validade, apagar após leitura, imagens como anexo), aba inicial de Importar, layout e alto contraste. Basta trocar `ligado` por `desligado` (ou a opção indicada), salvar e publicar.
+- A escolha que a pessoa já fez no navegador continua valendo. O novo botão **Restaurar padrão**, no rodapé, volta tudo para o arquivo, sem apagar textos, rascunhos ou versões.
+- Arquivo com erro não quebra a página: valem os padrões do código e o aviso aparece no console. Antes de publicar, o GitHub confere o arquivo e indica a linha do problema. A lista completa está em `docs/OPCOES.md`.
+- **Fontes de leitura sem arquivo repetido.** A Atkinson Hyperlegible Next é uma fonte variável: o mesmo arquivo tem o normal e o negrito. Antes, ele era embutido duas vezes em cada HTML e EPUB; agora vai uma vez, declarado para os pesos 400 a 700, e o negrito continua aparecendo. Se um dia os arquivos de peso forem iguais e a fonte não for variável, a geração avisa.
+- **Borda do contador de slides mais visível** na apresentação HTML (contraste de 3,54:1, acima do mínimo de 3:1 da WCAG 1.4.11).
+
 ## 1.77 - 04/11/2026
 - Ícones no menu Mais opções da apresentação HTML. Avanço automático, Notas (Mostrar/Ocultar) e Imprimir / PDF… ganham ícone à esquerda do texto; no celular, Acessibilidade também. Os ícones seguem o padrão da barra (SVG de 24 px, preenchidos, na cor do texto e ocultos para leitores de tela) e o Acessibilidade reaproveita o mesmo ícone da barra. O nome acessível continua sendo o texto do botão e, ao mostrar ou ocultar as notas, só o rótulo muda (o ícone permanece). Os ícones da barra B+ não mudam.
 

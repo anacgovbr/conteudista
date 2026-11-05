@@ -23,7 +23,7 @@
   const fmtDur = s => { s = Math.round(s); const m = Math.floor(s / 60); return m ? m + ' min ' + String(s % 60).padStart(2, '0') + ' s' : s + ' s'; };
   const go = $('go'); if (!go || !L()) return;
   const PREF = { on: 'narr.on', voz: 'narr.voz', vel: 'narr.vel', fmt: 'narr.fmt', auto: 'narr.auto' };
-  const pref = (k, d) => { const v = localStorage.getItem(PREF[k]); return v === null ? d : v; };
+  const pref = (k, d) => { const v = window.Opcoes ? Opcoes.ler(PREF[k], d) : localStorage.getItem(PREF[k]); return v === null ? d : v; };
   const ICO = '<svg viewBox="0 0 24 24" aria-hidden="true" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/></svg>';
 
   /* ---------------------------- Estilos ---------------------------- */

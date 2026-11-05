@@ -408,6 +408,8 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
       const n = contar($('drafts')) + contar($('links'));
       let ult = ''; try { ult = localStorage.getItem(CH_ABA) || ''; } catch (e) { /* sem armazenamento */ }
       if (ult && (ult !== 'sav' || n)) return ult;
+      const ini = window.Opcoes ? Opcoes.inicial('importar.aba_inicial') : '';  // web/config/opcoes.yaml
+      if (ini) return ini;
       return n ? 'sav' : 'pc';
     },
     aoAtivar: k => { try { localStorage.setItem(CH_ABA, k); } catch (e) { /* sem armazenamento */ } },

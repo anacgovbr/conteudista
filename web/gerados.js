@@ -177,8 +177,8 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
   if (drafts) new MutationObserver(atualizarContagens).observe(drafts, { childList: true, subtree: true });
   setTimeout(atualizarContagens, 600);
   /* fim: historico de arquivos e rascunhos */
-  $('gerAtivo').checked = localStorage.getItem(ATIVO) !== '0';
-  $('gerLim').value = localStorage.getItem(LIM) || '10';
+  $('gerAtivo').checked = (window.Opcoes ? Opcoes.ler(ATIVO, '1') : localStorage.getItem(ATIVO)) !== '0';
+  $('gerLim').value = (window.Opcoes ? Opcoes.ler(LIM, '10') : localStorage.getItem(LIM)) || '10';
   $('gerAtivo').onchange = () => localStorage.setItem(ATIVO, $('gerAtivo').checked ? '1' : '0');
   $('gerLim').onchange = async () => { localStorage.setItem(LIM, $('gerLim').value); await podar(); listar(); };
 
@@ -323,3 +323,6 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
   listar();
   window.Gerados = { listar, capturar, abrir: abrirGer, fechar: fecharGer, metaHtml, temaRotulo };
 })();
+
+/* 1.76: a apresentação sempre abre em slides. Apaga a escolha de Modo leitura gravada por versões anteriores (vale também para arquivos do Histórico). */
+try { localStorage.removeItem('conteudista.apresentacao.modo'); } catch (e) { /* sem acesso ao armazenamento */ }

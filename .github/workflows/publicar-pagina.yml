@@ -8,6 +8,7 @@ on:
       - "tools/**"
       - "CHANGELOG.md"
       - "MIGRACAO-LOCUCAO.md"
+      - "docs/**"
       - ".github/workflows/publicar-pagina.yml"
   workflow_dispatch:
 
@@ -52,6 +53,12 @@ jobs:
           python tools/testar_acessibilidade.py /tmp/teste --prefixo Exemplo $EXIGIR
           python tools/testar_acessibilidade.py /tmp/teste2 --prefixo Exemplo --fonte-pptx "Segoe UI" $EXIGIR
 
+      - name: Verificar opções padrão (web/config/opcoes.yaml)
+        run: |
+          node --check web/opcoes.js
+          node tools/opcoes/testar_opcoes.js
+          node tools/opcoes/verificar_opcoes.js
+
       - name: Verificar sintaxe dos scripts da página
         run: |
           node --check web/editor.js
@@ -82,6 +89,7 @@ jobs:
         run: |
           mkdir -p site/wheels
           cp web/index.html web/*.js web/*.css tools/gerador.py site/
+          cp -r web/config site/config
           cp -r tools/temas site/temas
           cp -r tools/fontes site/fontes
           cp -r web/exemplo site/exemplo

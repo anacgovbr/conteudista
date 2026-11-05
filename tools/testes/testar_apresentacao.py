@@ -471,6 +471,64 @@ def grupo7(amb, ctx_movel, G):
     pg.close()
 
 
+# ----------------------------------------------------------------------------- GRUPO 8 — opções padrão (web/config/opcoes.yaml)
+def _servidor(pasta):
+    """Serve uma cópia de web/ por HTTP (o YAML é lido por requisição; arquivo local não serve)."""
+    import functools, http.server, threading
+    class H(http.server.SimpleHTTPRequestHandler):
+        def log_message(self, *a): pass
+    srv = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(H, directory=str(pasta)))
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv, f'http://127.0.0.1:{srv.server_address[1]}/index.html'
+
+
+def grupo8(amb, ctx, G):
+    import shutil
+    YAML = ('versao: 1\neditor:\n  modo_inicial: previa\nsalvar:\n  automaticamente: desligado\n'
+            'link:\n  onde_guardar: privatebin\n  imagens_como_anexo: desligado\n')
+    pastas = {}
+    for nome, conteudo in (('padrao', None), ('alterado', YAML)):
+        d = amb.tmp / f'web_{nome}'
+        if not d.exists():
+            shutil.copytree(RAIZ / 'web', d)
+            if conteudo is not None:
+                (d / 'config' / 'opcoes.yaml').write_text(conteudo, encoding='utf-8')
+        pastas[nome] = d
+    def ler_estado(pg):
+        pg.wait_for_selector('.mde', state='attached', timeout=15000)
+        return pg.evaluate("""() => ({ carregado: !!(window.Opcoes && Opcoes.carregado()), avisos: window.Opcoes ? Opcoes.avisos().length : -1,
+            modo: (document.querySelector('.mde') || {dataset: {}}).dataset.m, auto: document.getElementById('auto').checked,
+            mode: document.getElementById('mode').value, anexo: document.getElementById('anexo').checked })""")
+    srv1, url1 = _servidor(pastas['padrao'])
+    srv2, url2 = _servidor(pastas['alterado'])
+    try:
+        pg = ctx.new_page(); erros = []
+        pg.on('pageerror', lambda e: erros.append(str(e)))
+        pg.goto(url1); e = ler_estado(pg)
+        G.chk('8.1', 'opcoes.yaml lido ao abrir, sem avisos', e['carregado'] and e['avisos'] == 0, e)
+        G.chk('8.2', 'Sem mudar o YAML, tudo começa como antes (dividido, salvar automático, link autocontido)',
+              e['modo'] == 's' and e['auto'] and e['mode'] == 'self' and e['anexo'], e)
+        G.chk('8.3', 'Nenhum erro de JavaScript ligado às opções', not [x for x in erros if 'pcoes' in x], erros)
+        pg.close()
+        c2 = amb.novo_contexto()
+        try:
+            pg = c2.new_page(); pg.goto(url2); e = ler_estado(pg)
+            G.chk('8.4', 'YAML alterado muda o padrão (prévia, salvar automático desligado, PrivateBin, sem anexo)',
+                  e['modo'] == 'p' and not e['auto'] and e['mode'] == 'pb' and not e['anexo'], e)
+            pg.evaluate("localStorage.setItem('mde.modo', 'e')"); pg.reload(); e = ler_estado(pg)
+            G.chk('8.5', 'A escolha da pessoa prevalece sobre o YAML', e['modo'] == 'e', e)
+            pg.once('dialog', lambda d: d.accept())
+            with pg.expect_navigation(timeout=15000):
+                pg.click('#btnRestaurar')
+            e = ler_estado(pg)
+            G.chk('8.6', 'Restaurar padrão volta ao YAML', e['modo'] == 'p' and pg.evaluate("localStorage.getItem('mde.modo')") is None, e)
+            pg.close()
+        finally:
+            c2.close()
+    finally:
+        srv1.shutdown(); srv2.shutdown()
+
+
 # navegador escolhido -> motor do Playwright (chrome e msedge usam o programa instalado no computador)
 MOTOR = {'chrome': 'chromium', 'msedge': 'chromium', 'chromium': 'chromium', 'firefox': 'firefox', 'webkit': 'webkit'}
 
@@ -482,6 +540,7 @@ GRUPOS = {
     '5': ('Versão e documentação', grupo5, 'estatico'),
     '6': ('Geração dos arquivos e layout', grupo6, 'estatico'),
     '7': ('Celular (emulação de toque)', grupo7, 'movel'),
+    '8': ('Opções padrão (opcoes.yaml)', grupo8, 'desktop'),
 }
 
 MANUAIS = [
@@ -496,7 +555,7 @@ MANUAIS = [
 # ----------------------------------------------------------------------------- execução
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--grupos', default='1,2,3,4,5,6,7', help='lista de grupos (ex.: 1,2,5)')
+    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8', help='lista de grupos (ex.: 1,2,5)')
     ap.add_argument('--navegador', default='chrome', choices=list(MOTOR), help='padrão: chrome (Google Chrome instalado)')
     ap.add_argument('--saida', default=str(Path(__file__).parent / 'relatorio'), help='pasta do relatório')
     ap.add_argument('--tentativas', type=int, default=2, help='repete o grupo com falha até N vezes (passou na repetição = INSTAVEL)')

@@ -1,0 +1,278 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "opcoes.schema.json",
+  "title": "Conteudista · opções padrão",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "versao": {
+      "const": 1,
+      "description": "Versão do formato deste arquivo"
+    },
+    "editor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "modo_inicial": {
+          "description": "Modo do editor ao abrir. editar: só o texto · dividido: texto e prévia · previa: só a prévia.",
+          "default": "dividido",
+          "enum": [
+            "editar",
+            "dividido",
+            "previa"
+          ]
+        },
+        "imagens": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "recomprimir_grandes": {
+              "description": "Reduzir imagens: recomprimir também as acima de 300 KB",
+              "default": "ligado",
+              "enum": [
+                "ligado",
+                "desligado",
+                "sim",
+                "não",
+                "nao",
+                true,
+                false
+              ]
+            }
+          }
+        }
+      }
+    },
+    "aplicativo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layout": {
+          "description": "Layout (tema) dos arquivos gerados",
+          "default": "govbr",
+          "enum": [
+            "govbr",
+            "anac20_claro",
+            "anac20_escuro",
+            "classico"
+          ]
+        },
+        "alto_contraste": {
+          "description": "Alto contraste no aplicativo",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        }
+      }
+    },
+    "salvar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "automaticamente": {
+          "description": "Salvar automaticamente neste navegador",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "lembrar_links": {
+          "description": "Lembrar os links criados neste navegador",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "guardar_cada_geracao": {
+          "description": "Guardar automaticamente cada geração no Histórico",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "limite_de_geracoes": {
+          "description": "Quantas gerações o Histórico guarda",
+          "default": 10,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    "link": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "onde_guardar": {
+          "description": "Onde guardar o link criptografado",
+          "default": "autocontido",
+          "enum": [
+            "autocontido",
+            "privatebin"
+          ]
+        },
+        "expira_em": {
+          "description": "PrivateBin: prazo de validade do link",
+          "default": "1_semana",
+          "enum": [
+            "1_hora",
+            "1_dia",
+            "1_semana",
+            "1_mes",
+            "1_ano",
+            "nunca"
+          ]
+        },
+        "apagar_apos_primeira_leitura": {
+          "description": "PrivateBin: apagar após a primeira leitura",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "imagens_como_anexo": {
+          "description": "PrivateBin: enviar as imagens como anexo (ZIP)",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        }
+      }
+    },
+    "importar": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "aba_inicial": {
+          "description": "Aba que abre em Importar. automatica: a última usada; na primeira vez, Salvos (se houver) ou Computador. A escolha da pessoa continua valendo.",
+          "default": "automatica",
+          "enum": [
+            "automatica",
+            "salvos",
+            "computador",
+            "colar"
+          ]
+        }
+      }
+    },
+    "narracao": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "narrar_slides": {
+          "description": "Narração dos slides (gerar áudio das notas)",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "avancar_sozinho": {
+          "description": "Avançar os slides sozinho ao fim da narração",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "formato_audio": {
+          "description": "Formato do áudio da narração",
+          "default": "mp3",
+          "enum": [
+            "mp3",
+            "ogg",
+            "wav"
+          ]
+        }
+      }
+    },
+    "locucao": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "carregar_audio_ao_abrir": {
+          "description": "Locução: carregar os recursos de áudio ao abrir a página",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "formato_audio": {
+          "description": "Locução: formato do arquivo",
+          "default": "mp3",
+          "enum": [
+            "mp3",
+            "ogg",
+            "wav"
+          ]
+        },
+        "notas_dos_slides": {
+          "description": "Locução: começar em \"Notas dos slides\" (desligado: texto livre)",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        }
+      }
+    }
+  }
+}

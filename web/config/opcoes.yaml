@@ -1,0 +1,68 @@
+# yaml-language-server: $schema=opcoes.schema.json
+# =====================================================================
+# Conteudista · opções padrão
+# Define como cada opção COMEÇA para quem abre o Conteudista.
+# Se a pessoa já mudou a opção no navegador, vale a escolha dela.
+# "Restaurar padrão" (rodapé da página) volta tudo para este arquivo.
+#
+# Como mudar: troque o valor depois dos dois-pontos, salve e publique.
+#   ligado / desligado  (também aceita sim / não)
+# Use 2 espaços para recuar. Não use tabulação.
+# Linha que começa com # é comentário.
+# =====================================================================
+
+versao: 1
+
+editor:  # Editor
+  # Modo do editor ao abrir. editar: só o texto · dividido: texto e prévia · previa: só a prévia. [editar | dividido | previa]
+  modo_inicial: dividido
+
+  imagens:
+    # Reduzir imagens: recomprimir também as acima de 300 KB [ligado | desligado]
+    recomprimir_grandes: ligado
+
+aplicativo:  # Aplicativo
+  # Layout (tema) dos arquivos gerados [govbr | anac20_claro | anac20_escuro | classico]
+  layout: govbr
+  # Alto contraste no aplicativo [ligado | desligado]
+  alto_contraste: desligado
+
+salvar:  # Salvar e Histórico
+  # Salvar automaticamente neste navegador [ligado | desligado]
+  automaticamente: ligado
+  # Lembrar os links criados neste navegador [ligado | desligado]
+  lembrar_links: ligado
+  # Guardar automaticamente cada geração no Histórico [ligado | desligado]
+  guardar_cada_geracao: ligado
+  # Quantas gerações o Histórico guarda [1 a 100]
+  limite_de_geracoes: 10
+
+link:  # Link criptografado
+  # Onde guardar o link criptografado [autocontido | privatebin]
+  onde_guardar: autocontido
+  # PrivateBin: prazo de validade do link [1_hora | 1_dia | 1_semana | 1_mes | 1_ano | nunca]
+  expira_em: 1_semana
+  # PrivateBin: apagar após a primeira leitura [ligado | desligado]
+  apagar_apos_primeira_leitura: desligado
+  # PrivateBin: enviar as imagens como anexo (ZIP) [ligado | desligado]
+  imagens_como_anexo: ligado
+
+importar:  # Importar
+  # Aba que abre em Importar. automatica: a última usada; na primeira vez, Salvos (se houver) ou Computador. A escolha da pessoa continua valendo. [automatica | salvos | computador | colar]
+  aba_inicial: automatica
+
+narracao:  # Narração (aba Gerar)
+  # Narração dos slides (gerar áudio das notas) [ligado | desligado]
+  narrar_slides: desligado
+  # Avançar os slides sozinho ao fim da narração [ligado | desligado]
+  avancar_sozinho: desligado
+  # Formato do áudio da narração [mp3 | ogg | wav]
+  formato_audio: mp3
+
+locucao:  # Locução
+  # Locução: carregar os recursos de áudio ao abrir a página [ligado | desligado]
+  carregar_audio_ao_abrir: desligado
+  # Locução: formato do arquivo [mp3 | ogg | wav]
+  formato_audio: mp3
+  # Locução: começar em "Notas dos slides" (desligado: texto livre) [ligado | desligado]
+  notas_dos_slides: ligado

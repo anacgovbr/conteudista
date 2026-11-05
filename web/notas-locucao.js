@@ -371,7 +371,7 @@
     if (notas) desenhar();
   }
   modo.addEventListener('click', e => { const b = e.target.closest('button[data-modo]'); if (b) definirModo(b.dataset.modo, true); });
-  let modoIni = 'notas'; try { modoIni = localStorage.getItem(CHAVE_MODO) || 'notas'; } catch (e) { /* */ }
+  let modoIni = 'notas'; try { modoIni = (window.Opcoes ? Opcoes.ler(CHAVE_MODO, 'notas') : localStorage.getItem(CHAVE_MODO)) || 'notas'; } catch (e) { /* */ }
   definirModo(modoIni, false);
   new MutationObserver(() => { if (!sec.hidden) desenhar(); }).observe(sec, { attributes: true, attributeFilter: ['hidden'] });
   let tS = null;

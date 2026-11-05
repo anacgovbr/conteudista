@@ -277,6 +277,8 @@
 <tr><td>Perdi o link</td><td>Veja em <b>Importar › Salvos</b>. Só aparece se a opção de lembrar estava marcada neste navegador.</td></tr></table>
 <h4>Tutorial</h4>
 <p>O tutorial abre sozinho na primeira visita. Para vê-lo de novo, use o botão <b>▶ Tutorial</b>, o botão <b>↺ Reiniciar tutorial</b> desta janela ou <kbd>Alt+Shift+R</kbd>. Dentro do tutorial, <b>↺</b> volta ao primeiro passo.</p>
+<h4>Opções padrão (para quem mantém o Conteudista)</h4>
+<p>As opções de ligar e desligar começam como define o arquivo <code>web/config/opcoes.yaml</code>. Para mudar, edite o valor depois dos dois-pontos (<code>ligado</code> ou <code>desligado</code>), salve e publique. Se alguém já mudou uma opção no próprio navegador, vale a escolha dela. O botão <b>Restaurar padrão</b>, no rodapé, volta tudo para o que está no arquivo, sem apagar textos, rascunhos ou versões. A lista completa está em <code>docs/OPCOES.md</code>.</p>
 <h4>Novidades</h4>
 <p>O botão <b>★ Novidades</b> no topo (ou <kbd>Alt+Shift+U</kbd>) mostra o que mudou em cada versão. Um ponto verde indica versão ainda não vista.</p>
 <h4>Privacidade</h4>

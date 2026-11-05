@@ -237,7 +237,7 @@
     const expand = t => t.replace(/\(img:(\d+)\)/g, (m, n) => imgs[n - 1] ? '(' + imgs[n - 1] + ')' : m);
     const addImg = d => { if (!idx.has(d)) { imgs.push(d); idx.set(d, imgs.length); } return idx.get(d); };
 
-    const box = document.createElement('div'); box.className = 'mde'; box.dataset.m = localStorage.getItem('mde.modo') || 's';
+    const box = document.createElement('div'); box.className = 'mde'; box.dataset.m = (window.Opcoes ? Opcoes.ler('mde.modo', 's') : localStorage.getItem('mde.modo')) || 's';
     const tb = document.createElement('div'); tb.className = 'mde-tb';
     const body = document.createElement('div'); body.className = 'mde-body';
     const ta = document.createElement('textarea'); ta.className = 'mde-ta'; ta.spellcheck = true; ta.lang = 'pt-BR'; ta.placeholder = real.placeholder || '';
@@ -551,7 +551,7 @@
         '<label>Largura máxima (px)</label><select data-m><option>1920</option><option>1600</option><option selected>1280</option><option>1024</option><option>800</option></select>' +
         '<label>Formato</label><select data-f><option value="manter">Manter o formato de cada imagem</option><option value="image/jpeg">Converter para JPEG (exceto transparências: use “Manter”)</option></select>' +
         '<label>Qualidade (JPEG/WebP): <span data-qv>85</span>%</label><input type="range" data-q min="40" max="100" value="85" style="width:100%">' +
-        '<label style="font-weight:400"><input type="checkbox" data-s checked> Também recomprimir imagens acima de 300 KB mesmo sem reduzir a largura</label>' +
+        '<label style="font-weight:400"><input type="checkbox" data-s' + (window.Opcoes && !Opcoes.ligado('editor.imagens.recomprimir_grandes') ? '' : ' checked') + '> Também recomprimir imagens acima de 300 KB mesmo sem reduzir a largura</label>' +
         '<div class="res" data-r>Clique em Aplicar para processar.</div></div></div>',
         (d, fechar) => {
           const qs = d.querySelector('[data-q]'); qs.oninput = () => d.querySelector('[data-qv]').textContent = qs.value;

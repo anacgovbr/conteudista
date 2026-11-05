@@ -33,6 +33,22 @@ for fam in man.get('familias', []):
                 ok(not faltam, a['arquivo'] + ': acentos do português' + (' (faltam %s)' % ''.join(faltam) if faltam else ''))
             except Exception as e:
                 print('AVISO: não foi possível ler %s com fontTools (%s)' % (a['arquivo'], e))
+# Pesos com o mesmo arquivo: só é aceitável em fonte variável (tabela fvar), que tem o negrito no eixo de peso.
+sys.path.insert(0, os.path.dirname(PASTA))
+try:
+    from gerador import woff2_tabelas
+except Exception:
+    woff2_tabelas = None
+if woff2_tabelas:
+    for fam in man.get('familias', []):
+        por_hash = {}
+        for a in fam.get('arquivos', []):
+            cam = os.path.join(PASTA, a['arquivo'])
+            if os.path.isfile(cam): por_hash.setdefault(hashlib.sha256(open(cam, 'rb').read()).hexdigest(), []).append(a['arquivo'])
+        for h, arqs in por_hash.items():
+            if len(arqs) < 2: continue
+            var = 'fvar' in woff2_tabelas(open(os.path.join(PASTA, arqs[0]), 'rb').read())
+            ok(var, '%s: arquivos iguais (%s) %s' % (fam.get('nome'), ', '.join(arqs), 'são de uma fonte variável; o negrito vem do eixo de peso' if var else 'e a fonte NÃO é variável: o negrito não existe'))
 soltos = [f for f in os.listdir(PASTA) if f.endswith('.woff2') and f not in {a['arquivo'] for fam in man['familias'] for a in fam.get('arquivos', [])}]
 ok(not soltos, 'nenhum WOFF2 fora do manifesto' + (': ' + ', '.join(soltos) if soltos else ''))
 print('Fontes no manifesto: %d de 8%s' % (n, '' if n == 8 else ' (as demais caem para Verdana)'))

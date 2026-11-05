@@ -249,10 +249,10 @@
   document.addEventListener('click', e => { if (e.target.closest('#tg,#ts,#btnTour') && !sec.hidden) mostrarAba('curso'); }, true);
 
   /* ---------------------------- Preferências ---------------------------- */
-  const pref = (k, d) => { const v = localStorage.getItem(PREF[k]); return v === null ? d : v; };
+  const pref = (k, d) => { const v = window.Opcoes ? Opcoes.ler(PREF[k], d) : localStorage.getItem(PREF[k]); return v === null ? d : v; };
   if (!localStorage.getItem(PREF.migr)) { const v = localStorage.getItem(PREF.voz); if (!v || /^p[fm]_/.test(v)) localStorage.setItem(PREF.voz, VOZ_PADRAO); localStorage.setItem(PREF.migr, '1'); }
   if (!localStorage.getItem(PREF.migr118)) { localStorage.setItem(PREF.dtype, 'fp32'); localStorage.setItem(PREF.migr118, '1'); }
-  if (!localStorage.getItem(PREF.migr125)) { localStorage.setItem(PREF.preload, '0'); localStorage.setItem(PREF.migr125, '1'); }  // recursos de áudio sob demanda
+  if (!localStorage.getItem(PREF.migr125)) { localStorage.removeItem(PREF.preload); localStorage.setItem(PREF.migr125, '1'); }  // recursos de áudio sob demanda (padrão: opcoes.yaml)
   $('locPreload').checked = pref('preload', '0') === '1';
   $('locFon').value = pref('fon', 'auto'); $('locDtype').value = pref('dtype', 'fp32'); $('locDevice').value = pref('device', 'auto');
   $('locVel').value = pref('vel', '1'); $('locPausa').value = pref('pausa', '300'); $('locFmt').value = pref('fmt', 'mp3');

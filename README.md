@@ -29,6 +29,10 @@ Página única que converte os arquivos Markdown de um conteúdo em:
 ```
 web/index.html           ← a página
 web/editor.js            ← editor Markdown leve (sem dependências)
+web/opcoes.js            ← opções padrão (lê web/config/opcoes.yaml)
+web/config/opcoes.yaml   ← padrão de cada opção de ligar e desligar (edite aqui)
+docs/OPCOES.md           ← lista das opções (gerada)
+tools/opcoes/            ← verificação e testes das opções (Node, sem dependências)
 web/ajuda.js             ← tutorial guiado, ajuda e atalhos de teclado
 web/historico.js         ← histórico de versões, comparação (diff) e Importar link
 web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
@@ -85,6 +89,16 @@ Limitações conhecidas:
 - Para baixar ou atualizar: `powershell -ExecutionPolicy Bypass -File .\tools\fontes\baixar-fontes.ps1`; depois `python tools/fontes/verificar_fontes.py`. Faça o commit da pasta inteira e atualize o parâmetro de cache (`?v=`) se trocar scripts.
 - Se uma face faltar, a geração continua: o texto cai para Verdana e o resultado mostra um aviso.
 - Créditos: Atkinson Hyperlegible Next — Braille Institute (Google Fonts); OpenDyslexic — Abbie Gonzalez (antijingoist/opendyslexic). Ambas sob a SIL Open Font License 1.1 (`OFL-*.txt` na mesma pasta).
+
+## Opções padrão (`web/config/opcoes.yaml`)
+
+As opções de ligar e desligar da página (salvar automático, lembrar links, guardar cada geração, narração, modo do editor, PrivateBin, aba inicial de Importar etc.) começam como define `web/config/opcoes.yaml`.
+
+- **Mudar um padrão:** troque o valor depois dos dois-pontos (`ligado` / `desligado`, ou uma das opções indicadas no comentário), salve e publique. Use 2 espaços para recuar.
+- **Quem prevalece:** a escolha da pessoa no próprio navegador > `opcoes.yaml` > padrão do código. O botão **Restaurar padrão** (rodapé) volta ao arquivo sem apagar textos, rascunhos ou versões.
+- **Erro no arquivo:** a página abre com os padrões do código e registra o aviso no console; a publicação no GitHub é recusada e a mensagem diz a linha.
+- **Lista completa:** `docs/OPCOES.md`. No VS Code, `opcoes.schema.json` completa e valida enquanto você digita.
+- **Opção nova no código:** registre em `REGISTRO` (`web/opcoes.js`) e rode `node tools/opcoes/verificar_opcoes.js --gerar`. O teste falha se uma caixa de ligar/desligar da página não estiver registrada.
 
 ## Manutenção
 

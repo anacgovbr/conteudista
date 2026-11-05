@@ -16,6 +16,18 @@ for _f in (sys.stdout, sys.stderr):
         pass
 
 FALHAS = []
+# Faces esperadas (1.78): arquivos iguais de uma fonte variável viram uma face com faixa de peso ("400 700").
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    import gerador as _G
+    def faces_esperadas(familia): return _G.fontes_faces_unicas(familia)
+except Exception:
+    _G = None
+    def faces_esperadas(familia): return []
+def cobre_negrito(css, nome):
+    "Toda família embutida declara peso 700: face própria ou faixa que inclui 700."
+    pesos = re.findall(r'@font-face\{font-family:"%s";[^}]*?font-weight:([0-9 ]+);font-style:normal' % re.escape(nome), css)
+    return any(p.strip() == '700' or (len(p.split()) == 2 and int(p.split()[0]) <= 700 <= int(p.split()[1])) for p in pesos)
 def ok(c, m):
     print(('PASS ' if c else 'FAIL ') + m)
     if not c: FALHAS.append(m)
@@ -53,7 +65,8 @@ def testar_epub(cam, familia, exigir_fontes):
     outra = 'opendyslexic' if familia == 'atkinson' else 'atkinson-hyperlegible-next'
     ok(not any(outra in f for f in fontes), nome + ': só a família escolhida')
     if exigir_fontes or fontes:
-        ok(len(fontes) == 4 and all(base in f for f in fontes), '%s: 4 faces de %s' % (nome, base))
+        esp = len(faces_esperadas(familia)) or 4
+        ok(len(fontes) == esp and all(base in f for f in fontes), '%s: %d arquivo(s) de fonte de %s, sem repetição' % (nome, esp, base))
         ok(all(man.get(f[6:]) is not None and man[f[6:]].get('media-type') == 'font/woff2' for f in fontes), nome + ': fontes declaradas como font/woff2')
     css = z.read('OEBPS/css/style.css').decode('utf-8')
     ok(not re.search(r'url\(\s*["\']?https?:', css) and '@import' not in css, nome + ': CSS sem fonte/recurso remoto')
@@ -99,8 +112,10 @@ def testar_apostila_html(cam, exigir_fontes):
     ok('<label for="leitura"' in h, n + ': rótulo visível "Leitura"')
     ff = re.findall(r'@font-face\{font-family:"([^"]+)";src:url\(data:font/woff2;base64,', h)
     if exigir_fontes or ff:
-        ok('Atkinson Hyperlegible Next' in ff and 'OpenDyslexic' in ff and ff.count('Atkinson Hyperlegible Next') == 4 and ff.count('OpenDyslexic') == 4,
-           n + ': 8 @font-face em base64 (Atkinson e OpenDyslexic)')
+        ea, eo = len(faces_esperadas('atkinson')) or 4, len(faces_esperadas('opendyslexic')) or 4
+        ok('Atkinson Hyperlegible Next' in ff and 'OpenDyslexic' in ff and ff.count('Atkinson Hyperlegible Next') == ea and ff.count('OpenDyslexic') == eo,
+           n + ': %d @font-face em base64 (Atkinson %d, OpenDyslexic %d), sem arquivo repetido' % (ea + eo, ea, eo))
+        ok(cobre_negrito(h, 'Atkinson Hyperlegible Next') and cobre_negrito(h, 'OpenDyslexic'), n + ': negrito (peso 700) declarado nas duas fontes')
         ok('font-display:swap' in h, n + ': font-display:swap')
     ok(not re.search(r'@font-face\{font-family:"(Atkinson|OpenDyslexic)[^}]*https?:', h), n + ': sem CDN para Atkinson/OpenDyslexic')
     ok('--leitura:Verdana,Tahoma,Arial,sans-serif' in h and '--leitura:"OpenDyslexic",Verdana,Tahoma,Arial,sans-serif' in h, n + ': padrão Verdana e fallback')
@@ -215,7 +230,8 @@ def testar_slides_html(cam, exigir_fontes):
     ok('html.estreito .in{' in h and 'function estreito()' in h and "matchMedia('(max-width:700px) and (orientation:portrait)')" in h, n + ': palco legível para celular em retrato')
     ok('touch-action:pan-y' in h, n + ': gestos horizontais chegam ao JavaScript (swipe)')
     ff = re.findall(r'@font-face\{font-family:"([^"]+)";src:url\(data:font/woff2;base64,', h)
-    if exigir_fontes or ff: ok(len(ff) == 8, n + ': fontes de leitura embutidas')
+    if exigir_fontes or ff: ok(len(ff) == (len(faces_esperadas('atkinson')) or 4) + (len(faces_esperadas('opendyslexic')) or 4), n + ': fontes de leitura embutidas, sem arquivo repetido')
+    ok('#hud.bplus>.cnt{padding:0 12px;border:1px dashed #888888;' in h, n + ': borda do contador com contraste de 3,54:1 (WCAG 1.4.11)')
     ok('.s{font-family:var(--leitura)}' in h, n + ': slides usam var(--leitura)')
 
 if __name__ == '__main__':
