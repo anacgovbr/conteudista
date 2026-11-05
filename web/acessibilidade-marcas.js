@@ -187,7 +187,8 @@ html.contraste .la-balao{background:#000;color:#fff;border-color:#fff}
     const sp = c.cam.querySelector('.la-m[data-i="' + balaoI + '"]');
     const rt = c.ta.getBoundingClientRect();
     let r = sp && sp.getClientRects()[0];
-    if (!r || r.bottom < rt.top || r.top > rt.bottom) { if (document.activeElement !== balao && !balao.contains(document.activeElement)) { fecharBalao(false); return; } r = { left: rt.left + 16, top: rt.top + 8, bottom: rt.top + 8 }; }
+    if (!r || r.bottom < rt.top || r.top > rt.bottom) r = { left: rt.left + 16, top: rt.top + 8, bottom: rt.top + 8 };   // 1.81.1: rolar nunca fecha o balao; ele fica preso ao campo
+    balao.style.visibility = rt.bottom < 0 || rt.top > innerHeight ? 'hidden' : '';             // campo fora da tela: o balao some da vista, mas continua aberto
     const w = balao.offsetWidth, hgt = balao.offsetHeight;
     let x = Math.max(8, Math.min(r.left, innerWidth - w - 8)), y = r.bottom + 6;
     if (y + hgt > innerHeight - 8 && r.top - hgt - 6 > 8) y = r.top - hgt - 6;

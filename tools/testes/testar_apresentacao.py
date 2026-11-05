@@ -739,6 +739,15 @@ ALINHAMENTO_JS = """() => { const ta = ED.g.textarea, c = document.querySelector
   return { n: r.length, max: Math.max(0, ...r), larg: [ta.clientWidth, c.clientWidth], alt: [ta.scrollHeight, c.scrollHeight] }; }"""
 
 
+BALAO_ABERTO = "(() => { const b = document.querySelector('.la-balao'); return !!b && !b.hidden; })()"
+def _esperar(pg, js, ms=2000):
+    """Espera uma condicao da pagina ficar verdadeira (sem falhar aqui: quem decide e o G.chk)."""
+    fim = time.time() + ms / 1000
+    while time.time() < fim:
+        if pg.evaluate(js):
+            return True
+        pg.wait_for_timeout(50)
+    return False
 def grupo13(amb, ctx, G):
     srv, url = _servidor(RAIZ / 'web')
     try:
@@ -755,9 +764,9 @@ def grupo13(amb, ctx, G):
               pg.evaluate("(() => { const c = document.querySelector('#pg .la-camada'); return c.getAttribute('aria-hidden') === 'true' && getComputedStyle(c).pointerEvents === 'none'; })()"))
         ED_SCROLL = "(() => { const ta = ED.g.textarea; ta.scrollTop = 400; return new Promise(r => requestAnimationFrame(() => r(document.querySelector('#pg .la-camada').scrollTop === ta.scrollTop))); })()"
         G.chk('13.4', 'A camada acompanha a rolagem do campo', pg.evaluate(ED_SCROLL))
-        pg.evaluate("ED.g.textarea.scrollTop = 0; ED.g.element.scrollIntoView({ block: 'start' })"); pg.wait_for_timeout(150)
+        pg.evaluate("ED.g.textarea.scrollTop = 0; ED.g.element.scrollIntoView({ block: 'start', behavior: 'instant' })"); pg.wait_for_timeout(300)
         r = pg.evaluate("(() => { const s = [...document.querySelectorAll('#pg .la-camada .la-m')].find(x => x.textContent.startsWith('[clique')); const q = s.getClientRects()[0]; return { x: q.left + q.width / 2, y: q.top + q.height / 2 }; })()")
-        pg.mouse.click(r['x'], r['y']); pg.wait_for_timeout(200)
+        pg.mouse.click(r['x'], r['y']); _esperar(pg, BALAO_ABERTO); pg.wait_for_timeout(100)
         G.chk('13.5', 'Clique na marca abre o balão com a mensagem, sem tirar o foco do texto',
               pg.is_visible('.la-balao') and 'clique aqui' in pg.inner_text('.la-balao .lb-msg') and pg.evaluate('document.activeElement === ED.g.textarea'))
         pg.keyboard.press('Escape')
@@ -767,7 +776,7 @@ def grupo13(amb, ctx, G):
         pg.wait_for_function("document.querySelectorAll('#pg .la-camada .la-m').length > 0", timeout=6000)
         G.chk('13.8', 'E voltam depois da conferência', True)
         pg.evaluate("t => { document.getElementById('g').value = t; ED.g.refresh(); }", TEXTO_MARCAS); pg.wait_for_timeout(1500)
-        pg.evaluate('ED.g.textarea.focus(); ED.g.textarea.setSelectionRange(0, 0)'); pg.keyboard.press('Alt+Shift+N'); pg.wait_for_timeout(300)
+        pg.evaluate('ED.g.textarea.focus(); ED.g.textarea.setSelectionRange(0, 0)'); pg.keyboard.press('Alt+Shift+N'); _esperar(pg, BALAO_ABERTO); pg.wait_for_timeout(150)
         e = pg.evaluate("(() => { const b = document.querySelector('.la-balao'); return [!!b && !b.hidden, b ? b.textContent.slice(0, 60) : '', document.activeElement === ED.g.textarea]; })()")
         G.chk('13.9', 'Alt+Shift+N mostra o balão do próximo item e o foco fica no texto', e[0] and 'pulou' in e[1] and e[2], e)
         pg.keyboard.press('Alt+Shift+I'); pg.wait_for_timeout(200)
