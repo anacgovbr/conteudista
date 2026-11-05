@@ -11,7 +11,9 @@
    - No celular (até 900 px), o painel abre como folha inferior modal.
    - Atalhos (registrados em ajuda.js): Alt+Shift+C abre e fecha o painel; Alt+Shift+N vai ao próximo item.
    - Opções em web/config/opcoes.yaml, seção acessibilidade_texto.
-   API: window.AcessibilidadeTexto = { alternar, abrir, fechar, proximo, resultado, analisarAgora }
+   - 1.81: avisa as marcas no texto (web/acessibilidade-marcas.js) pelo evento acessibilidade:resultado e
+     oferece executar() para corrigir pelo balão do editor.
+   API: window.AcessibilidadeTexto = { alternar, abrir, fechar, proximo, resultado, analisarAgora, estado, executar, irPara }
    ===================================================================================== */
 (function () {
   'use strict';
@@ -188,6 +190,7 @@ html.contraste .la-msg,html.contraste .la-cab h3{color:#fff}html.contraste .la-l
       if (st.ta.value !== texto) { agendar(k); return st.resultado; }  // mudou enquanto analisava
       st.resultado = r; st.analisado = texto;
       atualizarBotao(k); atualizarAviso(); if (!st.painel.hidden) desenhar(k, st.focoApos);
+      document.dispatchEvent(new CustomEvent('acessibilidade:resultado', { detail: { k } }));
       return r;
     } catch (e) {
       indisponivel = true; Object.keys(E).forEach(x => { E[x].btn.title = 'Conferência de acessibilidade indisponível neste navegador'; if (!E[x].painel.hidden) desenhar(x); });
@@ -332,28 +335,37 @@ setInterval(() => Object.values(E).forEach(st => { if (st.analisado !== null && 
     const li = b.closest('.la-it'); if (!li || !st.resultado) return;
     const d = st.resultado.diagnosticos[+li.dataset.i]; if (!d) return;
     if (a === 'pq') { const q = li.querySelector('.la-pq'); q.hidden = !q.hidden; b.setAttribute('aria-expanded', String(!q.hidden)); return; }
-    if (st.ta.value !== st.analisado) { await analisar(k); dica('O texto mudou. Confira a lista de novo.'); return; }
+    return executar(k, d, a, +b.dataset.j, li);
+  }
+  // Executa uma ação sobre um item: 'ir', 'ign' (ignorar) ou 'cor' (correção j). li: item do painel (para devolver o foco).
+  async function executar(k, d, a, j, li) {
+    const st = E[k]; if (!st || d == null) return false;
+    if (typeof d === 'number') d = st.resultado && st.resultado.diagnosticos[d];
+    if (!d) return false;
+    if (st.ta.value !== st.analisado) { await analisar(k); dica('O texto mudou. Confira a lista de novo.'); return false; }
     // depois de corrigir ou ignorar, o foco volta ao painel (no mesmo item ou no seguinte)
-    const marcarFoco = () => { st.focoApos = { chave: li.dataset.chave, a: 'cor', j: '0', pos: [...st.painel.querySelectorAll('.la-it')].indexOf(li) }; };
-    if (a === 'ir') { irPara(k, d); return; }
+    const marcarFoco = () => { if (li && !st.painel.hidden) st.focoApos = { chave: li.dataset.chave, a: 'cor', j: '0', pos: [...st.painel.querySelectorAll('.la-it')].indexOf(li) }; };
+    if (a === 'ir') { irPara(k, d); return true; }
     if (a === 'ign') {
       const v = st.ta.value, i = inicioDoBloco(v, d.inicio);
       marcarFoco(); aplicar(st, [{ inicio: i, fim: i, texto: '<!-- linguagem-acessivel: ignorar ' + d.codigo + ' -->\n' }]);
       dica('Sugestão ignorada neste texto. Para voltar a vê-la, apague o comentário "linguagem-acessivel: ignorar ' + d.codigo + '".');
-      await analisar(k); return;
+      await analisar(k); return true;
     }
     if (a === 'cor') {
-      const c = d.correcoes[+b.dataset.j]; if (!c) return;
+      const c = d.correcoes[j]; if (!c) return false;
       if (c.edicoes) {
         marcarFoco();
-        if (!aplicar(st, c.edicoes)) { st.focoApos = null; dica('Não foi possível aplicar. Confira o trecho no editor.'); return; }
+        if (!aplicar(st, c.edicoes)) { st.focoApos = null; dica('Não foi possível aplicar. Confira o trecho no editor.'); return false; }
         const r = await analisar(k);
         dica('Correção aplicada: ' + c.rotulo + '.' + (r ? ' ' + plural(r.resumo.corrigir, 'item para corrigir', 'itens para corrigir') + '.' : ''));
-        return;
+        return true;
       }
       const alvo = c.alvo || { inicio: d.inicio, fim: d.fim };
       irPara(k, d, alvo); dica(DICA[c.acao] || 'Ajuste o trecho selecionado.');
+      return true;
     }
+    return false;
   }
   function aplicar(st, eds) {
     if (st.ed && st.ed.aplicarEdicoes) return st.ed.aplicarEdicoes(eds);
@@ -379,6 +391,7 @@ setInterval(() => Object.values(E).forEach(st => { if (st.analisado !== null && 
     let i = lista.findIndex(d => sel ? d.inicio > pos : d.inicio >= pos); if (i < 0) i = 0;
     const d = lista[i];
     irPara(k, d);
+    document.dispatchEvent(new CustomEvent('acessibilidade:item', { detail: { k, i: st.resultado.diagnosticos.indexOf(d) } }));
     const n = d.nivel === 'corrigir' ? 'Para corrigir' : 'Sugestão';
     anunciar('Item ' + (i + 1) + ' de ' + lista.length + '. ' + n + ': ' + d.mensagem + '. Linha ' + d.linha + '.');
   }
@@ -390,5 +403,8 @@ setInterval(() => Object.values(E).forEach(st => { if (st.analisado !== null && 
     if (MQ.addEventListener) MQ.addEventListener('change', () => Object.keys(E).forEach(k => { if (!E[k].painel.hidden) { fechar(k, true); abrir(k, false); } }));
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
-  window.AcessibilidadeTexto = { alternar, abrir, fechar, proximo, analisarAgora: k => analisar(k || visivel()), resultado: k => (E[k || visivel()] || {}).resultado || null };
+  window.AcessibilidadeTexto = { alternar, abrir, fechar, proximo, analisarAgora: k => analisar(k || visivel()), resultado: k => (E[k || visivel()] || {}).resultado || null,
+    estado: k => { const st = E[k || visivel()]; return st ? { k: st.k, resultado: st.resultado, analisado: st.analisado, ta: st.ta, box: st.box, painel: st.painel, ed: st.ed } : null; },
+    executar: (k, i, a, j) => executar(k, i, a, j || 0, null), irPara: (k, i) => { const st = E[k]; if (st && st.resultado && st.resultado.diagnosticos[i]) irPara(k, st.resultado.diagnosticos[i]); },
+    visivel, dica, meta };
 })();

@@ -1,4 +1,11 @@
 # Novidades do Conteudista
+## 1.81 - 05/11/2026
+- **Marcas no texto.** O editor sublinha os trechos para corrigir com uma linha ondulada vermelha, como um corretor ortográfico. As sugestões podem ser sublinhadas com uma linha pontilhada (desligado por padrão). A cor nunca vem sozinha: o tipo de linha também muda.
+- **Clique numa marca** para ver a mensagem e as correções num balão, com **Por quê?**, **Ignorar** (nas sugestões) e **Ver no painel**. Pelo teclado: Alt+Shift+N vai ao próximo item e mostra o balão; o novo **Alt+Shift+I** leva o foco às correções do item no cursor; Esc volta ao texto.
+- As marcas somem enquanto você digita e voltam 1 segundo depois. Não entram no texto, no link nem nos arquivos gerados.
+- **Resumo no rodapé do editor** (computador): "Acessibilidade: N para corrigir", que abre o painel.
+- Interruptores **Marcar no texto** e **Marcar também as sugestões** no rodapé do painel. Padrões em `web/config/opcoes.yaml`: `acessibilidade_texto.marcas_no_texto` (ligado) e `marcas_sugestoes` (desligado).
+
 ## 1.80 - 05/11/2026
 - **Acessibilidade do texto.** Novo botão **Acessibilidade** na barra do editor (atalho Alt+Shift+C). Ele abre um painel com dois níveis: **Para corrigir** (o que impede alguém de ler: imagem sem descrição, título que pula nível, link "clique aqui", slide sem título, tabela sem cabeçalho) e **Sugestões** de linguagem simples (frase longa, sigla sem explicação, texto em maiúsculas). As mensagens estão em linguagem simples, com **Por quê?** em cada item.
 - **Correção em um clique** quando é possível (Ajustar nível, É decorativa, Usar a primeira linha, Explicar a sigla, Converter maiúsculas). Toda correção pode ser desfeita com Ctrl+Z. Quando depende de você, **Ir para** seleciona o trecho e uma dica diz o que escrever. Sugestões podem ser ignoradas naquele trecho.

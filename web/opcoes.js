@@ -65,6 +65,10 @@
       chave: 'conteudista.acessibilidade.limite', controles: [], rotulo: 'Acessibilidade do texto: palavras por frase antes da sugestão "frase longa"' },
     { caminho: 'acessibilidade_texto.aviso_ao_gerar', tipo: 'chave', padrao: 'ligado', valores: LIG,
       chave: null, controles: [], rotulo: 'Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia)' },
+    { caminho: 'acessibilidade_texto.marcas_no_texto', tipo: 'chave', padrao: 'ligado', valores: LIG,
+      chave: 'conteudista.acessibilidade.marcas', controles: ['data-la-marcas'], rotulo: 'Acessibilidade do texto: sublinhar no editor os trechos para corrigir' },
+    { caminho: 'acessibilidade_texto.marcas_sugestoes', tipo: 'chave', padrao: 'desligado', valores: LIG,
+      chave: 'conteudista.acessibilidade.marcasSug', controles: ['data-la-marcas-sug'], rotulo: 'Acessibilidade do texto: sublinhar também as sugestões (linha pontilhada)' },
 
     { caminho: 'narracao.narrar_slides', tipo: 'chave', padrao: 'desligado', valores: LIG,
       chave: 'narr.on', controles: ['narrOn'], rotulo: 'Narração dos slides (gerar áudio das notas)' },

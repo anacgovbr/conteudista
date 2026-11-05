@@ -261,6 +261,32 @@
             true,
             false
           ]
+        },
+        "marcas_no_texto": {
+          "description": "Acessibilidade do texto: sublinhar no editor os trechos para corrigir",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "marcas_sugestoes": {
+          "description": "Acessibilidade do texto: sublinhar também as sugestões (linha pontilhada)",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
         }
       }
     },

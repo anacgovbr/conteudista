@@ -285,7 +285,9 @@
 <li>Quando a correção depende de você (descrever uma imagem, simplificar uma frase), o trecho fica selecionado e uma dica diz o que escrever.</li>
 <li><b>Ignorar</b> grava um comentário no texto, que não aparece nos arquivos gerados. A sugestão some só naquele trecho.</li>
 <li><kbd>Alt+Shift+N</kbd> vai ao próximo item a partir do cursor. A conferência roda 1 segundo depois que você para de digitar e não envia o texto para fora do navegador.</li>
-<li>Se houver itens para corrigir, um aviso aparece perto de <b>Gerar arquivos</b>. Você pode gerar os arquivos assim mesmo.</li></ul>
+<li>Se houver itens para corrigir, um aviso aparece perto de <b>Gerar arquivos</b>. Você pode gerar os arquivos assim mesmo.</li>
+<li><b>Marcas no texto:</b> os trechos para corrigir ficam sublinhados no editor com uma linha ondulada vermelha, como num corretor ortográfico. Clique numa marca para ver a mensagem e as correções. Pelo teclado, <kbd>Alt+Shift+N</kbd> vai ao próximo item e mostra o balão; <kbd>Alt+Shift+I</kbd> leva o foco às correções do item no cursor; <kbd>Esc</kbd> volta ao texto. As marcas somem enquanto você digita e voltam 1 segundo depois.</li>
+<li>No rodapé do painel: <b>Marcar no texto</b> liga e desliga as marcas; <b>Marcar também as sugestões</b> sublinha as sugestões com uma linha pontilhada. As marcas não entram no texto nem nos arquivos gerados.</li></ul>
 <h4>Editor no celular</h4>
 <p>Em telas pequenas, a barra do editor ocupa no máximo duas linhas. Na primeira ficam <b>Desfazer</b>, <b>Refazer</b>, <b>Negrito</b>, <b>Itálico</b> e três menus: <b>H</b> (títulos, código e listas), <b>+</b> (Inserir: link, imagem, tabela, caixas, fluxo e <b>Imagens do texto</b>) e <b>⋯</b> (Mais: compartilhar link, versões e tela cheia). Na segunda, os modos <b>Editar</b>, <b>Dividido</b> e <b>Prévia</b>. A contagem do texto ocupa uma linha; toque nela para ver os detalhes. Nos menus, as setas trocam de item e <kbd>Esc</kbd> fecha.</p>
 <h4>Ampliar (zoom) nos arquivos gerados</h4>
@@ -352,6 +354,7 @@
     
     { g: 'Navegação', k: 'F', d: 'Tela cheia do editor', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); const b = vis && [...vis.querySelectorAll('.mde-tb button')].pop(); if (b) b.click(); } },
     { g: 'Acessibilidade do texto', k: 'C', d: 'Conferir acessibilidade: abre e fecha o painel', f: () => window.AcessibilidadeTexto && AcessibilidadeTexto.alternar() },
+    { g: 'Acessibilidade do texto', k: 'I', d: 'Correções do item no cursor (leva o foco para o balão; Esc volta ao texto)', f: () => { const l = document.getElementById('secLoc'); if (l && !l.hidden) return; if (window.MarcasTexto) MarcasTexto.abrirNoCursor(true); } },
     { g: 'Acessibilidade do texto', k: 'N', d: 'Próximo item para corrigir ou sugestão (seleciona no editor)', f: () => { const l = document.getElementById('secLoc'); if (l && !l.hidden) return; if (window.AcessibilidadeTexto) AcessibilidadeTexto.proximo(); } },
     { g: 'Ajuda', k: 'T', d: 'Tutorial', f: iniciar },
     { g: 'Ajuda', k: 'R', d: 'Reiniciar o tutorial (do primeiro passo)', f: reiniciar },

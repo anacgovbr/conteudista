@@ -727,6 +727,74 @@ def grupo12(amb, ctx, G):
         srv.shutdown()
 
 
+# ----------------------------------------------------------------------------- GRUPO 13 — marcas no texto e balão (1.81)
+TEXTO_MARCAS = ('# Processo\n\n### Prazos\n\nOs prazos estão no regulamento, que é um texto bem longo para quebrar a linha automaticamente dentro do campo. '
+                'Para consultar, [clique aqui](https://www.gov.br/anac).\n\n![](fluxo.png)\n\nO pedido segue o RBAC 145. 😀 Ação.\n\n' + 'Linha de enchimento.\n\n' * 40 + 'Fim. ![Imagem](x.png)\n')
+ALINHAMENTO_JS = """() => { const ta = ED.g.textarea, c = document.querySelector('#pg .la-camada'), cs = getComputedStyle(ta), r = [];
+  for (const sp of c.querySelectorAll('.la-m')) { const d = AcessibilidadeTexto.resultado('g').diagnosticos[+sp.dataset.i];
+    const m = document.createElement('div'); ['fontFamily','fontSize','lineHeight','paddingTop','paddingLeft','paddingRight','letterSpacing','tabSize','wordSpacing'].forEach(k => m.style[k] = cs[k]);
+    Object.assign(m.style, { position: 'absolute', top: '0', left: '-9999px', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', boxSizing: 'border-box', width: ta.clientWidth + 'px' });
+    m.textContent = ta.value.slice(0, d.inicio); const s = document.createElement('span'); s.textContent = 'x'; m.appendChild(s); document.body.appendChild(m);
+    r.push(Math.abs(sp.offsetTop - s.offsetTop) + Math.abs(sp.offsetLeft - s.offsetLeft)); m.remove(); }
+  return { n: r.length, max: Math.max(0, ...r), larg: [ta.clientWidth, c.clientWidth], alt: [ta.scrollHeight, c.scrollHeight] }; }"""
+
+
+def grupo13(amb, ctx, G):
+    srv, url = _servidor(RAIZ / 'web')
+    try:
+        pg = ctx.new_page(); erros = []
+        pg.on('pageerror', lambda e: erros.append(str(e)))
+        pg.add_init_script("try { localStorage.setItem('conteudista.tour', '1'); } catch (e) {}")   # sem o tutorial da primeira visita
+        pg.goto(url); pg.wait_for_selector('#pg .la-btn', state='attached', timeout=15000); pg.wait_for_timeout(300)
+        pg.evaluate("t => { document.getElementById('g').value = t; ED.g.refresh(); }", TEXTO_MARCAS)
+        pg.wait_for_selector('#pg .la-camada .la-m', timeout=8000)
+        a = pg.evaluate(ALINHAMENTO_JS)
+        G.chk('13.1', 'Marcas só nos itens para corrigir (4), por padrão', a['n'] == 4 and pg.evaluate("document.querySelectorAll('#pg .la-camada .la-m.s').length") == 0, a)
+        G.chk('13.2', 'Marcas alinhadas ao texto, com quebra de linha automática e emoji (até 1 px)', a['max'] <= 1 and a['larg'][0] == a['larg'][1] and abs(a['alt'][0] - a['alt'][1]) <= 4, a)
+        G.chk('13.3', 'Camada invisível para leitor de tela e sem bloquear o mouse',
+              pg.evaluate("(() => { const c = document.querySelector('#pg .la-camada'); return c.getAttribute('aria-hidden') === 'true' && getComputedStyle(c).pointerEvents === 'none'; })()"))
+        ED_SCROLL = "(() => { const ta = ED.g.textarea; ta.scrollTop = 400; return new Promise(r => requestAnimationFrame(() => r(document.querySelector('#pg .la-camada').scrollTop === ta.scrollTop))); })()"
+        G.chk('13.4', 'A camada acompanha a rolagem do campo', pg.evaluate(ED_SCROLL))
+        pg.evaluate("ED.g.textarea.scrollTop = 0; ED.g.element.scrollIntoView({ block: 'start' })"); pg.wait_for_timeout(150)
+        r = pg.evaluate("(() => { const s = [...document.querySelectorAll('#pg .la-camada .la-m')].find(x => x.textContent.startsWith('[clique')); const q = s.getClientRects()[0]; return { x: q.left + q.width / 2, y: q.top + q.height / 2 }; })()")
+        pg.mouse.click(r['x'], r['y']); pg.wait_for_timeout(200)
+        G.chk('13.5', 'Clique na marca abre o balão com a mensagem, sem tirar o foco do texto',
+              pg.is_visible('.la-balao') and 'clique aqui' in pg.inner_text('.la-balao .lb-msg') and pg.evaluate('document.activeElement === ED.g.textarea'))
+        pg.keyboard.press('Escape')
+        G.chk('13.6', 'Esc fecha o balão', not pg.is_visible('.la-balao'))
+        pg.keyboard.type('x')
+        G.chk('13.7', 'Ao digitar, as marcas somem (não ficam fora do lugar)', pg.evaluate("document.querySelectorAll('#pg .la-camada .la-m').length") == 0)
+        pg.wait_for_function("document.querySelectorAll('#pg .la-camada .la-m').length > 0", timeout=6000)
+        G.chk('13.8', 'E voltam depois da conferência', True)
+        pg.evaluate("t => { document.getElementById('g').value = t; ED.g.refresh(); }", TEXTO_MARCAS); pg.wait_for_timeout(1500)
+        pg.evaluate('ED.g.textarea.focus(); ED.g.textarea.setSelectionRange(0, 0)'); pg.keyboard.press('Alt+Shift+N'); pg.wait_for_timeout(300)
+        e = pg.evaluate("(() => { const b = document.querySelector('.la-balao'); return [!!b && !b.hidden, b ? b.textContent.slice(0, 60) : '', document.activeElement === ED.g.textarea]; })()")
+        G.chk('13.9', 'Alt+Shift+N mostra o balão do próximo item e o foco fica no texto', e[0] and 'pulou' in e[1] and e[2], e)
+        pg.keyboard.press('Alt+Shift+I'); pg.wait_for_timeout(200)
+        G.chk('13.10', 'Alt+Shift+I leva o foco à primeira correção do balão', pg.evaluate('document.activeElement.textContent') == 'Ajustar nível')
+        pg.keyboard.press('Enter'); pg.wait_for_timeout(900)
+        G.chk('13.11', 'Corrigir pelo balão aplica e devolve o foco ao texto',
+              pg.evaluate("ED.g.textarea.value.split('\\n')[2]") == '## Prazos' and pg.evaluate('document.activeElement === ED.g.textarea') and not pg.is_visible('.la-balao'))
+        rod = pg.inner_text('#pg .st-la')
+        G.chk('13.12', 'Resumo no rodapé do editor', rod == 'Acessibilidade: 3 para corrigir', rod)
+        pg.evaluate("AcessibilidadeTexto.abrir('g')"); pg.wait_for_timeout(300)
+        pg.locator('#laP-g [data-la-marcas-sug]').check(); pg.wait_for_timeout(200)
+        G.chk('13.13', '"Marcar também as sugestões" sublinha as sugestões (linha pontilhada)', pg.evaluate("document.querySelectorAll('#pg .la-camada .la-m.s').length") >= 1)
+        a = pg.evaluate(ALINHAMENTO_JS)
+        G.chk('13.14', 'Com o painel aberto (campo mais estreito), as marcas continuam alinhadas', a['max'] <= 1 and a['larg'][0] == a['larg'][1], a)
+        pg.locator('#laP-g [data-la-marcas]').uncheck(); pg.wait_for_timeout(200)
+        G.chk('13.15', '"Marcar no texto" desligado esconde as marcas e fica guardado',
+              pg.evaluate("document.querySelector('#pg .la-camada').hidden") and pg.evaluate("localStorage.getItem('conteudista.acessibilidade.marcas')") == '0')
+        pg.locator('#laP-g [data-la-marcas]').check()
+        pg.click('#pg .mde-tb [data-m=p]'); pg.wait_for_timeout(200)
+        G.chk('13.16', 'No modo Prévia, a camada some', pg.evaluate("document.querySelector('#pg .la-camada').hidden"))
+        G.chk('13.17', 'As marcas não entram no texto', '<span' not in pg.evaluate('document.getElementById("g").value') and 'la-m' not in pg.evaluate('document.getElementById("g").value'))
+        G.chk('13.18', 'Nenhum erro de JavaScript nas marcas', not erros, erros)
+        pg.close()
+    finally:
+        srv.shutdown()
+
+
 # navegador escolhido -> motor do Playwright (chrome e msedge usam o programa instalado no computador)
 MOTOR = {'chrome': 'chromium', 'msedge': 'chromium', 'chromium': 'chromium', 'firefox': 'firefox', 'webkit': 'webkit'}
 
@@ -743,6 +811,7 @@ GRUPOS = {
     '10': ('Zoom nos arquivos gerados (1.79)', grupo10, 'desktop'),
     '11': ('Biblioteca Linguagem Acessível no navegador', grupo11, 'desktop'),
     '12': ('Painel Acessibilidade do texto (1.80)', grupo12, 'desktop'),
+    '13': ('Marcas no texto e balão (1.81)', grupo13, 'desktop'),
 }
 
 MANUAIS = [
@@ -757,7 +826,7 @@ MANUAIS = [
 # ----------------------------------------------------------------------------- execução
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10,11,12', help='lista de grupos (ex.: 1,2,5)')
+    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10,11,12,13', help='lista de grupos (ex.: 1,2,5)')
     ap.add_argument('--navegador', default='chrome', choices=list(MOTOR), help='padrão: chrome (Google Chrome instalado)')
     ap.add_argument('--saida', default=str(Path(__file__).parent / 'relatorio'), help='pasta do relatório')
     ap.add_argument('--tentativas', type=int, default=2, help='repete o grupo com falha até N vezes (passou na repetição = INSTAVEL)')
