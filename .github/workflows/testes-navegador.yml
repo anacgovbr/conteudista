@@ -85,7 +85,7 @@ jobs:
 
       - name: Guardar relatório e capturas de tela
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: relatorio-testes-${{ matrix.navegador }}
           path: relatorio-${{ matrix.navegador }}

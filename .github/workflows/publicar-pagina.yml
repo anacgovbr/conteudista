@@ -67,7 +67,7 @@ jobs:
           node tools/lac/lac.mjs c -f sarif -o linguagem-acessivel.sarif web/exemplo/treinamento.md web/exemplo/apresentacao.md
 
       - name: Guardar o relatório SARIF do conteúdo de exemplo
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: linguagem-acessivel-sarif
           path: linguagem-acessivel.sarif
@@ -130,7 +130,7 @@ jobs:
 
       - name: Cache dos modelos de voz
         continue-on-error: true
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: .cache/modelos
           key: modelos-${{ hashFiles('web/modelos.json') }}-${{ steps.chave_modelos.outputs.perfis }}
@@ -145,10 +145,10 @@ jobs:
           du -sh site || true
 
       - name: Configurar GitHub Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Enviar site
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
