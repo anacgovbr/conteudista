@@ -651,6 +651,82 @@ const w = new Worker('./w.js', { type: 'module' }); w.onmessage = e => { window.
         srv.shutdown()
 
 
+# ----------------------------------------------------------------------------- GRUPO 12 — painel "Acessibilidade do texto" (1.80)
+TEXTO_A11Y = ('# Processo\n\n### Prazos\n\nOs prazos estão no regulamento. Para consultar, [clique aqui](https://www.gov.br/anac).\n\n'
+              '![](fluxo.png)\n\nO pedido segue o RBAC 145.\n\n' + 'Linha de enchimento.\n\n' * 60 + 'Fim. ![Imagem](x.png)\n')
+
+
+def _editor_com_texto(pg, url):
+    pg.goto(url); pg.wait_for_selector('#pg .la-btn', state='attached', timeout=15000); pg.wait_for_timeout(300)
+    pg.keyboard.press('Escape')
+    pg.evaluate("t => { document.getElementById('g').value = t; ED.g.refresh(); }", TEXTO_A11Y)
+    pg.wait_for_function("document.querySelector('#pg .la-btn').getAttribute('aria-label').includes('4 itens')", timeout=8000)
+
+
+def grupo12(amb, ctx, G):
+    srv, url = _servidor(RAIZ / 'web')
+    try:
+        pg = ctx.new_page(); erros = []
+        pg.on('pageerror', lambda e: erros.append(str(e)))
+        _editor_com_texto(pg, url)
+        bt = pg.locator('#pg .la-btn')
+        G.chk('12.1', 'Botão Acessibilidade na barra do editor mostra os itens para corrigir (nome acessível e número)',
+              bt.get_attribute('aria-label') == 'Conferir acessibilidade, 4 itens para corrigir' and pg.inner_text('#pg .la-cont') == '4', bt.get_attribute('aria-label'))
+        av = pg.inner_text('#laAviso') if pg.is_visible('#laAviso') else ''
+        G.chk('12.2', 'Aviso perto de Gerar arquivos, sem bloquear a geração', '4 itens para corrigir na apostila' in av and not pg.is_disabled('#go'), av)
+        pg.keyboard.press('Alt+Shift+C'); pg.wait_for_timeout(300)
+        G.chk('12.3', 'Alt+Shift+C abre o painel, com o foco no título e aria-expanded', pg.is_visible('#laP-g') and pg.evaluate("document.activeElement.id") == 'laT-g' and bt.get_attribute('aria-expanded') == 'true')
+        n = pg.evaluate("[document.querySelectorAll('#laP-g .la-sec.c .la-it').length, document.querySelectorAll('#laP-g .la-sec.s .la-it').length]")
+        sub = pg.inner_text('#laP-g .la-sub')
+        G.chk('12.4', 'Dois níveis: 4 para corrigir e 1 sugestão (recolhida)', n == [4, 1] and pg.evaluate("document.getElementById('laLs-g').hidden") and '1 sugestão' in sub, [n, sub])
+        pg.locator('#laP-g .la-it', has_text='pulou').locator('button', has_text='Ajustar nível').click(); pg.wait_for_timeout(700)
+        ok = pg.evaluate("ED.g.textarea.value.split('\\n')[2]") == '## Prazos'
+        G.chk('12.5', 'Correção em um clique aplica e o foco continua no painel', ok and pg.evaluate("!!document.activeElement.closest('#laP-g')"))
+        pg.evaluate('ED.g.desfazer()')
+        G.chk('12.6', 'A correção sai com um único Ctrl+Z (desfazer do editor)', pg.evaluate("ED.g.textarea.value.split('\\n')[2]") == '### Prazos')
+        pg.evaluate('ED.g.refazer()'); pg.wait_for_timeout(1300)
+        pg.locator('#laP-g .la-it', has_text='não diz o que').locator('button', has_text='Ir para').click(); pg.wait_for_timeout(200)
+        e = pg.evaluate("(() => { const t = ED.g.textarea; return [t.value.slice(t.selectionStart, t.selectionEnd), t.scrollTop > 0, document.activeElement === t]; })()")
+        G.chk('12.7', '"Ir para" seleciona o trecho no editor e rola até ele', e == ['![Imagem](x.png)', True, True], e)
+        pg.locator('#laP-g .la-it', has_text='não diz o que').locator('button', has_text='Descrever').click(); pg.wait_for_timeout(200)
+        e = pg.evaluate("(() => { const t = ED.g.textarea; return t.value.slice(t.selectionStart, t.selectionEnd); })()")
+        G.chk('12.8', 'Correção que precisa de uma pessoa seleciona o texto a reescrever e mostra a dica', e == 'Imagem' and 'colchetes' in pg.inner_text('.la-toast'), e)
+        pg.locator('#laP-g .la-abre').click(); pg.wait_for_timeout(100)
+        pg.locator('#laP-g .la-it', has_text='RBAC').locator('button', has_text='Ignorar').click(); pg.wait_for_timeout(900)
+        G.chk('12.9', 'Ignorar grava o comentário no texto e a sugestão some',
+              pg.evaluate("ED.g.textarea.value.includes('<!-- linguagem-acessivel: ignorar s1 -->\\nO pedido')") and '0 sugestões' in pg.inner_text('#laP-g .la-sub'))
+        pq = pg.locator('#laP-g .la-it').first.locator('button', has_text='Por quê?'); pq.click()
+        G.chk('12.10', '"Por quê?" mostra a explicação (aria-expanded)', pq.get_attribute('aria-expanded') == 'true' and pg.locator('#laP-g .la-it').first.locator('.la-pq').is_visible())
+        pg.evaluate('ED.g.textarea.setSelectionRange(0, 0)'); pg.keyboard.press('Alt+Shift+N'); pg.wait_for_timeout(300)
+        e = pg.evaluate("(() => { const t = ED.g.textarea; return t.value.slice(t.selectionStart, t.selectionEnd); })()")
+        G.chk('12.11', 'Alt+Shift+N vai ao próximo item a partir do cursor', e == '[clique aqui](https://www.gov.br/anac)', e)
+        pg.locator('#laP-g h3').focus(); pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
+        G.chk('12.12', 'Esc fecha o painel e devolve o foco ao botão', not pg.is_visible('#laP-g') and pg.evaluate("document.activeElement.classList.contains('la-btn')"))
+        pg.evaluate("t => { document.getElementById('g').value = t; ED.g.refresh(); }", '# Título\n\n## Parte\n\nTexto simples.\n')
+        pg.wait_for_function("document.querySelector('#pg .la-cont').hidden", timeout=6000)
+        G.chk('12.13', 'Sem itens: o número some e o aviso de Gerar arquivos também', not pg.is_visible('#laAviso'))
+        pg.evaluate("AcessibilidadeTexto.abrir('g')"); pg.wait_for_timeout(200)
+        G.chk('12.14', 'Sem itens: o painel diz "Nada para corrigir"', 'Nada para corrigir' in pg.inner_text('#laP-g .la-corpo'))
+        G.chk('12.15', 'Nenhum erro de JavaScript no painel', not erros, erros)
+        pg.close()
+        c2 = amb.novo_contexto(movel=True)
+        try:
+            m = c2.new_page(); _editor_com_texto(m, url)
+            m.locator('#pg .mv-bt[data-g=mais]').click(); m.wait_for_timeout(150)
+            tem = m.locator('.mv-menu:not([hidden]) [role=menuitem]', has_text='Conferir acessibilidade')
+            G.chk('12.16', 'Celular: "Conferir acessibilidade" no menu ⋯ da barra', tem.count() == 1)
+            tem.click(); m.wait_for_timeout(300)
+            e = m.evaluate("(() => { const p = document.getElementById('laP-g'); return [p.classList.contains('folha'), p.getAttribute('role'), p.getAttribute('aria-modal'), document.activeElement.id]; })()")
+            G.chk('12.17', 'Celular: painel abre como folha inferior modal, com o foco no título', e == [True, 'dialog', 'true', 'laT-g'], e)
+            m.locator('#laP-g .la-it', has_text='Descreva').locator('button', has_text='Ir para').click(); m.wait_for_timeout(300)
+            G.chk('12.18', 'Celular: "Ir para" fecha a folha e seleciona o trecho', not m.is_visible('#laP-g') and m.evaluate("(() => { const t = ED.g.textarea; return t.value.slice(t.selectionStart, t.selectionEnd); })()") == '![](fluxo.png)')
+            m.close()
+        finally:
+            c2.close()
+    finally:
+        srv.shutdown()
+
+
 # navegador escolhido -> motor do Playwright (chrome e msedge usam o programa instalado no computador)
 MOTOR = {'chrome': 'chromium', 'msedge': 'chromium', 'chromium': 'chromium', 'firefox': 'firefox', 'webkit': 'webkit'}
 
@@ -666,6 +742,7 @@ GRUPOS = {
     '9': ('Celular: editor e Importar (1.79)', grupo9, 'movel'),
     '10': ('Zoom nos arquivos gerados (1.79)', grupo10, 'desktop'),
     '11': ('Biblioteca Linguagem Acessível no navegador', grupo11, 'desktop'),
+    '12': ('Painel Acessibilidade do texto (1.80)', grupo12, 'desktop'),
 }
 
 MANUAIS = [
@@ -680,7 +757,7 @@ MANUAIS = [
 # ----------------------------------------------------------------------------- execução
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10,11', help='lista de grupos (ex.: 1,2,5)')
+    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10,11,12', help='lista de grupos (ex.: 1,2,5)')
     ap.add_argument('--navegador', default='chrome', choices=list(MOTOR), help='padrão: chrome (Google Chrome instalado)')
     ap.add_argument('--saida', default=str(Path(__file__).parent / 'relatorio'), help='pasta do relatório')
     ap.add_argument('--tentativas', type=int, default=2, help='repete o grupo com falha até N vezes (passou na repetição = INSTAVEL)')

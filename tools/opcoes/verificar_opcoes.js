@@ -22,7 +22,7 @@ function grupos() {
   O.REGISTRO.forEach(r => { const p = r.caminho.split('.'); const k = p.slice(0, -1).join('.'); if (!g.has(k)) g.set(k, []); g.get(k).push(r); });
   return g;
 }
-const TITULOS = { editor: 'Editor', 'editor.imagens': 'Editor · imagens', aplicativo: 'Aplicativo', salvar: 'Salvar e Histórico', link: 'Link criptografado', importar: 'Importar', celular: 'Celular', narracao: 'Narração (aba Gerar)', locucao: 'Locução' };
+const TITULOS = { editor: 'Editor', 'editor.imagens': 'Editor · imagens', aplicativo: 'Aplicativo', salvar: 'Salvar e Histórico', link: 'Link criptografado', importar: 'Importar', celular: 'Celular', acessibilidade_texto: 'Acessibilidade do texto', narracao: 'Narração (aba Gerar)', locucao: 'Locução' };
 const aceitos = r => r.tipo === 'chave' ? 'ligado | desligado' : r.tipo === 'numero' ? r.min + ' a ' + r.max : Object.keys(r.valores).join(' | ');
 function yamlExemplo() {
   const o = ['# yaml-language-server: $schema=opcoes.schema.json',

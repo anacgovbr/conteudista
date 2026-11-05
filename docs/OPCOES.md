@@ -56,6 +56,14 @@ Arquivo: `web/config/opcoes.yaml`. Ele define como cada opção **começa**. Se 
 | `barra_compacta` | Celular: barra do editor em até duas linhas, com os botões agrupados em menus | ligado · desligado | `ligado` | não (vale ao abrir) |
 | `imagens_recolhidas` | Celular: esconder "Imagens do texto" abaixo do editor (abre por Inserir › Imagens do texto) | ligado · desligado | `ligado` | não (vale ao abrir) |
 
+## Acessibilidade do texto
+
+| Opção | O que faz | Valores | Padrão | Lembrada no navegador |
+|---|---|---|---|---|
+| `mostrar_sugestoes` | Acessibilidade do texto: mostrar também as sugestões de linguagem simples (desligado: só o que é para corrigir) | ligado · desligado | `ligado` | não (vale ao abrir) |
+| `limite_frase_longa` | Acessibilidade do texto: palavras por frase antes da sugestão "frase longa" | 10 a 60 | `25` | sim |
+| `aviso_ao_gerar` | Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia) | ligado · desligado | `ligado` | não (vale ao abrir) |
+
 ## Narração (aba Gerar)
 
 | Opção | O que faz | Valores | Padrão | Lembrada no navegador |

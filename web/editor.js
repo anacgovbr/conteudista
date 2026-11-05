@@ -765,7 +765,37 @@
 
     pull(); snap('ini'); preview(); status(); atualizaUR();
     setInterval(pull, 600);
-    return { refresh: pull, textarea: ta, element: box, render: () => preview(), desfazer, refazer, inserirImagens, ehImagem };
+    /* ---------- API para outros módulos (verificador de acessibilidade, 1.80) ---------- */
+    // Aplica edições [{inicio, fim, texto}] sobre o texto do editor (com (img:N) recolhidas) numa única
+    // operação: entra no desfazer (Ctrl+Z) como um passo só e preserva a rolagem.
+    function aplicarEdicoes(eds) {
+      if (!eds || !eds.length) return false;
+      const v = ta.value, ord = eds.map(e => ({ i: e.inicio | 0, f: e.fim | 0, t: String(e.texto) })).sort((x, y) => x.i - y.i || x.f - y.f);
+      for (let k = 0; k < ord.length; k++) if (ord[k].i < 0 || ord[k].f < ord[k].i || ord[k].f > v.length || (k && ord[k].i < ord[k - 1].f)) return false;
+      const a = ord[0].i, b = Math.max(...ord.map(e => e.f));
+      let meio = '', p = a; for (const e of ord) { meio += v.slice(p, e.i) + e.t; p = e.f; } meio += v.slice(p, b);
+      const top = ta.scrollTop; ta.focus({ preventScroll: true }); ta.setSelectionRange(a, b); ins(meio); ta.scrollTop = top;
+      return true;
+    }
+    // Seleciona um trecho e o traz para a área visível (sai do modo Prévia, se for o caso).
+    function selecionar(inicio, fim) {
+      if (box.dataset.m === 'p') { const bt = tb.querySelector('[data-m="s"]'); if (bt) bt.click(); }
+      const n = ta.value.length; inicio = Math.max(0, Math.min(n, inicio | 0)); fim = Math.max(inicio, Math.min(n, fim | 0));
+      ta.blur(); ta.focus({ preventScroll: true }); ta.setSelectionRange(inicio, fim);
+      const r = ta.getBoundingClientRect(); if (r.bottom < 0 || r.top > innerHeight) box.scrollIntoView({ block: 'center' });
+      const y = topoDe(inicio), lh = parseFloat(getComputedStyle(ta).lineHeight) || 20;
+      if (y < ta.scrollTop || y + lh > ta.scrollTop + ta.clientHeight) ta.scrollTop = Math.max(0, y - ta.clientHeight / 3);
+    }
+    // Distância do topo do texto até a posição, com as quebras automáticas de linha (espelho invisível).
+    function topoDe(pos) {
+      const cs = getComputedStyle(ta), m = document.createElement('div');
+      ['fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'tabSize', 'wordSpacing']
+        .forEach(k => { m.style[k] = cs[k]; });
+      Object.assign(m.style, { boxSizing: 'border-box', border: '0', position: 'absolute', visibility: 'hidden', top: '0', left: '-9999px', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', wordBreak: cs.wordBreak, width: ta.clientWidth + 'px' });
+      m.textContent = ta.value.slice(0, pos); const sp = document.createElement('span'); sp.textContent = '\u200b'; m.appendChild(sp);
+      document.body.appendChild(m); const y = sp.offsetTop - (parseFloat(cs.paddingTop) || 0); m.remove(); return y;
+    }
+    return { refresh: pull, textarea: ta, element: box, render: () => preview(), desfazer, refazer, inserirImagens, ehImagem, aplicarEdicoes, selecionar, tipo };
   }
 
   const ATALHOS = [

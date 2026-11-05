@@ -277,6 +277,15 @@
 <tr><td>Perdi o link</td><td>Veja em <b>Importar › Salvos</b>. Só aparece se a opção de lembrar estava marcada neste navegador.</td></tr></table>
 <h4>Tutorial</h4>
 <p>O tutorial abre sozinho na primeira visita. Para vê-lo de novo, use o botão <b>▶ Tutorial</b>, o botão <b>↺ Reiniciar tutorial</b> desta janela ou <kbd>Alt+Shift+R</kbd>. Dentro do tutorial, <b>↺</b> volta ao primeiro passo.</p>
+<h4>Acessibilidade do texto</h4>
+<p>O botão <b>Acessibilidade</b>, na barra do editor (no celular, no menu <b>⋯</b>), confere o texto e mostra o que melhorar. O número vermelho no botão é a quantidade de itens <b>para corrigir</b>. Atalho: <kbd>Alt+Shift+C</kbd>.</p>
+<ul><li><b>Para corrigir</b>: impedem alguém de ler, como imagem sem descrição, título que pula nível, link "clique aqui", slide sem título e tabela sem cabeçalho.</li>
+<li><b>Sugestões</b>: deixam o texto mais fácil, como frase longa, sigla sem explicação e texto em maiúsculas. Não contam como erro.</li>
+<li>Botões de cada item: a correção (por exemplo, <b>Ajustar nível</b> ou <b>É decorativa</b>), <b>Ir para</b> (seleciona o trecho no editor), <b>Por quê?</b> e, nas sugestões, <b>Ignorar</b>. Toda correção pode ser desfeita com <kbd>Ctrl+Z</kbd>.</li>
+<li>Quando a correção depende de você (descrever uma imagem, simplificar uma frase), o trecho fica selecionado e uma dica diz o que escrever.</li>
+<li><b>Ignorar</b> grava um comentário no texto, que não aparece nos arquivos gerados. A sugestão some só naquele trecho.</li>
+<li><kbd>Alt+Shift+N</kbd> vai ao próximo item a partir do cursor. A conferência roda 1 segundo depois que você para de digitar e não envia o texto para fora do navegador.</li>
+<li>Se houver itens para corrigir, um aviso aparece perto de <b>Gerar arquivos</b>. Você pode gerar os arquivos assim mesmo.</li></ul>
 <h4>Editor no celular</h4>
 <p>Em telas pequenas, a barra do editor ocupa no máximo duas linhas. Na primeira ficam <b>Desfazer</b>, <b>Refazer</b>, <b>Negrito</b>, <b>Itálico</b> e três menus: <b>H</b> (títulos, código e listas), <b>+</b> (Inserir: link, imagem, tabela, caixas, fluxo e <b>Imagens do texto</b>) e <b>⋯</b> (Mais: compartilhar link, versões e tela cheia). Na segunda, os modos <b>Editar</b>, <b>Dividido</b> e <b>Prévia</b>. A contagem do texto ocupa uma linha; toque nela para ver os detalhes. Nos menus, as setas trocam de item e <kbd>Esc</kbd> fecha.</p>
 <h4>Ampliar (zoom) nos arquivos gerados</h4>
@@ -342,6 +351,8 @@
     { g: 'Navegação', k: 'V', d: 'Versões do texto (comparar antes e depois)', f: () => { const ln = document.getElementById('locNotas'), sl = document.getElementById('secLoc'); if (ln && !ln.hidden && sl && !sl.hidden) { const b = document.getElementById('lnVer'); if (b) { b.click(); return; } } if (window.Hist) Hist.abrir(); } },
     
     { g: 'Navegação', k: 'F', d: 'Tela cheia do editor', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); const b = vis && [...vis.querySelectorAll('.mde-tb button')].pop(); if (b) b.click(); } },
+    { g: 'Acessibilidade do texto', k: 'C', d: 'Conferir acessibilidade: abre e fecha o painel', f: () => window.AcessibilidadeTexto && AcessibilidadeTexto.alternar() },
+    { g: 'Acessibilidade do texto', k: 'N', d: 'Próximo item para corrigir ou sugestão (seleciona no editor)', f: () => { const l = document.getElementById('secLoc'); if (l && !l.hidden) return; if (window.AcessibilidadeTexto) AcessibilidadeTexto.proximo(); } },
     { g: 'Ajuda', k: 'T', d: 'Tutorial', f: iniciar },
     { g: 'Ajuda', k: 'R', d: 'Reiniciar o tutorial (do primeiro passo)', f: reiniciar },
     { g: 'Ajuda', k: 'H', d: 'Ajuda (também F1)', f: () => ajuda() },

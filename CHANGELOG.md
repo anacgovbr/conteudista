@@ -1,4 +1,11 @@
 # Novidades do Conteudista
+## 1.80 - 05/11/2026
+- **Acessibilidade do texto.** Novo botão **Acessibilidade** na barra do editor (atalho Alt+Shift+C). Ele abre um painel com dois níveis: **Para corrigir** (o que impede alguém de ler: imagem sem descrição, título que pula nível, link "clique aqui", slide sem título, tabela sem cabeçalho) e **Sugestões** de linguagem simples (frase longa, sigla sem explicação, texto em maiúsculas). As mensagens estão em linguagem simples, com **Por quê?** em cada item.
+- **Correção em um clique** quando é possível (Ajustar nível, É decorativa, Usar a primeira linha, Explicar a sigla, Converter maiúsculas). Toda correção pode ser desfeita com Ctrl+Z. Quando depende de você, **Ir para** seleciona o trecho e uma dica diz o que escrever. Sugestões podem ser ignoradas naquele trecho.
+- O número vermelho no botão mostra os itens para corrigir. Um aviso perto de **Gerar arquivos** lembra desses itens, mas nunca impede a geração. Alt+Shift+N vai ao próximo item a partir do cursor.
+- A conferência roda em segundo plano, 1 segundo depois que você para de digitar, e não envia o texto para fora do navegador. No celular, o painel abre como folha inferior.
+- Opções novas em `web/config/opcoes.yaml`, seção `acessibilidade_texto`: mostrar sugestões, palavras por frase (padrão 25) e o aviso perto de Gerar arquivos.
+
 ## 1.79 - 05/11/2026
 - **Editor no celular mais compacto.** A barra ocupa no máximo duas linhas: Desfazer, Refazer, Negrito e Itálico continuam à mão, e o restante fica em três menus: **H** (títulos, código e listas), **+** (Inserir) e **⋯** (Mais). A segunda linha traz os modos Editar, Dividido e Prévia. Os menus seguem o padrão gov.br, funcionam com setas e Esc, e cada item mostra ícone e nome.
 - **Mais espaço para o texto no celular:** a contagem ocupa uma linha (toque para ver os detalhes) e **Imagens do texto** fica recolhida; abre como folha inferior em **+ › Imagens do texto**, e o botão Voltar do celular fecha.

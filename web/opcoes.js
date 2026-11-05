@@ -59,6 +59,13 @@
     { caminho: 'celular.imagens_recolhidas', tipo: 'chave', padrao: 'ligado', valores: LIG,
       chave: null, controles: [], rotulo: 'Celular: esconder "Imagens do texto" abaixo do editor (abre por Inserir › Imagens do texto)' },
 
+    { caminho: 'acessibilidade_texto.mostrar_sugestoes', tipo: 'chave', padrao: 'ligado', valores: LIG,
+      chave: null, controles: [], rotulo: 'Acessibilidade do texto: mostrar também as sugestões de linguagem simples (desligado: só o que é para corrigir)' },
+    { caminho: 'acessibilidade_texto.limite_frase_longa', tipo: 'numero', padrao: 25, min: 10, max: 60,
+      chave: 'conteudista.acessibilidade.limite', controles: [], rotulo: 'Acessibilidade do texto: palavras por frase antes da sugestão "frase longa"' },
+    { caminho: 'acessibilidade_texto.aviso_ao_gerar', tipo: 'chave', padrao: 'ligado', valores: LIG,
+      chave: null, controles: [], rotulo: 'Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia)' },
+
     { caminho: 'narracao.narrar_slides', tipo: 'chave', padrao: 'desligado', valores: LIG,
       chave: 'narr.on', controles: ['narrOn'], rotulo: 'Narração dos slides (gerar áudio das notas)' },
     { caminho: 'narracao.avancar_sozinho', tipo: 'chave', padrao: 'desligado', valores: LIG,

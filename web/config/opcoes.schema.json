@@ -225,6 +225,45 @@
         }
       }
     },
+    "acessibilidade_texto": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mostrar_sugestoes": {
+          "description": "Acessibilidade do texto: mostrar também as sugestões de linguagem simples (desligado: só o que é para corrigir)",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "limite_frase_longa": {
+          "description": "Acessibilidade do texto: palavras por frase antes da sugestão \"frase longa\"",
+          "default": 25,
+          "type": "integer",
+          "minimum": 10,
+          "maximum": 60
+        },
+        "aviso_ao_gerar": {
+          "description": "Acessibilidade do texto: aviso perto de \"Gerar arquivos\" quando há itens para corrigir (nunca bloqueia)",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        }
+      }
+    },
     "narracao": {
       "type": "object",
       "additionalProperties": false,

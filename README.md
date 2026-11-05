@@ -44,6 +44,7 @@ web/metadados.js         ← Nome do conteúdo, Rodapé (opcional) sempre visív
 web/dicas.js             ← dicas (tooltip) acessíveis dos botões da barra do editor
 web/janelas.js           ← Importar, Salvar ▾ (menu), Compartilhar link e Histórico de arquivos (janelas, barra de ações e status do salvamento)
 web/colar.js             ← Importar > Link (primeira aba) e Importar > Colar (subabas Apostila e Apresentação)
+web/acessibilidade.js    ← painel Acessibilidade do texto (usa web/acessibilidade-worker.js e a biblioteca)
 web/celular.js           ← editor no celular: barra em até duas linhas, contagem em uma linha, Imagens do texto em folha inferior
 web/versoes.js           ← rascunhos e versões unificados (salvar, abrir, excluir e migração dos dados antigos)
 web/locucao.js           ← aba Locução
@@ -94,6 +95,13 @@ Limitações conhecidas:
 - Para baixar ou atualizar: `powershell -ExecutionPolicy Bypass -File .\tools\fontes\baixar-fontes.ps1`; depois `python tools/fontes/verificar_fontes.py`. Faça o commit da pasta inteira e atualize o parâmetro de cache (`?v=`) se trocar scripts.
 - Se uma face faltar, a geração continua: o texto cai para Verdana e o resultado mostra um aviso.
 - Créditos: Atkinson Hyperlegible Next — Braille Institute (Google Fonts); OpenDyslexic — Abbie Gonzalez (antijingoist/opendyslexic). Ambas sob a SIL Open Font License 1.1 (`OFL-*.txt` na mesma pasta).
+
+## Acessibilidade do texto (painel do editor)
+
+- **Botão Acessibilidade** na barra de cada editor (Alt+Shift+C). Mostra o número de itens para corrigir e abre um painel com dois níveis: **Para corrigir** e **Sugestões** (recolhidas). Cada item tem a correção em um clique (quando existe), **Ir para**, **Por quê?** e, nas sugestões, **Ignorar** (grava `<!-- linguagem-acessivel: ignorar CÓDIGO -->`). Alt+Shift+N vai ao próximo item.
+- Usa a biblioteca `web/lib/linguagem-acessivel` em um Web Worker (`web/acessibilidade-worker.js`), 1 s depois da última tecla; sem Worker, roda na página. Nada sai do navegador. As correções usam `aplicarEdicoes` do editor (um passo no Ctrl+Z).
+- Aviso perto de **Gerar arquivos** quando há itens para corrigir; nunca bloqueia. No celular, o painel é uma folha inferior modal e o botão fica no menu ⋯.
+- Opções: `acessibilidade_texto` no `opcoes.yaml` (mostrar sugestões, limite de palavras por frase, aviso perto de Gerar arquivos). Código: `web/acessibilidade.js`. Testes: grupo 12 do roteiro do navegador.
 
 ## Celular e zoom
 

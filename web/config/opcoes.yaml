@@ -57,6 +57,14 @@ celular:  # Celular
   # Celular: esconder "Imagens do texto" abaixo do editor (abre por Inserir › Imagens do texto) [ligado | desligado]
   imagens_recolhidas: ligado
 
+acessibilidade_texto:  # Acessibilidade do texto
+  # Acessibilidade do texto: mostrar também as sugestões de linguagem simples (desligado: só o que é para corrigir) [ligado | desligado]
+  mostrar_sugestoes: ligado
+  # Acessibilidade do texto: palavras por frase antes da sugestão "frase longa" [10 a 60]
+  limite_frase_longa: 25
+  # Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia) [ligado | desligado]
+  aviso_ao_gerar: ligado
+
 narracao:  # Narração (aba Gerar)
   # Narração dos slides (gerar áudio das notas) [ligado | desligado]
   narrar_slides: desligado
