@@ -277,7 +277,7 @@
       const ni = (mascaraCodigo(real.value).match(/!\[[^\]]*\]\(/g) || []).length;
       const extra = tipo === 'slides' ? 'Slides: ' + (real.value.replace(/^---\n[\s\S]*?\n---\n/, '').split(/\n---\s*\n/).filter(p => p.trim()).length) : 'Seções: ' + (v.match(/^## /gm) || []).length;
       galeria();
-      st.innerHTML = '<span>Palavras: ' + words.toLocaleString('pt-BR') + '</span><span>Linhas: ' + v.split('\n').length + '</span><span>Imagens: ' + ni + '</span><span>' + extra + '</span><span style="flex:1"></span><span>' + (real.value.length / 1024).toFixed(1) + ' KB</span>';
+      st.innerHTML = '<span class="st-pal">Palavras: ' + words.toLocaleString('pt-BR') + '</span><span class="st-lin">Linhas: ' + v.split('\n').length + '</span><span class="st-img">Imagens: ' + ni + '</span><span class="st-ext">' + extra + '</span><span class="st-esp" style="flex:1"></span><span class="st-kb">' + (real.value.length / 1024).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' KB</span>';
     }
 
     let emCmd = false, tocado = false;

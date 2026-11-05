@@ -33,7 +33,7 @@
 .md-bd mark{background:#ffe08a;color:inherit;padding:0 1px;border-radius:2px}
 .md-bd .hs[hidden]{display:none}.md-bd .hz{color:#636363;font-style:italic;margin:8px 0}
 .md-tools{display:flex;gap:8px;align-items:center;margin-bottom:10px}.md-tools input{flex:1;margin:0!important}.md-tools button{margin:0!important}
-.kb-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:2100;background:#0c326f;color:#fff;padding:8px 14px;border-radius:8px;font:13.5px "Segoe UI",Arial,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;transition:opacity .2s}
+.kb-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:2100;background:#0c326f;color:#fff;padding:8px 14px;border-radius:8px;font:13.5px "Segoe UI",Arial,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.25);opacity:0;transition:opacity .2s;pointer-events:none}
 .kb-toast.on{opacity:1}`;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
@@ -199,7 +199,7 @@
 <tr><td>Voltar a uma versão anterior, neste navegador</td><td><b>Versão</b> (<b>Salvar ▾ › Guardar no navegador</b>)</td></tr></table>
 <h4>Onde fica e como recuperar</h4>
 <table><tr><th>Como</th><th>Onde fica</th><th>Como recuperar</th></tr>
-<tr><td><b>Link</b></td><td>No próprio endereço ou no PrivateBin (cifrado)</td><td>Abra o link, ou <b>Importar › Colar › Link</b></td></tr>
+<tr><td><b>Link</b></td><td>No próprio endereço ou no PrivateBin (cifrado)</td><td>Abra o link, ou <b>Importar › Link</b></td></tr>
 <tr><td><b>Salvamento automático</b> (ligado por padrão; o horário do último salvamento aparece sob a barra de ações)</td><td>Neste navegador, neste computador</td><td>Abra a página de novo: o último trabalho volta sozinho</td></tr>
 <tr><td><b>Versão</b> (<b>Salvar ▾ › Guardar no navegador</b>)</td><td>Neste navegador</td><td><b>Importar › Salvos</b></td></tr>
 <tr><td><b>Pasta</b>, <b>.MD</b> e <b>.ZIP</b></td><td>No seu disco</td><td>Arraste os <code>.md</code> de volta para as abas ou use <b>Importar › Computador</b></td></tr></table>
@@ -247,7 +247,7 @@
 </ul>
 <h4>Voltar a um conteúdo</h4>
 <ul>
-<li><b>Importar › Colar › Link</b>: cole o endereço (e a senha, se houver) e clique em <b>Importar</b>. O texto atual vai para <b>Versões</b> antes de ser substituído.</li>
+<li><b>Importar › Link</b> (a primeira aba, que já abre selecionada): cole o endereço (e a senha, se houver) e clique em <b>Importar</b>. O texto atual vai para <b>Versões</b> antes de ser substituído.</li>
 <li>Ou abra o link direto no navegador: o conteúdo carrega sozinho.</li>
 <li>Os links criados neste navegador ficam em <b>Importar › Salvos</b>, com o tipo e a validade.</li>
 <li>Para limpar, use <b>Excluir versões salvas</b> ou <b>Excluir links</b>, logo abaixo do título de cada grupo, ou <b>Excluir tudo</b>, no rodapé da janela. Cada item também tem o seu <b>Excluir</b>. Toda exclusão pede confirmação e não pode ser desfeita.</li>
@@ -277,6 +277,10 @@
 <tr><td>Perdi o link</td><td>Veja em <b>Importar › Salvos</b>. Só aparece se a opção de lembrar estava marcada neste navegador.</td></tr></table>
 <h4>Tutorial</h4>
 <p>O tutorial abre sozinho na primeira visita. Para vê-lo de novo, use o botão <b>▶ Tutorial</b>, o botão <b>↺ Reiniciar tutorial</b> desta janela ou <kbd>Alt+Shift+R</kbd>. Dentro do tutorial, <b>↺</b> volta ao primeiro passo.</p>
+<h4>Editor no celular</h4>
+<p>Em telas pequenas, a barra do editor ocupa no máximo duas linhas. Na primeira ficam <b>Desfazer</b>, <b>Refazer</b>, <b>Negrito</b>, <b>Itálico</b> e três menus: <b>H</b> (títulos, código e listas), <b>+</b> (Inserir: link, imagem, tabela, caixas, fluxo e <b>Imagens do texto</b>) e <b>⋯</b> (Mais: compartilhar link, versões e tela cheia). Na segunda, os modos <b>Editar</b>, <b>Dividido</b> e <b>Prévia</b>. A contagem do texto ocupa uma linha; toque nela para ver os detalhes. Nos menus, as setas trocam de item e <kbd>Esc</kbd> fecha.</p>
+<h4>Ampliar (zoom) nos arquivos gerados</h4>
+<p>Na <b>apostila</b>, use a pinça com dois dedos ou <kbd>Ctrl</kbd> + roda do mouse. Na <b>apresentação</b>, use a pinça, o toque duplo, <kbd>Ctrl</kbd> + roda do mouse ou as teclas <kbd>+</kbd> e <kbd>−</kbd>; com o slide ampliado, as setas movem a visão e <kbd>0</kbd> (ou o botão <b>100% ↺</b>) volta ao tamanho normal. Ao trocar de slide, o zoom volta a 100%. Em imagens e fluxos, o botão com a lupa (ou um toque na imagem) abre a imagem em tela cheia, com zoom próprio; <kbd>Esc</kbd> fecha.</p>
 <h4>Opções padrão (para quem mantém o Conteudista)</h4>
 <p>As opções de ligar e desligar começam como define o arquivo <code>web/config/opcoes.yaml</code>. Para mudar, edite o valor depois dos dois-pontos (<code>ligado</code> ou <code>desligado</code>), salve e publique. Se alguém já mudou uma opção no próprio navegador, vale a escolha dela. O botão <b>Restaurar padrão</b>, no rodapé, volta tudo para o que está no arquivo, sem apagar textos, rascunhos ou versões. A lista completa está em <code>docs/OPCOES.md</code>.</p>
 <h4>Novidades</h4>

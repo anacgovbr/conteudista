@@ -39,7 +39,8 @@ web/gerados.js           ← arquivos gerados guardados no navegador (IndexedDB)
 web/metadados.js         ← Nome do conteúdo, Rodapé (opcional) sempre visível (a Barra superior foi retirada)
 web/dicas.js             ← dicas (tooltip) acessíveis dos botões da barra do editor
 web/janelas.js           ← Importar, Salvar ▾ (menu), Compartilhar link e Histórico de arquivos (janelas, barra de ações e status do salvamento)
-web/colar.js             ← Importar > Colar: subabas Apostila, Apresentação e Link
+web/colar.js             ← Importar > Link (primeira aba) e Importar > Colar (subabas Apostila e Apresentação)
+web/celular.js           ← editor no celular: barra em até duas linhas, contagem em uma linha, Imagens do texto em folha inferior
 web/versoes.js           ← rascunhos e versões unificados (salvar, abrir, excluir e migração dos dados antigos)
 web/locucao.js           ← aba Locução
 web/notas-locucao.js     ← Locução › Notas dos slides (rascunho, aplicar, versões e link)
@@ -89,6 +90,12 @@ Limitações conhecidas:
 - Para baixar ou atualizar: `powershell -ExecutionPolicy Bypass -File .\tools\fontes\baixar-fontes.ps1`; depois `python tools/fontes/verificar_fontes.py`. Faça o commit da pasta inteira e atualize o parâmetro de cache (`?v=`) se trocar scripts.
 - Se uma face faltar, a geração continua: o texto cai para Verdana e o resultado mostra um aviso.
 - Créditos: Atkinson Hyperlegible Next — Braille Institute (Google Fonts); OpenDyslexic — Abbie Gonzalez (antijingoist/opendyslexic). Ambas sob a SIL Open Font License 1.1 (`OFL-*.txt` na mesma pasta).
+
+## Celular e zoom
+
+- **Editor no celular (até 700 px):** barra em no máximo duas linhas, com menus no padrão Dropdown do gov.br (H: títulos, código e listas; +: Inserir; ⋯: Mais), contagem em uma linha e **Imagens do texto** recolhida, aberta como folha inferior por **Inserir**. Os botões originais continuam no lugar, escondidos, e os menus acionam esses botões. Liga e desliga em `celular` no `opcoes.yaml`.
+- **Importar:** **Link** é a primeira aba e abre selecionada (`importar.aba_inicial: link`; `ultima` volta ao comportamento anterior). Erros do link em linguagem simples.
+- **Zoom nos arquivos gerados:** a apostila aceita a pinça e o Ctrl + roda do navegador. Na apresentação, o palco se ajusta à tela, então o zoom é próprio: pinça nativa no celular, toque duplo, Ctrl + roda, teclas + − 0 e botão **100% ↺**; com zoom, as setas movem a visão e o deslizar não troca de slide. Imagens e fluxos têm o botão **Ampliar** (lupa), que abre a imagem em tela cheia com zoom (`ZOOM_JS` e `ZOOM_CSS` em `tools/gerador.py`).
 
 ## Opções padrão (`web/config/opcoes.yaml`)
 

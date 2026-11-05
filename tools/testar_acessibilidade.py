@@ -133,6 +133,22 @@ def testar_apostila_html(cam, exigir_fontes):
     ok('id="pg" role="status" aria-live="polite"' in h, n + ': #pg com aria-live')
     ok('justify' not in re.sub(r'justify-content|justify-self|justify-items', '', h.split('</style>')[0]), n + ': sem text-align: justify')
     ok('<main id="conteudo" tabindex="-1">' in h and 'class="skip"' in h, n + ': link "Ir para o conteúdo"')
+    testar_zoom(h, n, slides=False)
+
+def testar_zoom(h, n, slides):
+    "Zoom (1.79): nada bloqueia o zoom do navegador; imagens com botão Ampliar acessível; na apresentação, zoom próprio."
+    vp = re.search(r'<meta name="viewport" content="([^"]+)"', h)
+    ok(vp is not None and not re.search(r'user-scalable\s*=\s*(no|0)|maximum-scale\s*=\s*1(\.0)?\b', vp.group(1)), n + ': viewport não bloqueia o zoom (WCAG 1.4.4)')
+    ok("b.setAttribute('aria-label','Ampliar '+nomeDe(el))" in h and "b.type='button';b.className='zm-amp'" in h, n + ': imagens e fluxos com botão "Ampliar" (nome acessível)')
+    ok("lb.setAttribute('role','dialog');lb.setAttribute('aria-modal','true')" in h and "if(k==='Escape'){e.preventDefault();e.stopPropagation();fechar();return}" in h, n + ': imagem ampliada em diálogo modal que fecha com Esc')
+    ok('.zm-lb button{min-width:44px;min-height:44px' in h and '@media print{.zm-amp,.zm-reset,.zm-lb,.zm-vh{display:none!important}}' in h, n + ': botões do zoom com 44 px e fora da impressão')
+    if slides:
+        ok('touch-action:pan-y pinch-zoom' in h, n + ': pinça com dois dedos liberada no palco')
+        ok("addEventListener('wheel',function(e){if(!e.ctrlKey||lendo()||camada())return;e.preventDefault()" in h, n + ': Ctrl + roda amplia o slide')
+        ok("D.addEventListener('conteudista:slide',function(){resetar(false)})" in h, n + ': trocar de slide volta o zoom a 100%')
+        iz, ij = h.find('function zoomEm('), h.find('var D=document,H=D.documentElement,B=D.body,S=')
+        ok(0 <= iz < ij, n + ': zoom carregado antes dos atalhos da apresentação (setas movem a visão com o slide ampliado)')
+
 
 def testar_docx(cam):
     n = os.path.basename(cam); z = zipfile.ZipFile(cam)
@@ -232,6 +248,7 @@ def testar_slides_html(cam, exigir_fontes):
     ff = re.findall(r'@font-face\{font-family:"([^"]+)";src:url\(data:font/woff2;base64,', h)
     if exigir_fontes or ff: ok(len(ff) == (len(faces_esperadas('atkinson')) or 4) + (len(faces_esperadas('opendyslexic')) or 4), n + ': fontes de leitura embutidas, sem arquivo repetido')
     ok('#hud.bplus>.cnt{padding:0 12px;border:1px dashed #888888;' in h, n + ': borda do contador com contraste de 3,54:1 (WCAG 1.4.11)')
+    testar_zoom(h, n, slides=True)
     ok('.s{font-family:var(--leitura)}' in h, n + ': slides usam var(--leitura)')
 
 if __name__ == '__main__':

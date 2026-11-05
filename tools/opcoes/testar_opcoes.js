@@ -53,12 +53,16 @@ t('caminhos e chaves sem repetição', () => {
   igual(new Set(c).size, c.length); igual(new Set(k).size, k.length);
 });
 t('todo padrão é válido para o próprio tipo', () => O.REGISTRO.forEach(r => verdade(O.normalizar(r, r.padrao).ok, r.caminho)));
-t('padrões do registro = comportamento anterior do código', () => {
+t('padrões do registro = comportamento do código (1.79: Importar abre em Link)', () => {
   limpar(); O._definir({});
   igual([O.ler('mde.modo'), O.ler('conteudista.auto'), O.ler('conteudista.keep'), O.ler('conteudista.tema'), O.ler('conteudista.contraste'), O.ler('conteudista.gerados.ativo'), O.ler('conteudista.gerados.limite'), O.ler('narr.on'), O.ler('narr.auto'), O.ler('loc.preload'), O.ler('conteudista.locucao.modo')],
         ['s', '1', '1', 'govbr', '0', '1', '10', '0', '0', '0', 'notas']);
-  igual([O.inicial('link.onde_guardar'), O.inicial('link.expira_em'), O.inicial('importar.aba_inicial')], ['self', '1week', '']);
+  igual([O.inicial('link.onde_guardar'), O.inicial('link.expira_em'), O.inicial('importar.aba_inicial'), O.ligado('celular.barra_compacta'), O.ligado('celular.imagens_recolhidas')], ['self', '1week', 'lk', true, true]);
 });
+
+t('importar: "ultima" volta ao comportamento anterior', () => { O._definir({ 'importar.aba_inicial': 'ultima' }); igual(O.inicial('importar.aba_inicial'), ''); });
+t('nome antigo "automatica" (1.78) vira "ultima"', () => { const r = O.interpretar('importar:\n  aba_inicial: automatica\n'); igual(r.avisos, []); igual(r.valores['importar.aba_inicial'], 'ultima'); });
+t('celular: opções podem ser desligadas', () => { O._definir({ 'celular.barra_compacta': 'desligado' }); igual(O.ligado('celular.barra_compacta'), false); igual(O.ligado('celular.imagens_recolhidas'), true); });
 
 console.log('\n' + (n - f) + ' de ' + n + ' testes aprovados.');
 process.exit(f ? 1 : 0);

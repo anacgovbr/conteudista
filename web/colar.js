@@ -1,10 +1,12 @@
 /* =====================================================================================
-   Conteudista - Importar > Colar: subabas Apostila, Apresentacao e Link
+   Conteudista - Importar > Link (aba propria, a primeira) e Importar > Colar (subabas Apostila e Apresentacao)
 
+   - 1.79: o Link deixou de ser subaba de Colar. E a primeira aba de Importar e abre por padrao
+     (web/config/opcoes.yaml, importar.aba_inicial).
    - Apostila e Apresentacao sao dois textos distintos: cada um tem a sua caixa Markdown.
-   - Link: endereco e senha. Colar um link numa das caixas de texto move o endereco para a subaba Link.
-   - "Importar" envia o que estiver preenchido: um ou os dois textos (subabas de texto) ou o link
-     (subaba Link). Antes de substituir, o texto atual dos editores vai para Versoes.
+   - Link: endereco e senha. Colar um link numa das caixas de texto leva o endereco para a aba Link.
+   - Erros do link em linguagem simples: dizem o que aconteceu e o que fazer (WCAG 3.3.1 e 3.3.3).
+   - "Importar" de Colar envia um ou os dois textos. Antes de substituir, o texto atual vai para Versoes.
    - Cada subaba mostra um check quando esta preenchida; o aviso abaixo diz o que sera importado.
    - O link e aberto direto pela funcao abrirLink() da pagina (sem depender de #olink, #opw e #open).
    - Teclado: setas, Home e End trocam de subaba; Enter nos campos do link aciona Importar.
@@ -13,10 +15,10 @@
 (function () {
   'use strict';
   const $ = id => document.getElementById(id);
-  const pane = $('jnImpPane-cl'), API = window.Importar;
-  if (!pane || !API || typeof API.msg !== 'function' || typeof API.ativar !== 'function') return;
+  const pane = $('jnImpPane-cl'), pLk = $('jnImpPane-lk'), API = window.Importar;
+  if (!pane || !pLk || !API || typeof API.msg !== 'function' || typeof API.ativar !== 'function') return;
 
-  const SUB = [['g', 'Apostila'], ['s', 'Apresenta\u00e7\u00e3o'], ['l', 'Link']];
+  const SUB = [['g', 'Apostila'], ['s', 'Apresenta\u00e7\u00e3o']];
   const NOME = { g: 'Apostila', s: 'Apresenta\u00e7\u00e3o' };
   const anunciar = m => { try { if (window.UXFeedback && UXFeedback.anunciar) UXFeedback.anunciar(m); } catch (e) { /* sem anuncio */ } };
   const logApp = (m, c) => { try { if (typeof log === 'function') log(m, c); } catch (e) { /* sem log */ } };
@@ -55,13 +57,15 @@ html.contraste .cl-ok{color:#0f8}
     '<div class="cl-painel" role="tabpanel" id="clPane-s" aria-labelledby="clTab-s" hidden>' +
     '<label class="jn-lb" for="clT-s">Markdown da apresenta\u00e7\u00e3o</label>' +
     '<textarea id="clT-s" spellcheck="false" aria-describedby="clDica" placeholder="Cole aqui o texto da apresenta\u00e7\u00e3o"></textarea></div>' +
-    '<div class="cl-painel" role="tabpanel" id="clPane-l" aria-labelledby="clTab-l" hidden>' +
-    '<label class="jn-lb" for="clUrl">Endere\u00e7o do link do conte\u00fado</label>' +
-    '<input type="url" id="clUrl" autocomplete="off" aria-describedby="clDica" placeholder="https://\u2026">' +
-    '<label class="jn-lb" for="clSenha">Senha (se houver)</label>' +
-    '<input type="password" id="clSenha" autocomplete="off"></div>' +
     '<p class="jn-hint" id="clDica"></p>' +
     '<div class="jn-acoes"><button type="button" class="sec" id="clColar">Colar agora</button><button type="button" id="clOk" disabled>Importar</button></div>';
+  pLk.innerHTML =
+    '<label class="jn-lb" for="clUrl">Endere\u00e7o do link</label>' +
+    '<input type="url" id="clUrl" autocomplete="off" inputmode="url" aria-describedby="lkDica" placeholder="https://\u2026">' +
+    '<label class="jn-lb" for="clSenha">Senha (se houver)</label>' +
+    '<input type="password" id="clSenha" autocomplete="off" aria-describedby="lkDica">' +
+    '<p class="jn-hint" id="lkDica"></p>' +
+    '<div class="jn-acoes"><button type="button" class="sec" id="lkColar">Colar link</button><button type="button" id="lkOk" disabled>Importar</button></div>';
 
   const campos = { g: $('clT-g'), s: $('clT-s') };
   let sub = 'g';
@@ -70,13 +74,14 @@ html.contraste .cl-ok{color:#0f8}
   function atualizar() {
     const v = { g: campos.g.value.trim(), s: campos.s.value.trim() }, u = $('clUrl').value.trim();
     SUB.forEach(a => {
-      const k = a[0], cheio = k === 'l' ? !!u : !!v[k], t = $('clTab-' + k);
+      const k = a[0], cheio = !!v[k], t = $('clTab-' + k);
       t.classList.toggle('cheio', cheio);
       t.setAttribute('aria-label', a[1] + (cheio ? ', preenchido' : ''));
     });
+    $('lkDica').textContent = u ? 'Informe a senha, se houver, e toque em Importar.' : 'Cole o link do conte\u00fado. O texto atual vai para Vers\u00f5es antes de ser substitu\u00eddo.';
+    $('lkOk').disabled = !u;
     let txt;
-    if (sub === 'l') txt = u ? 'Informe a senha, se houver, e clique em Importar.' : 'Tem um link do conte\u00fado? Cole aqui. O texto atual vai para Vers\u00f5es antes de ser substitu\u00eddo.';
-    else {
+    {
       const p = [];
       ['g', 's'].forEach(k => { if (v[k]) p.push(NOME[k] + ' (' + lin(v[k]) + ')'); });
       txt = p.length ? 'Ser\u00e1 importado: ' + p.join(' e ') + '.' : 'Cole o Markdown de cada texto na sua aba.';
@@ -84,7 +89,7 @@ html.contraste .cl-ok{color:#0f8}
       if (sub === 'g' && sinalApresentacao(v.g)) txt += ' Este texto parece uma apresenta\u00e7\u00e3o: use a aba Apresenta\u00e7\u00e3o.';
     }
     $('clDica').textContent = txt;
-    $('clOk').disabled = sub === 'l' ? !u : !(v.g || v.s);
+    $('clOk').disabled = !(v.g || v.s);
   }
   function ativar(k, foco) {
     sub = k;
@@ -97,9 +102,9 @@ html.contraste .cl-ok{color:#0f8}
   }
   function moverLink(v) {
     $('clUrl').value = v; $('clSenha').value = '';
-    ativar('l', false);
-    $('clDica').textContent = 'Link detectado: movido para a aba Link. Informe a senha, se houver.';
-    anunciar('Link detectado. Movido para a aba Link.');
+    API.ativar('lk', false); atualizar();
+    $('lkDica').textContent = 'Link reconhecido e trazido para esta aba. Informe a senha, se houver.';
+    anunciar('Link reconhecido. Aberta a aba Link.');
     setTimeout(() => $('clUrl').focus(), 30);
   }
 
@@ -136,7 +141,7 @@ html.contraste .cl-ok{color:#0f8}
     url = String(url || '').trim(); if (!url) return;
     if (typeof abrirLink !== 'function' || typeof aplicar !== 'function') { API.msg('Abertura de links indispon\u00edvel nesta p\u00e1gina.', false); return; }
     API.msg('');
-    const ok = $('clOk'); ok.disabled = true;
+    const ok = $('lkOk'); ok.disabled = true;
     try {
       const d = await abrirLink(url, senha || '');
       if (window.Hist && Hist.registrar) await Hist.registrar('antes', 'Antes de abrir link');
@@ -149,31 +154,40 @@ html.contraste .cl-ok{color:#0f8}
       anunciar('Conte\u00fado carregado do link.');
       try { if (window.UXFeedback && $('btnImportar')) UXFeedback.confirmar($('btnImportar'), 'Link importado.'); } catch (e) { /* sem feedback */ }
     } catch (err) {
-      const t = 'Erro: ' + ((err && err.message) || err);
-      API.msg(t, false); logApp(t, 'err');
+      const det = String((err && err.message) || err || '');
+      API.msg(erroLink(det), false); logApp('Link: ' + det, 'err');
       atualizar();
+      const f = /senha/i.test(erroLink(det)) ? $('clSenha') : $('clUrl'); if (f) setTimeout(() => f.focus(), 60);
     }
+  }
+  // Mensagem em linguagem simples: o que aconteceu e o que fazer. O detalhe técnico vai só para o registro.
+  function erroLink(det) {
+    if (/expir|n[aã]o existe|apagad|exclu[ií]d|not exist|expired|deleted|404/i.test(det)) return 'Este link n\u00e3o funciona mais. Ele pode ter expirado ou sido apagado. Pe\u00e7a um link novo a quem compartilhou.';
+    if (/senha|password|decrypt|descriptograf|OperationError|chave|key/i.test(det)) return 'N\u00e3o foi poss\u00edvel abrir o link. Confira a senha e tente de novo.';
+    if (/fetch|network|rede|internet|cors|timeout|tempo/i.test(det)) return 'N\u00e3o foi poss\u00edvel acessar o link. Confira a internet e tente de novo.';
+    return 'N\u00e3o foi poss\u00edvel abrir este link. Confira se o endere\u00e7o est\u00e1 completo e tente de novo.';
   }
   // Botao "Abrir" de um link salvo (aba Salvos)
   function linkSalvo(url, temSenha) {
     if (temSenha) {
       $('clUrl').value = url; $('clSenha').value = '';
-      API.ativar('cl', false); ativar('l', false);
+      API.ativar('lk', false); atualizar();
       API.msg('Este link tem senha. Informe a senha e clique em Importar.', true);
       setTimeout(() => { const s = $('clSenha'); if (s) s.focus(); }, 30);
     } else importarLink(url, '');
   }
 
   /* ---------------------------- Colar agora (area de transferencia) ---------------------------- */
-  function colarAgora() {
-    if (!navigator.clipboard || !navigator.clipboard.readText) { API.msg('Seu navegador n\u00e3o permite ler a \u00e1rea de transfer\u00eancia. Use Ctrl+V no campo.', true); return; }
+  function colarAgora(link) {
+    if (!navigator.clipboard || !navigator.clipboard.readText) { API.msg('Seu navegador n\u00e3o permite ler a \u00e1rea de transfer\u00eancia. Toque e segure no campo e escolha Colar.', true); return; }
     navigator.clipboard.readText().then(t => {
       if (!t) { API.msg('A \u00e1rea de transfer\u00eancia est\u00e1 vazia.', true); return; }
       API.msg('');
       const v = t.trim();
-      if (sub !== 'l' && ehLink(v)) { moverLink(v); return; }
-      const alvo = sub === 'l' ? $('clUrl') : campos[sub];
-      alvo.value = sub === 'l' ? v : t; atualizar(); alvo.focus();
+      if (!link && ehLink(v)) { moverLink(v); return; }
+      if (link && !ehLink(v)) { API.msg('O que foi copiado n\u00e3o \u00e9 um link. Para colar um texto, use a aba Colar.', true); return; }
+      const alvo = link ? $('clUrl') : campos[sub];
+      alvo.value = link ? v : t; atualizar(); alvo.focus();
     }).catch(() => API.msg('N\u00e3o foi poss\u00edvel ler a \u00e1rea de transfer\u00eancia. Use Ctrl+V no campo.', true));
   }
 
@@ -181,8 +195,13 @@ html.contraste .cl-ok{color:#0f8}
   pane.addEventListener('click', e => {
     const b = e.target.closest ? e.target.closest('button') : null; if (!b) return;
     if (b.dataset.ck) ativar(b.dataset.ck, false);
-    else if (b.id === 'clColar') colarAgora();
-    else if (b.id === 'clOk') { if (sub === 'l') importarLink($('clUrl').value, $('clSenha').value); else importarTextos(); }
+    else if (b.id === 'clColar') colarAgora(false);
+    else if (b.id === 'clOk') importarTextos();
+  });
+  pLk.addEventListener('click', e => {
+    const b = e.target.closest ? e.target.closest('button') : null; if (!b) return;
+    if (b.id === 'lkColar') colarAgora(true);
+    else if (b.id === 'lkOk') importarLink($('clUrl').value, $('clSenha').value);
   });
   $('clTabs').addEventListener('keydown', e => {
     const t = e.target.closest ? e.target.closest('.cl-tab') : null;
@@ -201,7 +220,7 @@ html.contraste .cl-ok{color:#0f8}
   });
   $('clUrl').addEventListener('input', atualizar);
   ['clUrl', 'clSenha'].forEach(id => $(id).addEventListener('keydown', e => {
-    if (e.key === 'Enter') { e.preventDefault(); if (!$('clOk').disabled) $('clOk').click(); }
+    if (e.key === 'Enter') { e.preventDefault(); if (!$('lkOk').disabled) $('lkOk').click(); }
   }));
 
   ativar('g', false);

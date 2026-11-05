@@ -1,4 +1,12 @@
 # Novidades do Conteudista
+## 1.79 - 05/11/2026
+- **Editor no celular mais compacto.** A barra ocupa no máximo duas linhas: Desfazer, Refazer, Negrito e Itálico continuam à mão, e o restante fica em três menus: **H** (títulos, código e listas), **+** (Inserir) e **⋯** (Mais). A segunda linha traz os modos Editar, Dividido e Prévia. Os menus seguem o padrão gov.br, funcionam com setas e Esc, e cada item mostra ícone e nome.
+- **Mais espaço para o texto no celular:** a contagem ocupa uma linha (toque para ver os detalhes) e **Imagens do texto** fica recolhida; abre como folha inferior em **+ › Imagens do texto**, e o botão Voltar do celular fecha.
+- **Importar › Link** virou a primeira aba e já abre selecionada. Colar ficou só para textos. As mensagens de erro do link dizem o que aconteceu e o que fazer (link expirado, senha ou internet).
+- **Zoom na apostila e na apresentação.** Na apresentação: pinça com dois dedos, toque duplo, Ctrl + roda do mouse ou teclas + e −; com o slide ampliado, as setas movem a visão e 0 ou o botão **100% ↺** voltam ao normal. Ao trocar de slide, o zoom volta a 100%. Imagens e fluxos têm o botão **Ampliar** (lupa), que abre a imagem em tela cheia com zoom próprio. A apostila mantém a pinça e o Ctrl + roda do navegador.
+- Opções novas em `web/config/opcoes.yaml`: `celular.barra_compacta`, `celular.imagens_recolhidas` e o valor `link` (padrão) em `importar.aba_inicial`. O valor antigo `automatica` continua aceito.
+- Correção: o aviso discreto do rodapé (ex.: "Tutorial concluído") não bloqueia mais toques na parte de baixo da tela quando está invisível.
+
 ## 1.78 - 05/11/2026
 - **Opções padrão em um arquivo YAML.** As opções de ligar e desligar da página começam como define `web/config/opcoes.yaml`: salvar automático, lembrar links, guardar cada geração e o limite do Histórico, narração dos slides e avanço automático, formato do áudio, recursos de áudio ao abrir, modo inicial do editor, Notas dos slides na Locução, opções do link (autocontido ou PrivateBin, validade, apagar após leitura, imagens como anexo), aba inicial de Importar, layout e alto contraste. Basta trocar `ligado` por `desligado` (ou a opção indicada), salvar e publicar.
 - A escolha que a pessoa já fez no navegador continua valendo. O novo botão **Restaurar padrão**, no rodapé, volta tudo para o arquivo, sem apagar textos, rascunhos ou versões.

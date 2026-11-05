@@ -238,13 +238,14 @@ flowchart LR
 
 | Origem | Para que serve |
 |---|---|
+| Link | Abrir um conteúdo compartilhado (primeira aba) |
 | Salvos | Reabrir versões e links guardados |
 | Computador | Enviar .md, .txt, .zip e imagens |
-| Colar | Colar a apostila, a apresentação ou um link |
+| Colar | Colar o texto da apostila ou da apresentação |
 
 > [!info] O texto atual vai para Versões antes de ser substituído.
 
-<!-- notas: O botão Importar abre uma janela com três origens. Em Salvos, reabrem-se versões e links guardados. Em Computador, enviam-se arquivos de texto, pacotes compactados e imagens. Em Colar, cola-se a apostila, a apresentação ou um link. Em qualquer caso, o texto atual é preservado em Versões antes de ser substituído, de modo que a operação pode ser revertida. Esse cuidado vale para qualquer origem escolhida. -->
+<!-- notas: O botão Importar abre uma janela com quatro origens. A primeira é Link, que já abre selecionada: basta colar o endereço e, se houver, a senha. Em Salvos, reabrem-se versões e links guardados. Em Computador, enviam-se arquivos de texto, pacotes compactados e imagens. Em Colar, cola-se o texto da apostila ou da apresentação. Em qualquer caso, o texto atual é preservado em Versões antes de ser substituído, de modo que a operação pode ser revertida. Esse cuidado vale para qualquer origem escolhida. -->
 
 ---
 
@@ -253,7 +254,7 @@ flowchart LR
 - O destino de cada arquivo é detectado e pode ser alterado
 - Imagens citadas por nome são associadas ao arquivo enviado
 - Um ZIP pode trazer os dois textos e a pasta de imagens
-- Em Colar, um endereço é reconhecido como link
+- Em Colar, um endereço é levado para a aba Link
 - Em Salvos, o campo Buscar filtra os itens
 
 <!-- notas: Alguns detalhes tornam a importação mais prática. Ao enviar arquivos, o destino é detectado pelo nome ou pelo conteúdo e pode ser alterado. Se o texto cita uma imagem pelo nome, o arquivo enviado é associado a ela. Um pacote compactado pode trazer os dois textos e a pasta de imagens. Na aba Colar, um endereço é reconhecido como link e levado para a subaba correta. Em Salvos, o campo Buscar filtra os itens. -->

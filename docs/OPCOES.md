@@ -47,7 +47,14 @@ Arquivo: `web/config/opcoes.yaml`. Ele define como cada opção **começa**. Se 
 
 | Opção | O que faz | Valores | Padrão | Lembrada no navegador |
 |---|---|---|---|---|
-| `aba_inicial` | Aba que abre em Importar. automatica: a última usada; na primeira vez, Salvos (se houver) ou Computador. A escolha da pessoa continua valendo. | automatica · salvos · computador · colar | `automatica` | não (vale ao abrir) |
+| `aba_inicial` | Aba que abre em Importar. link: sempre a aba Link (padrão). ultima: a última usada; na primeira vez, Salvos (se houver) ou Computador. | link · ultima · salvos · computador · colar | `link` | não (vale ao abrir) |
+
+## Celular
+
+| Opção | O que faz | Valores | Padrão | Lembrada no navegador |
+|---|---|---|---|---|
+| `barra_compacta` | Celular: barra do editor em até duas linhas, com os botões agrupados em menus | ligado · desligado | `ligado` | não (vale ao abrir) |
+| `imagens_recolhidas` | Celular: esconder "Imagens do texto" abaixo do editor (abre por Inserir › Imagens do texto) | ligado · desligado | `ligado` | não (vale ao abrir) |
 
 ## Narração (aba Gerar)
 

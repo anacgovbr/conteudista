@@ -401,15 +401,16 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   const CH_ABA = 'conteudista.importar.aba';
   const importar = criarJanela({
     id: 'jnImp', rotuloAbas: 'Origem',
-    abas: [['sav', 'Salvos', 'sav'], ['pc', 'Computador', 'pc'], ['cl', 'Colar', 'cl']],
+    abas: [['lk', 'Link', 'lnk'], ['sav', 'Salvos', 'sav'], ['pc', 'Computador', 'pc'], ['cl', 'Colar', 'cl']],
     rodape: k => k === 'sav',
     resolver: k => {
       if (k) return k;
+      // 1.79: Link abre primeiro (web/config/opcoes.yaml, importar.aba_inicial). "ultima" volta ao comportamento anterior.
+      const ini = window.Opcoes ? Opcoes.inicial('importar.aba_inicial') : 'lk';
+      if (ini) return ini;
       const n = contar($('drafts')) + contar($('links'));
       let ult = ''; try { ult = localStorage.getItem(CH_ABA) || ''; } catch (e) { /* sem armazenamento */ }
       if (ult && (ult !== 'sav' || n)) return ult;
-      const ini = window.Opcoes ? Opcoes.inicial('importar.aba_inicial') : '';  // web/config/opcoes.yaml
-      if (ini) return ini;
       return n ? 'sav' : 'pc';
     },
     aoAtivar: k => { try { localStorage.setItem(CH_ABA, k); } catch (e) { /* sem armazenamento */ } },

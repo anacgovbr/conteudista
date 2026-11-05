@@ -48,10 +48,16 @@
     { caminho: 'link.imagens_como_anexo', tipo: 'chave', padrao: 'ligado', valores: LIG,
       chave: null, controles: ['anexo'], rotulo: 'PrivateBin: enviar as imagens como anexo (ZIP)' },
 
-    { caminho: 'importar.aba_inicial', tipo: 'escolha', padrao: 'automatica',
-      valores: { automatica: '', salvos: 'sav', computador: 'pc', colar: 'cl' },
+    { caminho: 'importar.aba_inicial', tipo: 'escolha', padrao: 'link',
+      valores: { link: 'lk', ultima: '', salvos: 'sav', computador: 'pc', colar: 'cl' },
       chave: null, controles: [], rotulo: 'Aba que abre em Importar',
-      descricao: 'automatica: a última usada; na primeira vez, Salvos (se houver) ou Computador. A escolha da pessoa continua valendo.' },
+      descricao: 'link: sempre a aba Link (padrão). ultima: a última usada; na primeira vez, Salvos (se houver) ou Computador.',
+      sinonimos: { automatica: 'ultima' } },
+
+    { caminho: 'celular.barra_compacta', tipo: 'chave', padrao: 'ligado', valores: LIG,
+      chave: null, controles: [], rotulo: 'Celular: barra do editor em até duas linhas, com os botões agrupados em menus' },
+    { caminho: 'celular.imagens_recolhidas', tipo: 'chave', padrao: 'ligado', valores: LIG,
+      chave: null, controles: [], rotulo: 'Celular: esconder "Imagens do texto" abaixo do editor (abre por Inserir › Imagens do texto)' },
 
     { caminho: 'narracao.narrar_slides', tipo: 'chave', padrao: 'desligado', valores: LIG,
       chave: 'narr.on', controles: ['narrOn'], rotulo: 'Narração dos slides (gerar áudio das notas)' },
@@ -132,7 +138,8 @@
       if (v < r.min || v > r.max) return { ok: false, msg: 'use um número de ' + r.min + ' a ' + r.max };
       return { ok: true, v };
     }
-    const k = String(v).toLowerCase().replace(/-/g, '_').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    let k = String(v).toLowerCase().replace(/-/g, '_').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    if (r.sinonimos && Object.prototype.hasOwnProperty.call(r.sinonimos, k)) k = r.sinonimos[k];   // nomes antigos continuam valendo
     if (Object.prototype.hasOwnProperty.call(r.valores, k)) return { ok: true, v: k };
     return { ok: false, msg: 'valores aceitos: ' + Object.keys(r.valores).join(', ') };
   }

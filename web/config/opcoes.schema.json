@@ -181,13 +181,46 @@
       "additionalProperties": false,
       "properties": {
         "aba_inicial": {
-          "description": "Aba que abre em Importar. automatica: a última usada; na primeira vez, Salvos (se houver) ou Computador. A escolha da pessoa continua valendo.",
-          "default": "automatica",
+          "description": "Aba que abre em Importar. link: sempre a aba Link (padrão). ultima: a última usada; na primeira vez, Salvos (se houver) ou Computador.",
+          "default": "link",
           "enum": [
-            "automatica",
+            "link",
+            "ultima",
             "salvos",
             "computador",
             "colar"
+          ]
+        }
+      }
+    },
+    "celular": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "barra_compacta": {
+          "description": "Celular: barra do editor em até duas linhas, com os botões agrupados em menus",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "imagens_recolhidas": {
+          "description": "Celular: esconder \"Imagens do texto\" abaixo do editor (abre por Inserir › Imagens do texto)",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
           ]
         }
       }

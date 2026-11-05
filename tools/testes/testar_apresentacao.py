@@ -529,6 +529,101 @@ def grupo8(amb, ctx, G):
         srv1.shutdown(); srv2.shutdown()
 
 
+# ----------------------------------------------------------------------------- GRUPO 9 — celular: editor e Importar (1.79)
+def grupo9(amb, ctx, G):
+    srv, url = _servidor(RAIZ / 'web')
+    try:
+        pg = ctx.new_page(); erros = []
+        pg.on('pageerror', lambda e: erros.append(str(e)))
+        pg.goto(url); pg.wait_for_selector('#pg .mde-tb.mv-tb', state='attached', timeout=15000); pg.wait_for_timeout(500)
+        pg.keyboard.press('Escape')                                   # fecha o tutorial da primeira visita
+        pg.click('#ex'); pg.wait_for_timeout(1200)
+        pg.evaluate("document.querySelector('#pg .mde').scrollIntoView()")
+        e = pg.evaluate("""() => { const tb = document.querySelector('#pg .mde-tb');
+            const v = [...tb.children].filter(x => x.offsetParent !== null && x.getBoundingClientRect().height > 0);
+            const ys = [...new Set(v.map(x => Math.round(x.getBoundingClientRect().top / 4)))];
+            const peq = v.filter(x => x.getBoundingClientRect().height < 40 || x.getBoundingClientRect().width < 24).length;
+            return { linhas: ys.length, rolagem: tb.scrollWidth > tb.clientWidth + 1, peq }; }""")
+        G.chk('9.1', 'Celular: barra do editor em no máximo 2 linhas, sem rolagem lateral', e['linhas'] <= 2 and not e['rolagem'], e)
+        G.chk('9.2', 'Celular: botões da barra com altura de 40 px ou mais e largura de 24 px ou mais (WCAG 2.5.8)', e['peq'] == 0, e)
+        bt = pg.locator('#pg .mv-bt[data-g=ins]')
+        G.chk('9.3', 'Menu Inserir com aria-haspopup="menu" e aria-expanded', bt.get_attribute('aria-haspopup') == 'menu' and bt.get_attribute('aria-expanded') == 'false')
+        bt.click(); pg.wait_for_timeout(150)
+        itens = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [role=menuitem]')].map(x => x.textContent.trim())")
+        foco = pg.evaluate("document.activeElement.getAttribute('role')")
+        G.chk('9.4', 'Inserir lista Link, Imagem, Tabela e Imagens do texto; foco no primeiro item', any(x.startswith('Link') for x in itens) and any(x.startswith('Imagens do texto') for x in itens) and foco == 'menuitem', itens[:4] + ['…'])
+        pg.keyboard.press('ArrowDown'); pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
+        G.chk('9.5', 'Esc fecha o menu e devolve o foco ao botão', pg.evaluate("document.activeElement.dataset.g") == 'ins' and bt.get_attribute('aria-expanded') == 'false')
+        antes = pg.evaluate("document.querySelector('#pg .mde-ta').value.length")
+        pg.locator('#pg .mv-bt[data-g=fmt]').click(); pg.locator('.mv-menu:not([hidden]) [role=menuitem]', has_text='Título 2').click(); pg.wait_for_timeout(150)
+        G.chk('9.6', 'Item do menu aciona o botão original (Título 2 altera o texto)', pg.evaluate("document.querySelector('#pg .mde-ta').value.length") != antes)
+        pg.keyboard.press('Control+z'); pg.wait_for_timeout(100)
+        st = pg.evaluate("(() => { const s = document.querySelector('#pg .mde-st'); return { h: s.getBoundingClientRect().height, role: s.getAttribute('role') }; })()")
+        G.chk('9.7', 'Contagem do texto em uma linha (até 32 px), tocável para ver detalhes', st['h'] <= 32 and st['role'] == 'button', st)
+        G.chk('9.8', 'Imagens do texto recolhida abaixo do editor', pg.evaluate("document.querySelector('#pg .mde-gal').offsetParent === null"))
+        bt.click(); pg.locator('.mv-menu:not([hidden]) [role=menuitem]', has_text='Imagens do texto').click(); pg.wait_for_timeout(200)
+        f = pg.evaluate("(() => { const g = document.querySelector('#pg .mde-gal'); return { folha: g.classList.contains('mv-folha'), role: g.getAttribute('role'), modal: g.getAttribute('aria-modal'), foco: g.contains(document.activeElement) }; })()")
+        G.chk('9.9', 'Inserir › Imagens do texto abre folha inferior modal com o foco dentro', f['folha'] and f['role'] == 'dialog' and f['modal'] == 'true' and f['foco'], f)
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(150)
+        G.chk('9.10', 'Esc fecha a folha de imagens', pg.evaluate("!document.querySelector('#pg .mde-gal').classList.contains('mv-folha')"))
+        pg.click('#btnImportar'); pg.wait_for_timeout(300)
+        abas = pg.evaluate("[...document.querySelectorAll('#jnImpBack .jn-tab')].map(x => x.textContent.trim())")
+        sel = pg.evaluate("(document.querySelector('#jnImpBack .jn-tab[aria-selected=true]') || {}).textContent")
+        G.chk('9.11', 'Importar: Link é a primeira aba e abre selecionada', abas[:1] == ['Link'] and (sel or '').strip() == 'Link', {'abas': abas, 'selecionada': sel})
+        G.chk('9.12', 'Colar ficou só com Apostila e Apresentação', pg.evaluate("[...document.querySelectorAll('#clTabs .cl-tab')].map(x => x.textContent.trim().replace('\u2713',''))") == ['Apostila', 'Apresentação'])
+        pg.route('**/privatebin.exemplo/**', lambda r: r.fulfill(status=200, content_type='application/json', body='{"status":1,"message":"A cópia não existe, expirou ou já foi excluída."}'))
+        pg.fill('#clUrl', 'https://privatebin.exemplo/?abc#def'); pg.click('#lkOk'); pg.wait_for_timeout(1500)
+        msg = pg.evaluate("document.querySelector('#jnImpBack .jn-msg').textContent")
+        G.chk('9.13', 'Erro do link em linguagem simples (sem nome técnico) e foco no campo do endereço', 'não funciona mais' in msg and 'PrivateBin' not in msg and pg.evaluate("document.activeElement.id") == 'clUrl', msg)
+        G.chk('9.14', 'Nenhum erro de JavaScript no celular', not erros, erros)
+        pg.close()
+    finally:
+        srv.shutdown()
+
+
+# ----------------------------------------------------------------------------- GRUPO 10 — zoom nos arquivos gerados (1.79)
+def grupo10(amb, ctx, G):
+    d = amb.tmp / 'saida_zoom'
+    if not (d / 'Apresentacao_Exemplo.html').exists():
+        rodar([sys.executable, str(GERADOR), str(EXEMPLO_TREINO), str(EXEMPLO_APRES), '--prefixo', 'Exemplo', '--rodape', 'Teste', '--saida', str(d), '--tema', 'govbr'], cwd=RAIZ)
+    html = d / 'Apresentacao_Exemplo.html'
+    h = html.read_text(encoding='utf-8')
+    secs = re.findall(r'<section class="s[^"]*".*?</section>', h, re.S)
+    k = next((i for i, x in enumerate(secs) if '<figure' in x), 0)
+    pg = ctx.new_page(); erros = []
+    pg.on('pageerror', lambda e: erros.append(str(e)))
+    pg.goto(html.as_uri() + '#2'); pg.reload(); pg.wait_for_timeout(700)
+    pg.keyboard.press('+'); pg.wait_for_timeout(100)
+    G.chk('10.1', 'Tecla + amplia o slide e mostra o botão "100% ↺"', pg.evaluate("document.documentElement.classList.contains('zoom-slide')") and pg.is_visible('#zr'))
+    pg.keyboard.press('ArrowRight'); pg.wait_for_timeout(100)
+    G.chk('10.2', 'Com zoom, a seta move a visão e não troca de slide', pg.evaluate('location.hash') == '#2' and 'translate' in pg.evaluate("document.querySelector('.s.on').style.transform"))
+    pg.keyboard.press('0'); pg.wait_for_timeout(100)
+    G.chk('10.3', 'Tecla 0 volta ao tamanho normal', not pg.evaluate("document.documentElement.classList.contains('zoom-slide')") and not pg.is_visible('#zr'))
+    pg.mouse.move(640, 360); pg.keyboard.down('Control'); pg.mouse.wheel(0, -300); pg.keyboard.up('Control'); pg.wait_for_timeout(100)
+    G.chk('10.4', 'Ctrl + roda do mouse amplia o slide', (pg.evaluate('window.ZoomConteudista.nivel()') or 1) > 1.2)
+    pg.keyboard.press('PageDown'); pg.wait_for_timeout(200)
+    G.chk('10.5', 'Trocar de slide volta o zoom a 100%', pg.evaluate('location.hash') == '#3' and pg.evaluate('window.ZoomConteudista.nivel()') == 1)
+    pg.goto(html.as_uri() + '#%d' % (k + 1)); pg.reload(); pg.wait_for_timeout(700)
+    b = pg.locator('.s.on .zm-amp').first
+    G.chk('10.6', 'Imagem do slide tem botão "Ampliar" com nome acessível', b.count() > 0 and (b.get_attribute('aria-label') or '').startswith('Ampliar '))
+    b.focus(); pg.keyboard.press('Enter'); pg.wait_for_timeout(200)
+    G.chk('10.7', 'Ampliar abre diálogo modal, com o foco dentro e o fundo inerte', pg.locator('.zm-lb[role=dialog][aria-modal=true]').count() == 1 and pg.evaluate("!!document.activeElement.closest('.zm-lb')") and pg.evaluate("document.getElementById('st').inert"))
+    pg.keyboard.press('+'); pg.wait_for_timeout(100)
+    G.chk('10.8', 'Tecla + amplia a imagem', pg.inner_text('.zm-pct') == '150%')
+    pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
+    G.chk('10.9', 'Esc fecha e devolve o foco ao botão Ampliar', pg.locator('.zm-lb').count() == 0 and pg.evaluate("document.activeElement.classList.contains('zm-amp')") and not pg.evaluate("document.getElementById('st').inert"))
+    a = ctx.new_page(); a.on('pageerror', lambda e: erros.append('apostila: ' + str(e)))
+    a.goto((d / 'Apostila_Exemplo.html').as_uri()); a.wait_for_timeout(800)
+    n = a.locator('figure .zm-amp').count()
+    G.chk('10.10', 'Apostila: imagens com botão "Ampliar"', n > 0, n)
+    if n:
+        a.locator('figure .zm-amp').first.scroll_into_view_if_needed(); a.locator('figure .zm-amp').first.click(); a.wait_for_timeout(150)
+        G.chk('10.11', 'Apostila: Ampliar abre a imagem em tela cheia', a.locator('.zm-lb img').count() == 1)
+        a.keyboard.press('Escape')
+    G.chk('10.12', 'Nenhum erro de JavaScript no zoom', not erros, erros)
+    pg.close(); a.close()
+
+
 # navegador escolhido -> motor do Playwright (chrome e msedge usam o programa instalado no computador)
 MOTOR = {'chrome': 'chromium', 'msedge': 'chromium', 'chromium': 'chromium', 'firefox': 'firefox', 'webkit': 'webkit'}
 
@@ -541,6 +636,8 @@ GRUPOS = {
     '6': ('Geração dos arquivos e layout', grupo6, 'estatico'),
     '7': ('Celular (emulação de toque)', grupo7, 'movel'),
     '8': ('Opções padrão (opcoes.yaml)', grupo8, 'desktop'),
+    '9': ('Celular: editor e Importar (1.79)', grupo9, 'movel'),
+    '10': ('Zoom nos arquivos gerados (1.79)', grupo10, 'desktop'),
 }
 
 MANUAIS = [
@@ -555,7 +652,7 @@ MANUAIS = [
 # ----------------------------------------------------------------------------- execução
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8', help='lista de grupos (ex.: 1,2,5)')
+    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10', help='lista de grupos (ex.: 1,2,5)')
     ap.add_argument('--navegador', default='chrome', choices=list(MOTOR), help='padrão: chrome (Google Chrome instalado)')
     ap.add_argument('--saida', default=str(Path(__file__).parent / 'relatorio'), help='pasta do relatório')
     ap.add_argument('--tentativas', type=int, default=2, help='repete o grupo com falha até N vezes (passou na repetição = INSTAVEL)')
