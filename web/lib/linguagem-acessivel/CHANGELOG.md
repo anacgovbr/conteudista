@@ -2,6 +2,10 @@
 
 Segue versionamento semântico. Mudar o id ou o código de uma regra, ou o formato do diagnóstico, é mudança incompatível (versão maior). Regra nova entra como versão menor.
 
+## 0.2.1 - 05/11/2026
+- Correção: `tipo: 'auto'` (e o `lac` sem `-t`) tratava como apresentação uma apostila que mostra exemplos da sintaxe de slides dentro de blocos de código, como a apostila de exemplo. Agora o código é ignorado na detecção.
+- Unidades de tamanho (KB, MB, GB, TB), QR e as extensões MD e TXT entram nas siglas conhecidas, que dispensam explicação.
+
 ## 0.2.0 - 05/11/2026
 - Oito regras novas. Para corrigir: `i2` descrição que não descreve, `e2` slide sem título e `e3` tabela sem cabeçalho. Sugestões: `f1` frase longa (mais de 25 palavras), `f2` parágrafo longo (mais de 100 palavras), `f3` texto em maiúsculas, `s1` sigla sem explicação na primeira vez e `n1` frase longa na narração.
 - Glossário de siglas (`dados/siglas.js`): nome completo para "Explicar" com um clique e lista de siglas conhecidas que dispensam explicação. Cada conteúdo pode acrescentar siglas por `config.siglas`.

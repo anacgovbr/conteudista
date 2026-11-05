@@ -1,9 +1,9 @@
 {
- "versao": "0.2.0",
+ "versao": "0.2.1",
  "resumo": {
   "corrigir": 0,
-  "sugestoes": 11,
-  "total": 11
+  "sugestoes": 9,
+  "total": 9
  },
  "itens": [
   [
@@ -12,13 +12,6 @@
    13,
    145,
    "Frase longa na narração (33 palavras). A legenda fica difícil de ler"
-  ],
-  [
-   "s1",
-   "sugestao",
-   23,
-   39,
-   "Explique a sigla IA na primeira vez em que ela aparece"
   ],
   [
    "n1",
@@ -33,13 +26,6 @@
    136,
    40,
    "Frase longa na narração (27 palavras). A legenda fica difícil de ler"
-  ],
-  [
-   "s1",
-   "sugestao",
-   161,
-   48,
-   "Explique a sigla MB na primeira vez em que ela aparece"
   ],
   [
    "n1",
@@ -65,21 +51,21 @@
   [
    "s1",
    "sugestao",
-   334,
+   404,
    3,
    "Explique a sigla ANAC na primeira vez em que ela aparece"
   ],
   [
    "n1",
    "sugestao",
-   359,
+   429,
    243,
    "Frase longa na narração (30 palavras). A legenda fica difícil de ler"
   ],
   [
    "n1",
    "sugestao",
-   372,
+   442,
    172,
    "Frase longa na narração (28 palavras). A legenda fica difícil de ler"
   ]

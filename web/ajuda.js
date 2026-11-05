@@ -60,12 +60,13 @@
     { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em poucos passos você verá como <b>escrever</b>, <b>gerar</b>, <b>guardar</b> e <b>recuperar</b> um conteúdo. A conversão acontece no seu navegador; nada é enviado sem você pedir.' },
     { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apostila</b> e <b>Apresentação</b>. Cole o texto gerado por uma IA (use o prompt padrão do exemplo), arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. No fim da barra ficam o ícone <b>Compartilhar link</b> e o botão <b>Versões</b>, que guarda, compara, restaura e <b>importa um link</b> para comparar.' },
-    { alvo: 'go', t: '3. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe a apostila (HTML, DOCX, MD e dois EPUB: <b>.EPUB</b> e <b>.EPUB OpenDyslexic</b>), a apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>. Os anteriores ficam no <b>Histórico</b>, com busca. Para testar agora, use <b>Carregar exemplo</b>, que traz um guia completo de uso da aplicação.' },
-    { alvo: 'secRes', t: '4. Leia como preferir', d: 'Nos arquivos HTML, o <b>Tema</b> muda as cores e a <b>Leitura</b> muda a fonte: Verdana, Atkinson Hyperlegible Next ou OpenDyslexic. A apresentação tem o <b>Modo leitura</b> (<kbd>L</kbd>), com os slides em sequência e as notas visíveis. Para PDF, use <b>Imprimir / PDF</b> no HTML.' },
-    { alvo: 'btnSalvar', t: '5. Guarde neste computador', d: 'O botão <b>Salvar ▾</b>, ao lado de <b>Gerar arquivos</b>, reúne <b>Guardar no navegador</b> (versão), <b>Baixar tudo (.zip)</b>, <b>Salvar na pasta</b> e <b>Baixar .md</b>. O <b>salvamento automático</b> recupera o último trabalho ao reabrir a página.' },
-    { alvo: 'btnCompartilharAcao', t: '6. Guarde em um link', d: 'O botão <b>Compartilhar link</b> leva o texto-fonte, com as imagens, para um endereço que abre em qualquer computador. Ele também está ao lado de <b>Importar</b> e na barra do editor; os três abrem a mesma janela (<kbd>' + MOD + ' + L</kbd>).' },
-    { alvo: 'btnImportar', t: '7. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. Use o campo <b>Buscar</b> para achar um item pelo nome, data, layout ou tipo de arquivo. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
-    { alvo: 'abasApp', t: '8. Revise a narração slide a slide', d: 'Na aba <b>Locução › Notas dos slides</b>, <b>Importar notas</b> traz a nota de cada slide para um rascunho. Edite, ouça e clique em <b>Aplicar à apresentação</b>. Os botões <b>Versões</b> e <b>Compartilhar link</b> da própria aba comparam as notas e as levam para outro computador.' },
+    { alvo: () => document.querySelector('#pg .la-btn'), antes: () => abrirAba('g'), t: '3. Confira a acessibilidade', d: 'O botão <b>Acessibilidade</b> encontra o que pode dificultar a leitura. Corrija os itens <b>para corrigir</b> e revise as <b>sugestões</b> antes de gerar. Os trechos para corrigir ficam sublinhados no texto: clique na marca para ver as correções (<kbd>' + MOD + ' + C</kbd> abre o painel).' },
+    { alvo: 'go', t: '4. Gere os arquivos', d: 'Clique em <b>Gerar arquivos</b>. Você recebe a apostila (HTML, DOCX, MD e dois EPUB: <b>.EPUB</b> e <b>.EPUB OpenDyslexic</b>), a apresentação (HTML, PPTX, MD) e um ZIP, em <b>Arquivos gerados</b>. Os anteriores ficam no <b>Histórico</b>, com busca. Para testar agora, use <b>Carregar exemplo</b>, que traz um guia completo de uso da aplicação.' },
+    { alvo: 'secRes', t: '5. Leia como preferir', d: 'Nos arquivos HTML, o <b>Tema</b> muda as cores e a <b>Leitura</b> muda a fonte: Verdana, Atkinson Hyperlegible Next ou OpenDyslexic. A apresentação tem o <b>Modo leitura</b> (<kbd>L</kbd>), com os slides em sequência e as notas visíveis. Para PDF, use <b>Imprimir / PDF</b> no HTML.' },
+    { alvo: 'btnSalvar', t: '6. Guarde neste computador', d: 'O botão <b>Salvar ▾</b>, ao lado de <b>Gerar arquivos</b>, reúne <b>Guardar no navegador</b> (versão), <b>Baixar tudo (.zip)</b>, <b>Salvar na pasta</b> e <b>Baixar .md</b>. O <b>salvamento automático</b> recupera o último trabalho ao reabrir a página.' },
+    { alvo: 'btnCompartilharAcao', t: '7. Guarde em um link', d: 'O botão <b>Compartilhar link</b> leva o texto-fonte, com as imagens, para um endereço que abre em qualquer computador. Ele também está ao lado de <b>Importar</b> e na barra do editor; os três abrem a mesma janela (<kbd>' + MOD + ' + L</kbd>).' },
+    { alvo: 'btnImportar', t: '8. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. Use o campo <b>Buscar</b> para achar um item pelo nome, data, layout ou tipo de arquivo. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
+    { alvo: 'abasApp', t: '9. Revise a narração slide a slide', d: 'Na aba <b>Locução › Notas dos slides</b>, <b>Importar notas</b> traz a nota de cada slide para um rascunho. Edite, ouça e clique em <b>Aplicar à apresentação</b>. Os botões <b>Versões</b> e <b>Compartilhar link</b> da própria aba comparam as notas e as levam para outro computador.' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
@@ -139,13 +140,14 @@
 <p>O botão <b>Carregar exemplo</b> traz um <b>guia de uso do próprio Conteudista</b>, que serve de aula e de modelo para o seu conteúdo:</p>
 <ul>
 <li>uma <b>apostila</b> de 16 seções, do <b>Início rápido</b> ao prompt para IA, com 5 fluxos Mermaid, figuras, vídeos, checklists, exercícios com gabarito e referências;</li>
-<li>uma <b>apresentação</b> de 34 slides, um assunto por slide, com <b>notas para narração</b> (cerca de 15 minutos de áudio);</li>
-<li>o <b>prompt padrão para IA</b>, na seção 11.3 da apostila.</li>
+<li>uma <b>apresentação</b> de 39 slides, um assunto por slide, com <b>notas para narração</b> (cerca de 17 minutos de áudio);</li>
+<li>o <b>prompt padrão para IA</b> (versão 1.1, com regras de acessibilidade e linguagem simples), na seção 11.3 da apostila;</li>
+<li>as seções <b>5.6 Acessibilidade do texto</b> e <b>10.6 Escrever conteúdo acessível</b>, e 5 slides sobre o assunto.</li>
 </ul>
 <p>Para criar o seu conteúdo, substitua os textos e mantenha a estrutura. Para gerar a aula narrada, marque <b>Narração dos slides</b> na aba <b>Apresentação</b> antes de <b>Gerar arquivos</b>. Para ouvir apenas as notas, importe-as na aba <b>Locução</b>.</p>
 <h4>Produzir os textos com uma IA</h4>
 <ul>
-<li>Na seção <b>11.3</b> da apostila de exemplo está o <b>prompt padrão</b>: um bloco único, para copiar e colar em uma IA autorizada pela instituição.</li>
+<li>Na seção <b>11.3</b> da apostila de exemplo está o <b>prompt padrão 1.1</b>: um bloco único, para copiar e colar em uma IA autorizada pela instituição. Ele já pede frases curtas, siglas explicadas, títulos em ordem, legendas descritivas e links claros, para que o texto chegue com menos itens a corrigir.</li>
 <li>Edite somente a seção 1 do prompt, com 14 parâmetros (tema, público, objetivo de aprendizagem, número de seções e de slides, tamanho das notas, formato de entrega e outros), e a seção 2, com o material de referência. As demais seções fixam as regras de conteúdo e de formato.</li>
 <li>Escolha a entrega: <b>A</b>, dois blocos de texto, que você cola em <b>Importar › Colar</b>, nas subabas <b>Apostila</b> e <b>Apresentação</b>; ou <b>B</b>, um arquivo <b>ZIP</b> com os dois textos e a pasta <code>imagens/</code>, que você importa em <b>Importar › Computador</b>.</li>
 <li>Revise tudo antes de gerar os arquivos, em especial os trechos marcados com <code>[A confirmar]</code>. Não envie dados pessoais nem informações restritas.</li>
@@ -290,6 +292,20 @@
 <li>Se houver itens para corrigir, um aviso aparece perto de <b>Gerar arquivos</b>. Você pode gerar os arquivos assim mesmo.</li>
 <li><b>Marcas no texto:</b> os trechos para corrigir ficam sublinhados no editor com uma linha ondulada vermelha, como num corretor ortográfico. Clique numa marca para ver a mensagem e as correções. Pelo teclado, <kbd>Alt+Shift+N</kbd> vai ao próximo item e mostra o balão; <kbd>Alt+Shift+I</kbd> leva o foco às correções do item no cursor; <kbd>Esc</kbd> volta ao texto. As marcas somem enquanto você digita e voltam 1 segundo depois.</li>
 <li>No rodapé do painel: <b>Marcar no texto</b> liga e desliga as marcas; <b>Marcar também as sugestões</b> sublinha as sugestões com uma linha pontilhada. As marcas não entram no texto nem nos arquivos gerados.</li></ul>
+<table><tr><th>Ação</th><th>Atalho</th></tr>
+<tr><td>Abrir e fechar o painel Acessibilidade</td><td><kbd>Alt+Shift+C</kbd></td></tr>
+<tr><td>Ir ao próximo item</td><td><kbd>Alt+Shift+N</kbd></td></tr>
+<tr><td>Ver as correções do item no cursor</td><td><kbd>Alt+Shift+I</kbd></td></tr>
+<tr><td>Fechar o balão ou a janela</td><td><kbd>Esc</kbd></td></tr>
+<tr><td>Desfazer a correção</td><td><kbd>Ctrl+Z</kbd></td></tr></table>
+<p><b>Imagens decorativas:</b> a imagem marcada com <b>É decorativa</b> recebe o comentário <code>&lt;!-- linguagem-acessivel: decorativa --&gt;</code>. Nos arquivos gerados, ela sai sem descrição, para o leitor de tela pular; no PPTX, fica marcada como decorativa.</p>
+<h4>Escrever conteúdo acessível</h4>
+<ol><li><b>Uma ideia por frase</b>, com até 20 palavras. O verificador sugere dividir a partir de 25.</li>
+<li><b>Siglas:</b> na primeira vez, escreva o nome completo e a sigla entre parênteses.</li>
+<li><b>Títulos em ordem</b> (# depois ##, depois ###) e todo slide com título.</li>
+<li><b>Imagens</b> com legenda que diz o que mostram; gráficos e fluxos explicados também no texto.</li>
+<li><b>Links</b> com texto que diz aonde levam. Nunca "clique aqui".</li></ol>
+<p>Exemplos de antes e depois estão na seção <b>10.6</b> da apostila de exemplo. O prompt padrão 1.1 (seção <b>11.3</b>) leva essas regras para a IA.</p>
 <h4>Editor no celular</h4>
 <p>Em telas pequenas, a barra do editor ocupa no máximo duas linhas. Na primeira ficam <b>Desfazer</b>, <b>Refazer</b>, <b>Negrito</b>, <b>Itálico</b> e três menus: <b>H</b> (títulos, código e listas), <b>+</b> (Inserir: link, imagem, tabela, caixas, fluxo e <b>Imagens do texto</b>) e <b>⋯</b> (Mais: compartilhar link, versões e tela cheia). Na segunda, os modos <b>Editar</b>, <b>Dividido</b> e <b>Prévia</b>. A contagem do texto ocupa uma linha; toque nela para ver os detalhes. Nos menus, as setas trocam de item e <kbd>Esc</kbd> fecha.</p>
 <h4>Ampliar (zoom) nos arquivos gerados</h4>

@@ -149,6 +149,10 @@ t('aplicar recusa edições sobrepostas e correções manuais', () => {
   try { LA.aplicar('abc', { acao: 'descrever-imagem' }); throw 0; } catch (e) { igual(e.codigo, 'correcao-manual'); }
 });
 t('agrupar soma por grupo', () => { const g = LA.agrupar(LA.analisar('# A\n\n### B\n\n![](a.png) [aqui](x)')); igual([g.grupos.estrutura.corrigir, g.grupos.imagens.corrigir, g.grupos.links.corrigir], [1, 1, 1]); });
+t('detectarTipo ignora exemplos em blocos de código (apostila que ensina a sintaxe dos slides)', () => {
+  igual(LA.detectarTipo('# A\n\n```text\n---\ntitle: x\n---\n<!-- notas: y -->\n<!-- class: title -->\n```\n\nUse `<!-- notas: z -->`.'), 'apostila');
+  igual(LA.detectarTipo('---\ntitle: x\n---\n\n# A'), 'apresentacao'); igual(LA.detectarTipo('# A\n\n<!-- notas: y -->'), 'apresentacao');
+});
 t('regras() expõe metadados sem funções', () => verdade(LA.regras().every(r => r.id && r.codigo && r.titulo && !r.verificar)));
 
 /* ------------------------------------------------ 6. regras de linguagem */

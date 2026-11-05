@@ -1,6 +1,6 @@
 # Linguagem Acessível · regras
 
-Versão da biblioteca: 0.2.0.
+Versão da biblioteca: 0.2.1.
 
 > Página gerada por `node tools/linguagem-acessivel/gerar_docs.mjs`. Não edite à mão: mude a regra ou `mensagens/pt-BR.js`.
 

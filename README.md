@@ -116,7 +116,7 @@ Limitações conhecidas:
 
 ## Biblioteca Linguagem Acessível (`web/lib/linguagem-acessivel/`)
 
-Confere acessibilidade e linguagem simples em textos Markdown. É a base do verificador do editor (etapas 5 e 6), da linha de comando `lac` (etapa 4) e da API (etapa 11). Nesta versão (0.2.0) traz 11 regras. Para corrigir: `i1` imagem sem descrição, `i2` descrição que não descreve, `e1` título que pula nível, `e2` slide sem título, `e3` tabela sem cabeçalho e `k1` link que não diz aonde leva. Sugestões de linguagem simples: `f1` frase longa, `f2` parágrafo longo, `f3` texto em maiúsculas, `s1` sigla sem explicação e `n1` frase longa na narração. Também traz o glossário de siglas e os pedidos padronizados para IA. Ainda não aparece na tela do editor.
+Confere acessibilidade e linguagem simples em textos Markdown. É a base do verificador do editor (etapas 5 e 6), da linha de comando `lac` (etapa 4) e da API (etapa 11). Nesta versão (0.2.1) traz 11 regras. Para corrigir: `i1` imagem sem descrição, `i2` descrição que não descreve, `e1` título que pula nível, `e2` slide sem título, `e3` tabela sem cabeçalho e `k1` link que não diz aonde leva. Sugestões de linguagem simples: `f1` frase longa, `f2` parágrafo longo, `f3` texto em maiúsculas, `s1` sigla sem explicação e `n1` frase longa na narração. Também traz o glossário de siglas e os pedidos padronizados para IA. No editor, aparece no painel Acessibilidade, nas marcas no texto e nas janelas de apoio (1.80 a 1.82).
 
 - **Linha de comando `lac`** (`tools/lac/`): `lac c apostila.md`, `cat apostila.md | lac c -g f`, `lac a -d apostila.md`, `lac p simplificar < trecho.txt`. No Windows: `tools\lac\lac.cmd`. Ajuda: `lac h` ou `docs/lac.md`. Antes de cada publicação, o GitHub confere que o conteúdo de exemplo não tem nada para corrigir e guarda um relatório SARIF.
 
@@ -176,12 +176,14 @@ O botão **Carregar exemplo** carrega `web/exemplo/treinamento.md` (apostila) e 
 | Arquivo | Conteúdo |
 |---|---|
 | `treinamento.md` | Apostila de 16 seções: Início rápido, funcionamento, percurso de aprendizado, edição, importação, formas de guardar, geração, locução e narração, o que cabe no Markdown, produção com IA, fluxo de trabalho, checklists, exercícios, gabarito e referências. Traz 5 fluxos Mermaid, 4 figuras, links para vídeos e o **prompt padrão para IA** (seção 11.3) |
-| `apresentacao.md` | 34 slides, um assunto por slide, com notas para narração (63 a 81 palavras por slide, cerca de 15 minutos de áudio), 5 fluxos Mermaid e 3 figuras |
+| `apresentacao.md` | 39 slides, um assunto por slide, com notas para narração (cerca de 17 minutos de áudio), 7 fluxos Mermaid e 3 figuras; inclui 5 slides sobre acessibilidade do texto |
 
 Manutenção do exemplo:
 
 - É texto comum: edite os dois `.md`. As figuras são PNG embutidas em base64, de modo que cada arquivo é autossuficiente.
-- O prompt padrão está em um único bloco de código. Qualquer mudança na sintaxe aceita pelo gerador deve ser refletida nas seções 5 e 6 do prompt e na tabela da seção 10 da apostila.
+- O prompt padrão está em um único bloco de código (versão 1.1). Qualquer mudança na sintaxe aceita pelo gerador deve ser refletida nas seções 5 e 6 do prompt e na tabela da seção 10 da apostila. A versão 1.1 acrescentou à seção 4 as regras de acessibilidade e linguagem simples (itens 8 a 17) e à seção 8 a conferência correspondente. Ao mudar o texto do prompt, suba a versão.
+- O exemplo precisa ficar sem itens **para corrigir** (`node tools/lac/lac.mjs c -n c web/exemplo/*.md`); a publicação no GitHub confere. As sugestões que restam estão registradas em `tools/linguagem-acessivel/resultados/` (atualize com `node tools/linguagem-acessivel/testar.mjs --atualizar-exemplo` e revise o diff). Exemplos de texto "ruim" ficam em código, para não serem acusados.
+- Seções sobre acessibilidade: 5.6 (uso do painel e das marcas) e 10.6 (como escrever), além de 5 slides antes de "Gerar arquivos".
 - As notas dos slides são escritas para serem ouvidas: texto corrido, sem símbolos, parênteses nem endereços.
 - O workflow de publicação gera o exemplo com os temas `govbr` e `classico` como teste.
 - Na apostila em HTML, os fluxos Mermaid são desenhados no navegador de quem lê e dependem de `cdn.jsdelivr.net`. Na apresentação em HTML, cada fluxo é convertido em imagem ao gerar os arquivos (`prepararFluxos`, em `web/index.html`; o gerador recebe o parâmetro `fluxos`); sem a imagem, o HTML desenha o fluxo no navegador com todos os slides mensuráveis (classe `mm`). O `.md` e o PPTX não mudam.

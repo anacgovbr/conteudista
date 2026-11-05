@@ -16,7 +16,18 @@ const RE_HR = /^ {0,3}([-*_])(?:[ \t]*\1){2,}[ \t\r]*$/;
 
 /** Detecta se o texto é uma apresentação (mesmos sinais usados ao importar). */
 export function detectarTipo(texto) {
-  if (/^---\s*\n[\s\S]*?\n---/.test(texto) || /<!--\s*(class|notas):/.test(texto) || (texto.match(/\n---\s*\n/g) || []).length >= 2) return 'apresentacao';
+  texto = String(texto || '').replace(/\r\n/g, '\n');
+  // 0.2.1: exemplos dentro de blocos de código e de código em linha não contam (uma apostila que ensina a
+  // sintaxe da apresentação, como a de exemplo, não é uma apresentação)
+  const fora = []; let cerca = null;
+  for (const l of texto.split('\n')) {
+    const c = /^ {0,3}(`{3,}|~{3,})/.exec(l);
+    if (cerca) { if (c && c[1][0] === cerca[0] && c[1].length >= cerca.length && !l.slice(c[0].length).trim()) cerca = null; continue; }
+    if (c) { cerca = c[1]; continue; }
+    fora.push(l);
+  }
+  const t = fora.join('\n').replace(/`[^`\n]*`/g, '');
+  if (/^---[ \t]*\n[\s\S]*?\n---[ \t]*(\n|$)/.test(t) || /<!--\s*(class|notas|narra[cç][aã]o)\s*:/i.test(t) || (t.match(/\n---[ \t]*\n/g) || []).length >= 2) return 'apresentacao';
   return 'apostila';
 }
 

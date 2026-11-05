@@ -695,8 +695,10 @@ def grupo12(amb, ctx, G):
         pg.locator('#laP-g .la-it', has_text='RBAC').locator('button', has_text='Ignorar').click(); pg.wait_for_timeout(900)
         G.chk('12.9', 'Ignorar grava o comentário no texto e a sugestão some',
               pg.evaluate("ED.g.textarea.value.includes('<!-- linguagem-acessivel: ignorar s1 -->\\nO pedido')") and '0 sugestões' in pg.inner_text('#laP-g .la-sub'))
-        pq = pg.locator('#laP-g .la-it').first.locator('button', has_text='Por quê?'); pq.click()
-        G.chk('12.10', '"Por quê?" mostra a explicação (aria-expanded)', pq.get_attribute('aria-expanded') == 'true' and pg.locator('#laP-g .la-it').first.locator('.la-pq').is_visible())
+        pg.locator('#laP-g .la-it').first.locator('button', has_text='Por quê?').click()
+        pg.evaluate("AcessibilidadeTexto.analisarAgora('g')"); pg.wait_for_timeout(1500)   # nova conferência redesenha a lista
+        pq = pg.locator('#laP-g .la-it').first.locator('button', has_text='Por quê?')
+        G.chk('12.10', '"Por quê?" mostra a explicação (aria-expanded) e continua aberto depois de uma nova conferência', pq.get_attribute('aria-expanded') == 'true' and pg.locator('#laP-g .la-it').first.locator('.la-pq').is_visible())
         pg.evaluate('ED.g.textarea.setSelectionRange(0, 0)'); pg.keyboard.press('Alt+Shift+N'); pg.wait_for_timeout(300)
         e = pg.evaluate("(() => { const t = ED.g.textarea; return t.value.slice(t.selectionStart, t.selectionEnd); })()")
         G.chk('12.11', 'Alt+Shift+N vai ao próximo item a partir do cursor', e == '[clique aqui](https://www.gov.br/anac)', e)
@@ -915,6 +917,56 @@ def grupo14(amb, ctx, G):
     G.chk('14.17', 'Gerador: no PPTX, a imagem fica marcada como decorativa', 'adec:decorative' in xml)
 
 
+# ----------------------------------------------------------------------------- GRUPO 15 — conteúdo acessível desde a criação (1.83)
+def grupo15(amb, ctx, G):
+    ler = lambda p: (RAIZ / p).read_text(encoding='utf-8')
+    lac = RAIZ / 'tools' / 'lac' / 'lac.mjs'
+    ex = [str(RAIZ / 'web' / 'exemplo' / 'treinamento.md'), str(RAIZ / 'web' / 'exemplo' / 'apresentacao.md')]
+    r = rodar(['node', str(lac), 'c', '-n', 'c'] + ex, cwd=RAIZ)
+    G.chk('15.1', 'Conteúdo de exemplo sem itens para corrigir (lac c -n c sai com 0)', r.returncode == 0, (r.stdout + r.stderr)[-400:])
+    r = rodar(['node', str(lac), 'c', '-f', 'json', '--agrupar', 'nenhum', ex[0]], cwd=RAIZ)
+    tipo = ''
+    try: tipo = json.loads(r.stdout).get('tipo')
+    except Exception: pass
+    G.chk('15.2', 'A apostila de exemplo é reconhecida como apostila (exemplos de slides em código não confundem)', tipo == 'apostila', tipo)
+    t = ler('web/exemplo/treinamento.md')
+    m = re.search(r'PROMPT PADRÃO DO CONTEUDISTA.*?\n```', t, re.S); pr = m.group(0) if m else ''
+    nunca = [l for l in pr.splitlines() if 'clique aqui' in l]
+    G.chk('15.3', 'Prompt padrão 1.1 com as regras de acessibilidade e linguagem simples',
+          'Versão 1.1' in pr and 'ACESSIBILIDADE E LINGUAGEM SIMPLES' in pr and 'Nome completo (SIGLA)' in pr and '25' in pr and 'linguagem-acessivel:' in pr
+          and len(nunca) == 1 and 'Nunca use' in nunca[0], nunca)
+    G.chk('15.4', 'Apostila de exemplo com as seções 5.6 e 10.6 e o Checklist A atualizado',
+          '### 5.6 Acessibilidade do texto' in t and '### 10.6 Escrever conteúdo acessível' in t and 'O botão **Acessibilidade** não mostra itens para corrigir' in t)
+    a = ler('web/exemplo/apresentacao.md')
+    tit = ['# Acessibilidade do texto', '# O que é para corrigir', '# Sugestões de linguagem simples', '# Corrigir no próprio texto', '# Pedir ajuda a uma IA']
+    n = len(re.findall(r'(?m)^---\s*$', a)) - 1
+    G.chk('15.5', 'Apresentação de exemplo com os 5 slides de acessibilidade (39 slides)', all(x in a for x in tit) and n == 39, n)
+    aj = ler('web/ajuda.js')
+    G.chk('15.6', 'Ajuda com "Escrever conteúdo acessível" e a tabela de atalhos da acessibilidade',
+          '<h4>Escrever conteúdo acessível</h4>' in aj and '<kbd>Alt+Shift+I</kbd>' in aj and "t: '3. Confira a acessibilidade'" in aj)
+    srv, url = _servidor(RAIZ / 'web')
+    try:
+        pg = ctx.new_page(); erros = []
+        pg.on('pageerror', lambda e: erros.append(str(e)))
+        pg.add_init_script("try { localStorage.setItem('conteudista.tour', '1'); } catch (e) {}")
+        pg.goto(url); pg.wait_for_selector('#pg .la-btn', state='attached', timeout=15000); pg.wait_for_timeout(300)
+        pg.click('#btnTour'); pg.wait_for_selector('.tr-pop', timeout=5000)
+        for _ in range(3): pg.keyboard.press('ArrowRight'); pg.wait_for_timeout(250)
+        e = pg.evaluate("""() => { const p = document.querySelector('.tr-pop'), h = document.querySelector('.tr-hole'), b = document.querySelector('#pg .la-btn').getBoundingClientRect();
+            const r = h && h.getBoundingClientRect(); return { titulo: p && p.querySelector('h4').textContent, cobre: !!r && r.left <= b.left && r.right >= b.right && r.top <= b.top && r.bottom >= b.bottom }; }""")
+        G.chk('15.7', 'Tutorial: passo "3. Confira a acessibilidade" destaca o botão Acessibilidade', e['titulo'] == '3. Confira a acessibilidade' and e['cobre'], e)
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
+        pg.click('#ex'); pg.wait_for_timeout(500)
+        pg.wait_for_function("(() => { const g = AcessibilidadeTexto.resultado('g'), s = AcessibilidadeTexto.resultado('s'); return g && s && g.diagnosticos.length + s.diagnosticos.length > 0; })()", timeout=15000)
+        pg.wait_for_timeout(1500)
+        e = pg.evaluate("[AcessibilidadeTexto.resultado('g').resumo.corrigir, AcessibilidadeTexto.resultado('s').resumo.corrigir, document.getElementById('laAviso') ? !document.getElementById('laAviso').hidden : false]")
+        G.chk('15.8', 'Carregar exemplo: o painel não acusa nada para corrigir e não há aviso perto de Gerar arquivos', e == [0, 0, False], e)
+        G.chk('15.9', 'Nenhum erro de JavaScript', not erros, erros)
+        pg.close()
+    finally:
+        srv.shutdown()
+
+
 # navegador escolhido -> motor do Playwright (chrome e msedge usam o programa instalado no computador)
 MOTOR = {'chrome': 'chromium', 'msedge': 'chromium', 'chromium': 'chromium', 'firefox': 'firefox', 'webkit': 'webkit'}
 
@@ -933,6 +985,7 @@ GRUPOS = {
     '12': ('Painel Acessibilidade do texto (1.80)', grupo12, 'desktop'),
     '13': ('Marcas no texto e balão (1.81)', grupo13, 'desktop'),
     '14': ('Janelas de apoio e imagens decorativas (1.82)', grupo14, 'desktop'),
+    '15': ('Conteúdo acessível desde a criação (1.83)', grupo15, 'desktop'),
 }
 
 MANUAIS = [
@@ -947,7 +1000,7 @@ MANUAIS = [
 # ----------------------------------------------------------------------------- execução
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10,11,12,13,14', help='lista de grupos (ex.: 1,2,5)')
+    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10,11,12,13,14,15', help='lista de grupos (ex.: 1,2,5)')
     ap.add_argument('--navegador', default='chrome', choices=list(MOTOR), help='padrão: chrome (Google Chrome instalado)')
     ap.add_argument('--saida', default=str(Path(__file__).parent / 'relatorio'), help='pasta do relatório')
     ap.add_argument('--tentativas', type=int, default=2, help='repete o grupo com falha até N vezes (passou na repetição = INSTAVEL)')

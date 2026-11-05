@@ -13,7 +13,7 @@ Confere acessibilidade e linguagem simples em textos Markdown. Funciona com pipe
 ## Ajuda
 
 ```text
-lac · Linguagem Acessível 0.2.0
+lac · Linguagem Acessível 0.2.1
 Confere acessibilidade e linguagem simples em textos Markdown.
 
 Uso:  lac <comando> [opções] [arquivo...]

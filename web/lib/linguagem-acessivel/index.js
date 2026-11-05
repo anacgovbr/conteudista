@@ -15,7 +15,7 @@ import MSG from './mensagens/pt-BR.js';
 import PADRAO from './config/padrao.js';
 import SIGLAS from './dados/siglas.js';
 
-export const VERSAO = '0.2.0';
+export const VERSAO = '0.2.1';
 export { detectarTipo };
 export { dividirFrases, contarPalavras } from './nucleo/frases.js';
 export { montarPedido, lerRespostaDescricao, lerRespostaSimplificar, PEDIDOS, VERSAO_PEDIDOS } from './pedidos.js';

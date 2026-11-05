@@ -20,7 +20,7 @@ Apresentação de uso da aplicação
 - Escrever, editar e importar textos e imagens
 - Guardar o trabalho em versões, arquivos ou links
 - Gerar a apostila, a apresentação e a narração
-- Produzir os textos com apoio de uma IA
+- Produzir os textos com apoio de inteligência artificial (IA)
 
 <!-- notas: Ao final desta apresentação, você será capaz de executar o ciclo completo de produção de um conteúdo. Esse ciclo compreende gerar o primeiro conteúdo, escrever e importar textos e imagens, guardar o trabalho com segurança, gerar os arquivos finais e a narração e, por fim, produzir os textos com apoio de uma inteligência artificial. Cada etapa corresponde a uma seção da apostila, que serve de consulta posterior. -->
 
@@ -310,6 +310,76 @@ flowchart LR
 - Versões salvas com nome não são apagadas; limite de 120
 
 <!-- notas: As versões protegem o seu trabalho. O botão Versões, na barra do editor, abre a lista de cópias guardadas neste navegador. É possível comparar duas versões, com as diferenças destacadas, e restaurar qualquer uma delas. O botão Importar link traz o texto de um link como versão, sem alterar os editores, para comparar. Versões salvas com nome não são apagadas. A aplicação mantém até cento e vinte versões e guarda o estado anterior antes de cada importação. -->
+
+---
+
+# Acessibilidade do texto
+
+```mermaid
+flowchart LR
+    T00((Início)) --> T01[01. Escrever]
+    T01 --> T02[02. Conferir]
+    T02 --> T03[03. Corrigir]
+    T03 --> T04[04. Gerar arquivos]
+    T04 --> T99(((Fim)))
+```
+
+<!-- notas: O Conteudista confere a acessibilidade do texto enquanto você escreve. O botão Acessibilidade, na barra do editor, mostra o que precisa de atenção. A conferência acontece no seu navegador. Nenhum texto é enviado para fora. Corrija o que for preciso e, depois, gere os arquivos. -->
+
+---
+
+# O que é para corrigir
+
+- Imagem sem descrição ou com descrição vaga
+- Título que pula um nível
+- Link que não diz aonde leva
+- Slide sem título
+- Tabela sem cabeçalho
+
+<!-- notas: Os itens para corrigir impedem alguém de ler o conteúdo. Uma imagem sem descrição fica muda para quem usa leitor de tela. Um link que diz apenas clique aqui não informa aonde leva. Títulos fora de ordem confundem a navegação. Corrija esses itens antes de entregar o material. -->
+
+---
+
+# Sugestões de linguagem simples
+
+| Sugestão | O que fazer |
+|---|---|
+| Frase longa | Dividir em frases curtas |
+| Parágrafo longo | Separar as ideias |
+| Texto em maiúsculas | Usar negrito para destacar |
+| Sigla sem explicação | Escrever o nome completo na primeira vez |
+| Narração longa | Encurtar as frases das notas |
+
+<!-- notas: As sugestões deixam o texto mais fácil de ler. Elas não contam como erro e não impedem a geração dos arquivos. A frase longa passa de vinte e cinco palavras. A sigla precisa do nome completo na primeira vez em que aparece. Quando uma sugestão não fizer sentido, você pode ignorá-la. -->
+
+---
+
+# Corrigir no próprio texto
+
+- Linha ondulada vermelha: item para corrigir
+- Clique na marca para ver as correções
+- `Alt+Shift+N`: próximo item
+- `Alt+Shift+I`: correções do item no cursor
+- `Ctrl+Z` desfaz qualquer correção
+
+<!-- notas: Os trechos para corrigir ficam sublinhados no editor, como num corretor ortográfico. Clique na marca para abrir um balão com a mensagem e as correções. Pelo teclado, use Alt Shift N para ir ao próximo item. Use Alt Shift I para chegar às correções. Toda correção pode ser desfeita. -->
+
+---
+
+# Pedir ajuda a uma IA
+
+```mermaid
+flowchart LR
+    T00((Início)) --> T01[01. Copiar o pedido]
+    T01 --> T02[02. Colar na IA autorizada]
+    T02 --> T03[03. Colar a resposta]
+    T03 --> T04[04. Conferir e aplicar]
+    T04 --> T99(((Fim)))
+```
+
+> [!warning] Não envie dados pessoais nem informação restrita.
+
+<!-- notas: Nas janelas Descrever e Simplificar, você pode pedir ajuda a uma inteligência artificial. Copie o pedido pronto e cole na ferramenta autorizada pela instituição. Traga a resposta de volta e confira antes de aplicar. O Conteudista não envia nada sozinho. Você continua responsável pelo texto final. -->
 
 ---
 

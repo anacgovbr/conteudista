@@ -1,10 +1,10 @@
 # Conteudista na Prática — Apostila de Uso
 
-**Guia de uso do Conteudista: do primeiro conteúdo gerado à produção com apoio de IA**
+**Guia de uso do Conteudista: do primeiro conteúdo gerado à produção com apoio de inteligência artificial (IA)**
 
 Material de exemplo · Conteudista · Versão 1.0
 
-> [!info] **Objetivo:** ao final desta apostila você será capaz de gerar um conteúdo completo (apostila e apresentação), editar e importar textos e imagens, guardar o trabalho com segurança e produzir os textos com apoio de uma IA.
+> [!info] **Objetivo:** ao final desta apostila, você será capaz de gerar um conteúdo completo, com apostila e apresentação. Também vai saber editar e importar textos e imagens e guardar o trabalho com segurança. Por fim, vai conferir a acessibilidade e produzir os textos com apoio de uma IA.
 
 > [!tip] **Este material é o próprio exemplo da aplicação.** Cada recurso descrito aqui aparece nele: fluxos, imagens, tabelas, caixas, checklists, exercícios, vídeos e links. Para criar o seu conteúdo, substitua os textos e mantenha a estrutura.
 
@@ -16,6 +16,7 @@ Material de exemplo · Conteudista · Versão 1.0
 | Entender como a aplicação funciona | Seção 3 |
 | Seguir um percurso de estudo | Seção 4 |
 | Escrever e editar os textos | Seção 5 |
+| Escrever um conteúdo acessível | Seções 5.6 e 10.6 |
 | Importar textos, imagens e links | Seção 6 |
 | Guardar o trabalho | Seção 7 |
 | Gerar e consultar os arquivos | Seção 8 |
@@ -191,6 +192,31 @@ O botão **Versões**, na barra do editor, abre a lista de cópias do texto guar
 - **★ Salvar versão** cria um ponto nomeado, que não é apagado automaticamente. O limite é de 120 versões.
 - **Importar link** traz o texto-fonte de um link do Conteudista (direto ou PrivateBin) como uma versão **via link**, sem alterar os editores. Se o link tiver senha, ela é pedida antes de adicionar. A versão importada fica selecionada como **Versão A** e já é comparada com o texto atual; para comparar dois links, importe os dois e escolha A e B.
 
+### 5.6 Acessibilidade do texto
+
+O botão **Acessibilidade**, na barra do editor, confere o texto enquanto você escreve. A conferência acontece no seu navegador. O texto não é enviado para fora.
+
+| Nível | O que mostra | Exemplos |
+|---|---|---|
+| **Para corrigir** | O que impede alguém de ler | Imagem sem descrição, título que pula nível, link que não diz aonde leva, slide sem título, tabela sem cabeçalho |
+| **Sugestão** | O que deixa o texto mais fácil | Frase longa, parágrafo longo, sigla sem explicação, texto em maiúsculas, narração longa |
+
+- Os trechos para corrigir ficam **sublinhados no editor**, como num corretor ortográfico. Clique numa marca para ver o que fazer.
+- Cada item tem a correção, **Ir para** e **Por quê?**. Nas sugestões, também há **Ignorar**.
+- **Descrever**, **Simplificar** e **Explicar** abrem uma janela de apoio. Nela, você escreve o texto ou pede ajuda a uma IA autorizada.
+- Toda correção pode ser desfeita com `Ctrl+Z`.
+- Quando há itens para corrigir, um aviso aparece perto de **Gerar arquivos**. Você pode gerar os arquivos assim mesmo.
+
+| Ação | Atalho |
+|---|---|
+| Abrir e fechar o painel | `Alt+Shift+C` |
+| Ir ao próximo item | `Alt+Shift+N` |
+| Ver as correções do item no cursor | `Alt+Shift+I` |
+| Fechar o balão ou a janela | `Esc` |
+| Desfazer a correção | `Ctrl+Z` |
+
+> [!warning] Ao pedir ajuda a uma IA, use somente a ferramenta autorizada pela instituição. Não envie imagens ou textos com dados pessoais ou informação restrita.
+
 ## 6. Importar
 
 O botão **Importar** abre uma janela com quatro origens. A primeira é **Link**, que já abre selecionada.
@@ -251,7 +277,7 @@ O link reúne o conteúdo inteiro: textos, imagens, nome e rodapé. A janela sug
 
 O botão **Compartilhar link** aparece em três lugares, e todos abrem a mesma janela: na **barra de ações**, depois de **Importar**; na **barra de ferramentas do editor** (só o ícone); e **ao lado de Salvar ▾**. Ele não faz parte do menu do **Salvar ▾**. No celular, o rótulo vira **Link**.
 
-| | Link direto | PrivateBin |
+| Característica | Link direto | PrivateBin |
 |---|---|---|
 | Onde fica o conteúdo | No próprio endereço | Cifrado em um servidor |
 | Validade | Não expira | Até a data escolhida (padrão: 1 ano) |
@@ -490,6 +516,43 @@ O Conteudista **não incorpora um reprodutor de vídeo**. O vídeo entra no text
 | Imagem dentro de link | A sintaxe se quebra | Imagem em uma linha e o link em outra |
 | Títulos de nível 4 ou mais | Aparecem no texto, mas não entram no sumário | Até `###` |
 
+### 10.6 Escrever conteúdo acessível
+
+Um texto acessível é mais fácil para todos: para quem usa leitor de tela, para quem tem dislexia e para quem lê com pressa. Siga estas regras desde o primeiro rascunho. Depois, confira com o botão **Acessibilidade** (seção 5.6).
+
+| Tema | Evite | Prefira |
+|---|---|---|
+| Frases | `A solicitação deverá ser instruída pelo interessado com a documentação comprobatória.` | `Envie o pedido com os documentos exigidos.` |
+| Voz ativa | `O parecer será emitido pela área técnica.` | `A área técnica emite o parecer.` |
+| Siglas | `O RBAC define os prazos.` | `O Regulamento Brasileiro da Aviação Civil (RBAC) define os prazos.` |
+| Links | `Para ver os prazos, [clique aqui](endereço).` | `Veja os [prazos de análise](endereço).` |
+| Títulos | `# Processo` seguido de `### Prazos` | `# Processo` seguido de `## Prazos` |
+| Destaque | `ATENÇÃO: O PRAZO TERMINA HOJE.` | `**Atenção:** o prazo termina hoje.` |
+| Tabelas | Primeira linha vazia | Primeira linha com o nome de cada coluna |
+
+- **Uma ideia por frase.** Mire em até 20 palavras. O verificador sugere dividir a partir de 25.
+- **Palavras do dia a dia.** Quando um termo técnico for necessário, mantenha o termo e explique em poucas palavras.
+- **Parágrafos curtos.** Até 100 palavras, com uma ideia central.
+- **Siglas.** Na primeira vez, escreva o nome completo e a sigla entre parênteses. Depois, use só a sigla.
+- **Cor e maiúsculas.** Não passe uma informação só pela cor. Para destacar, use negrito.
+
+**Imagens.** Toda imagem que traz informação precisa de uma descrição. Escreva a descrição entre os colchetes: ela vira a legenda e o texto lido pelo leitor de tela. Gráficos e fluxos também ganham uma descrição detalhada, logo abaixo. A imagem que é só enfeite fica marcada como decorativa.
+
+```text
+![Fluxo de aprovação: o pedido passa pela área técnica e segue para a coordenação](fluxo.png)
+
+1. O pedido chega pelo sistema.
+2. A área técnica analisa o pedido.
+3. A coordenação decide.
+
+<!-- linguagem-acessivel: decorativa -->
+![](divisor.png)
+```
+
+**Apresentações e narração.** Todo slide tem título. Use até cinco marcadores curtos por slide. As notas são ouvidas uma vez só e viram legenda: escreva frases curtas e diga as siglas por extenso.
+
+> [!tip] Para reescrever um trecho longo, use **Simplificar** no painel **Acessibilidade**. A janela mostra o antes e o depois e conta as palavras de cada frase.
+
 ## 11. Produzir os textos com uma IA
 
 Uma IA pode redigir a apostila e a apresentação a partir de um material de referência. O Conteudista oferece um **prompt padrão**, que já descreve a sintaxe aceita, de modo que a saída possa ser importada sem ajustes.
@@ -545,7 +608,7 @@ Só a seção 1 e a seção 2 do prompt precisam de edição. O restante do prom
 
 ```text
 PROMPT PADRÃO DO CONTEUDISTA — apostila e apresentação
-Versão 1.0. Edite somente a seção 1 (parâmetros) e a seção 2 (material de
+Versão 1.1. Edite somente a seção 1 (parâmetros) e a seção 2 (material de
 referência). Não altere as demais seções.
 
 ==================================================
@@ -604,6 +667,27 @@ notas do apresentador, para serem convertidas pelo Conteudista.
    material.
 7. Não use imagens da internet. Use somente as que eu enviei, citadas pelo
    nome do arquivo.
+
+ACESSIBILIDADE E LINGUAGEM SIMPLES (vale para a apostila, os slides e as
+notas)
+8. Uma ideia por frase, com até 20 palavras. Nenhuma frase passa de 25
+   palavras. Use voz ativa e ordem direta: quem faz o quê.
+9. Prefira verbos a substantivos ("analisar", e não "proceder à análise") e
+   palavras do dia a dia. Termo técnico necessário: mantenha e explique.
+10. Parágrafos com até 100 palavras.
+11. Sigla: na primeira vez, escreva Nome completo (SIGLA). Depois, só a sigla.
+12. Títulos em ordem: # depois ##, depois ###. Não pule níveis. Todo slide
+    tem título.
+13. Toda imagem tem legenda que diz o que ela mostra, com até 150
+    caracteres. Gráfico, esquema ou fluxo em imagem: explique também no
+    texto. Imagem só de enfeite: escreva <!-- linguagem-acessivel:
+    decorativa --> na linha anterior.
+14. Link com texto que diz aonde leva. Nunca use "clique aqui", "saiba
+    mais" ou "acesse aqui".
+15. Toda tabela tem a primeira linha com o nome de cada coluna.
+16. Não passe informação só pela cor. Não escreva trechos inteiros em
+    maiúsculas: para destacar, use negrito.
+17. Notas de narração: frases curtas, fáceis de ouvir e de ler na legenda.
 
 ==================================================
 5. FORMATO DA APOSTILA (arquivo Apostila_NOME.md)
@@ -691,6 +775,10 @@ Confira e corrija antes de responder:
 [ ] Os dois textos começam como descrito e usam somente a sintaxe permitida.
 [ ] Cada slide tem notas e cada fluxo segue os nomes T00, T01, D01 e T99.
 [ ] A numeração das seções e dos exercícios é contínua.
+[ ] Nenhuma frase passa de 25 palavras; as siglas estão explicadas na
+    primeira vez.
+[ ] Os títulos estão em ordem e todo slide tem título.
+[ ] Toda imagem tem legenda descritiva e todo link tem texto claro.
 Ao final, liste em até cinco itens o que uma pessoa precisa revisar.
 ```
 
@@ -751,6 +839,7 @@ Os checklists ficam marcáveis no HTML da apostila, e a marcação é lembrada n
 - [ ] As imagens estão em base64: o painel mostra “Imagens: N de N”.
 - [ ] Os fluxos Mermaid seguem a nomenclatura T00, T01, D01 e T99.
 - [ ] As notas dos slides foram escritas para serem ouvidas.
+- [ ] O botão **Acessibilidade** não mostra itens para corrigir, e as sugestões foram revisadas.
 
 ### Checklist B — Antes de entregar
 

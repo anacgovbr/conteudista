@@ -1,6 +1,6 @@
 {
   "name": "lac",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Linha de comando da Linguagem Acessível: confere acessibilidade e linguagem simples em Markdown.",
   "type": "module",
   "bin": { "lac": "./lac.mjs", "linguagem-acessivel": "./lac.mjs" },

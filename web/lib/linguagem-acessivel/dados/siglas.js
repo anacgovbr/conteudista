@@ -31,6 +31,6 @@ export default {
     SPO: 'Superintendência de Padrões Operacionais',
     WCAG: 'Diretrizes de Acessibilidade para Conteúdo Web',
   },
-  conhecidas: ['CEP', 'CNH', 'CNPJ', 'CPF', 'CSS', 'DOCX', 'EPUB', 'GIF', 'HTML', 'HTTP', 'HTTPS', 'JPEG', 'JPG', 'JSON', 'MP3', 'MP4', 'OGG', 'OK',
-    'PDF', 'PNG', 'PPTX', 'RG', 'SMS', 'SVG', 'TV', 'URL', 'USB', 'WAV', 'WEBP', 'XLSX', 'ZIP'],
+  conhecidas: ['CEP', 'CNH', 'GB', 'KB', 'MB', 'QR', 'TB', 'CNPJ', 'CPF', 'CSS', 'DOCX', 'EPUB', 'GIF', 'HTML', 'HTTP', 'HTTPS', 'JPEG', 'JPG', 'JSON', 'MD', 'MP3', 'MP4', 'OGG', 'OK',
+    'PDF', 'PNG', 'PPTX', 'RG', 'SMS', 'SVG', 'TV', 'TXT', 'URL', 'USB', 'WAV', 'WEBP', 'XLSX', 'ZIP'],
 };

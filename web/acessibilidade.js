@@ -153,7 +153,7 @@ html.contraste .la-msg,html.contraste .la-cab h3{color:#fff}html.contraste .la-l
       '<p class="la-sub" role="status" aria-live="polite"></p><div class="la-corpo"></div>' +
       '<div class="la-rod"><label for="laL-' + k + '">Frase longa a partir de</label><input type="number" id="laL-' + k + '" min="10" max="60" step="1" inputmode="numeric"><span>palavras</span></div>';
     body.append(p);
-    const st = E[k] = { k, box, ta, ed, btn, painel: p, resultado: null, analisado: null, t: 0, abertoSug: false, mostrar: { c: LOTE, s: LOTE }, atual: -1, fundo: null, volta: null };
+    const st = E[k] = { k, box, ta, ed, btn, painel: p, resultado: null, analisado: null, t: 0, abertoSug: false, pqAbertos: new Set(), mostrar: { c: LOTE, s: LOTE }, atual: -1, fundo: null, volta: null };
     btn.addEventListener('click', () => (p.hidden ? abrir(k) : fechar(k)));
     p.querySelector('.la-x').addEventListener('click', () => fechar(k));
     p.addEventListener('keydown', e => {
@@ -300,7 +300,11 @@ setInterval(() => Object.values(E).forEach(st => { if (st.analisado !== null && 
       }
     }
     corpo.innerHTML = h;
-    corpo.querySelectorAll('.la-it').forEach(el => { const d = todos[+el.dataset.i]; el.dataset.chave = d.codigo + ':' + d.trecho; });
+    corpo.querySelectorAll('.la-it').forEach(el => {
+      const d = todos[+el.dataset.i]; el.dataset.chave = d.codigo + ':' + d.trecho;
+      // 1.83: "Por quê?" aberto continua aberto quando a lista é redesenhada (nova conferência)
+      if (st.pqAbertos.has(el.dataset.chave)) { const q = el.querySelector('.la-pq'), b = el.querySelector('[data-a="pq"]'); if (q && b) { q.hidden = false; b.setAttribute('aria-expanded', 'true'); } }
+    });
     if (!guardado) return;
     if (guardado.abre) { const b = corpo.querySelector('.la-abre'); if (b) b.focus(); return; }
     const lis = [...corpo.querySelectorAll('.la-it')];
@@ -334,7 +338,7 @@ setInterval(() => Object.values(E).forEach(st => { if (st.analisado !== null && 
     if (a === 'mais') { st.mostrar[b.dataset.n] += LOTE; desenhar(k); return; }
     const li = b.closest('.la-it'); if (!li || !st.resultado) return;
     const d = st.resultado.diagnosticos[+li.dataset.i]; if (!d) return;
-    if (a === 'pq') { const q = li.querySelector('.la-pq'); q.hidden = !q.hidden; b.setAttribute('aria-expanded', String(!q.hidden)); return; }
+    if (a === 'pq') { const q = li.querySelector('.la-pq'); q.hidden = !q.hidden; b.setAttribute('aria-expanded', String(!q.hidden)); st.pqAbertos[q.hidden ? 'delete' : 'add'](li.dataset.chave); return; }
     return executar(k, d, a, +b.dataset.j, li);
   }
   // Executa uma ação sobre um item: 'ir', 'ign' (ignorar) ou 'cor' (correção j). li: item do painel (para devolver o foco).

@@ -1,4 +1,13 @@
 # Novidades do Conteudista
+## 1.83 - 05/11/2026
+- **Prompt padrão 1.1** (seção 11.3 da apostila de exemplo): a IA passa a receber regras de acessibilidade e linguagem simples. Frases de até 20 palavras, voz ativa, siglas explicadas na primeira vez, títulos em ordem, todo slide com título, legendas que dizem o que a imagem mostra, imagens decorativas marcadas, links que dizem aonde levam, tabelas com cabeçalho e notas de narração curtas. A verificação final do prompt confere esses pontos.
+- **Apostila de exemplo:** novas seções **5.6 Acessibilidade do texto** (painel, marcas, janelas, atalhos) e **10.6 Escrever conteúdo acessível** (antes e depois, imagens, apresentações e narração). O Checklist A ganhou "conferir a acessibilidade". O próprio exemplo não tem itens para corrigir.
+- **Apresentação de exemplo:** 5 slides novos sobre acessibilidade do texto, antes de "Gerar arquivos" (agora são 39 slides).
+- **Tutorial:** novo passo **3. Confira a acessibilidade**, que mostra o botão Acessibilidade da barra do editor.
+- **Ajuda:** tabela de atalhos da acessibilidade, imagens decorativas e a seção "Escrever conteúdo acessível".
+- Correção: a explicação aberta em **Por quê?**, no painel Acessibilidade, fechava sozinha quando a conferência rodava de novo (por exemplo, logo depois de ignorar uma sugestão).
+- Correção na biblioteca (0.2.1): a apostila de exemplo era tratada como apresentação pela linha de comando, porque traz exemplos da sintaxe dos slides em blocos de código. Unidades (KB, MB, GB) e extensões (MD, TXT) não são mais cobradas como siglas.
+
 ## 1.82 - 05/11/2026
 - **Janelas de apoio.** As correções **Descrever**, **Simplificar** e **Explicar** abrem uma janela:
   - **Descrever imagem:** mostra a imagem, a descrição curta (até 150 caracteres, com contagem) e a detalhada, opcional, que entra como texto abaixo da imagem. Também dá para marcar a imagem como decorativa.
