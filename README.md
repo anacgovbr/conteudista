@@ -36,6 +36,9 @@ tools/opcoes/            ← verificação e testes das opções (Node, sem depe
 web/lib/linguagem-acessivel/ ← biblioteca de acessibilidade e linguagem simples (módulo ES, sem dependências)
 tools/linguagem-acessivel/   ← testes e geração da documentação da biblioteca
 tools/lac/               ← linha de comando lac (comandos.json é a fonte única da ajuda e da futura API)
+tools/pacote/            ← pacotes de atualização: criar, aplicar, testar e cdt (Termux)
+tools/verificar.sh       ← verificação completa sem navegador (usada pelos fluxos do GitHub)
+pacotes/                 ← pasta opcional para enviar os pacotes .zip
 docs/decisoes/           ← registro de decisões do projeto
 web/ajuda.js             ← tutorial guiado, ajuda e atalhos de teclado
 web/historico.js         ← histórico de versões, comparação (diff) e Importar link
@@ -123,6 +126,12 @@ Confere acessibilidade e linguagem simples em textos Markdown. É a base do veri
 - Uso, contrato e estrutura: `web/lib/linguagem-acessivel/README.md`. Regras e marcadores: `docs/linguagem-acessivel/`.
 - Testes (sem dependências): `node tools/linguagem-acessivel/testar.mjs`. Rodam antes de cada publicação; o conteúdo de exemplo não pode ter nenhum item "para corrigir".
 - Decisões de projeto: `docs/decisoes/`.
+
+## Atualizar pelo celular (pacotes)
+
+Cada versão nova chega como `conteudista-pacote-<versão>.zip`. Envie o ZIP para a raiz do repositório (**Add file › Upload files › Commit changes**) ou use `cdt` no Termux. O fluxo **Aplicar pacote** (`.github/workflows/aplicar-pacote.yml`) confere o manifesto, roda `tools/verificar.sh` e o roteiro no Chrome, grava no `main`, apaga o ZIP e inicia a publicação. Se falhar, nada muda e abre uma issue com o rótulo `pacote`. Detalhes, instalação do `cdt` e formato: `tools/pacote/LEIA-ME.md`.
+
+Uma vez: **Settings › Actions › General › Workflow permissions › Read and write permissions**.
 
 ## Opções padrão (`web/config/opcoes.yaml`)
 

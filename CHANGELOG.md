@@ -1,4 +1,9 @@
 # Novidades do Conteudista
+## 1.83.1 - 05/11/2026
+- **Atualização pelo celular.** As próximas versões chegam como pacote (`conteudista-pacote-<versão>.zip`). Basta enviar o ZIP ao repositório pelo navegador (Add file › Upload files) ou pelo Termux (`cdt`). O novo fluxo **Aplicar pacote** do GitHub confere a versão e cada arquivo, roda todos os testes e, se tudo passar, grava e publica. Se algo falhar, nada muda e uma issue explica o motivo. Instruções em `tools/pacote/LEIA-ME.md`.
+- A verificação sem navegador ficou num único script, `tools/verificar.sh`, usado pela publicação e pelos pacotes.
+- `.gitattributes`: o repositório guarda quebras de linha LF, e os avisos "LF will be replaced by CRLF" deixam de aparecer.
+
 ## 1.83 - 05/11/2026
 - **Prompt padrão 1.1** (seção 11.3 da apostila de exemplo): a IA passa a receber regras de acessibilidade e linguagem simples. Frases de até 20 palavras, voz ativa, siglas explicadas na primeira vez, títulos em ordem, todo slide com título, legendas que dizem o que a imagem mostra, imagens decorativas marcadas, links que dizem aonde levam, tabelas com cabeçalho e notas de narração curtas. A verificação final do prompt confere esses pontos.
 - **Apostila de exemplo:** novas seções **5.6 Acessibilidade do texto** (painel, marcas, janelas, atalhos) e **10.6 Escrever conteúdo acessível** (antes e depois, imagens, apresentações e narração). O Checklist A ganhou "conferir a acessibilidade". O próprio exemplo não tem itens para corrigir.

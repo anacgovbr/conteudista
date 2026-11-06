@@ -1,0 +1,157 @@
+name: Aplicar pacote
+
+# Atualização pelo celular (ou por qualquer navegador).
+# 1. Envie o ZIP do pacote para a raiz do repositório (Add file > Upload files > Commit changes)
+#    ou para a pasta pacotes/. Pelo Termux: cdt (tools/pacote/cdt.sh).
+# 2. Este fluxo confere o pacote (versão anterior e assinatura de cada arquivo), aplica, roda TODOS os
+#    testes (sem navegador e no Google Chrome) e:
+#    - se tudo passar: grava as mudanças no main, apaga o ZIP e dispara a publicação da página;
+#    - se algo falhar: não muda o código, apaga o ZIP e abre uma issue com o motivo.
+# Pacotes que alteram arquivos em .github/workflows são recusados (o GITHUB_TOKEN não pode alterá-los).
+on:
+  push:
+    branches: [main]
+    paths:
+      - "*.zip"
+      - "pacotes/*.zip"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  actions: write
+
+concurrency:
+  group: aplicar-pacote
+  cancel-in-progress: false
+
+jobs:
+  aplicar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RESUMO: ${{ runner.temp }}/resumo.md
+    steps:
+      - name: Baixar repositório (main atual)
+        uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Localizar o pacote
+        id: loc
+        run: |
+          P=$(python3 tools/pacote/aplicar.py --localizar || true)
+          echo "pacote=$P" >> "$GITHUB_OUTPUT"
+          if [ -z "$P" ]; then echo "Nenhum pacote no repositório."; else echo "Pacote: $P"; fi
+
+      - name: Conferir e aplicar o pacote
+        id: aplicar
+        if: steps.loc.outputs.pacote != ''
+        env:
+          PACOTE: ${{ steps.loc.outputs.pacote }}
+        run: |
+          set +e
+          python3 tools/pacote/aplicar.py "$PACOTE" --resumo "$RESUMO" --saida-github "$GITHUB_OUTPUT"
+          COD=$?
+          echo "codigo=$COD" >> "$GITHUB_OUTPUT"
+          cat "$RESUMO" >> "$GITHUB_STEP_SUMMARY"
+          [ "$COD" = "0" ] || [ "$COD" = "3" ]
+
+      - name: Configurar Python
+        if: steps.aplicar.outputs.codigo == '0'
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            tools/requirements.txt
+            tools/testes/requirements.txt
+
+      - name: Instalar dependências e o Google Chrome
+        if: steps.aplicar.outputs.codigo == '0'
+        run: |
+          pip install -r tools/requirements.txt -r tools/testes/requirements.txt
+          python -m playwright install --with-deps chrome
+
+      - name: Verificar tudo sem navegador
+        id: verificar
+        if: steps.aplicar.outputs.codigo == '0'
+        run: |
+          set -o pipefail
+          bash tools/verificar.sh 2>&1 | tee "$RUNNER_TEMP/verificar.log"
+
+      - name: Roteiro no Google Chrome (todos os grupos)
+        id: navegador
+        if: steps.aplicar.outputs.codigo == '0'
+        run: python tools/testes/testar_apresentacao.py --navegador chrome --saida "$RUNNER_TEMP/relatorio"
+
+      - name: Guardar relatórios
+        if: always() && steps.loc.outputs.pacote != ''
+        uses: actions/upload-artifact@v6
+        with:
+          name: relatorio-pacote
+          path: |
+            ${{ runner.temp }}/relatorio
+            ${{ runner.temp }}/verificar.log
+            ${{ runner.temp }}/resumo.md
+          if-no-files-found: ignore
+
+      - name: Gravar no main e publicar
+        if: success() && steps.loc.outputs.pacote != ''
+        env:
+          PACOTE: ${{ steps.loc.outputs.pacote }}
+          CODIGO: ${{ steps.aplicar.outputs.codigo }}
+          VERSAO: ${{ steps.aplicar.outputs.versao }}
+          MENSAGEM: ${{ steps.aplicar.outputs.mensagem }}
+          CAMINHOS: ${{ steps.aplicar.outputs.caminhos }}
+          EXECUCAO: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          rm -f linguagem-acessivel.sarif
+          git rm -q --cached "$PACOTE" && rm -f "$PACOTE"
+          if [ "$CODIGO" = "0" ]; then
+            printf '%s\n' "$CAMINHOS" | while IFS= read -r c; do [ -n "$c" ] && git add -A -- "$c"; done
+            MSG="$MENSAGEM"
+          else
+            MSG="chore: remove pacote $VERSAO (já estava aplicado)"
+          fi
+          git commit -qm "$MSG" -m "Aplicado pelo fluxo Aplicar pacote: $EXECUCAO"
+          git push origin HEAD:main
+          if [ "$CODIGO" = "0" ]; then
+            gh workflow run publicar-pagina.yml --ref main
+            echo "### ✅ Pacote $VERSAO aplicado. A publicação da página foi iniciada." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Em caso de falha, remover o pacote e abrir uma issue
+        if: failure() && steps.loc.outputs.pacote != ''
+        env:
+          PACOTE: ${{ steps.loc.outputs.pacote }}
+          EXECUCAO: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          git reset -q --hard HEAD
+          git config user.name "github-actions[bot]"
+          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git rm -q "$PACOTE"
+          git commit -qm "chore: remove pacote com falha ($PACOTE)"
+          git push origin HEAD:main || echo "Não foi possível remover o pacote automaticamente."
+          {
+            echo "O pacote **$PACOTE** não foi aplicado. O código do main não mudou."
+            echo
+            echo "Execução: $EXECUCAO (relatórios em *Artifacts*)."
+            echo
+            [ -f "$RESUMO" ] && cat "$RESUMO"
+            if [ -f "$RUNNER_TEMP/verificar.log" ]; then
+              echo; echo "### Verificação sem navegador (falhas)"; echo '```text'
+              grep -E "FALHA|FAIL|Error|rror:|✘" "$RUNNER_TEMP/verificar.log" | head -40 || true
+              tail -15 "$RUNNER_TEMP/verificar.log"; echo '```'
+            fi
+            if [ -f "$RUNNER_TEMP/relatorio/relatorio.md" ]; then
+              echo; echo "### Roteiro no Google Chrome (falhas)"
+              grep -E "FALHA|^\| Caso|^\|---" "$RUNNER_TEMP/relatorio/relatorio.md" || true
+            fi
+            echo; echo "Cole este texto na conversa para pedir a correção."
+          } > "$RUNNER_TEMP/issue.md"
+          gh label create pacote --color B60205 --description "Falha ao aplicar pacote" --force >/dev/null 2>&1 || true
+          gh issue create --title "Pacote não aplicado: $PACOTE" --label pacote --body-file "$RUNNER_TEMP/issue.md"

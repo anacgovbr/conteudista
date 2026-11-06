@@ -1,0 +1,17 @@
+# Quebras de linha: o repositório guarda LF. Scripts do Windows ficam com CRLF.
+# (Evita os avisos "LF will be replaced by CRLF" e mantém as assinaturas dos pacotes estáveis.)
+* text=auto eol=lf
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+*.sh text eol=lf
+# Binários
+*.zip binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.woff2 binary
+*.whl binary
+*.onnx binary
