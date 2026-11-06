@@ -35,9 +35,19 @@ O `cdt` envia o pacote mais recente da pasta Downloads, acompanha o fluxo e most
 4. Tudo certo: grava no `main`, apaga o ZIP e inicia a publicação da página (que testa de novo antes de publicar).
 5. Falhou: não muda o código, apaga o ZIP e abre a issue.
 
-## Configuração do repositório (uma vez)
+## Configuração do repositório
+Nada a configurar em **Settings › Actions › General**. A organização fixa a permissão padrão do `GITHUB_TOKEN` como somente leitura e essa tela fica bloqueada. Isso não impede os pacotes: o fluxo **Aplicar pacote** declara no YAML as permissões de que precisa (`contents`, `issues` e `actions: write`) e a publicação declara `pages: write`.
 
-**Settings › Actions › General › Workflow permissions**: marque **Read and write permissions**. Se o `main` tiver regra de proteção que bloqueie push, o fluxo não consegue gravar; nesse caso, a issue avisa.
+Pelo mesmo motivo, o fluxo não abre pull request: grava direto no `main`. Se o `main` tiver regra de proteção que bloqueie push, o fluxo não consegue gravar; nesse caso, a issue avisa.
+
+## Conferir antes de cada pacote
+No computador, na pasta do repositório:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\tools\pacote\conferir-versao.ps1
+```
+
+Confere no GitHub a versão em `web/changelog.js`, `web/index.html` e `CHANGELOG.md`, as permissões do fluxo **Aplicar pacote** e se há pacote pendente. Termina com **LIBERADO** ou **BLOQUEADO**.
 
 ## Para quem prepara os pacotes
 

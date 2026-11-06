@@ -1,4 +1,9 @@
 # Novidades do Conteudista
+## 1.84 - 05/11/2026
+- **Pacotes sem mudar permissões no GitHub**: a organização bloqueia a opção *Read and write permissions* em *Settings › Actions*. Não é preciso alterá-la: o fluxo **Aplicar pacote** pede no próprio YAML as permissões de que precisa. O guia `tools/pacote/LEIA-ME.md` foi corrigido.
+- **Conferência de versão**: novo `tools/pacote/conferir-versao.ps1`. Antes de cada pacote, confere no GitHub se `changelog.js`, `index.html` e `CHANGELOG.md` estão na mesma versão, se o fluxo **Aplicar pacote** tem as permissões e se não há pacote pendente.
+- Primeira versão entregue pelo fluxo **Aplicar pacote**, sem script de atualização direta.
+
 ## 1.83.1 - 05/11/2026
 - **Atualização pelo celular.** As próximas versões chegam como pacote (`conteudista-pacote-<versão>.zip`). Basta enviar o ZIP ao repositório pelo navegador (Add file › Upload files) ou pelo Termux (`cdt`). O novo fluxo **Aplicar pacote** do GitHub confere a versão e cada arquivo, roda todos os testes e, se tudo passar, grava e publica. Se algo falhar, nada muda e uma issue explica o motivo. Instruções em `tools/pacote/LEIA-ME.md`.
 - A verificação sem navegador ficou num único script, `tools/verificar.sh`, usado pela publicação e pelos pacotes.
