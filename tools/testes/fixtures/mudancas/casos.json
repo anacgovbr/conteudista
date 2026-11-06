@@ -1,0 +1,19 @@
+[
+  {"nome":"documentacao","registros":[{"caminho":"README.md"}],"completo":false,"chrome":false,"gerador":false,"grupos":["documentacao"]},
+  {"nome":"versao","registros":[{"caminho":"CHANGELOG.md"},{"caminho":"web/changelog.js"}],"completo":false,"chrome":false,"gerador":false,"grupos":["versao"]},
+  {"nome":"editor","registros":[{"caminho":"web/editor.js"}],"completo":false,"chrome":true,"gerador":false,"grupos":["editor","atalhos"]},
+  {"nome":"marcas","registros":[{"caminho":"web/acessibilidade-marcas.js"}],"completo":false,"chrome":true,"gerador":false,"grupos":["biblioteca","marcas","editor"]},
+  {"nome":"regra","registros":[{"caminho":"web/lib/linguagem-acessivel/regras/frase-longa.js"}],"completo":false,"chrome":true,"grupos":["biblioteca","acessibilidade"]},
+  {"nome":"gerador","registros":[{"caminho":"tools/gerador.py"}],"completo":true,"chrome":true,"grupos":["gerador_markdown"]},
+  {"nome":"docx","registros":[{"caminho":"tools/conteudo/docx.py"}],"completo":false,"chrome":false,"grupos":["gerador_markdown","gerador_docx"]},
+  {"nome":"locucao","registros":[{"caminho":"web/locucao-worker.js"}],"completo":false,"chrome":false,"gerador":false,"grupos":["locucao"]},
+  {"nome":"workflow","registros":[{"caminho":".github/workflows/publicar-pagina.yml"}],"completo":true,"chrome":true,"grupos":["workflows"]},
+  {"nome":"desconhecido","registros":[{"caminho":"novo.codigo"}],"completo":true,"chrome":true,"grupos":[]},
+  {"nome":"renomeacao","registros":[{"status":"R100","antigo":"web/editor.js","caminho":"web/locucao.js"}],"completo":false,"chrome":true,"grupos":["editor","locucao"]},
+  {"nome":"exclusao","registros":[{"status":"D","caminho":"web/editor.js"}],"completo":false,"chrome":true,"grupos":["editor"]},
+  {"nome":"uniao","registros":[{"caminho":"web/editor.js"},{"caminho":"tools/conteudo/docx.py"}],"completo":false,"chrome":true,"grupos":["editor","gerador_docx"]},
+  {"nome":"classificador","registros":[{"caminho":"tools/testes/classificar_mudancas.py"}],"completo":true,"chrome":true,"grupos":[]},
+  {"nome":"pacote","registros":[{"caminho":"pacotes/conteudista-pacote-1.90.zip"}],"completo":true,"chrome":true,"grupos":["pacote"]},
+  {"nome":"exemplo sem diff seguro","registros":[{"caminho":"web/exemplo/apresentacao.md"}],"completo":false,"chrome":false,"grupos":["exemplo","gerador_mermaid","gerador_imagens"]},
+  {"nome":"parser","registros":[{"caminho":"tools/conteudo/markdown.py"}],"completo":true,"chrome":true,"grupos":["gerador_markdown"]}
+]

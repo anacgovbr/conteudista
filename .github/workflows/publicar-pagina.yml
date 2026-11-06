@@ -3,19 +3,15 @@ name: Publicar página do Conteudista
 on:
   push:
     branches: [main]
-    paths:
-      - "web/**"
-      - "tools/**"
-      - "CHANGELOG.md"
   workflow_dispatch:
     inputs:
       executar_testes:
-        description: "Executar novamente a bateria de navegador"
+        description: "Compatibilidade: os testes de publicação são sempre obrigatórios"
         type: boolean
         required: false
         default: true
       executar_verificacao:
-        description: "Executar novamente a verificação completa sem navegador"
+        description: "Compatibilidade: a verificação de publicação é sempre obrigatória"
         type: boolean
         required: false
         default: true
@@ -30,24 +26,54 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  classificar:
+    runs-on: ubuntu-latest
+    outputs:
+      publicar: ${{ steps.plano.outputs.publicar || 'true' }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Selecionar publicação pela mesma classificação
+        id: plano
+        continue-on-error: true
+        env:
+          BASE: ${{ github.event.before || 'HEAD~1' }}
+          EVENTO: ${{ github.event_name }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          python tools/testes/classificar_mudancas.py --base "$BASE" --head HEAD --evento "$EVENTO" --branch "$BRANCH" --saida selecao-publicacao.json
+          if [ "$EVENTO" = workflow_dispatch ]; then echo 'publicar=true' >> "$GITHUB_OUTPUT"; fi
+
   build:
+    needs: classificar
+    if: needs.classificar.outputs.publicar == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Baixar repositório
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
 
       - name: Configurar Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: tools/requirements.txt
+          cache-dependency-path: |
+            tools/requirements.txt
+            tools/testes/requirements-estaticos.txt
 
       - name: Instalar dependências
-        run: pip install -r tools/requirements.txt
+        run: pip install -r tools/requirements.txt -r tools/testes/requirements-estaticos.txt
 
       - name: Verificar tudo (gerador, acessibilidade das saídas, biblioteca, lac, opções, pacotes, sintaxe)
-        if: github.event_name != 'workflow_dispatch' || inputs.executar_verificacao
         run: bash tools/verificar.sh
 
       - name: Guardar o relatório SARIF do conteúdo de exemplo
@@ -106,19 +132,26 @@ jobs:
 
   # Roteiro de validação no Google Chrome (tools/testes). Se falhar, a página não é publicada.
   testes:
-    if: github.event_name != 'workflow_dispatch' || inputs.executar_testes
+    needs: classificar
+    if: needs.classificar.outputs.publicar == 'true'
     uses: ./.github/workflows/testes-navegador.yml
     with:
       navegadores: '["chrome"]'
 
   deploy:
     needs: [build, testes]
-    if: always() && needs.build.result == 'success' && (needs.testes.result == 'success' || needs.testes.result == 'skipped')
+    if: needs.build.result == 'success' && needs.testes.result == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
+      - name: Conferir que main ainda aponta para o SHA validado
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          atual=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')
+          test "$atual" = "$GITHUB_SHA"
       - name: Publicar no GitHub Pages
         id: deploy
         uses: actions/deploy-pages@v5

@@ -4,7 +4,7 @@ name: Testes de navegador
 # - O navegador PRINCIPAL é o Google Chrome (estável): só ele bloqueia a publicação.
 # - Firefox, WebKit (Safari) e Edge são complementares e apenas informativos.
 # - É chamado pelo fluxo de publicação (publicar-pagina.yml): se o Chrome falhar, a página NÃO é publicada.
-# - Também roda em pull requests que alteram código/testes ou manualmente (Actions > Testes de navegador > Run workflow).
+# - PRs são encaminhados pelo workflow Testes seletivos; a execução manual mantém a suíte antiga.
 on:
   workflow_call:
     inputs:
@@ -12,19 +12,20 @@ on:
         description: 'Lista JSON de navegadores'
         type: string
         default: '["chrome"]'
+      grupos:
+        description: 'IDs ou aliases; vazio executa todos'
+        type: string
+        default: ''
+      completo:
+        description: 'Executar também a verificação completa sem navegador'
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       navegadores:
         description: 'Lista JSON de navegadores (chrome, msedge, firefox, webkit, chromium)'
         type: string
         default: '["chrome","msedge","firefox","webkit"]'
-  pull_request:
-    paths:
-      - "web/**"
-      - "tools/**"
-      - "CHANGELOG.md"
-      - "README.md"
-      - ".github/workflows/**"
 
 permissions:
   contents: read
@@ -43,6 +44,9 @@ jobs:
     steps:
       - name: Baixar repositório
         uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
 
       - name: Configurar Python
         uses: actions/setup-python@v6
@@ -52,6 +56,7 @@ jobs:
           cache-dependency-path: |
             tools/requirements.txt
             tools/testes/requirements.txt
+            tools/testes/requirements-estaticos.txt
 
       - name: Instalar dependências
         run: |
@@ -71,7 +76,17 @@ jobs:
           PY
 
       - name: Executar o roteiro automatizado
-        run: python tools/testes/testar_apresentacao.py --navegador ${{ matrix.navegador }} --saida relatorio-${{ matrix.navegador }}
+        env:
+          GRUPOS: ${{ inputs.grupos }}
+          NAVEGADOR: ${{ matrix.navegador }}
+        run: |
+          args=()
+          if [ -n "$GRUPOS" ]; then args+=(--grupos "$GRUPOS"); fi
+          python tools/testes/testar_apresentacao.py --navegador "$NAVEGADOR" --saida "relatorio-$NAVEGADOR" "${args[@]}"
+
+      - name: Verificar tudo sem navegador
+        if: inputs.completo
+        run: bash tools/verificar.sh
 
       - name: Publicar o relatório no resumo da execução
         if: always()
@@ -87,3 +102,4 @@ jobs:
           name: relatorio-testes-${{ matrix.navegador }}
           path: relatorio-${{ matrix.navegador }}
           if-no-files-found: ignore
+          retention-days: 14

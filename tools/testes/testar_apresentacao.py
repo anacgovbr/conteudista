@@ -38,6 +38,7 @@ from grupos.geracao import grupo15, grupo19, grupo5, grupo6
 from grupos.editor import grupo8, grupo9
 from grupos.acessibilidade_texto import grupo11, grupo12, grupo13, grupo14
 from grupos.acessibilidade_arquivos import grupo16, grupo17, grupo18, grupo20, grupo21
+from classificar_mudancas import carregar_config
 
 GRUPOS = {
     '1': ('Pausa respeitada', grupo1, 'desktop'),
@@ -63,6 +64,46 @@ GRUPOS = {
     '21': ('Acessibilidade dos arquivos gerados (1.89)', grupo21, 'desktop'),
 }
 
+COM_GERADOR = {'1', '2', '3', '4', '6', '7', '10', '14', '20', '21'}
+
+
+def resolver_grupos(nomes):
+    config = carregar_config()
+    ids = set()
+    for nome in nomes:
+        if nome in GRUPOS:
+            ids.add(nome)
+        elif nome in config['grupos'] and config['grupos'][nome]['tipo'] == 'navegador':
+            ids.update(str(numero) for numero in config['grupos'][nome]['numeros'])
+        else:
+            raise ValueError('Grupo de navegador desconhecido: ' + nome)
+    if ids - GRUPOS.keys():
+        raise ValueError('Registro referencia identificador inexistente')
+    return sorted(ids, key=int)
+
+
+def executar_estaticos(ids, args):
+    saida = Path(args.saida)
+    saida.mkdir(parents=True, exist_ok=True)
+    relatorio = Relatorio()
+    inicio = time.perf_counter()
+    with tempfile.TemporaryDirectory() as pasta:
+        ambiente = Ambiente(pasta, args)
+        for gid in ids:
+            grupo = Grupo(gid)
+            GRUPOS[gid][1](ambiente, None, grupo)
+            for identificador, titulo, status, detalhe in grupo.itens:
+                relatorio.add(identificador, titulo, status, detalhe, gid)
+    for identificador, titulo in MANUAIS:
+        relatorio.add(identificador, titulo, 'MANUAL', '', 'M')
+    contagem = {status: sum(item['status'] == status for item in relatorio.itens) for status in ('OK', 'FALHA', 'ERRO', 'INSTAVEL', 'AVISO', 'PULADO', 'MANUAL')}
+    versao = re.search(r"const VERSAO = '([\d.]+)'", (RAIZ / 'web/changelog.js').read_text(encoding='utf-8')).group(1)
+    resultado = {'versao': versao, 'navegador': None, 'versao_navegador': 'sem navegador', 'data': datetime.now().isoformat(timespec='seconds'), 'duracao_s': round(time.perf_counter() - inicio, 3), 'resumo': contagem, 'itens': relatorio.itens}
+    (saida / 'relatorio.json').write_text(json.dumps(resultado, ensure_ascii=False, indent=2), encoding='utf-8')
+    (saida / 'relatorio.md').write_text('# Verificacoes sem navegador\n\n' + '\n'.join(f'- {item["id"]}: {item["status"]} {item["titulo"]}' for item in relatorio.itens), encoding='utf-8')
+    print(f'RESULTADO: {contagem["OK"]} ok, {contagem["FALHA"] + contagem["ERRO"]} falha(s), sem navegador')
+    return int(bool(relatorio.falhou()))
+
 MANUAIS = [
     ('M.1', 'iPhone/Safari de verdade: o áudio automático após trocar de slide não é bloqueado (botão não pode ficar em Pausar sem som)'),
     ('M.2', 'Android de verdade (Chrome): gesto de deslizar e toque na barra com o dedo, em retrato e paisagem'),
@@ -75,7 +116,10 @@ MANUAIS = [
 # ----------------------------------------------------------------------------- execução
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--grupos', default='1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21', help='lista de grupos (ex.: 1,2,5)')
+    ap.add_argument('--grupos', help='lista de IDs ou aliases (ex.: 1,2,5 ou editor,marcas)')
+    ap.add_argument('--grupo', action='append', help='ID ou alias de grupo')
+    ap.add_argument('--completo', action='store_true')
+    ap.add_argument('--listar-grupos', action='store_true')
     ap.add_argument('--navegador', default='chrome', choices=list(MOTOR), help='padrão: chrome (Google Chrome instalado)')
     ap.add_argument('--saida', default=str(Path(__file__).parent / 'relatorio'), help='pasta do relatório')
     ap.add_argument('--tentativas', type=int, default=2, help='repete o grupo com falha até N vezes (passou na repetição = INSTAVEL)')
@@ -85,12 +129,22 @@ def main():
     ap.add_argument('--com-cabeca', action='store_true', help='mostra a janela do navegador')
     args = ap.parse_args()
 
+    if args.listar_grupos:
+        print(json.dumps({gid: {'id': gid, 'descricao': dados[0], 'perfil': dados[2], 'gerador': gid in COM_GERADOR, 'manual': False} for gid, dados in GRUPOS.items()}, ensure_ascii=False, indent=2))
+        return 0
+    try:
+        nomes = (args.grupo or []) + [nome.strip() for nome in (args.grupos or '').split(',') if nome.strip()]
+        ids = sorted(GRUPOS, key=int) if args.completo or not nomes else resolver_grupos(nomes)
+    except ValueError as exc:
+        ap.error(str(exc))
     if args.canal:
         args.navegador = args.canal
     global GERADOR
     if args.gerador:
         GERADOR = Path(args.gerador).resolve()
         suporte.GERADOR = GERADOR
+    if set(ids) <= {'5', '19'}:
+        return executar_estaticos(ids, args)
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
@@ -103,12 +157,13 @@ def main():
     with tempfile.TemporaryDirectory(prefix='conteudista-testes-') as tmp, sync_playwright() as p:
         amb = Ambiente(tmp, args)
         print(f'Conteudista · testes de navegador · {args.navegador} · {datetime.now():%d/%m/%Y %H:%M}')
-        print('Gerando apresentações de teste…')
-        try:
-            amb.gerar_apresentacoes()
-        except Exception as ex:
-            print('ERRO ao gerar os arquivos de teste:', ex)
-            return 2
+        if set(ids) & {'1', '2', '3', '4', '7'}:
+            print('Gerando apresentações de teste…')
+            try:
+                amb.gerar_apresentacoes()
+            except Exception as ex:
+                print('ERRO ao gerar os arquivos de teste:', ex)
+                return 2
         motor = MOTOR[args.navegador]
         tipo = getattr(p, motor)
         kw = {'headless': not args.com_cabeca}
@@ -139,9 +194,7 @@ def main():
             return nav.new_context(viewport=viewport or {'width': 1280, 'height': 720}, has_touch=touch)
         amb.novo_contexto = novo_contexto
 
-        for gid in [g.strip() for g in args.grupos.split(',') if g.strip()]:
-            if gid not in GRUPOS:
-                continue
+        for gid in ids:
             titulo, fn, perfil = GRUPOS[gid]
             print(f'\nGrupo {gid} — {titulo}')
             anterior = None

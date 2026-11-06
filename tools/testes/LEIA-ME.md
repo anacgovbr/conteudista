@@ -12,9 +12,10 @@ Só ele pode reprovar a publicação. Edge, Firefox e WebKit (Safari) são compl
 | Gatilho | O que acontece |
 |---|---|
 | **Push na `main`** (publicação) | Mudanças em código rodam no **Google Chrome** antes de publicar. Se falhar, a página **não** é publicada. Alterações apenas de documentação não iniciam a publicação. |
-| **Pull request** | Roda no Chrome (bloqueia) e, em paralelo, em Edge, Firefox e WebKit (informativos). |
-| **Pacote de atualização** | Roda a verificação completa e Chrome uma vez; a publicação disparada em seguida não repete esses dois gates. |
-| **Manual** | *Actions › Testes de navegador › Run workflow* ou *Publicar página › Run workflow* (testes ligados por padrão). |
+| **Pull request** | Classifica arquivos e executa os grupos relacionados; Chrome só é instalado quando necessário. Caminhos desconhecidos e mudanças transversais usam a suíte completa. |
+| **Pacote de atualização** | Mantém a suíte completa antes de gravar; a publicação valida novamente o SHA final. O reaproveitamento entre esses SHAs não faz parte desta entrega. |
+| **Manual** | *Testes seletivos* permite solicitar a suíte completa; *Publicar página* exige todos os gates, independentemente dos booleanos antigos de compatibilidade. |
+| **Agendado** | A suíte completa roda em `main` três vezes por semana, com artefatos retidos por 14 dias. |
 
 O resultado aparece no **resumo da execução** (tabela por caso) e o relatório completo, com
 capturas de tela dos erros, fica como artefato `relatorio-testes-<navegador>`.
@@ -34,6 +35,18 @@ powershell -ExecutionPolicy Bypass -File .\tools\testes\executar-testes.ps1 -Gru
 O script usa o Chrome já instalado (não baixa navegador) e mostra a versão dele. O relatório sai em `tools/testes/relatorio/relatorio.md` (e `.json`). Código de saída 0 = tudo certo.
 
 ## Organização por funcionalidade
+
+Veja a [SPEC adaptada e os comandos de seleção](../../docs/TESTES-SELETIVOS.md).
+`grupos.yaml` é a fonte única de caminhos, aliases e requisitos; o arquivo usa sintaxe JSON,
+um subconjunto de YAML, para o classificador não precisar de dependências externas.
+
+```powershell
+python tools/testes/classificar_mudancas.py --base HEAD~1 --head HEAD
+python tools/testes/executar_seletivos.py --grupo editor
+python tools/testes/executar_seletivos.py --grupo gerador_docx
+python tools/testes/testar_apresentacao.py --grupos editor,marcas
+python tools/testes/executar_seletivos.py --listar-grupos
+```
 
 O comando continua em `testar_apresentacao.py`; os casos e identificadores permanecem os mesmos.
 Os módulos de `grupos/` reúnem apresentação, geração, editor, acessibilidade do texto e

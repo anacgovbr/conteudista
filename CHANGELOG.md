@@ -1,5 +1,6 @@
 # Novidades do Conteudista
 ## 1.89 - 05/11/2026
+- **Testes seletivos:** classificação conservadora por domínio, executor local e aliases dos 21 grupos existentes. Documentação e versão não abrem navegador; formatos usam o curso e os validadores existentes. PRs executam os grupos relacionados; publicações mantêm a bateria completa no mesmo SHA, sem repeti-la no workflow seletivo. Pacotes continuam com validação completa antes de gravar e na publicação do SHA final; não há novos testes de voz real nesta entrega.
 - **Conferência antes de gerar:** itens para corrigir abrem uma confirmação com Conferir agora, Gerar assim mesmo e Cancelar; sugestões não interrompem. A preferência de sessão e Alt+Shift+G usam o mesmo fluxo.
 - **Relatório de acessibilidade:** exportação em HTML, JSON e Markdown, com versões, limites, regras, marcadores, itens, linhas e trechos. Pode ser incluído no ZIP. O relatório informa que não substitui avaliação WCAG/eMAG.
 - **API Linguagem Acessível v1:** `lac servir`, rotas de conferir, ajustar, regras, pedidos, ajuda e saúde; OpenAPI 3.1, erros RFC 9457, CORS configurável, ETag, limites de corpo e taxa, sem registrar conteúdo.

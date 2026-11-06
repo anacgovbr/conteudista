@@ -9,10 +9,18 @@
 # =====================================================================================
 set -euo pipefail
 cd "$(dirname "$0")/.."
+if [ "$#" -gt 0 ]; then
+  PY="${PYTHON:-python3}"; command -v "$PY" >/dev/null || PY=python
+  exec "$PY" tools/testes/executar_seletivos.py "$@"
+fi
 TMP="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/conteudista-verificar"
 rm -rf "$TMP"; mkdir -p "$TMP"
 PY="${PYTHON:-python3}"; command -v "$PY" >/dev/null || PY=python
 etapa() { echo; echo "==> $*"; }
+
+etapa "Seleção conservadora e versão"
+"$PY" tools/testes/executar_seletivos.py --grupos minimos,versao
+"$PY" tools/testes/testar_estaticos.py --modo workflows
 
 etapa "Contratos dos módulos e carregamento do motor Python"
 "$PY" -m compileall -q tools/conteudo tools/testes
