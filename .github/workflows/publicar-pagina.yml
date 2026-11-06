@@ -8,9 +8,18 @@ on:
       - "tools/**"
       - "CHANGELOG.md"
       - "MIGRACAO-LOCUCAO.md"
-      - "docs/**"
-      - ".github/workflows/publicar-pagina.yml"
   workflow_dispatch:
+    inputs:
+      executar_testes:
+        description: "Executar novamente a bateria de navegador"
+        type: boolean
+        required: false
+        default: true
+      executar_verificacao:
+        description: "Executar novamente a verificação completa sem navegador"
+        type: boolean
+        required: false
+        default: true
 
 permissions:
   contents: read
@@ -39,6 +48,7 @@ jobs:
         run: pip install -r tools/requirements.txt
 
       - name: Verificar tudo (gerador, acessibilidade das saídas, biblioteca, lac, opções, pacotes, sintaxe)
+        if: github.event_name != 'workflow_dispatch' || inputs.executar_verificacao
         run: bash tools/verificar.sh
 
       - name: Guardar o relatório SARIF do conteúdo de exemplo
@@ -96,12 +106,14 @@ jobs:
 
   # Roteiro de validação no Google Chrome (tools/testes). Se falhar, a página não é publicada.
   testes:
+    if: github.event_name != 'workflow_dispatch' || inputs.executar_testes
     uses: ./.github/workflows/testes-navegador.yml
     with:
       navegadores: '["chrome"]'
 
   deploy:
     needs: [build, testes]
+    if: always() && needs.build.result == 'success' && (needs.testes.result == 'success' || needs.testes.result == 'skipped')
     runs-on: ubuntu-latest
     environment:
       name: github-pages

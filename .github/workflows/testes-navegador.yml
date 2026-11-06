@@ -4,8 +4,7 @@ name: Testes de navegador
 # - O navegador PRINCIPAL é o Google Chrome (estável): só ele bloqueia a publicação.
 # - Firefox, WebKit (Safari) e Edge são complementares e apenas informativos.
 # - É chamado pelo fluxo de publicação (publicar-pagina.yml): se o Chrome falhar, a página NÃO é publicada.
-# - Também roda em pull requests, toda segunda-feira (pega regressões causadas por atualização
-#   do Chrome) e manualmente (Actions > Testes de navegador > Run workflow).
+# - Também roda em pull requests que alteram código/testes ou manualmente (Actions > Testes de navegador > Run workflow).
 on:
   workflow_call:
     inputs:
@@ -26,8 +25,6 @@ on:
       - "CHANGELOG.md"
       - "README.md"
       - ".github/workflows/**"
-  schedule:
-    - cron: "0 9 * * 1"
 
 permissions:
   contents: read

@@ -5,7 +5,7 @@ name: Aplicar pacote
 #    ou para a pasta pacotes/. Pelo Termux: cdt (tools/pacote/cdt.sh).
 # 2. Este fluxo confere o pacote (versão anterior e assinatura de cada arquivo), aplica, roda TODOS os
 #    testes (sem navegador e no Google Chrome) e:
-#    - se tudo passar: grava as mudanças no main, apaga o ZIP e dispara a publicação da página;
+#    - se tudo passar: grava as mudanças no main, apaga o ZIP e publica a página sem repetir os testes;
 #    - se algo falhar: não muda o código, apaga o ZIP e abre uma issue com o motivo.
 # Pacotes que alteram arquivos em .github/workflows são recusados (o GITHUB_TOKEN não pode alterá-los).
 # As permissões abaixo são declaradas aqui porque a organização fixa o padrão do token como somente leitura.
@@ -127,7 +127,7 @@ jobs:
           git commit -qm "$MSG" -m "Aplicado pelo fluxo Aplicar pacote: $EXECUCAO"
           git push origin HEAD:main
           if [ "$CODIGO" = "0" ]; then
-            gh workflow run publicar-pagina.yml --ref main
+            gh workflow run publicar-pagina.yml --ref main -f executar_testes=false -f executar_verificacao=false
             echo "### ✅ Pacote $VERSAO aplicado. A publicação da página foi iniciada." >> "$GITHUB_STEP_SUMMARY"
           fi
 
