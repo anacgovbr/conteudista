@@ -14,7 +14,7 @@ Página única que converte os arquivos Markdown de um conteúdo em:
 |---|---|---|
 | Editor Markdown | Barra de ferramentas, **desfazer/refazer** próprio (Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z e botões; cobre botões, arquivos e rascunhos), atalhos (Ctrl+B/I/E/K, Ctrl+Shift+1/2/3 títulos, Ctrl+Shift+7/8/9 listas, Alt+↑/↓ mover linha, Ctrl+Shift+D duplicar), modos Editar/Dividido/Prévia, tela cheia, prévia fiel ao gerador (inclusive slides) | Só na memória do navegador |
 | Tutorial, Ajuda e Atalhos | Tutorial guiado na primeira visita (ou botão ▶ Tutorial), com **reinício** (↺ no tutorial, botão na Ajuda ou `Alt+Shift+R`); Ajuda **com busca** e destaque dos termos (botão ou F1); atalhos `Alt+Shift+tecla` com janela de consulta (botão ⌨ Atalhos ou `Alt+Shift+K`) | — |
-| Gerar conteúdo | Apostila + apresentação em Markdown → 8 arquivos + ZIP (apostila MD, HTML, DOCX, EPUB e EPUB OpenDyslexic; apresentação MD, HTML e PPTX; PDF pela impressão do HTML), no layout **gov.br** (padrão) ou **Clássico** | Só na memória do navegador |
+| Gerar conteúdo | Apostila + apresentação em Markdown → 8 arquivos + ZIP (apostila MD, HTML, DOCX, EPUB e EPUB OpenDyslexic; apresentação MD, HTML e PPTX; PDF pela impressão do HTML). Se houver itens para corrigir, a pessoa escolhe conferir, gerar mesmo assim ou cancelar. O relatório pode ser incluído no ZIP | Só na memória do navegador |
 | Imagens em base64 | Arraste, cole (Ctrl+V) ou insira pelo botão de imagem; no editor aparecem como `(img:N)` | No próprio texto `.md` |
 | Versões salvas | Salvamento automático ligado por padrão (recupera o último trabalho ao reabrir) e **versões salvas** (**Salvar ▾ → Guardar no navegador**), reunidas em **Versões** e em **Importar → Salvos**. O horário do último salvamento automático aparece sob a barra de ações | IndexedDB do navegador, só nesta máquina |
 | Salvar ▾ | Botão ao lado de **Gerar arquivos** que reúne as formas de guardar neste computador. Itens: **Guardar no navegador** (versão), **Baixar tudo (.zip)**, **Salvar na pasta** (grava os `.md` e os arquivos gerados numa pasta escolhida, Edge/Chrome) e **Baixar .md** | Navegador ou disco do usuário |
@@ -48,6 +48,10 @@ web/dicas.js             ← dicas (tooltip) acessíveis dos botões da barra do
 web/janelas.js           ← Importar, Salvar ▾ (menu), Compartilhar link e Histórico de arquivos (janelas, barra de ações e status do salvamento)
 web/colar.js             ← Importar > Link (primeira aba) e Importar > Colar (subabas Apostila e Apresentação)
 web/acessibilidade.js    ← painel Acessibilidade do texto (usa web/acessibilidade-worker.js e a biblioteca)
+web/relatorio-acessibilidade.js ← exportação do relatório HTML, JSON e Markdown
+web/acessibilidade-config.js ← configuração avançada e importação/exportação JSON
+web/acessibilidade-geracao.js ← confirmação não bloqueante antes de gerar
+web/vlibras.js           ← carrega VLibras no aplicativo somente após clique
 web/acessibilidade-marcas.js ← marcas no texto e balão de correções (1.81)
 web/acessibilidade-janelas.js ← janelas Descrever imagem, Simplificar trecho e Explicar sigla, com pedido para IA (1.82)
 web/celular.js           ← editor no celular: barra em até duas linhas, contagem em uma linha, Imagens do texto em folha inferior
@@ -73,8 +77,8 @@ Os arquivos gerados foram ajustados para a leitura por pessoas com dislexia, sem
 
 | Formato | O que oferece |
 |---|---|
-| Apostila HTML | **Tema** (claro, escuro, alto contraste) e **Leitura** (Padrão/Verdana, Atkinson Hyperlegible Next, OpenDyslexic) independentes; a Leitura fica salva em `localStorage['conteudista.leitura']`. Texto em 16 px na Verdana (18 px em Atkinson e OpenDyslexic), entrelinha 1,7, à esquerda e sem hifenização; **Tamanho do texto** (A− · 100% · A+, de 90% a 150%) no cabeçalho, mesma preferência da apresentação (`localStorage['conteudista.leitura.tamanho']`); foco visível; tabelas e código com rolagem por teclado; **Tabela do fluxo** para cada Mermaid; gabarito com `aria-expanded`; **Imprimir / PDF** em A4 |
-| Apresentação HTML | Mesmo seletor **Leitura**; **Modo leitura** (`L`) vertical, em fundo claro, com as notas visíveis; a apresentação sempre abre em slides, em qualquer tela (a escolha da pessoa fica em `localStorage['conteudista.apresentacao.modo']`); a barra é a mesma pílula branca dos slides, fixa na base, com anterior/próximo, contador (seletor de slide) e o botão **Slides**/**Leitura**; texto da Verdana em 16 px, com ajuste de 90 % a 150 % no painel Acessibilidade (`localStorage['conteudista.leitura.tamanho']`); ARIA de apresentação e de slide, contador anunciado, auto-ajuste até 0,85 e rolagem abaixo disso; impressão A4 com as notas |
+| Apostila HTML | **Tema** (claro, escuro, alto contraste) e **Leitura** (Padrão/Verdana, Atkinson Hyperlegible Next, OpenDyslexic) independentes; a Leitura fica salva em `localStorage['conteudista.leitura']`. Texto em 16 px na Verdana (18 px em Atkinson e OpenDyslexic), entrelinha 1,7, à esquerda e sem hifenização; **Tamanho do texto** (A− · 100% · A+, de 90% a 150%) no cabeçalho, mesma preferência da apresentação (`localStorage['conteudista.leitura.tamanho']`); painel lateral Acessibilidade com contraste, espaçamento WCAG 1.4.12, régua, leitura em voz alta e VLibras sob demanda; foco visível; tabelas e código com rolagem por teclado; **Tabela do fluxo** para cada Mermaid; gabarito com `aria-expanded`; **Imprimir / PDF** em A4 |
+| Apresentação HTML | Mesmo seletor **Leitura**; **Modo leitura** (`L`) vertical, em fundo claro, com as notas visíveis; barra de controles, contador, Slides/Leitura, zoom, narração e impressão A4; painel lateral Acessibilidade (folha inferior no celular) com alto contraste, espaçamento, régua, leitura em voz alta, legendas ligadas por padrão, movimento reduzido e opção de manter a barra visível; VLibras só carrega após clique |
 | Apostila EPUB | `Apostila_<nome>.epub` (Atkinson Hyperlegible Next) e `Apostila_<nome>_OpenDyslexic.epub`; XHTML, sumário (nav e NCX), fontes embutidas, Mermaid em tabela, checklists ☐/☒ e metadados de acessibilidade (EPUB Accessibility 1.1) |
 | Apostila DOCX | Verdana 12 pt, entrelinha 1,5, 6 pt após parágrafos, texto alternativo nas imagens, idioma pt-BR e cabeçalho de tabela repetido |
 | Apresentação PPTX | Mantém a fonte do layout (`pptx_font`); texto alternativo, notas em pt-BR, cabeçalho de tabela (`firstRow`), entrelinha 1,2 e corpo de no mínimo 16 pt |
@@ -92,7 +96,7 @@ Limitações conhecidas:
 - O PPTX não tem modo leitura nem placeholders de título; a ordem de leitura dos objetos não foi revista. Recebe só texto alternativo, notas, cabeçalho de tabela, entrelinha, tamanho mínimo e idioma.
 - O EPUB depende do leitor: leitores antigos podem não aceitar fontes WOFF2 e usam a fonte do aparelho.
 - Imagem sem descrição (`![](…)`) continua sem texto alternativo; a geração mostra um aviso. A descrição não é inventada.
-- Legendas, audiodescrição e Libras estão fora do escopo.
+- As legendas dos arquivos HTML usam as notas do apresentador e ficam ligadas por padrão. O VLibras é opcional na geração, carregado somente após clique e requer internet. O painel HTML não transforma automaticamente o arquivo em PDF/UA.
 
 ### Fontes de leitura: manutenção
 
@@ -106,6 +110,10 @@ Limitações conhecidas:
 - **Botão Acessibilidade** na barra de cada editor (Alt+Shift+C). Mostra o número de itens para corrigir e abre um painel com dois níveis: **Para corrigir** e **Sugestões** (recolhidas). Cada item tem a correção em um clique (quando existe), **Ir para**, **Por quê?** e, nas sugestões, **Ignorar** (grava `<!-- linguagem-acessivel: ignorar CÓDIGO -->`). Alt+Shift+N vai ao próximo item.
 - Usa a biblioteca `web/lib/linguagem-acessivel` em um Web Worker (`web/acessibilidade-worker.js`), 1 s depois da última tecla; sem Worker, roda na página. Nada sai do navegador. As correções usam `aplicarEdicoes` do editor (um passo no Ctrl+Z).
 - Aviso perto de **Gerar arquivos** quando há itens para corrigir; nunca bloqueia. No celular, o painel é uma folha inferior modal e o botão fica no menu ⋯.
+- **Conferência ao gerar:** com itens para corrigir, escolha **Conferir agora**, **Gerar assim mesmo** ou **Cancelar**. Sugestões não abrem confirmação. **Não perguntar de novo nesta sessão** é temporário; Alt+Shift+G segue o mesmo fluxo.
+- **Relatório de acessibilidade:** exporte HTML, JSON ou Markdown pelo painel ou por Arquivos gerados. O aviso do relatório deixa claro que a verificação automática não substitui avaliação WCAG/eMAG. A opção `incluir_relatorio_no_zip` é desligada por padrão.
+- **Configurar acessibilidade do texto:** ajuste sugestões, limite, aviso, confirmação, regras, marcas e ajuda de IA; níveis só podem ser rebaixados. Configurações podem ser importadas/exportadas em JSON.
+- **Glossário por conteúdo:** `<!-- linguagem-acessivel: siglas QWER=Quadro de Registro -->`; as definições do conteúdo prevalecem sobre o glossário institucional e as siglas conhecidas.
 - Opções: `acessibilidade_texto` no `opcoes.yaml` (mostrar sugestões, limite de palavras por frase, aviso perto de Gerar arquivos). Código: `web/acessibilidade.js`. Testes: grupo 12 do roteiro do navegador.
 - **Janelas de apoio (1.82):** `web/acessibilidade-janelas.js` abre Descrever imagem, Simplificar trecho e Explicar sigla quando a correção tem `acao`. Descrever e Simplificar têm a aba **Pedir ajuda a uma IA**, que usa `montarPedido` e `lerResposta*` da biblioteca (pedidos versão 1.0). A IA fica fora do Conteudista. Opção `acessibilidade_texto.ajuda_ia`. Testes: grupo 14.
 - **Imagens decorativas:** o gerador lê `<!-- linguagem-acessivel: decorativa -->` antes da imagem (`DECORATIVAS` em `tools/gerador.py`): texto alternativo vazio sem aviso e, no PPTX, a marca de imagem decorativa.
@@ -119,9 +127,9 @@ Limitações conhecidas:
 
 ## Biblioteca Linguagem Acessível (`web/lib/linguagem-acessivel/`)
 
-Confere acessibilidade e linguagem simples em textos Markdown. É a base do verificador do editor (etapas 5 e 6), da linha de comando `lac` (etapa 4) e da API (etapa 11). Nesta versão (0.2.1) traz 11 regras. Para corrigir: `i1` imagem sem descrição, `i2` descrição que não descreve, `e1` título que pula nível, `e2` slide sem título, `e3` tabela sem cabeçalho e `k1` link que não diz aonde leva. Sugestões de linguagem simples: `f1` frase longa, `f2` parágrafo longo, `f3` texto em maiúsculas, `s1` sigla sem explicação e `n1` frase longa na narração. Também traz o glossário de siglas e os pedidos padronizados para IA. No editor, aparece no painel Acessibilidade, nas marcas no texto e nas janelas de apoio (1.80 a 1.82).
+Confere acessibilidade e linguagem simples em textos Markdown. É a base do editor, do gerador, do `lac` e da API HTTP local. Nesta versão (0.2.1) traz 11 regras. Para corrigir: `i1`, `i2`, `e1`, `e2`, `e3` e `k1`; sugestões: `f1`, `f2`, `f3`, `s1` e `n1`. O glossário pode vir do conteúdo, de `config.siglas` ou da lista institucional, nessa ordem.
 
-- **Linha de comando `lac`** (`tools/lac/`): `lac c apostila.md`, `cat apostila.md | lac c -g f`, `lac a -d apostila.md`, `lac p simplificar < trecho.txt`. No Windows: `tools\lac\lac.cmd`. Ajuda: `lac h` ou `docs/lac.md`. Antes de cada publicação, o GitHub confere que o conteúdo de exemplo não tem nada para corrigir e guarda um relatório SARIF.
+- **Linha de comando `lac`** (`tools/lac/`): `lac c apostila.md`, `lac c -f relatorio apostila.md`, `lac c --config web/config/opcoes.yaml apostila.md`, `lac a -d apostila.md`, `lac p simplificar < trecho.txt`. No Windows: `tools\lac\lac.cmd`. `lac servir -p 8787` inicia a API local; OpenAPI 3.1 em `tools/lac/openapi.json`. CORS é negado por padrão; `LAC_CORS_ORIGINS` configura origens permitidas. O servidor não registra nem guarda conteúdo.
 
 - Uso, contrato e estrutura: `web/lib/linguagem-acessivel/README.md`. Regras e marcadores: `docs/linguagem-acessivel/`.
 - Testes (sem dependências): `node tools/linguagem-acessivel/testar.mjs`. Rodam antes de cada publicação; o conteúdo de exemplo não pode ter nenhum item "para corrigir".
@@ -172,7 +180,7 @@ No celular em retrato (até 700 px), o Modo slides usa um palco de 480 px de lar
 
 ## Testes automatizados
 
-O roteiro de validação roda em código no **Google Chrome** (Playwright): pausa e narração, último slide, navegação rápida, Modo leitura e tela cheia, celular (toque emulado), versão/documentação e geração dos arquivos. Ele roda **antes de cada publicação** (se o Chrome falhar, a página não é publicada), em pull requests, toda segunda-feira e sob demanda; Edge, Firefox e WebKit (Safari) rodam em paralelo, só como informação. No computador: `powershell -ExecutionPolicy Bypass -File .\tools\testes\executar-testes.ps1` (usa o Chrome instalado). Detalhes, casos cobertos e pendências manuais em `tools/testes/LEIA-ME.md`.
+O roteiro de validação roda no **Google Chrome** (Playwright) e cobre os grupos 1–21: editor, geração, confirmação, relatório/schema, configurações, API, axe-core, viewports 320–1920 px, preferências do sistema e arquivos gerados. Ele roda quando código relevante muda, em pull requests ou manualmente; pacotes passam pela bateria uma vez e não repetem a mesma validação na publicação. No computador: `powershell -ExecutionPolicy Bypass -File .\tools\testes\executar-testes.ps1` (usa o Chrome instalado). Detalhes e pendências manuais em `tools/testes/LEIA-ME.md`; resultado da entrega 1.89 em `docs/auditoria-1.89.md`.
 
 ## Atalhos da aplicação
 

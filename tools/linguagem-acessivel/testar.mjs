@@ -177,6 +177,16 @@ t('s1: glossário extra do conteúdo e siglas conhecidas por config', () => {
   igual(LA.aplicar(tx, cods(LA.analisar(tx, { config: { siglas: { QWER: 'Quadro de Registro' } } }), 's1')[0].correcoes[0]), 'O Quadro de Registro (QWER) aprova.');
   igual(cods(LA.analisar(tx, { config: { siglasConhecidas: ['qwer'] } }), 's1').length, 0);
 });
+t('s1: glossário no marcador do conteúdo prevalece sobre o institucional', () => {
+  const tx = '<!-- linguagem-acessivel: siglas QWER=Quadro do Conteúdo -->\nO QWER aprova.';
+  const d = cods(LA.analisar(tx, { config: { siglas: { QWER: 'Quadro Institucional' } } }), 's1')[0];
+  igual(LA.aplicar(tx, d.correcoes[0]), '<!-- linguagem-acessivel: siglas QWER=Quadro do Conteúdo -->\nO Quadro do Conteúdo (QWER) aprova.');
+});
+t('configuração por código pode rebaixar ou desligar, mas não promover uma sugestão', () => {
+  const tx = 'O QWER aprova.';
+  igual(cods(LA.analisar(tx, { config: { regras: { s1: 'corrigir' } } }), 's1')[0].nivel, 'sugestao');
+  igual(cods(LA.analisar(tx, { config: { regras: { s1: 'desligado' } } }), 's1').length, 0);
+});
 t('s1: sigla só no título não é cobrada; no texto, sim', () => { igual(cods(LA.analisar('# Regras do QWER\n\nTexto.'), 's1').length, 0); igual(cods(LA.analisar('# Regras do QWER\n\nO QWER aprova.'), 's1').length, 1); });
 t('f3: "Converter" mantém siglas e só põe maiúscula no início da frase', () => {
   const tx = 'Leia: O PRAZO DA ANAC TERMINA HOJE.', d = cods(LA.analisar(tx), 'f3')[0];

@@ -8,10 +8,14 @@
    ===================================================================================== */
 import fs from 'node:fs';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import * as LA from '../../web/lib/linguagem-acessivel/index.js';
 import { C, comandoPor, opcaoPor, ajudaGeral, ajudaCurta, ajudaComando, completarBash, completarZsh } from './ajuda.mjs';
 import * as F from './formatos.mjs';
+
+const require = createRequire(import.meta.url);
+const OpcoesYaml = require('../../web/opcoes.js');
 
 class ErroUso extends Error {}
 const sair = (codigo) => { process.exitCode = codigo; };
@@ -20,10 +24,11 @@ const sair = (codigo) => { process.exitCode = codigo; };
 export function lerArgumentos(argv) {
   const a = { comando: null, args: [], op: {} };
   const toma = (o, nome, resto, i) => {
-    if (!o.valor) { a.op[o.id] = true; return i; }
+    const destino = o.id === 'config' ? 'configPath' : o.id;
+    if (!o.valor) { a.op[destino] = true; return i; }
     let v = resto;
     if (v === undefined || v === '') { v = argv[++i]; if (v === undefined) throw new ErroUso('A opção ' + nome + ' precisa de um valor (' + o.valor + ').'); }
-    a.op[o.id] = v; return i;
+    a.op[destino] = v; return i;
   };
   let soArgs = false;
   for (let i = 0; i < argv.length; i++) {
@@ -65,6 +70,24 @@ function entradas(args, exigir) {
 /* ---------------------------------------------------------------- opções da biblioteca */
 function opcoesLib(op) {
   const o = { config: {} };
+  if (op.configPath) {
+    let texto;
+    try { texto = fs.readFileSync(op.configPath, 'utf8'); } catch (e) { throw new ErroUso('Não foi possível ler a configuração "' + op.configPath + '": ' + (e.code === 'ENOENT' ? 'arquivo não encontrado' : e.message)); }
+    const leitura = OpcoesYaml.interpretar(texto);
+    if (leitura.avisos.length) throw new ErroUso('Configuração inválida: ' + leitura.avisos.map(x => (x.linha ? 'linha ' + x.linha + ': ' : '') + x.msg).join('; '));
+    const valores = leitura.valores;
+    if (valores['acessibilidade_texto.limite_frase_longa'] !== undefined) {
+      o.config.limiteFraseLonga = valores['acessibilidade_texto.limite_frase_longa'];
+      o.config.limiteFraseNarracao = valores['acessibilidade_texto.limite_frase_longa'];
+    }
+    if (valores['acessibilidade_texto.mostrar_sugestoes'] !== undefined) o.config.sugestoes = valores['acessibilidade_texto.mostrar_sugestoes'] === 'ligado';
+    const regras = {};
+    Object.entries(valores).forEach(([caminho, valor]) => {
+      const m = /^acessibilidade_texto\.regras\.([a-z0-9]+)$/.exec(caminho);
+      if (m) regras[m[1]] = valor === 'desligado' ? false : valor;
+    });
+    if (Object.keys(regras).length) o.config.regras = regras;
+  }
   const sel = [op.grupo, op.regra].filter(Boolean).join(',');
   if (sel) { try { o.regras = LA.selecionar(sel); } catch (e) { throw new ErroUso(e.message); } }
   if (op.nivel) { const n = String(op.nivel).toLowerCase(); if (!['c', 's', 'corrigir', 'sugestao', 'sugestão'].includes(n)) throw new ErroUso('Nível desconhecido: "' + op.nivel + '". Use c (corrigir) ou s (sugestão).'); o.nivel = n === 'sugestão' ? 's' : n; }
@@ -91,8 +114,8 @@ const COMANDOS = {
     const c = comandoPor('conferir'), f = formato(a.op, c.formatos), o = opcoesLib(a.op);
     const modo = a.op.agrupar || 'grupo';
     if (!['grupo', 'regra', 'nenhum'].includes(modo)) throw new ErroUso('Agrupamento desconhecido: "' + modo + '". Use grupo, regra ou nenhum.');
-    const itens = entradas(a.args, true).map(e => ({ arquivo: e.arquivo, resultado: LA.analisar(e.texto, o) }));
-    const s = f === 'texto' ? F.texto(itens, pintor(a.op)) : f === 'json' ? F.json(itens, modo) : f === 'jsonl' ? F.jsonl(itens) : f === 'sarif' ? F.sarif(itens) : F.resumo(itens);
+    const itens = entradas(a.args, true).map(e => ({ arquivo: e.arquivo, conteudo: e.texto, resultado: LA.analisar(e.texto, o) }));
+    const s = f === 'texto' ? F.texto(itens, pintor(a.op)) : f === 'json' ? F.json(itens, modo) : f === 'jsonl' ? F.jsonl(itens) : f === 'sarif' ? F.sarif(itens) : f === 'relatorio' ? F.relatorio(itens, a.op.nome || '', o.config) : F.resumo(itens);
     escrever(a.op, s);
     return F.soma(itens).corrigir ? 1 : 0;
   },
@@ -136,7 +159,15 @@ const COMANDOS = {
     escrever(a.op, s + '\n');
     return 0;
   },
-  servir() { throw new ErroUso('O servidor da API ainda não está disponível nesta versão. Use a biblioteca ou os outros comandos.'); },
+  servir(a) {
+    const porta = Number(a.op.porta || 8787);
+    if (!Number.isInteger(porta) || porta < 1 || porta > 65535) throw new ErroUso('Porta inválida. Use um número de 1 a 65535.');
+    import('./servidor.mjs').then(({ iniciarServidor }) => iniciarServidor({ porta })).catch(e => {
+      process.stderr.write('lac: não foi possível iniciar a API: ' + e.message + '\n');
+      process.exitCode = 3;
+    });
+    return 0;
+  },
   ajuda(a) {
     if (!a.args[0]) { escrever(a.op, ajudaGeral()); return 0; }
     const t = ajudaComando(a.args[0]); if (!t) throw new ErroUso('Comando desconhecido: "' + a.args[0] + '". Veja: lac h');
@@ -161,7 +192,7 @@ export function principal(argv) {
     const c = comandoPor(a.comando);
     if (!c) throw new ErroUso('Comando desconhecido: "' + a.comando + '". Veja: lac h');
     if (a.op.ajuda) { process.stdout.write(ajudaComando(c.id)); return 0; }
-    for (const k of Object.keys(a.op)) { const o = opcaoPor(k); if (!o.global && !c.opcoes.includes(k)) throw new ErroUso('A opção --' + k + ' não serve para "' + c.id + '". Veja: lac h ' + (c.atalho || c.id)); }
+    for (const k of Object.keys(a.op)) { const id = k === 'configPath' ? 'config' : k, o = opcaoPor(id); if (!o.global && !c.opcoes.includes(id)) throw new ErroUso('A opção --' + id + ' não serve para "' + c.id + '". Veja: lac h ' + (c.atalho || c.id)); }
     if (a.op.saida) { const d = path.dirname(path.resolve(a.op.saida)); if (!fs.existsSync(d)) throw new ErroUso('A pasta de saída não existe: ' + d); }
     return COMANDOS[c.id](a);
   } catch (e) {

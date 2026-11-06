@@ -64,12 +64,33 @@ acessibilidade_texto:  # Acessibilidade do texto
   limite_frase_longa: 25
   # Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia) [ligado | desligado]
   aviso_ao_gerar: ligado
+  # Acessibilidade do texto: confirmar antes de gerar quando há itens para corrigir [ligado | desligado]
+  confirmar_ao_gerar: ligado
+  # Incluir o relatório HTML de acessibilidade no ZIP dos arquivos gerados [ligado | desligado]
+  incluir_relatorio_no_zip: desligado
   # Acessibilidade do texto: aba "Pedir ajuda a uma IA" nas janelas Descrever imagem e Simplificar trecho (desligado: só escrever) [ligado | desligado]
   ajuda_ia: ligado
   # Acessibilidade do texto: sublinhar no editor os trechos para corrigir [ligado | desligado]
   marcas_no_texto: ligado
   # Acessibilidade do texto: sublinhar também as sugestões (linha pontilhada) [ligado | desligado]
   marcas_sugestoes: desligado
+  # Nível das regras. Regras para corrigir podem virar sugestão ou ser desligadas; sugestões só podem ser desligadas.
+  regras:
+    i1: corrigir
+    i2: corrigir
+    e1: corrigir
+    e2: corrigir
+    e3: corrigir
+    k1: corrigir
+    f1: sugestao
+    f2: sugestao
+    f3: sugestao
+    s1: sugestao
+    n1: sugestao
+
+acessibilidade_arquivos:  # Acessibilidade dos arquivos gerados
+  # Incluir controle VLibras no HTML (carregado apenas após clique) [ligado | desligado]
+  vlibras: ligado
 
 narracao:  # Narração (aba Gerar)
   # Narração dos slides (gerar áudio das notas) [ligado | desligado]

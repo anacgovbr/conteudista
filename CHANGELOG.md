@@ -1,4 +1,12 @@
 # Novidades do Conteudista
+## 1.89 - 05/11/2026
+- **Conferência antes de gerar:** itens para corrigir abrem uma confirmação com Conferir agora, Gerar assim mesmo e Cancelar; sugestões não interrompem. A preferência de sessão e Alt+Shift+G usam o mesmo fluxo.
+- **Relatório de acessibilidade:** exportação em HTML, JSON e Markdown, com versões, limites, regras, marcadores, itens, linhas e trechos. Pode ser incluído no ZIP. O relatório informa que não substitui avaliação WCAG/eMAG.
+- **API Linguagem Acessível v1:** `lac servir`, rotas de conferir, ajustar, regras, pedidos, ajuda e saúde; OpenAPI 3.1, erros RFC 9457, CORS configurável, ETag, limites de corpo e taxa, sem registrar conteúdo.
+- **Configuração avançada:** janela para sugestões, limite, regras, confirmação, marcas e IA; importar/exportar JSON. O marcador `<!-- linguagem-acessivel: siglas QWER=Quadro de Registro -->` define o glossário do conteúdo.
+- **Arquivos HTML gerados:** painel lateral responsivo de acessibilidade, alto contraste, espaçamento WCAG 1.4.12, régua, leitura em voz alta, barra persistente e VLibras sob demanda. Legendas das notas de narração ligadas por padrão; VLibras pode ser desligado na geração.
+- **Auditoria ampliada:** grupos 16–21 cobrem geração, relatórios, API, configurações, axe-core, viewports de 320 a 1920 px, forced-colors, movimento reduzido e arquivos gerados.
+
 ## 1.84 - 05/11/2026
 - **Pacotes sem mudar permissões no GitHub**: a organização bloqueia a opção *Read and write permissions* em *Settings › Actions*. Não é preciso alterá-la: o fluxo **Aplicar pacote** pede no próprio YAML as permissões de que precisa. O guia `tools/pacote/LEIA-ME.md` foi corrigido.
 - **Conferência de versão**: novo `tools/pacote/conferir-versao.ps1`. Antes de cada pacote, confere no GitHub se `changelog.js`, `index.html` e `CHANGELOG.md` estão na mesma versão, se o fluxo **Aplicar pacote** tem as permissões e se não há pacote pendente.

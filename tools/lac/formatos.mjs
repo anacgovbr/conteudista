@@ -1,5 +1,6 @@
 /* Formatos de saída do lac (os mesmos da API): texto, json, jsonl, sarif, resumo; e a diferença do ajustar. */
 import { agrupar, regras, textos, VERSAO } from '../../web/lib/linguagem-acessivel/index.js';
+import { criarRelatorio, relatorioHtml } from '../../web/lib/linguagem-acessivel/relatorio.js';
 
 const T = textos();
 const plural = (n, um, varios) => n + ' ' + (n === 1 ? um : varios);
@@ -44,6 +45,11 @@ export function json(itens, modo = 'grupo') {
 }
 
 export const resumo = itens => itens.map(x => x.arquivo + ': ' + resumoTexto(x.resultado.resumo)).join('\n') + (itens.length > 1 ? '\nTotal: ' + resumoTexto(soma(itens)) : '') + '\n';
+
+/** Relatório HTML compartilhado com o aplicativo. */
+export function relatorio(itens, nome = '', config = {}) {
+  return relatorioHtml(criarRelatorio({ nome, config: Object.assign({ limiteFraseLonga: 25, limiteFraseNarracao: 25, limiteParagrafo: 100 }, config), resultados: itens.map(x => Object.assign({}, x, { nome: nome || x.nome || x.arquivo })) }));
+}
 
 /** SARIF 2.1.0 (GitHub code scanning). Colunas em pontos de código, como no contrato. */
 export function sarif(itens) {

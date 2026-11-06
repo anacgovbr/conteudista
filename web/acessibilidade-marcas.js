@@ -52,7 +52,7 @@
 .la-balao button.lb-ter:hover{background:#edf5ff!important}
 .la-balao .lb-atalho{margin:8px 0 0 28px;color:#636363;font-size:12px}
 .mde-st .st-la{all:unset;cursor:pointer;margin-left:auto;padding:0 6px;border-radius:4px;color:#b00020;font-weight:700;white-space:nowrap}
-.mde-st .st-la.ok{color:#168821;font-weight:600}
+.mde-st .st-la.ok{color:#0f5e17;font-weight:600}
 .mde-st .st-la:hover{text-decoration:underline}
 .mde-st .st-la:focus-visible{outline:3px dashed #c2850c;outline-offset:1px}
 .la-rod .la-sw{display:flex;align-items:center;gap:8px;flex-basis:100%;margin:2px 0;cursor:pointer}
@@ -245,6 +245,12 @@ html.contraste .la-balao{background:#000;color:#fff;border-color:#fff}
     sincronizar(); if (!prefs.marcas) fecharBalao(false);
     Object.keys(C).forEach(desenhar);
     anunciar(prefs.marcas ? 'Marcas no texto ligadas' + (prefs.sug ? ', com sugestões.' : ', só o que é para corrigir.') : 'Marcas no texto desligadas.');
+  });
+  document.addEventListener('conteudista:opcoes', () => {
+    prefs.marcas = ler(CH.marcas, '1'); prefs.sug = ler(CH.sug, '0');
+    sincronizar();
+    if (!prefs.marcas) fecharBalao(false);
+    Object.keys(C).forEach(desenhar);
   });
 
   /* ---------------------------- Início ---------------------------- */

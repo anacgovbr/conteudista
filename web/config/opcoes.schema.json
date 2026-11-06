@@ -72,6 +72,25 @@
         }
       }
     },
+    "acessibilidade_arquivos": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "vlibras": {
+          "description": "Incluir VLibras nos arquivos HTML gerados (carrega somente quando solicitado)",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        }
+      }
+    },
     "salvar": {
       "type": "object",
       "additionalProperties": false,
@@ -262,6 +281,32 @@
             false
           ]
         },
+        "confirmar_ao_gerar": {
+          "description": "Acessibilidade do texto: confirmar antes de gerar quando há itens para corrigir",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "incluir_relatorio_no_zip": {
+          "description": "Acessibilidade do texto: incluir o relatório HTML no ZIP gerado",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
         "ajuda_ia": {
           "description": "Acessibilidade do texto: aba \"Pedir ajuda a uma IA\" nas janelas Descrever imagem e Simplificar trecho (desligado: só escrever)",
           "default": "ligado",
@@ -300,6 +345,106 @@
             true,
             false
           ]
+        },
+        "regras": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "i1": {
+              "description": "Acessibilidade do texto: nível da regra i1",
+              "default": "corrigir",
+              "enum": [
+                "corrigir",
+                "sugestao",
+                "desligado"
+              ]
+            },
+            "i2": {
+              "description": "Acessibilidade do texto: nível da regra i2",
+              "default": "corrigir",
+              "enum": [
+                "corrigir",
+                "sugestao",
+                "desligado"
+              ]
+            },
+            "e1": {
+              "description": "Acessibilidade do texto: nível da regra e1",
+              "default": "corrigir",
+              "enum": [
+                "corrigir",
+                "sugestao",
+                "desligado"
+              ]
+            },
+            "e2": {
+              "description": "Acessibilidade do texto: nível da regra e2",
+              "default": "corrigir",
+              "enum": [
+                "corrigir",
+                "sugestao",
+                "desligado"
+              ]
+            },
+            "e3": {
+              "description": "Acessibilidade do texto: nível da regra e3",
+              "default": "corrigir",
+              "enum": [
+                "corrigir",
+                "sugestao",
+                "desligado"
+              ]
+            },
+            "k1": {
+              "description": "Acessibilidade do texto: nível da regra k1",
+              "default": "corrigir",
+              "enum": [
+                "corrigir",
+                "sugestao",
+                "desligado"
+              ]
+            },
+            "f1": {
+              "description": "Acessibilidade do texto: nível da regra f1",
+              "default": "sugestao",
+              "enum": [
+                "sugestao",
+                "desligado"
+              ]
+            },
+            "f2": {
+              "description": "Acessibilidade do texto: nível da regra f2",
+              "default": "sugestao",
+              "enum": [
+                "sugestao",
+                "desligado"
+              ]
+            },
+            "f3": {
+              "description": "Acessibilidade do texto: nível da regra f3",
+              "default": "sugestao",
+              "enum": [
+                "sugestao",
+                "desligado"
+              ]
+            },
+            "s1": {
+              "description": "Acessibilidade do texto: nível da regra s1",
+              "default": "sugestao",
+              "enum": [
+                "sugestao",
+                "desligado"
+              ]
+            },
+            "n1": {
+              "description": "Acessibilidade do texto: nível da regra n1",
+              "default": "sugestao",
+              "enum": [
+                "sugestao",
+                "desligado"
+              ]
+            }
+          }
         }
       }
     },

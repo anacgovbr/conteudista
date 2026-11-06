@@ -76,7 +76,7 @@ _lac() {
   case "$prev" in
     -g|--grupo) COMPREPLY=($(compgen -W "a l i e k f s n acessibilidade linguagem imagens estrutura links frases siglas narracao" -- "$cur")); return;;
     -n|--nivel) COMPREPLY=($(compgen -W "c s" -- "$cur")); return;;
-    -f|--formato) COMPREPLY=($(compgen -W "texto json jsonl sarif resumo" -- "$cur")); return;;
+    -f|--formato) COMPREPLY=($(compgen -W "texto json jsonl sarif resumo relatorio" -- "$cur")); return;;
     -t|--tipo) COMPREPLY=($(compgen -W "auto apostila apresentacao" -- "$cur")); return;;
     --agrupar) COMPREPLY=($(compgen -W "grupo regra nenhum" -- "$cur")); return;;
     p|pedido) COMPREPLY=($(compgen -W "descrever simplificar" -- "$cur")); return;;
@@ -119,7 +119,10 @@ export function markdown() {
     '| `jsonl` | Pipes: um item por linha, com `arquivo` e `grupo` | `application/x-ndjson` |',
     '| `json` | Resposta completa, agrupada por grupo (`--agrupar regra` ou `nenhum`) | `application/json` |',
     '| `sarif` | Achados no GitHub (SARIF 2.1.0; colunas em pontos de código) | `application/sarif+json` |',
+    '| `relatorio` | Relatório HTML acessível, com metadados, itens, linhas e marcadores | `text/html` |',
     '| `resumo` | Só as contagens | `text/plain` |', '',
+    '## API local', '', '`lac servir -p 8787` abre a API em `127.0.0.1`. Use `LAC_HOST` apenas quando precisar escolher explicitamente outro endereço de escuta. As origens CORS são negadas por padrão; configure `LAC_CORS_ORIGINS` com uma lista separada por vírgulas. A API não guarda nem registra o conteúdo enviado, limita o corpo a 1 MiB e responde com erros RFC 9457.',
+    'A especificação OpenAPI 3.1 fica em `tools/lac/openapi.json` e é gerada por `node tools/lac/gerar.mjs`.', '',
     '## Códigos de saída', '', '| Código | Significado |', '|---|---|');
   C.saida.forEach(s => l.push('| ' + s.codigo + ' | ' + s.descricao + ' |'));
   l.push('', 'Encontrar problemas no texto não é erro do programa: na API, a resposta é 200.', '');

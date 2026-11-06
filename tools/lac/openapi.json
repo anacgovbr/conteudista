@@ -1,0 +1,1026 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Linguagem Acessível API",
+    "version": "1.0.0",
+    "description": "Confere acessibilidade e linguagem simples em textos Markdown."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "paths": {
+    "/v1/conferir": {
+      "post": {
+        "operationId": "conferir",
+        "summary": "Mostra o que corrigir e as sugestões",
+        "description": "Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir; -f relatorio gera um relatório HTML.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir; -f relatorio gera um relatório HTML.",
+            "headers": {
+              "Linguagem-Acessivel-Resumo": {
+                "description": "Contagem de itens para corrigir e sugestões.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/sarif+json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "text/markdown": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Entrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/conferir/{selecao}": {
+      "post": {
+        "operationId": "conferirPorSelecao",
+        "summary": "Mostra o que corrigir e as sugestões",
+        "description": "Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir; -f relatorio gera um relatório HTML.",
+        "parameters": [
+          {
+            "name": "selecao",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir; -f relatorio gera um relatório HTML.",
+            "headers": {
+              "Linguagem-Acessivel-Resumo": {
+                "description": "Contagem de itens para corrigir e sugestões.",
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/sarif+json": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "text/html": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "text/markdown": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Entrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ajustar": {
+      "post": {
+        "operationId": "ajustar",
+        "summary": "Aplica as correções seguras e devolve o texto",
+        "description": "Aplica só as correções que não mudam o sentido (por exemplo, o nível de um título) e devolve o texto corrigido. Descrever imagens e simplificar frases sempre precisam de uma pessoa.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Aplica só as correções que não mudam o sentido (por exemplo, o nível de um título) e devolve o texto corrigido. Descrever imagens e simplificar frases sempre precisam de uma pessoa.",
+            "content": {
+              "text/markdown": {
+                "schema": {
+                  "type": "string"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "text/markdown": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Entrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/regras": {
+      "get": {
+        "operationId": "regras",
+        "summary": "Lista as regras",
+        "description": "Lista as regras com código, nome, grupo e nível.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista as regras com código, nome, grupo e nível.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/regras/{codigo}": {
+      "get": {
+        "operationId": "explicar",
+        "summary": "Explica uma regra",
+        "description": "Mostra o que a regra confere, por que importa, as correções e exemplos.",
+        "parameters": [
+          {
+            "name": "codigo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mostra o que a regra confere, por que importa, as correções e exemplos.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/pedidos/{tipo}": {
+      "post": {
+        "operationId": "pedido",
+        "summary": "Monta o pedido para IA",
+        "description": "Monta o pedido padronizado (linguagem simples e boas práticas de acessibilidade) para colar na IA autorizada. simplificar: o trecho vem da entrada. descrever: a entrada, se houver, é o texto perto da imagem.",
+        "parameters": [
+          {
+            "name": "tipo",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Monta o pedido padronizado (linguagem simples e boas práticas de acessibilidade) para colar na IA autorizada. simplificar: o trecho vem da entrada. descrever: a entrada, se houver, é o texto perto da imagem.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "text/markdown": {
+              "schema": {
+                "type": "string"
+              }
+            },
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PedidoEntrada"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ajuda": {
+      "get": {
+        "operationId": "ajuda",
+        "summary": "Ajuda de um comando",
+        "description": "Mostra a ajuda geral ou a de um comando.",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Mostra a ajuda geral ou a de um comando.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/ajuda/{comando}": {
+      "get": {
+        "operationId": "ajudaPorComando",
+        "summary": "Ajuda de um comando",
+        "description": "Mostra a ajuda geral ou a de um comando.",
+        "parameters": [
+          {
+            "name": "comando",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Mostra a ajuda geral ou a de um comando.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "413": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "415": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro no formato RFC 9457.",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problema"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/saude": {
+      "get": {
+        "operationId": "saude",
+        "summary": "Informa se a API está disponível e suas versões.",
+        "responses": {
+          "200": {
+            "description": "Informa se a API está disponível e suas versões.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/openapi.json": {
+      "get": {
+        "operationId": "openapi",
+        "summary": "Especificação OpenAPI 3.1 gerada dos comandos do lac.",
+        "responses": {
+          "200": {
+            "description": "Especificação OpenAPI 3.1 gerada dos comandos do lac.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Entrada": {
+        "type": "object",
+        "required": [
+          "conteudo"
+        ],
+        "properties": {
+          "conteudo": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "apostila",
+              "apresentacao"
+            ]
+          },
+          "config": {
+            "type": "object"
+          }
+        }
+      },
+      "PedidoEntrada": {
+        "type": "object",
+        "properties": {
+          "nome": {
+            "type": "string"
+          },
+          "conteudo": {
+            "type": "string",
+            "description": "Texto de contexto para o pedido."
+          },
+          "contexto": {
+            "type": "string"
+          },
+          "trecho": {
+            "type": "string"
+          },
+          "legenda": {
+            "type": "string"
+          }
+        }
+      },
+      "Problema": {
+        "type": "object",
+        "required": [
+          "type",
+          "title",
+          "status",
+          "detail"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "instance": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

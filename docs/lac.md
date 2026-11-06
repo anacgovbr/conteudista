@@ -25,7 +25,7 @@ Comandos
   r  regras     Lista as regras
   e  explicar   Explica uma regra                               lac e f1
   p  pedido     Monta o pedido para IA                          lac p simplificar
-  s  servir     Abre a API neste computador (em breve)
+  s  servir     Abre a API neste computador
   h  ajuda      Ajuda de um comando                             lac h c
      completar  Autocompletar para bash ou zsh
 
@@ -37,9 +37,11 @@ O que conferir
   -n  nível   c corrigir  s sugestão
 
 Opções
-  -f  --formato <formato>   Formato da saída (texto json jsonl sarif resumo)
+  -f  --formato <formato>   Formato da saída (texto json jsonl sarif resumo relatorio)
   -t  --tipo <tipo>         Tipo do texto (auto apostila apresentacao)
   -l  --limite <número>     Palavras por frase (10 a 60; padrão 25)
+      --config <arquivo YAML> Lê opções e níveis de regra de um arquivo YAML (web/config/opcoes.yaml ou outro arquivo compatível)
+  -p  --porta <número>      Porta HTTP do servidor lac (1 a 65535; padrão 8787)
       --agrupar <modo>      Agrupamento do json (grupo regra nenhum)
   -d  --diferenca           Com ajustar, mostra só o que mudou
   -o  --saida <arquivo>     Grava a saída num arquivo
@@ -66,7 +68,7 @@ Mais: lac h <comando> · regras: lac r · uma regra: lac e <código>
 ```text
 lac conferir (c) · Mostra o que corrigir e as sugestões
 
-Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir.
+Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir; -f relatorio gera um relatório HTML.
 
 Uso:  lac c [opções] [arquivo...]
 
@@ -74,9 +76,11 @@ Opções
   -g  --grupo <lista>       O que conferir: área, grupo ou regra (a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração)
   -r  --regra <lista>       Regra: código ou nome (f1, frase-longa…)
   -n  --nivel <c|s>         Só um nível (c corrigir · s sugestão)
-  -f  --formato <formato>   Formato da saída (texto json jsonl sarif resumo)
+  -f  --formato <formato>   Formato da saída (texto json jsonl sarif resumo relatorio)
   -t  --tipo <tipo>         Tipo do texto (auto apostila apresentacao)
   -l  --limite <número>     Palavras por frase (10 a 60; padrão 25)
+      --config <arquivo YAML> Lê opções e níveis de regra de um arquivo YAML (web/config/opcoes.yaml ou outro arquivo compatível)
+      --nome <texto>        Nome do conteúdo (pedido)
       --agrupar <modo>      Agrupamento do json (grupo regra nenhum)
   -o  --saida <arquivo>     Grava a saída num arquivo
   -q  --quieto              Não escreve nada; só o código de saída
@@ -103,6 +107,7 @@ Opções
   -g  --grupo <lista>       O que conferir: área, grupo ou regra (a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração)
   -r  --regra <lista>       Regra: código ou nome (f1, frase-longa…)
   -t  --tipo <tipo>         Tipo do texto (auto apostila apresentacao)
+      --config <arquivo YAML> Lê opções e níveis de regra de um arquivo YAML (web/config/opcoes.yaml ou outro arquivo compatível)
   -d  --diferenca           Com ajustar, mostra só o que mudou
   -o  --saida <arquivo>     Grava a saída num arquivo
   -q  --quieto              Não escreve nada; só o código de saída
@@ -177,11 +182,17 @@ Na API: POST /v1/pedidos/{tipo}
 ### servir (`s`)
 
 ```text
-lac servir (s) · Abre a API neste computador (em breve)
+lac servir (s) · Abre a API neste computador
 
-Abre a API neste computador. Em breve.
+Inicia a API HTTP local. Use LAC_CORS_ORIGINS para configurar origens CORS; por padrão, só aceita chamadas locais.
 
-Uso:  lac s
+Uso:  lac s [opções] [-p porta]
+
+Opções
+  -p  --porta <número>      Porta HTTP do servidor lac (1 a 65535; padrão 8787)
+
+Exemplos
+  lac s -p 8080                                 inicia a API local na porta 8080
 ```
 
 ### ajuda (`h`)
@@ -220,7 +231,13 @@ Exemplos
 | `jsonl` | Pipes: um item por linha, com `arquivo` e `grupo` | `application/x-ndjson` |
 | `json` | Resposta completa, agrupada por grupo (`--agrupar regra` ou `nenhum`) | `application/json` |
 | `sarif` | Achados no GitHub (SARIF 2.1.0; colunas em pontos de código) | `application/sarif+json` |
+| `relatorio` | Relatório HTML acessível, com metadados, itens, linhas e marcadores | `text/html` |
 | `resumo` | Só as contagens | `text/plain` |
+
+## API local
+
+`lac servir -p 8787` abre a API em `127.0.0.1`. Use `LAC_HOST` apenas quando precisar escolher explicitamente outro endereço de escuta. As origens CORS são negadas por padrão; configure `LAC_CORS_ORIGINS` com uma lista separada por vírgulas. A API não guarda nem registra o conteúdo enviado, limita o corpo a 1 MiB e responde com erros RFC 9457.
+A especificação OpenAPI 3.1 fica em `tools/lac/openapi.json` e é gerada por `node tools/lac/gerar.mjs`.
 
 ## Códigos de saída
 

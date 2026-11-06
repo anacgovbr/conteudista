@@ -11,3 +11,5 @@ site/
 /atualizar-conteudista.ps1
 # relatórios dos testes de navegador
 tools/testes/relatorio/
+tools/testes/relatorio-*/
+linguagem-acessivel.sarif

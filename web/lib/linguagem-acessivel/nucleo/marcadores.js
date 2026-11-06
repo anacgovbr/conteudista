@@ -11,7 +11,15 @@ export function lerMarcadores(texto) {
   if (texto.indexOf(PREFIXO) < 0) return r;
   RE.lastIndex = 0;
   for (let m; (m = RE.exec(texto));) {
-    r.push({ tipo: m[1].toLowerCase(), regras: m[2].trim().split(/[\s,]+/).filter(Boolean).map(s => s.toLowerCase()), inicio: m.index, fim: m.index + m[0].length });
+    const tipo = m[1].toLowerCase(), corpo = m[2].trim();
+    if (tipo === 'siglas') {
+      const siglas = {};
+      corpo.split(';').forEach(item => {
+        const x = /^\s*([A-Z][A-Z0-9]{1,9})\s*=\s*(.+?)\s*$/.exec(item);
+        if (x) siglas[x[1]] = x[2];
+      });
+      r.push({ tipo, regras: [], siglas, inicio: m.index, fim: m.index + m[0].length });
+    } else r.push({ tipo, regras: corpo.split(/[\s,]+/).filter(Boolean).map(s => s.toLowerCase()), inicio: m.index, fim: m.index + m[0].length });
   }
   return r;
 }

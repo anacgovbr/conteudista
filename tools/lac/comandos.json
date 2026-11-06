@@ -8,12 +8,20 @@
     "uso": "lac <comando> [opções] [arquivo...]",
     "entrada": "Sem arquivo, lê da entrada (pipe). Use - para a entrada."
   },
+  "api": {
+    "openapi": "3.1.0",
+    "versao": "1.0.0",
+    "rotasSistemicas": [
+      { "metodo": "GET", "caminho": "/v1/saude", "descricao": "Informa se a API está disponível e suas versões." },
+      { "metodo": "GET", "caminho": "/v1/openapi.json", "descricao": "Especificação OpenAPI 3.1 gerada dos comandos do lac." }
+    ]
+  },
   "comandos": [
     {
       "id": "conferir",
       "atalho": "c",
       "resumo": "Mostra o que corrigir e as sugestões",
-      "descricao": "Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir.",
+      "descricao": "Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir; -f relatorio gera um relatório HTML.",
       "argumentos": "[arquivo...]",
       "opcoes": [
         "grupo",
@@ -22,6 +30,8 @@
         "formato",
         "tipo",
         "limite",
+        "config",
+        "nome",
         "agrupar",
         "saida",
         "quieto"
@@ -31,7 +41,8 @@
         "json",
         "jsonl",
         "sarif",
-        "resumo"
+        "resumo",
+        "relatorio"
       ],
       "api": {
         "metodo": "POST",
@@ -66,6 +77,7 @@
         "grupo",
         "regra",
         "tipo",
+        "config",
         "diferenca",
         "saida",
         "quieto"
@@ -176,12 +188,11 @@
       "id": "servir",
       "atalho": "s",
       "resumo": "Abre a API neste computador",
-      "disponivel": false,
-      "descricao": "Abre a API neste computador. Em breve.",
-      "argumentos": "",
-      "opcoes": [],
+      "descricao": "Inicia a API HTTP local. Use LAC_CORS_ORIGINS para configurar origens CORS; por padrão, só aceita chamadas locais.",
+      "argumentos": "[-p porta]",
+      "opcoes": ["porta"],
       "formatos": [],
-      "exemplos": []
+      "exemplos": [["lac s -p 8080", "inicia a API local na porta 8080"]]
     },
     {
       "id": "ajuda",
@@ -249,7 +260,7 @@
       "curta": "f",
       "valor": "formato",
       "descricao": "Formato da saída",
-      "valores": "texto json jsonl sarif resumo",
+      "valores": "texto json jsonl sarif resumo relatorio",
       "api": "formato / f ou cabeçalho Accept"
     },
     {
@@ -267,6 +278,22 @@
       "descricao": "Palavras por frase",
       "valores": "10 a 60; padrão 25",
       "api": "limite / l"
+    },
+    {
+      "id": "config",
+      "curta": "",
+      "valor": "arquivo YAML",
+      "descricao": "Lê opções e níveis de regra de um arquivo YAML",
+      "valores": "web/config/opcoes.yaml ou outro arquivo compatível",
+      "api": "config"
+    },
+    {
+      "id": "porta",
+      "curta": "p",
+      "valor": "número",
+      "descricao": "Porta HTTP do servidor lac",
+      "valores": "1 a 65535; padrão 8787",
+      "api": "porta / p"
     },
     {
       "id": "agrupar",

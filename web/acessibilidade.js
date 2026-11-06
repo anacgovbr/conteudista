@@ -21,8 +21,8 @@
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const op = (c, padrao) => (window.Opcoes ? Opcoes.ligado(c) : padrao);
   const CH_LIMITE = 'conteudista.acessibilidade.limite';
-  const MOSTRAR_SUG = op('acessibilidade_texto.mostrar_sugestoes', true);
-  const AVISO = op('acessibilidade_texto.aviso_ao_gerar', true);
+  const MOSTRAR_SUG = () => op('acessibilidade_texto.mostrar_sugestoes', true);
+  const AVISO = () => op('acessibilidade_texto.aviso_ao_gerar', true);
   const ESPERA = 1000;                                   // ms sem digitar antes de conferir
   const LOTE = 40;                                       // itens mostrados por vez em cada nível
   const MQ = window.matchMedia ? matchMedia('(max-width: 900px)') : { matches: false };
@@ -136,7 +136,14 @@ html.contraste .la-msg,html.contraste .la-cab h3{color:#fff}html.contraste .la-l
   /* ---------------------------- Estado de cada editor ---------------------------- */
   const E = {};
   const limite = () => { const v = parseInt(window.Opcoes ? Opcoes.ler(CH_LIMITE, '25') : (localStorage.getItem(CH_LIMITE) || '25'), 10); return v >= 10 && v <= 60 ? v : 25; };
-  const configAtual = () => ({ limiteFraseLonga: limite(), limiteFraseNarracao: limite(), sugestoes: MOSTRAR_SUG });
+  const configAtual = () => {
+    const regras = {};
+    if (window.Opcoes) Opcoes.REGISTRO.filter(r => r.caminho.startsWith('acessibilidade_texto.regras.')).forEach(r => {
+      const codigo = r.caminho.split('.').pop(), v = Opcoes.ler(r.chave, r.padrao);
+      regras[codigo] = v === 'desligado' ? false : v;
+    });
+    return { limiteFraseLonga: limite(), limiteFraseNarracao: limite(), sugestoes: MOSTRAR_SUG(), regras };
+  };
 
   function montar(k) {
     const pane = $(k === 's' ? 'ps' : 'pg'), box = pane && pane.querySelector('.mde');
@@ -151,7 +158,7 @@ html.contraste .la-msg,html.contraste .la-cab h3{color:#fff}html.contraste .la-l
     const p = document.createElement('aside'); p.className = 'la-painel'; p.id = id; p.hidden = true; p.setAttribute('aria-labelledby', 'laT-' + k);
     p.innerHTML = '<div class="la-cab"><h3 id="laT-' + k + '" tabindex="-1">Acessibilidade do texto</h3><button type="button" class="sec mini la-x" title="Fechar (Esc)">Fechar <span aria-hidden="true">\u2715</span></button></div>' +
       '<p class="la-sub" role="status" aria-live="polite"></p><div class="la-corpo"></div>' +
-      '<div class="la-rod"><label for="laL-' + k + '">Frase longa a partir de</label><input type="number" id="laL-' + k + '" min="10" max="60" step="1" inputmode="numeric"><span>palavras</span></div>';
+      '<div class="la-rod"><button type="button" class="sec mini la-relatorio">Relatório de acessibilidade</button><button type="button" class="sec mini la-configurar">Configurar acessibilidade do texto</button><label for="laL-' + k + '">Frase longa a partir de</label><input type="number" id="laL-' + k + '" min="10" max="60" step="1" inputmode="numeric"><span>palavras</span></div>';
     body.append(p);
     const st = E[k] = { k, box, ta, ed, btn, painel: p, resultado: null, analisado: null, t: 0, abertoSug: false, pqAbertos: new Set(), mostrar: { c: LOTE, s: LOTE }, atual: -1, fundo: null, volta: null };
     btn.addEventListener('click', () => (p.hidden ? abrir(k) : fechar(k)));
@@ -210,7 +217,7 @@ setInterval(() => Object.values(E).forEach(st => { if (st.analisado !== null && 
   }
   let aviso = null;
   function atualizarAviso() {
-    if (!AVISO) return;
+    if (!AVISO()) { if (aviso) { aviso.hidden = true; aviso.innerHTML = ''; } return; }
     const lugar = document.querySelector('.acao-gerar'); if (!lugar) return;
     if (!aviso) {
       aviso = document.createElement('p'); aviso.id = 'laAviso'; aviso.hidden = true; lugar.after(aviso);
@@ -257,7 +264,7 @@ setInterval(() => Object.values(E).forEach(st => { if (st.analisado !== null && 
   }
   function itens(st) {
     const ds = st.resultado ? st.resultado.diagnosticos : [];
-    return { c: ds.filter(d => d.nivel === 'corrigir'), s: MOSTRAR_SUG ? ds.filter(d => d.nivel === 'sugestao') : [] };
+    return { c: ds.filter(d => d.nivel === 'corrigir'), s: MOSTRAR_SUG() ? ds.filter(d => d.nivel === 'sugestao') : [] };
   }
   function itemHtml(st, d, i) {
     const m = meta(d.codigo), botoes = [];
@@ -284,16 +291,16 @@ setInterval(() => Object.values(E).forEach(st => { if (st.analisado !== null && 
     if (indisponivel) { sub.textContent = ''; corpo.innerHTML = '<p class="la-indisp">A conferência de acessibilidade não está disponível neste navegador. Use um navegador atualizado ou o comando lac.</p>'; return; }
     if (!st.resultado) { sub.textContent = 'Conferindo\u2026'; corpo.innerHTML = ''; return; }
     const { c, s } = itens(st), todos = st.resultado.diagnosticos;
-    sub.textContent = ROTULO[k] + ' · ' + plural(c.length, 'item para corrigir', 'itens para corrigir') + (MOSTRAR_SUG ? ' · ' + plural(s.length, 'sugestão', 'sugestões') : '');
+    sub.textContent = ROTULO[k] + ' · ' + plural(c.length, 'item para corrigir', 'itens para corrigir') + (MOSTRAR_SUG() ? ' · ' + plural(s.length, 'sugestão', 'sugestões') : '');
     let h = '';
     if (!c.length && !s.length) {
-      h = '<div class="la-vazio">' + SVG.ok + '<b>Nada para corrigir</b><p>' + (MOSTRAR_SUG ? 'E nenhuma sugestão neste texto.' : 'Neste texto.') + '</p></div>';
+      h = '<div class="la-vazio">' + SVG.ok + '<b>Nada para corrigir</b><p>' + (MOSTRAR_SUG() ? 'E nenhuma sugestão neste texto.' : 'Neste texto.') + '</p></div>';
     } else {
       h += '<section class="la-sec c" aria-labelledby="laHc-' + k + '"><h4 id="laHc-' + k + '">Para corrigir (' + c.length + ') <small>Impedem alguém de ler</small></h4>';
       h += c.length ? '<ul class="la-lista">' + c.slice(0, st.mostrar.c).map(d => itemHtml(st, d, todos.indexOf(d))).join('') + '</ul>' + (c.length > st.mostrar.c ? '<button type="button" class="sec mini la-mais" data-a="mais" data-n="c">Mostrar mais ' + Math.min(LOTE, c.length - st.mostrar.c) + '</button>' : '')
         : '<p class="la-loc" style="padding:0 16px;white-space:normal">' + SVG.ok.replace('<svg ', '<svg width="16" height="16" style="vertical-align:-3px" ') + ' Nada para corrigir.</p>';
       h += '</section>';
-      if (MOSTRAR_SUG && s.length) {
+      if (MOSTRAR_SUG() && s.length) {
         h += '<section class="la-sec s"><h4><button type="button" class="la-abre" aria-expanded="' + st.abertoSug + '" aria-controls="laLs-' + k + '">Sugestões (' + s.length + ')</button><small>Deixam o texto mais fácil</small></h4>' +
           '<div id="laLs-' + k + '"' + (st.abertoSug ? '' : ' hidden') + '><ul class="la-lista">' + s.slice(0, st.mostrar.s).map(d => itemHtml(st, d, todos.indexOf(d))).join('') + '</ul>' +
           (s.length > st.mostrar.s ? '<button type="button" class="sec mini la-mais" data-a="mais" data-n="s">Mostrar mais ' + Math.min(LOTE, s.length - st.mostrar.s) + '</button>' : '') + '</div></section>';
@@ -413,7 +420,7 @@ setInterval(() => Object.values(E).forEach(st => { if (st.analisado !== null && 
     if (MQ.addEventListener) MQ.addEventListener('change', () => Object.keys(E).forEach(k => { if (!E[k].painel.hidden) { fechar(k, true); abrir(k, false); } }));
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
-  window.AcessibilidadeTexto = { alternar, abrir, fechar, proximo, analisarAgora: k => analisar(k || visivel()), resultado: k => (E[k || visivel()] || {}).resultado || null,
+  window.AcessibilidadeTexto = { alternar, abrir, fechar, proximo, analisarAgora: k => analisar(k || visivel()), atualizarOpcoes: () => Object.keys(E).forEach(k => { E[k].resultado = null; E[k].analisado = null; agendar(k, 0); }), resultado: k => (E[k || visivel()] || {}).resultado || null,
     estado: k => { const st = E[k || visivel()]; return st ? { k: st.k, resultado: st.resultado, analisado: st.analisado, ta: st.ta, box: st.box, painel: st.painel, ed: st.ed } : null; },
     executar: (k, i, a, j) => executar(k, i, a, j || 0, null), irPara: (k, i) => { const st = E[k]; if (st && st.resultado && st.resultado.diagnosticos[i]) irPara(k, st.resultado.diagnosticos[i]); },
     visivel, dica, meta };

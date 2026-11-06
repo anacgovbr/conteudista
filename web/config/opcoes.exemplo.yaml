@@ -27,6 +27,10 @@ aplicativo:  # Aplicativo
   # Alto contraste no aplicativo [ligado | desligado]
   alto_contraste: desligado
 
+acessibilidade_arquivos:  # acessibilidade_arquivos
+  # Incluir VLibras nos arquivos HTML gerados (carrega somente quando solicitado) [ligado | desligado]
+  vlibras: ligado
+
 salvar:  # Salvar e Histórico
   # Salvar automaticamente neste navegador [ligado | desligado]
   automaticamente: ligado
@@ -64,12 +68,40 @@ acessibilidade_texto:  # Acessibilidade do texto
   limite_frase_longa: 25
   # Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia) [ligado | desligado]
   aviso_ao_gerar: ligado
+  # Acessibilidade do texto: confirmar antes de gerar quando há itens para corrigir [ligado | desligado]
+  confirmar_ao_gerar: ligado
+  # Acessibilidade do texto: incluir o relatório HTML no ZIP gerado [ligado | desligado]
+  incluir_relatorio_no_zip: desligado
   # Acessibilidade do texto: aba "Pedir ajuda a uma IA" nas janelas Descrever imagem e Simplificar trecho (desligado: só escrever) [ligado | desligado]
   ajuda_ia: ligado
   # Acessibilidade do texto: sublinhar no editor os trechos para corrigir [ligado | desligado]
   marcas_no_texto: ligado
   # Acessibilidade do texto: sublinhar também as sugestões (linha pontilhada) [ligado | desligado]
   marcas_sugestoes: desligado
+
+  regras:
+    # Acessibilidade do texto: nível da regra i1 [corrigir | sugestao | desligado]
+    i1: corrigir
+    # Acessibilidade do texto: nível da regra i2 [corrigir | sugestao | desligado]
+    i2: corrigir
+    # Acessibilidade do texto: nível da regra e1 [corrigir | sugestao | desligado]
+    e1: corrigir
+    # Acessibilidade do texto: nível da regra e2 [corrigir | sugestao | desligado]
+    e2: corrigir
+    # Acessibilidade do texto: nível da regra e3 [corrigir | sugestao | desligado]
+    e3: corrigir
+    # Acessibilidade do texto: nível da regra k1 [corrigir | sugestao | desligado]
+    k1: corrigir
+    # Acessibilidade do texto: nível da regra f1 [sugestao | desligado]
+    f1: sugestao
+    # Acessibilidade do texto: nível da regra f2 [sugestao | desligado]
+    f2: sugestao
+    # Acessibilidade do texto: nível da regra f3 [sugestao | desligado]
+    f3: sugestao
+    # Acessibilidade do texto: nível da regra s1 [sugestao | desligado]
+    s1: sugestao
+    # Acessibilidade do texto: nível da regra n1 [sugestao | desligado]
+    n1: sugestao
 
 narracao:  # Narração (aba Gerar)
   # Narração dos slides (gerar áudio das notas) [ligado | desligado]

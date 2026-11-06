@@ -9,6 +9,8 @@ _lac() {
     '(-f --formato){-f,--formato}[Formato da saída]:formato:' \
     '(-t --tipo){-t,--tipo}[Tipo do texto]:tipo:' \
     '(-l --limite){-l,--limite}[Palavras por frase]:número:' \
+    '--config[Lê opções e níveis de regra de um arquivo YAML]:arquivo YAML:' \
+    '(-p --porta){-p,--porta}[Porta HTTP do servidor lac]:número:' \
     '--agrupar[Agrupamento do json]:modo:' \
     '(-d --diferenca){-d,--diferenca}[Com ajustar, mostra só o que mudou]' \
     '(-o --saida){-o,--saida}[Grava a saída num arquivo]:arquivo:_files' \

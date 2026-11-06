@@ -28,6 +28,8 @@
       chave: 'conteudista.tema', controles: ['tema'], rotulo: 'Layout (tema) dos arquivos gerados' },
     { caminho: 'aplicativo.alto_contraste', tipo: 'chave', padrao: 'desligado', valores: LIG,
       chave: 'conteudista.contraste', controles: ['btnContraste'], rotulo: 'Alto contraste no aplicativo' },
+    { caminho: 'acessibilidade_arquivos.vlibras', tipo: 'chave', padrao: 'ligado', valores: LIG,
+      chave: 'conteudista.acessibilidade.arquivos.vlibras', controles: ['vlibrasGerar'], rotulo: 'Incluir VLibras nos arquivos HTML gerados (carrega somente quando solicitado)' },
 
     { caminho: 'salvar.automaticamente', tipo: 'chave', padrao: 'ligado', valores: LIG,
       chave: 'conteudista.auto', controles: ['auto', 'jnAuto'], rotulo: 'Salvar automaticamente neste navegador' },
@@ -60,13 +62,17 @@
       chave: null, controles: [], rotulo: 'Celular: esconder "Imagens do texto" abaixo do editor (abre por Inserir › Imagens do texto)' },
 
     { caminho: 'acessibilidade_texto.mostrar_sugestoes', tipo: 'chave', padrao: 'ligado', valores: LIG,
-      chave: null, controles: [], rotulo: 'Acessibilidade do texto: mostrar também as sugestões de linguagem simples (desligado: só o que é para corrigir)' },
+      chave: 'conteudista.acessibilidade.sugestoes', controles: [], rotulo: 'Acessibilidade do texto: mostrar também as sugestões de linguagem simples (desligado: só o que é para corrigir)' },
     { caminho: 'acessibilidade_texto.limite_frase_longa', tipo: 'numero', padrao: 25, min: 10, max: 60,
       chave: 'conteudista.acessibilidade.limite', controles: [], rotulo: 'Acessibilidade do texto: palavras por frase antes da sugestão "frase longa"' },
     { caminho: 'acessibilidade_texto.aviso_ao_gerar', tipo: 'chave', padrao: 'ligado', valores: LIG,
-      chave: null, controles: [], rotulo: 'Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia)' },
+      chave: 'conteudista.acessibilidade.aviso', controles: [], rotulo: 'Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia)' },
+    { caminho: 'acessibilidade_texto.confirmar_ao_gerar', tipo: 'chave', padrao: 'ligado', valores: LIG,
+      chave: 'conteudista.acessibilidade.confirmar', controles: [], rotulo: 'Acessibilidade do texto: confirmar antes de gerar quando há itens para corrigir' },
+    { caminho: 'acessibilidade_texto.incluir_relatorio_no_zip', tipo: 'chave', padrao: 'desligado', valores: LIG,
+      chave: 'conteudista.acessibilidade.relatorioZip', controles: [], rotulo: 'Acessibilidade do texto: incluir o relatório HTML no ZIP gerado' },
     { caminho: 'acessibilidade_texto.ajuda_ia', tipo: 'chave', padrao: 'ligado', valores: LIG,
-      chave: null, controles: [], rotulo: 'Acessibilidade do texto: aba "Pedir ajuda a uma IA" nas janelas Descrever imagem e Simplificar trecho (desligado: só escrever)' },
+      chave: 'conteudista.acessibilidade.ajudaIA', controles: [], rotulo: 'Acessibilidade do texto: aba "Pedir ajuda a uma IA" nas janelas Descrever imagem e Simplificar trecho (desligado: só escrever)' },
     { caminho: 'acessibilidade_texto.marcas_no_texto', tipo: 'chave', padrao: 'ligado', valores: LIG,
       chave: 'conteudista.acessibilidade.marcas', controles: ['data-la-marcas'], rotulo: 'Acessibilidade do texto: sublinhar no editor os trechos para corrigir' },
     { caminho: 'acessibilidade_texto.marcas_sugestoes', tipo: 'chave', padrao: 'desligado', valores: LIG,
@@ -86,12 +92,21 @@
     { caminho: 'locucao.notas_dos_slides', tipo: 'chave', padrao: 'ligado', valores: { ligado: 'notas', desligado: 'livre' },
       chave: 'conteudista.locucao.modo', controles: [], rotulo: 'Locução: começar em "Notas dos slides" (desligado: texto livre)' },
   ];
+  const REGRAS_ACESS = [['i1', 'corrigir'], ['i2', 'corrigir'], ['e1', 'corrigir'], ['e2', 'corrigir'], ['e3', 'corrigir'], ['k1', 'corrigir'],
+    ['f1', 'sugestao'], ['f2', 'sugestao'], ['f3', 'sugestao'], ['s1', 'sugestao'], ['n1', 'sugestao']];
+  REGRAS_ACESS.forEach(([codigo, nivel]) => {
+    const valores = nivel === 'corrigir' ? { corrigir: 'corrigir', sugestao: 'sugestao', desligado: 'desligado' } : { sugestao: 'sugestao', desligado: 'desligado' };
+    REGISTRO.push({ caminho: 'acessibilidade_texto.regras.' + codigo, tipo: 'escolha', padrao: nivel, valores,
+      chave: 'conteudista.acessibilidade.regra.' + codigo, controles: [], rotulo: 'Acessibilidade do texto: nível da regra ' + codigo });
+  });
   // Caixas de seleção que NÃO são opções padrão (o teste de cobertura aceita só estas exceções).
   const EXCECOES = {
     'task': 'caixa de tarefa da prévia (somente leitura)',
     'data-so': '"Só substituir quando for menor" é marcada sozinha conforme girar ou cortar a imagem',
     'data-sel': 'seleção de imagens para editar em lote (vale só naquele momento)',
     'data-off': '"Sem narração" de cada slide (faz parte do texto, não é preferência)',
+    'laGerarSessao': 'checkbox temporário da confirmação de acessibilidade ao gerar (vale só nesta sessão)',
+    'data-caminho': 'identificador dinâmico dos controles gerados a partir do REGISTRO de opções',
   };
 
   const POR_CAMINHO = new Map(REGISTRO.map(r => [r.caminho, r]));
@@ -196,7 +211,21 @@
     const r = POR_CHAVE.get(chave);
     return r ? gravado(r, padraoDe(r.caminho)) : (padraoCodigo === undefined ? null : padraoCodigo);
   }
-  function ligado(caminho) { return padraoDe(caminho) === 'ligado'; }
+  function ligado(caminho) {
+    const r = POR_CAMINHO.get(caminho); if (!r) return false;
+    const v = r.chave ? ler(r.chave) : padraoDe(caminho);
+    return v === '1' || v === 'ligado' || v === true;
+  }
+  function definir(caminho, valor) {
+    const r = POR_CAMINHO.get(caminho);
+    if (!r || !r.chave) throw new Error('Esta opção não pode ser guardada: ' + caminho);
+    const n = normalizar(r, valor);
+    if (!n.ok) throw new Error(caminho + ': ' + n.msg);
+    const ls = armaz();
+    if (!ls) throw new Error('O armazenamento deste navegador não está disponível.');
+    ls.setItem(r.chave, gravado(r, n.v));
+    return n.v;
+  }
   function restaurar() {
     const ls = armaz(), apagadas = [];
     if (!ls) return apagadas;
@@ -231,6 +260,7 @@
     VERSAO_FORMATO, ARQUIVO, REGISTRO, EXCECOES,
     lerYaml, interpretar, normalizar,
     ler, inicial, ligado, padraoDe, restaurar,
+    definir,
     carregado: () => carregado,
     avisos: () => avisosCarga.slice(),
     /* só para testes: define os valores como se viessem do YAML */

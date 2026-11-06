@@ -14,11 +14,14 @@ import { REGRAS, AREAS, GRUPOS } from './regras/index.js';
 import MSG from './mensagens/pt-BR.js';
 import PADRAO from './config/padrao.js';
 import SIGLAS from './dados/siglas.js';
+import { lerMarcadores } from './nucleo/marcadores.js';
 
 export const VERSAO = '0.2.1';
 export { detectarTipo };
 export { dividirFrases, contarPalavras } from './nucleo/frases.js';
 export { montarPedido, lerRespostaDescricao, lerRespostaSimplificar, PEDIDOS, VERSAO_PEDIDOS } from './pedidos.js';
+export { AVISO_RELATORIO, criarRelatorio, relatorioHtml, relatorioMarkdown } from './relatorio.js';
+export { lerMarcadores };
 
 const POR_ID = new Map(REGRAS.map(r => [r.id, r]));
 const POR_COD = new Map(REGRAS.map(r => [r.codigo, r]));
@@ -59,21 +62,34 @@ const preencher = (t, d) => String(t).replace(/\{(\w+)\}/g, (m, k) => (d && d[k]
 function montarConfig(o) {
   const c = Object.assign({}, PADRAO, o && o.config);
   c.regras = Object.assign({}, PADRAO.regras, o && o.config && o.config.regras);
+  Object.entries(c.regras).forEach(([chave, valor]) => {
+    const regra = POR_COD.get(chave);
+    if (!regra) return;
+    c.regras[regra.id] = valor === 'desligado' ? false : valor;
+    if (chave !== regra.id) delete c.regras[chave];
+  });
   ['limiteFraseLonga', 'limiteFraseNarracao', 'limiteParagrafo'].forEach(k => {
     const v = Number(c[k]); if (!Number.isInteger(v) || v < 3 || v > 1000) { const e = new Error(k + ' inválido: ' + c[k]); e.codigo = 'config-invalida'; throw e; }
   });
   return c;
 }
-function criarSiglas(cfg) {
-  const glo = Object.assign({}, SIGLAS.glossario, cfg.siglas || {});
+function criarSiglas(cfg, texto) {
+  const conteudo = {};
+  lerMarcadores(texto).filter(m => m.tipo === 'siglas').forEach(m => Object.assign(conteudo, m.siglas));
+  const glo = Object.assign({}, SIGLAS.glossario, cfg.siglas || {}, conteudo);
   const con = new Set([...SIGLAS.conhecidas, ...(cfg.siglasConhecidas || [])].map(s => String(s).toUpperCase()));
-  return { nome: s => glo[s] || null, conhecida: s => con.has(String(s).toUpperCase()) };
+  return { nome: s => glo[s] || null, conhecida: s => !glo[s] && con.has(String(s).toUpperCase()) };
 }
 function regrasAtivas(o, cfg) {
   const sel = new Set(selecionar(o && o.regras));
   return REGRAS.filter(r => sel.has(r.id) && cfg.regras[r.id] !== false);
 }
-function nivelDe(r, cfg, d) { const n = cfg.regras[r.id]; return (n === 'corrigir' || n === 'sugestao') ? n : (d.nivel || r.nivel); }
+function nivelDe(r, cfg, d) {
+  const n = cfg.regras[r.id];
+  if (n === 'sugestao') return 'sugestao';
+  if (n === 'corrigir' && r.nivel === 'corrigir') return 'corrigir';
+  return d.nivel || r.nivel;
+}
 const ignorada = (r, lista) => lista && (lista.includes(r.id) || lista.includes(r.codigo) || lista.includes('tudo'));
 
 /* Executa as regras de um bloco e devolve diagnósticos com posições relativas ao bloco (para o cache). */
@@ -113,7 +129,7 @@ function publicar(d, rel, doc, cfg) {
 }
 
 function executar(texto, opcoes, cache) {
-  const cfg = montarConfig(opcoes), regs = regrasAtivas(opcoes, cfg), siglas = criarSiglas(cfg);
+  const cfg = montarConfig(opcoes), regs = regrasAtivas(opcoes, cfg), siglas = criarSiglas(cfg, texto);
   const doc = analisarEstrutura(texto, (opcoes && opcoes.tipo) || 'auto');
   const valeTipo = r => !r.tipos || r.tipos.includes(doc.tipo);
   const ignDoc = [...doc.ignorarDoc];

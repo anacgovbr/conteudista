@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://anacgovbr.github.io/conteudista/lib/linguagem-acessivel/esquema/relatorio.schema.json",
+  "title": "Relatório de acessibilidade do Conteudista",
+  "type": "object",
+  "required": ["versoes", "geradoEm", "nome", "limites", "regrasVerificadas", "arquivos", "aviso"],
+  "properties": {
+    "versoes": {
+      "type": "object",
+      "required": ["conteudista", "biblioteca", "pedidos"],
+      "properties": {
+        "conteudista": { "type": "string" },
+        "biblioteca": { "type": "string" },
+        "pedidos": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "geradoEm": { "type": "string", "format": "date-time" },
+    "nome": { "type": "string" },
+    "limites": {
+      "type": "object",
+      "required": ["fraseLonga", "fraseNarracao", "paragrafo"],
+      "properties": {
+        "fraseLonga": { "type": "integer", "minimum": 10, "maximum": 60 },
+        "fraseNarracao": { "type": "integer", "minimum": 10, "maximum": 60 },
+        "paragrafo": { "type": "integer", "minimum": 10 }
+      },
+      "additionalProperties": false
+    },
+    "regrasVerificadas": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+    "arquivos": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["arquivo", "nome", "tipo", "resumo", "diagnosticos", "marcadores"],
+        "properties": {
+          "arquivo": { "type": "string" },
+          "nome": { "type": "string" },
+          "tipo": { "type": "string", "enum": ["apostila", "apresentacao"] },
+          "resumo": {
+            "type": "object",
+            "required": ["corrigir", "sugestoes", "total"],
+            "properties": {
+              "corrigir": { "type": "integer", "minimum": 0 },
+              "sugestoes": { "type": "integer", "minimum": 0 },
+              "total": { "type": "integer", "minimum": 0 }
+            },
+            "additionalProperties": false
+          },
+          "diagnosticos": { "type": "array", "items": { "$ref": "diagnostico.schema.json" } },
+          "marcadores": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["tipo", "regras", "inicio", "fim", "linha"],
+              "properties": {
+                "tipo": { "type": "string" },
+                "regras": { "type": "array", "items": { "type": "string" } },
+                "inicio": { "type": "integer", "minimum": 0 },
+                "fim": { "type": "integer", "minimum": 0 },
+                "linha": { "type": "integer", "minimum": 1 }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "aviso": { "type": "string", "const": "Este relatório registra verificações automáticas. Não substitui uma avaliação completa de acessibilidade (WCAG/eMAG)." }
+  },
+  "additionalProperties": false
+}

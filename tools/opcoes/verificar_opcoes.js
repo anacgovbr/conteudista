@@ -20,7 +20,11 @@ const ok = (c, m) => { if (c) console.log('  ok   ' + m); else { falhas++; conso
 function grupos() {
   const g = new Map();
   O.REGISTRO.forEach(r => { const p = r.caminho.split('.'); const k = p.slice(0, -1).join('.'); if (!g.has(k)) g.set(k, []); g.get(k).push(r); });
-  return g;
+  const raizes = [...new Set(O.REGISTRO.map(r => r.caminho.split('.')[0]))];
+  return new Map([...g].sort((a, b) => {
+    const ap = a[0].split('.'), bp = b[0].split('.');
+    return raizes.indexOf(ap[0]) - raizes.indexOf(bp[0]) || ap.length - bp.length;
+  }));
 }
 const TITULOS = { editor: 'Editor', 'editor.imagens': 'Editor · imagens', aplicativo: 'Aplicativo', salvar: 'Salvar e Histórico', link: 'Link criptografado', importar: 'Importar', celular: 'Celular', acessibilidade_texto: 'Acessibilidade do texto', narracao: 'Narração (aba Gerar)', locucao: 'Locução' };
 const aceitos = r => r.tipo === 'chave' ? 'ligado | desligado' : r.tipo === 'numero' ? r.min + ' a ' + r.max : Object.keys(r.valores).join(' | ');
@@ -116,7 +120,17 @@ for (const f of fontes) {
 achados.forEach(a => ok(registrados.has(a.nome) || Object.prototype.hasOwnProperty.call(O.EXCECOES, a.nome), a.arq + ': ' + a.nome + (O.EXCECOES[a.nome] ? ' (exceção: ' + O.EXCECOES[a.nome] + ')' : '')));
 const ids = new Set(fontes.flatMap(f => [...fs.readFileSync(f, 'utf8').matchAll(/\bid=["']([A-Za-z0-9_-]+)["']/g)].map(m => m[1])));
 O.REGISTRO.forEach(r => r.controles.filter(c => !c.startsWith('data-')).forEach(c => ok(ids.has(c), r.caminho + ': controle #' + c + ' existe na página')));
-O.REGISTRO.filter(r => r.chave).forEach(r => ok(fontes.some(f => fs.readFileSync(f, 'utf8').includes(r.chave) || fs.readFileSync(f, 'utf8').includes("'" + r.chave.split('.').pop() + "'")), r.caminho + ': chave ' + r.chave + ' usada pelo código'));
+O.REGISTRO.filter(r => r.chave).forEach(r => {
+  const usado = fontes.some(f => {
+    const s = fs.readFileSync(f, 'utf8');
+    return s.includes(r.chave) || s.includes("'" + r.chave.split('.').pop() + "'") || s.includes("'" + r.caminho + "'");
+  });
+  const dinamico = r.caminho.startsWith('acessibilidade_texto.regras.') && fontes.some(f => {
+    const s = fs.readFileSync(f, 'utf8');
+    return s.includes('acessibilidade_texto.regras.') && s.includes('Opcoes.REGISTRO');
+  });
+  ok(usado || dinamico, r.caminho + ': chave ' + r.chave + ' usada pelo código');
+});
 
 console.log(falhas ? '\nHÁ ' + falhas + ' PROBLEMA(S).' : '\nTUDO CERTO.');
 process.exit(falhas ? 1 : 0);

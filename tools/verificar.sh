@@ -30,6 +30,7 @@ EXIGIR=$([ "${VERIFICAR_SEM_FONTES:-}" = "1" ] || "$PY" -c "import json;m=json.l
 etapa "Biblioteca Linguagem Acessível e linha de comando lac"
 node tools/linguagem-acessivel/testar.mjs
 node tools/lac/testar_lac.mjs
+node tools/lac/testar_api.mjs
 
 etapa "Conteúdo de exemplo: nada para corrigir"
 node tools/lac/lac.mjs c -n c web/exemplo/treinamento.md web/exemplo/apresentacao.md
@@ -52,7 +53,7 @@ for js in web/*.js; do
 done
 for js in $(find web/lib -name '*.js'); do cp "$js" "$TMP/lib.mjs"; node --check "$TMP/lib.mjs"; done
 "$PY" -c "import json;json.load(open('web/modelos.json',encoding='utf-8'))"
-node -e "import(process.argv[1]).then(m=>{const r=m.phonemizePTBR('Olá, mundo. A gestão de processos.');console.log(r);if(!/ˈ/.test(r))process.exit(1)})" "$TMP/ptbr-g2p.mjs"
+node -e "import(require('node:url').pathToFileURL(process.argv[1]).href).then(m=>{const r=m.phonemizePTBR('Olá, mundo. A gestão de processos.');console.log(r);if(!/ˈ/.test(r))process.exit(1)})" "$TMP/ptbr-g2p.mjs"
 "$PY" -c "import re,sys;s=open('web/index.html',encoding='utf-8').read();open(sys.argv[1],'w',encoding='utf-8').write(re.findall(r'<script>(.*?)</script>',s,re.S)[-1])" "$TMP/app.js"
 node --check "$TMP/app.js"
 echo "sintaxe: ok"

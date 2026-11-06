@@ -31,7 +31,7 @@ console.log('1. Códigos de saída');
 t('0 sem nada para corrigir; 1 com itens para corrigir', () => { igual(lac(['c', fBom]).cod, 0); igual(lac(['c', fRuim]).cod, 1); });
 t('só sugestões: sai com 0', () => igual(lac(['c'], 'O QWER aprova.').cod, 0));
 t('2 em erro de uso, com mensagem que aponta a ajuda', () => {
-  for (const a of [['c', '--zz'], ['zz'], ['c', '-g', 'x9'], ['c', '-n', 'z'], ['c', '-l', '5'], ['c', '-f', 'xml'], ['r', '-n', 'c'], ['e', 'q9'], ['c', path.join(TMP, 'nao-existe.md')], ['p'], ['a', fRuim, fBom], ['s']]) {
+  for (const a of [['c', '--zz'], ['zz'], ['c', '-g', 'x9'], ['c', '-n', 'z'], ['c', '-l', '5'], ['c', '-f', 'xml'], ['r', '-n', 'c'], ['e', 'q9'], ['c', path.join(TMP, 'nao-existe.md')], ['p'], ['a', fRuim, fBom], ['s', '-p', '70000']]) {
     const r = lac(a); igual(r.cod, 2, a.join(' ')); verdade(/^lac: /.test(r.err) && !r.out, 'mensagem: ' + a.join(' ') + ' -> ' + r.err);
   }
 });
@@ -57,6 +57,13 @@ t('-g por área, grupo e combinação; -r por código e nome; -n', () => {
 });
 t('atalhos curtos juntos: -qd e -gf', () => { igual(lac(['a', '-qd', fRuim]).out, ''); igual(lac(['c', '-gf', '-q', fRuim]).cod, 0); });
 t('-l muda o limite de frase', () => { const tx = 'A área técnica analisa o pedido e envia a resposta ao interessado no prazo previsto.'; igual(JSON.parse(lac(['c', '-f', 'json', '-l', '10'], tx).out).resumo.sugestoes, 1); igual(JSON.parse(lac(['c', '-f', 'json'], tx).out).resumo.sugestoes, 0); });
+t('--config lê YAML e a opção explícita prevalece', () => {
+  const p = arq('opcoes.yaml', 'versao: 1\nacessibilidade_texto:\n  limite_frase_longa: 10\n  regras:\n    e1: desligado\n');
+  const tx = 'A área técnica analisa o pedido e envia a resposta ao interessado no prazo previsto.';
+  igual(JSON.parse(lac(['c', '-f', 'json', '--config', p], tx).out).resumo.sugestoes, 1);
+  igual(JSON.parse(lac(['c', '-f', 'json', '--config', p, '-l', '25'], tx).out).resumo.sugestoes, 0);
+  igual(JSON.parse(lac(['c', '-f', 'json', '--agrupar', 'nenhum', '--config', p], RUIM).out).diagnosticos.some(d => d.codigo === 'e1'), false);
+});
 t('opção que não serve para o comando é recusada', () => { const r = lac(['r', '-d']); igual(r.cod, 2); verdade(/não serve/.test(r.err)); });
 
 console.log('4. Formatos');
@@ -80,6 +87,7 @@ t('sarif 2.1.0: regras, níveis, região e colunas em pontos de código', () => 
   igual(run.results.find(x => x.ruleId === 's1').level, 'note'); verdade(run.results.every(x => run.tool.driver.rules[x.ruleIndex].id === x.ruleId));
 });
 t('resumo: uma linha por arquivo e total', () => { const o = lac(['c', '-f', 'resumo', fRuim, fBom]).out.trim().split('\n'); igual(o.length, 3); verdade(/^Total: 2 para corrigir · 1 sugestão$/.test(o[2]), o[2]); });
+t('relatorio: HTML acessível com aviso e posições', () => { const r = lac(['c', '-f', 'relatorio', fRuim]); verdade(r.out.startsWith('<!doctype html>') && /não substitui uma avaliação completa/i.test(r.out) && r.out.includes('Linha')); igual(r.cod, 1); });
 
 console.log('5. ajustar');
 t('aplica só correções seguras; o resto fica', () => { const r = lac(['a'], RUIM); igual(r.out, RUIM.replace('### B', '## B')); verdade(/1 correção aplicada: e1 linha 3/.test(r.err)); });

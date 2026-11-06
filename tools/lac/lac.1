@@ -9,7 +9,7 @@ Sem arquivo, lê da entrada (pipe). Use \- para a entrada.
 .SH COMANDOS
 .TP
 .B c, conferir [arquivo...]
-Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir.
+Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as sugestões, com linha e coluna. Sai com 1 se houver algo para corrigir; \-f relatorio gera um relatório HTML.
 .TP
 .B a, ajustar [arquivo]
 Aplica só as correções que não mudam o sentido (por exemplo, o nível de um título) e devolve o texto corrigido. Descrever imagens e simplificar frases sempre precisam de uma pessoa.
@@ -23,8 +23,8 @@ Mostra o que a regra confere, por que importa, as correções e exemplos.
 .B p, pedido <descrever|simplificar>
 Monta o pedido padronizado (linguagem simples e boas práticas de acessibilidade) para colar na IA autorizada. simplificar: o trecho vem da entrada. descrever: a entrada, se houver, é o texto perto da imagem.
 .TP
-.B s, servir
-Abre a API neste computador. Em breve.
+.B s, servir [\-p porta]
+Inicia a API HTTP local. Use LAC_CORS_ORIGINS para configurar origens CORS; por padrão, só aceita chamadas locais.
 .TP
 .B h, ajuda [comando]
 Mostra a ajuda geral ou a de um comando.
@@ -43,13 +43,19 @@ Regra: código ou nome (f1, frase\-longa…).
 Só um nível (c corrigir · s sugestão).
 .TP
 .B \-f \-\-formato <formato>
-Formato da saída (texto json jsonl sarif resumo).
+Formato da saída (texto json jsonl sarif resumo relatorio).
 .TP
 .B \-t \-\-tipo <tipo>
 Tipo do texto (auto apostila apresentacao).
 .TP
 .B \-l \-\-limite <número>
 Palavras por frase (10 a 60; padrão 25).
+.TP
+.B \-\-config <arquivo YAML>
+Lê opções e níveis de regra de um arquivo YAML (web/config/opcoes.yaml ou outro arquivo compatível).
+.TP
+.B \-p \-\-porta <número>
+Porta HTTP do servidor lac (1 a 65535; padrão 8787).
 .TP
 .B \-\-agrupar <modo>
 Agrupamento do json (grupo regra nenhum).
@@ -124,6 +130,9 @@ pedido para simplificar
 .TP
 .B lac p descrever \-\-legenda "Fluxo" < contexto.txt
 pedido para descrever imagem
+.TP
+.B lac s \-p 8080
+inicia a API local na porta 8080
 .TP
 .B lac h c
 ajuda do conferir

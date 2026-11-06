@@ -63,6 +63,15 @@ t('padrões do registro = comportamento do código (1.79: Importar abre em Link)
 t('importar: "ultima" volta ao comportamento anterior', () => { O._definir({ 'importar.aba_inicial': 'ultima' }); igual(O.inicial('importar.aba_inicial'), ''); });
 t('nome antigo "automatica" (1.78) vira "ultima"', () => { const r = O.interpretar('importar:\n  aba_inicial: automatica\n'); igual(r.avisos, []); igual(r.valores['importar.aba_inicial'], 'ultima'); });
 t('celular: opções podem ser desligadas', () => { O._definir({ 'celular.barra_compacta': 'desligado' }); igual(O.ligado('celular.barra_compacta'), false); igual(O.ligado('celular.imagens_recolhidas'), true); });
+t('definir valida e guarda opções persistentes e níveis de regra', () => {
+  limpar(); O._definir({});
+  O.definir('acessibilidade_texto.mostrar_sugestoes', 'desligado');
+  O.definir('acessibilidade_texto.regras.e1', 'sugestao');
+  igual(O.ligado('acessibilidade_texto.mostrar_sugestoes'), false);
+  igual(O.ler('conteudista.acessibilidade.regra.e1'), 'sugestao');
+  let erro = false; try { O.definir('acessibilidade_texto.regras.f1', 'corrigir'); } catch { erro = true; }
+  verdade(erro, 'sugestão não pode ser promovida para corrigir');
+});
 
 console.log('\n' + (n - f) + ' de ' + n + ' testes aprovados.');
 process.exit(f ? 1 : 0);

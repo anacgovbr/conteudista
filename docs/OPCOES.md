@@ -25,6 +25,12 @@ Arquivo: `web/config/opcoes.yaml`. Ele define como cada opção **começa**. Se 
 | `layout` | Layout (tema) dos arquivos gerados | govbr · anac20_claro · anac20_escuro · classico | `govbr` | sim |
 | `alto_contraste` | Alto contraste no aplicativo | ligado · desligado | `desligado` | sim |
 
+## acessibilidade_arquivos
+
+| Opção | O que faz | Valores | Padrão | Lembrada no navegador |
+|---|---|---|---|---|
+| `vlibras` | Incluir VLibras nos arquivos HTML gerados (carrega somente quando solicitado) | ligado · desligado | `ligado` | sim |
+
 ## Salvar e Histórico
 
 | Opção | O que faz | Valores | Padrão | Lembrada no navegador |
@@ -60,12 +66,30 @@ Arquivo: `web/config/opcoes.yaml`. Ele define como cada opção **começa**. Se 
 
 | Opção | O que faz | Valores | Padrão | Lembrada no navegador |
 |---|---|---|---|---|
-| `mostrar_sugestoes` | Acessibilidade do texto: mostrar também as sugestões de linguagem simples (desligado: só o que é para corrigir) | ligado · desligado | `ligado` | não (vale ao abrir) |
+| `mostrar_sugestoes` | Acessibilidade do texto: mostrar também as sugestões de linguagem simples (desligado: só o que é para corrigir) | ligado · desligado | `ligado` | sim |
 | `limite_frase_longa` | Acessibilidade do texto: palavras por frase antes da sugestão "frase longa" | 10 a 60 | `25` | sim |
-| `aviso_ao_gerar` | Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia) | ligado · desligado | `ligado` | não (vale ao abrir) |
-| `ajuda_ia` | Acessibilidade do texto: aba "Pedir ajuda a uma IA" nas janelas Descrever imagem e Simplificar trecho (desligado: só escrever) | ligado · desligado | `ligado` | não (vale ao abrir) |
+| `aviso_ao_gerar` | Acessibilidade do texto: aviso perto de "Gerar arquivos" quando há itens para corrigir (nunca bloqueia) | ligado · desligado | `ligado` | sim |
+| `confirmar_ao_gerar` | Acessibilidade do texto: confirmar antes de gerar quando há itens para corrigir | ligado · desligado | `ligado` | sim |
+| `incluir_relatorio_no_zip` | Acessibilidade do texto: incluir o relatório HTML no ZIP gerado | ligado · desligado | `desligado` | sim |
+| `ajuda_ia` | Acessibilidade do texto: aba "Pedir ajuda a uma IA" nas janelas Descrever imagem e Simplificar trecho (desligado: só escrever) | ligado · desligado | `ligado` | sim |
 | `marcas_no_texto` | Acessibilidade do texto: sublinhar no editor os trechos para corrigir | ligado · desligado | `ligado` | sim |
 | `marcas_sugestoes` | Acessibilidade do texto: sublinhar também as sugestões (linha pontilhada) | ligado · desligado | `desligado` | sim |
+
+## acessibilidade_texto.regras
+
+| Opção | O que faz | Valores | Padrão | Lembrada no navegador |
+|---|---|---|---|---|
+| `i1` | Acessibilidade do texto: nível da regra i1 | corrigir · sugestao · desligado | `corrigir` | sim |
+| `i2` | Acessibilidade do texto: nível da regra i2 | corrigir · sugestao · desligado | `corrigir` | sim |
+| `e1` | Acessibilidade do texto: nível da regra e1 | corrigir · sugestao · desligado | `corrigir` | sim |
+| `e2` | Acessibilidade do texto: nível da regra e2 | corrigir · sugestao · desligado | `corrigir` | sim |
+| `e3` | Acessibilidade do texto: nível da regra e3 | corrigir · sugestao · desligado | `corrigir` | sim |
+| `k1` | Acessibilidade do texto: nível da regra k1 | corrigir · sugestao · desligado | `corrigir` | sim |
+| `f1` | Acessibilidade do texto: nível da regra f1 | sugestao · desligado | `sugestao` | sim |
+| `f2` | Acessibilidade do texto: nível da regra f2 | sugestao · desligado | `sugestao` | sim |
+| `f3` | Acessibilidade do texto: nível da regra f3 | sugestao · desligado | `sugestao` | sim |
+| `s1` | Acessibilidade do texto: nível da regra s1 | sugestao · desligado | `sugestao` | sim |
+| `n1` | Acessibilidade do texto: nível da regra n1 | sugestao · desligado | `sugestao` | sim |
 
 ## Narração (aba Gerar)
 

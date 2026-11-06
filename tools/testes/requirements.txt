@@ -1,1 +1,2 @@
 playwright>=1.45
+jsonschema>=4.23

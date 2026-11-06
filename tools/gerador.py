@@ -99,13 +99,21 @@ def slug(s):
     return re.sub(r'[^a-z0-9]+','-',s).strip('-')
 LI=re.compile(r'^(\s*)([-*]|\d+\.)\s+(.*)$')
 CODIGO_RX=re.compile(r'(?ms)(^```[^\n]*\n.*?^```[ \t]*$|`[^`\n]+`)')
-# Imagens marcadas como decorativas no texto (<!-- linguagem-acessivel: decorativa --> logo antes da imagem; 1.82).
-# Saem com texto alternativo vazio, sem aviso; no PPTX, ficam marcadas como decorativas.
-DECORATIVAS=set()
-DECOR_RX=re.compile(r'<!--\s*linguagem-acessivel\s*:\s*decorativa\s*-->\s*!\[[^\]\n]*\]\(([^)\s]+)\)')
+DECORATIVAS={}
+DECORATIVAS_VISTAS={}
+DECOR_IMG_RX=re.compile(r'!\[([^\]\n]*)\]\(([^)\s]+)\)')
+DECOR_RX=re.compile(r'<!--\s*linguagem-acessivel\s*:\s*decorativa\s*-->\s*!\[([^\]\n]*)\]\(([^)\s]+)\)')
 def registrar_decorativas(md):
-    "Guarda o destino das imagens marcadas como decorativas (fora de blocos de código)."
-    for m in DECOR_RX.finditer(CODIGO_RX.sub('',md or '')):DECORATIVAS.add(m.group(1))
+    "Associa marcadores às ocorrências exatas de imagem, sem vazar entre documentos ou formatos."
+    global DECORATIVAS, DECORATIVAS_VISTAS
+    texto=CODIGO_RX.sub('',md or '');DECORATIVAS={};DECORATIVAS_VISTAS={}
+    for m in DECOR_RX.finditer(texto):
+        chave=(m.group(2),m.group(1))
+        indice=sum(1 for x in DECOR_IMG_RX.finditer(texto,0,m.start()) if (x.group(2),x.group(1))==chave)
+        DECORATIVAS.setdefault(chave,set()).add(indice)
+def decorativa(src,alt):
+    chave=(src,alt);indice=DECORATIVAS_VISTAS.get(chave,0);DECORATIVAS_VISTAS[chave]=indice+1
+    return indice in DECORATIVAS.get(chave,set())
 def sem_comentarios(md):
     """Remove comentarios HTML (<!-- -->) do texto, preservando os que aparecem em blocos de codigo e em codigo em linha."""
     out=[];p=0
@@ -238,7 +246,8 @@ def mermaid_edges(code):
 def inl(t):
     s=''
     for x,b,i,c,u in runs(t):
-        if c==2:s+='<img class="il" src="%s" alt="%s">'%(E(u),E(x));continue
+        if c==2:
+            decor=decorativa(u,x);s+='<img class="il" src="%s" alt="%s">'%(E(u),E('' if decor else x));continue
         h=E(x,quote=False)
         if c:h='<code>'+h+'</code>'
         if i:h='<em>'+h+'</em>'
@@ -265,8 +274,10 @@ def html_of(bl,toc=None):
             o.append('<h%d id="%s">%s</h%d>'%(b[1],sid,inl(b[2]),b[1]))
         elif k=='p':o.append('<p>'+inl(b[1])+'</p>')
         elif k=='img':
-            if not b[1].strip() and b[2] not in DECORATIVAS:aviso('Imagem sem descrição (texto alternativo vazio): %s'%(b[2][:60]+'…' if len(b[2])>60 else b[2]))
-            o.append('<figure><img src="%s" alt="%s">%s</figure>'%(E(b[2]),E(b[1]),'<figcaption>%s</figcaption>'%E(b[1]) if b[1] else ''))
+            decor=decorativa(b[2],b[1])
+            if not b[1].strip() and not decor:aviso('Imagem sem descrição (texto alternativo vazio): %s'%(b[2][:60]+'…' if len(b[2])>60 else b[2]))
+            alt='' if decor else b[1]
+            o.append('<figure><img src="%s" alt="%s">%s</figure>'%(E(b[2]),E(alt),'<figcaption>%s</figcaption>'%E(b[1]) if b[1] and not decor else ''))
         elif k=='table':
             r=b[1];t='<div class="tbl" role="region" aria-label="Tabela" tabindex="0"><table><thead><tr>'+''.join('<th scope="col">%s</th>'%inl(c) for c in r[0])+'</tr></thead><tbody>'
             t+=''.join('<tr>'+''.join('<td>%s</td>'%inl(c) for c in x)+'</tr>' for x in r[1:]);o.append(t+'</tbody></table></div>')
@@ -386,7 +397,7 @@ function setEstado(v){UI.estado=v;hud.dataset.estado=v;H.dataset.barra=v==='hidd
 function camadaAberta(){return UI.estado==='menu-open'||UI.estado==='a11y-open'||UI.estado==='pick-open'}
 function cancelarInatividade(){clearTimeout(UI.inatividade);UI.inatividade=null}
 function focoTeclado(){var a=D.activeElement;if(!a||!(hud.contains(a)||a===b2))return false;try{return a.matches(':focus-visible')}catch(e){return UI.entrada==='keyboard'}}
-function programarInatividade(){cancelarInatividade();if(ler()||UI.sobre||camadaAberta()||UI.estado==='dialog-open')return;UI.inatividade=setTimeout(function(){if(ler())return;if(UI.sobre||focoTeclado()||(dica&&!dica.hidden&&dica.matches(':hover'))){programarInatividade();return}setEstado('hidden')},2500)}
+function programarInatividade(){cancelarInatividade();if(ler()||UI.sobre||camadaAberta()||UI.estado==='dialog-open'||UI.barraFixa)return;UI.inatividade=setTimeout(function(){if(ler())return;if(UI.barraFixa){setEstado('visible');return}if(UI.sobre||focoTeclado()||(dica&&!dica.hidden&&dica.matches(':hover'))){programarInatividade();return}setEstado('hidden')},2500)}
 function mostrar(entrada){if(entrada)setEntrada(entrada);if(UI.estado==='hidden')setEstado('visible');programarInatividade()}
 function fecharSilencioso(){if(menu)menu.hidden=true;if(a11y)a11y.hidden=true;if(pk)pk.hidden=true;[bmais,ba11y,cb].forEach(function(b){if(b)b.setAttribute('aria-expanded','false')})}
 function fecharCamadas(foco){fecharSilencioso();setEstado('visible');if(foco&&foco.focus)foco.focus();programarInatividade()}
@@ -424,6 +435,7 @@ function tempoLeitura(s){var w=palavras(s),v=s.querySelectorAll('img,table,pre,.
 function agendar(){clearTimeout(UI.relogio);UI.relogio=null;if(!UI.reproduzindo||ler())return;var q={i:i,narrado:false};D.dispatchEvent(new CustomEvent('conteudista:quanto',{detail:q}));if(q.narrado)return;UI.relogio=setTimeout(passo,tempoLeitura(S[i]))}
 function passo(){UI.relogio=null;if(!UI.reproduzindo||ler())return;if(i>=N-1){parar();return}g(i+1)}
 D.addEventListener('conteudista:slide',function(){if(UI.reproduzindo)agendar()});
+D.addEventListener('conteudista:barra-fixa',function(e){UI.barraFixa=!!e.detail;if(UI.barraFixa){cancelarInatividade();setEstado('visible')}else programarInatividade()});
 D.addEventListener('conteudista:narrfim',function(e){if(UI.reproduzindo&&!ler()&&e.detail===i){clearTimeout(UI.relogio);UI.relogio=setTimeout(passo,700)}});
 D.addEventListener('conteudista:narrmudou',function(){if(UI.reproduzindo)agendar()});
 D.addEventListener('conteudista:tocar',function(){if(!UI.reproduzindo&&!ler())reproduzir()});
@@ -639,9 +651,61 @@ function ap(k,av){i=Math.max(0,Math.min(T.length-1,k));var v=T[i];h.style.setPro
 function passo(d){var k=d===0?1:i+d;if(d!==0&&(k<0||k>T.length-1))return;ap(k,true)}
 m.addEventListener('click',function(){passo(-1)});p.addEventListener('click',function(){passo(1)});r.addEventListener('click',function(){passo(0)});ap(i,false)})();
 """
+PAINEL_A11Y_CSS=r'''
+.a11y-panel{position:fixed;inset:0 0 0 auto;width:min(380px,100vw);height:100vh;height:100dvh;max-height:100vh;margin:0;padding:0;border:0;border-left:1px solid #888;border-radius:0;background:#fff;color:#333;box-shadow:-8px 0 28px rgba(0,0,0,.25);font:16px/1.5 "Segoe UI",Roboto,Arial,sans-serif}
+.a11y-panel[open]{display:flex;flex-direction:column}.a11y-panel::backdrop{background:rgba(0,0,0,.45)}
+.a11y-panel header{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid #ccc;background:#fff;color:#333}
+.a11y-panel h2{flex:1;margin:0;color:#0c326f;font-size:19px}.a11y-panel .a11y-corpo{overflow:auto;padding:16px}
+.a11y-panel label{display:flex;align-items:flex-start;gap:10px;margin:12px 0;color:#333;font-weight:400}.a11y-panel input{flex:0 0 auto;width:22px;height:22px;margin:1px 0;accent-color:#1351b4}
+.a11y-panel button{min-height:44px}.a11y-panel .a11y-aviso{margin:8px 0;padding:10px 12px;border-left:5px solid #8a5c00;background:#fff5c2;color:#333}
+.a11y-panel .a11y-estado{min-height:1.5em;margin:12px 0;color:#0c326f}.a11y-ruler{position:fixed;z-index:2999;left:0;right:0;height:2.5em;border-block:2px solid #8a5c00;background:rgba(255,245,194,.28);pointer-events:none;display:none}
+html.a11y-spacing body,html.a11y-spacing body *{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}html.a11y-spacing p{margin-bottom:2em!important}
+html.a11y-contrast body,html.a11y-contrast main,html.a11y-contrast article,html.a11y-contrast .s{background:#000!important;color:#fff!important}
+html.a11y-contrast h1,html.a11y-contrast h2,html.a11y-contrast h3,html.a11y-contrast p,html.a11y-contrast li,html.a11y-contrast a{color:#fff!important}
+html.a11y-contrast a{text-decoration:underline!important}html.a11y-contrast table,html.a11y-contrast th,html.a11y-contrast td{background:#000!important;color:#fff!important;border-color:#fff!important}
+html.a11y-contrast .a11y-panel,html.a11y-contrast .a11y-panel header{background:#000!important;color:#fff!important;border-color:#fff!important}
+html.a11y-contrast .a11y-panel h2{color:#fff!important}html.a11y-contrast .a11y-panel .a11y-aviso{background:#000!important;color:#ff0!important;border-color:#ff0}
+html.a11y-reduce *,html.a11y-reduce *::before,html.a11y-reduce *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+.a11y-caption{display:none;position:absolute;z-index:4;left:8%;right:8%;bottom:8%;max-height:24%;overflow:auto;margin:0;padding:8px 12px;border-radius:4px;background:rgba(0,0,0,.9);color:#fff!important;text-align:center;font-size:1.05em;line-height:1.5}
+html.a11y-legendas-on .s.on .a11y-caption{display:block}
+.a11y-sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.a11y-panel-toggle:focus-visible,.a11y-panel button:focus-visible{outline:3px solid #c2850c;outline-offset:3px}
+@media(max-width:700px){.a11y-panel{inset:auto 0 0;width:100%;height:min(78vh,640px);height:min(78dvh,640px);max-height:90vh;border:0;border-top:1px solid #888;border-radius:16px 16px 0 0;box-shadow:0 -8px 28px rgba(0,0,0,.3)}.a11y-panel header{padding:18px 16px 10px}.a11y-panel .a11y-corpo{padding:10px 16px max(16px,env(safe-area-inset-bottom))}}
+@media(prefers-reduced-motion:reduce){.a11y-panel *{scroll-behavior:auto!important}}
+@media(forced-colors:active){.a11y-panel,.a11y-panel button,.a11y-ruler{border:1px solid CanvasText}.a11y-panel button:focus-visible{outline:3px solid Highlight}}
+'''
+def painel_a11y(vlibras=True, legendas=False):
+        libras = ('<p class="a11y-aviso">Ativar VLibras acessa um serviço externo e precisa de internet. Desative para conteúdo interno.</p>'
+            '<button type="button" class="sec" data-a11y="vlibras">Ativar VLibras</button>') if vlibras else ''
+        legenda = '<label><input type="checkbox" data-a11y="legendas" checked> Legendas da narração</label>' if legendas else ''
+        return ('<dialog id="a11yPanel" class="a11y-panel" aria-labelledby="a11yPanelTitle">'
+            '<header><h2 id="a11yPanelTitle">Acessibilidade</h2><button type="button" class="sec" data-a11y="fechar">Fechar</button></header>'
+            '<div class="a11y-corpo"><label><input type="checkbox" data-a11y="contraste"> Alto contraste</label>'
+            '<label><input type="checkbox" data-a11y="espacamento"> Espaçamento do texto (WCAG 1.4.12)</label>'
+            '<label><input type="checkbox" data-a11y="regua"> Régua de leitura</label>'
+            '<label><input type="checkbox" data-a11y="barra"> Manter a barra de controles visível</label>'
+            '<label><input type="checkbox" data-a11y="movimento"> Reduzir animações</label>' + legenda +
+            '<button type="button" class="sec" data-a11y="ouvir">Ouvir texto atual</button>' + libras +
+            '<p class="a11y-estado" id="a11yEstado" role="status" aria-live="polite"></p></div></dialog>' +
+            '<div id="a11yRegua" class="a11y-ruler" aria-hidden="true"></div><p id="a11yLegendasLive" class="a11y-sr" role="status" aria-live="polite" aria-atomic="true"></p>')
+A11Y_JS=r'''<script>(function(){var d=document,h=d.documentElement,p=d.getElementById('a11yPanel'),b=d.getElementById('a11yToggle'),r=d.getElementById('a11yRegua'),live=d.getElementById('a11yLegendasLive'),ut=null,loaded=false;
+if(!p||!b)return;function saved(k,def){try{var v=localStorage.getItem('conteudista.gerados.'+k);return v===null?def:v==='1'}catch(e){return def}}
+function set(k,v){try{localStorage.setItem('conteudista.gerados.'+k,v?'1':'0')}catch(e){}}
+function ctrl(k){return p.querySelector('[data-a11y="'+k+'"]')}
+[['contraste','a11y-contrast',false],['espacamento','a11y-spacing',false],['movimento','a11y-reduce',false],['legendas','a11y-legendas-on',true],['barra','a11y-barra-fixa',false]].forEach(function(x){var c=ctrl(x[0]);if(!c)return;var on=saved(x[0],x[2]);c.checked=on;h.classList.toggle(x[1],on);c.addEventListener('change',function(){h.classList.toggle(x[1],c.checked);set(x[0],c.checked);if(x[0]==='legendas')falaLegenda();if(x[0]==='barra')d.dispatchEvent(new CustomEvent('conteudista:barra-fixa',{detail:c.checked}))})});
+var rg=ctrl('regua');if(rg)rg.addEventListener('change',function(){if(r)r.style.display=rg.checked?'block':'none';if(rg.checked)setTimeout(function(){if(rg.checked&&r)r.style.top=(innerHeight*.35)+'px'},0)});
+function falaLegenda(){if(!live)return;var c=d.querySelector('.s.on .a11y-caption');live.textContent=d.body.classList.contains('a11y-legendas-on')&&c?c.textContent:''}
+function abrir(){p.showModal();b.setAttribute('aria-expanded','true');var t=d.getElementById('a11yPanelTitle');if(t)t.focus()}
+function fechar(){if(p.open)p.close()}
+b.addEventListener('click',abrir);p.addEventListener('close',function(){b.setAttribute('aria-expanded','false');b.focus()});p.addEventListener('cancel',function(){b.setAttribute('aria-expanded','false')});
+p.addEventListener('click',function(e){var x=e.target.closest('[data-a11y]');if(!x)return;var k=x.dataset.a11y;if(k==='fechar'){fechar();return}if(k==='ouvir'){if(!('speechSynthesis'in window)){d.getElementById('a11yEstado').textContent='A leitura em voz alta não está disponível neste navegador.';return}speechSynthesis.cancel();var alvo=d.querySelector('.s.on .conteudo')||d.querySelector('main article')||d.querySelector('main');var u=new SpeechSynthesisUtterance(alvo?(alvo.innerText||alvo.textContent):d.body.innerText);u.lang='pt-BR';u.onend=function(){d.getElementById('a11yEstado').textContent='Leitura concluída.'};speechSynthesis.speak(u);d.getElementById('a11yEstado').textContent='Leitura em voz alta iniciada.';return}if(k==='vlibras')vlibras(x)});
+function vlibras(btn){var st=d.getElementById('a11yEstado');if(st)st.textContent='Carregando VLibras. É necessário acesso à internet.';function iniciar(){if(window.VLibras&&window.VLibras.Widget){new window.VLibras.Widget('https://vlibras.gov.br/app');loaded=true;if(st)st.textContent='VLibras carregado.';btn.disabled=true;btn.textContent='VLibras ativado'}}if(loaded){iniciar();return}if(window.VLibras){iniciar();return}var s=d.createElement('script');s.src='https://vlibras.gov.br/app/vlibras-plugin.js';s.async=true;s.onload=iniciar;s.onerror=function(){if(st)st.textContent='Não foi possível carregar VLibras. Verifique a conexão.'};d.head.append(s)}
+var c=ctrl('legendas');function slide(){var x=d.querySelector('.s.on .a11y-caption');if(c&&c.checked&&x&&live)live.textContent=x.textContent}d.addEventListener('conteudista:slide',slide);slide();
+addEventListener('pointermove',function(e){if(rg&&rg.checked&&r)r.style.top=Math.max(0,Math.min(innerHeight-40,e.clientY-20))+'px'},{passive:true});addEventListener('keydown',function(e){if(e.key==='Escape'&&p.open)b.setAttribute('aria-expanded','false')},true);
+})();</script>'''
 def title_of(md,d):
     m=re.search(r'^#\s+(.+)$',md,re.M);return plain(m.group(1)).strip() if m else d
-def treinamento_html(md,bar,tema=None):
+def treinamento_html(md,bar,tema=None,vlibras=True):
     # Os temas ANAC 20 anos alteram somente a apresentação; a apostila permanece no padrão gov.br.
     T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema)
     toc=[];b=html_of(blocks(md),toc)
@@ -653,11 +717,11 @@ def treinamento_html(md,bar,tema=None):
             b=b[:m.start()]+'<section class="gab-sec">'+m.group(0)+'<div id="gab" class="hid" aria-hidden="true" inert>'+b[m.end():e]+'</div></section>'+b[e:];break
     t=title_of(md,'Apostila');tc=''.join('<li class="lv%d"><a href="#%s">%s</a></li>'%(v,s,E(x)) for v,s,x in toc)
     return ('<!DOCTYPE html><html lang="pt-BR" data-theme="light" data-leitura="padrao"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title>'
-    '<script>%s</script><style>%s%s%s</style></head><body><a class="skip" href="#conteudo">Ir para o conteúdo</a>'
+    '<script>%s</script><style>%s%s%s%s</style></head><body><a class="skip" href="#conteudo">Ir para o conteúdo</a>'
     '<header><span class="t">%s</span><span id="pg" role="status" aria-live="polite"></span><select id="th" aria-label="Tema"><option value="light">Tema claro</option><option value="dark">Tema escuro</option><option value="contrast">Alto contraste</option></select>'
-    '%s%s<button id="rs" type="button">Limpar checklists</button><button type="button" onclick="print()" title="Imprimir ou salvar em PDF em A4">Imprimir / PDF</button></header>'
-    '<div class="wrap"><nav aria-label="Sumário"><ul>%s</ul></nav><main id="conteudo" tabindex="-1"><article>%s</article></main></div><script>%s%s</script>%s</body></html>'
-    )%(E(t),LEITURA_HEAD,fontes_css(),tcss(CSS_G,T,T['extra_g']),CSS_G_A11Y+ZOOM_CSS,E(bar or t),LEITURA_SEL,TAM_HTML,tc,b,LEITURA_JS+TAM_JS+ZOOM_JS,JS_G.replace('__K__',slug(t)[:40]),MER)
+    '%s%s<button type="button" id="a11yToggle" class="a11y-panel-toggle sec mini" aria-controls="a11yPanel" aria-expanded="false">Acessibilidade</button><button id="rs" type="button">Limpar checklists</button><button type="button" onclick="print()" title="Imprimir ou salvar em PDF em A4">Imprimir / PDF</button></header>'
+    '<div class="wrap"><nav aria-label="Sumário"><ul>%s</ul></nav><main id="conteudo" tabindex="-1"><article>%s</article></main></div>%s<script>%s%s</script>%s%s</body></html>'
+    )%(E(t),LEITURA_HEAD,fontes_css(),tcss(CSS_G,T,T['extra_g']),CSS_G_A11Y+ZOOM_CSS,PAINEL_A11Y_CSS,E(bar or t),LEITURA_SEL,TAM_HTML,tc,b,painel_a11y(vlibras),LEITURA_JS+TAM_JS+ZOOM_JS,JS_G.replace('__K__',slug(t)[:40]),A11Y_JS,MER)
 # Zoom e "Ampliar imagem" (1.79): apostila e apresentação. Pinça nativa no celular, Ctrl+roda, teclas + − 0, toque duplo; imagens e fluxos abrem ampliados.
 ZOOM_CSS=r'''
 .zm-vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
@@ -1024,13 +1088,14 @@ ICO_B={'prev':'M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z','next':'M10 6 8.59
 ICO_B.update({'nota':'M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 14H6v-2h2v2zm0-3H6V9h2v2zm0-3H6V6h2v2zm7 6h-5v-2h5v2zm3-3h-8V9h8v2zm0-3h-8V6h8v2z','print':'M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z','auto':'M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z'})
 def _ic(k,cls=''):
     return '<svg class="ic%s" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="%s"/></svg>'%((' '+cls) if cls else '',ICO_B[k])
-def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
+def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True):
     """Monta o HTML da apresentação (com ou sem narração): ARIA, leitura, modo leitura, auto-ajuste e impressão A4."""
     T=tema_de(tema);n=len(sl);secs=[]
     for k,(c,b,nt) in enumerate(sl):
         rot='Slide %d de %d'%(k+1,n)
         nota='<aside class="nt" role="note" aria-label="Notas do apresentador"><p class="nt-t">Notas do apresentador</p><p class="nt-x">%s</p></aside>'%E(nt) if (nt or '').strip() else ''
-        secs.append('<section class="s %s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s</section>'%(c,rot,rot,html_of(b),nota))
+        legenda='<p class="a11y-caption">%s</p>'%E(nt) if audios and k in audios and (nt or '').strip() else ''
+        secs.append('<section class="s %s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,rot,rot,html_of(b),nota,legenda))
     o=_fluxos_img(''.join(secs),fluxos)
     css=fontes_css()+tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+_anac_html_css(tema,n)
     narr=bool(audios);aud=''
@@ -1040,7 +1105,7 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
             if 0<=k<n:
                 mime=MIME_AUDIO.get(os.path.splitext(cam)[1].lower(),'audio/mpeg')
                 aud+='<audio class="narr" data-s="%d" preload="auto" src="data:%s;base64,%s"></audio>'%(k,mime,base64.b64encode(open(cam,'rb').read()).decode())
-    css+=CSS_S_A11Y+CSS_BPLUS+CSS_ESTREITO+ZOOM_CSS
+    css+=CSS_S_A11Y+CSS_BPLUS+CSS_ESTREITO+ZOOM_CSS+PAINEL_A11Y_CSS
     hud=('<div id="hud" role="toolbar" aria-label="Controles da apresentação" class="bplus" data-estado="visible">'
          '<button id="p" type="button" aria-label="Slide anterior" aria-keyshortcuts="ArrowLeft" data-dica="Slide anterior · ←">'+_ic('prev')+'</button>'
          '<button id="bp" type="button" aria-label="Reproduzir apresentação" aria-keyshortcuts="Space" data-on="false" data-dica="Reproduzir · Espaço">'+_ic('play','i-off')+_ic('pause','i-on')+'</button>'
@@ -1061,6 +1126,7 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
          '<span id="tamS" class="vh" role="status" aria-live="polite"></span></div></div>'
          '<div id="bmais-menu" class="bplus-pop" hidden>'
          '<button id="ba11yM" class="so-mobile mi" type="button" aria-haspopup="true" aria-controls="a11y">'+_ic('a11y')+'<span class="mi-t">Acessibilidade (A)</span></button>'
+         '<button id="a11yToggle" class="mi" type="button" aria-haspopup="dialog" aria-controls="a11yPanel" aria-expanded="false">'+_ic('a11y')+'<span class="mi-t">Acessibilidade dos arquivos</span></button>'
          +('<button id="ba" type="button" aria-pressed="false">Avanço automático</button>' if narr else '')
          +'<button id="b1" type="button" aria-pressed="false" aria-keyshortcuts="N" class="mi">'+_ic('nota')+'<span class="mi-t">Mostrar notas (N)</span></button>'
          '<button id="imp" type="button" aria-haspopup="dialog" aria-keyshortcuts="Control+P" aria-controls="dimp" class="mi">'+_ic('print')+'<span class="mi-t">Imprimir / PDF…</span></button>'
@@ -1073,13 +1139,13 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
     js='<script>'+ZOOM_JS+'</script><script>'+LEITURA_JS+JS_S+'</script>'+('<script>'+JS_NARR.replace('__AUTO__','true' if avancar else 'false')+'</script>' if narr else '')
     return ('<!DOCTYPE html><html lang="pt-BR" data-leitura="padrao"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme" content="%s"><title>%s</title>'
     '<script>%s%s</script><style>%s</style></head><body><script>%s</script><a class="skip" href="#st">Ir para os slides</a>%s'
-    '<div id="st" role="region" aria-roledescription="apresentação" aria-label="Apresentação" tabindex="-1">%s</div><div id="bar" aria-hidden="true"></div>%s%s%s%s</body></html>'
-    )%(E(tema or TEMA_PADRAO),E(t),LEITURA_HEAD,SLIDES_MODO_HEAD,css,SLIDES_MODO_BODY,hud,o,ini,aud,js,_mer_s(o))
-def slides_html(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None):
-    return _slides_doc(t,sl,foot,tema,audios,avancar,fluxos)
-def _slides_html_narrado(t,sl,foot,tema,audios,avancar,fluxos=None):
+    '<div id="st" role="region" aria-roledescription="apresentação" aria-label="Apresentação" tabindex="-1">%s</div><div id="bar" aria-hidden="true"></div>%s%s%s%s%s%s</body></html>'
+    )%(E(tema or TEMA_PADRAO),E(t),LEITURA_HEAD,SLIDES_MODO_HEAD,css,SLIDES_MODO_BODY,hud,o,ini,aud,js,_mer_s(o),painel_a11y(vlibras,narr),A11Y_JS)
+def slides_html(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True):
+    return _slides_doc(t,sl,foot,tema,audios,avancar,fluxos,vlibras)
+def _slides_html_narrado(t,sl,foot,tema,audios,avancar,fluxos=None,vlibras=True):
     """Compatibilidade: a montagem é a mesma de slides_html (_slides_doc); a narração escuta o evento conteudista:slide."""
-    return _slides_doc(t,sl,foot,tema,audios,avancar,fluxos)
+    return _slides_doc(t,sl,foot,tema,audios,avancar,fluxos,vlibras)
 # ============================== DOCX ==============================
 def treinamento_docx(md,path,foot,tema=None):
     # Os temas ANAC 20 anos alteram somente a apresentação; o DOCX permanece no padrão gov.br.
@@ -1148,7 +1214,8 @@ def treinamento_docx(md,path,foot,tema=None):
         except Exception:run.text='[imagem]';return False
     def fill(p,t,color=None,size=None,bold=False):
         for x,b,i,c,u in runs(t):
-            if c==2:pic(p.add_run(),u,hcm=0.5,alt=x);continue
+            if c==2:
+                decor=decorativa(u,x);pic(p.add_run(),u,hcm=0.5,alt='' if decor else x,decor=decor);continue
             if u:link(p,x,u,b,size);continue
             r=p.add_run(x);r.bold=bool(b) or bold;r.italic=bool(i)
             if c:r.font.name='Consolas';r.font.size=Pt(10);r.font.color.rgb=PRI
@@ -1178,8 +1245,8 @@ def treinamento_docx(md,path,foot,tema=None):
                 p=d.add_paragraph();fill(p,b[1])
                 if inq:shade(p._p,inq[0]);lborder(p,inq[1])
             elif k=='img':
-                p=d.add_paragraph();p.alignment=1;pic(p.add_run(),b[2],alt=b[1],decor=b[2] in DECORATIVAS)
-                if b[1]:
+                decor=decorativa(b[2],b[1]);p=d.add_paragraph();p.alignment=1;pic(p.add_run(),b[2],alt='' if decor else b[1],decor=decor)
+                if b[1] and not decor:
                     c=d.add_paragraph();c.alignment=1;r=c.add_run(b[1]);r.italic=True;r.font.size=Pt(9)
             elif k=='table':table(b[1])
             elif k=='list':
@@ -1287,8 +1354,9 @@ def _ep_inl(t,cx):
     for x,b,i,c,u in runs(t):
         if c==2:
             src=cx.img(u);cx.n_img+=1
-            if not x.strip():cx.sem_alt+=1
-            s+='<img class="il" src="%s" alt="%s"/>'%(E(src),E(x)) if src else E('[imagem%s]'%(': '+x if x else ''),quote=False)
+            decor=decorativa(u,x)
+            if not x.strip() and not decor:cx.sem_alt+=1
+            s+='<img class="il" src="%s" alt="%s"/>'%(E(src),E('' if decor else x)) if src else E('[imagem%s]'%(': '+x if x else ''),quote=False)
             continue
         h=E(x,quote=False)
         if c:h='<code>'+h+'</code>'
@@ -1324,8 +1392,10 @@ def _ep_blocks(bl,cx,toc=None):
         elif k=='p':o.append('<p>'+_ep_inl(b[1],cx)+'</p>')
         elif k=='img':
             src=cx.img(b[2]);cx.n_img+=1
-            if not b[1].strip() and b[2] not in DECORATIVAS:cx.sem_alt+=1
-            if src:o.append('<figure><img src="%s" alt="%s"/>%s</figure>'%(E(src),E(b[1]),'<figcaption>%s</figcaption>'%E(b[1]) if b[1] else ''))
+            decor=decorativa(b[2],b[1])
+            if not b[1].strip() and not decor:cx.sem_alt+=1
+            alt='' if decor else b[1]
+            if src:o.append('<figure><img src="%s" alt="%s"/>%s</figure>'%(E(src),E(alt),'<figcaption>%s</figcaption>'%E(b[1]) if b[1] and not decor else ''))
             else:o.append('<p>%s</p>'%E('[Imagem não incluída%s]'%(': '+b[1] if b[1] else ''),quote=False));aviso('Imagem remota ou ilegível não incluída no EPUB: %s'%b[2][:60])
         elif k=='table':o.append(_ep_tabela(b[1],cx))
         elif k=='list':o.append(_ep_list(b[1],cx))
@@ -1482,7 +1552,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
         r=s.shapes.add_shape(shape,Inches(x),Inches(y),Inches(w),Inches(h));r.fill.solid();r.fill.fore_color.rgb=col;r.line.fill.background();r.shadow.inherit=False;return r
     def addruns(par,t,size,color,bold=False):
         for x,b,i,c,u in runs(t):
-            if c==2:x='[%s]'%(x or 'imagem');u=None;c=0
+            if c==2:decorativa(u,x);x='[%s]'%(x or 'imagem');u=None;c=0
             r=par.add_run();r.text=x;f=r.font;f.size=Pt(size);f.bold=bool(b) or bold;f.italic=bool(i);f.name='Consolas' if c else FONTE;f.language_id=PT_BR
             f.color.rgb=ACC if (u and color==INK) else (PRI if (b and color==INK) else color)
             if u:r.hyperlink.address=u;f.underline=True
@@ -1543,7 +1613,8 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                 tb,tf=tbox(s,x,y,w,0.4);addruns(tf.paragraphs[0],'[imagem: %s]'%(b[1] or 'sem descrição'),size,col)
             else:
                 iw,ih=img_size(raw);hh=min(4.6,w*ih/max(iw,1),ih/96);ww=hh*iw/max(ih,1)
-                alt_pic(s.shapes.add_picture(io.BytesIO(raw),Inches(x+(w-ww)/2),Inches(y),Inches(ww),Inches(hh)),b[1],b[2] in DECORATIVAS)
+                decor=decorativa(b[2],b[1])
+                alt_pic(s.shapes.add_picture(io.BytesIO(raw),Inches(x+(w-ww)/2),Inches(y),Inches(ww),Inches(hh)),'' if decor else b[1],decor)
                 if b[1]:
                     tb,tf=tbox(s,x,y+hh+0.03,w,0.32);tf.paragraphs[0].alignment=2;addruns(tf.paragraphs[0],b[1],12,MU)
         elif k=='code':
@@ -1669,35 +1740,38 @@ def markdown_com_tema(md,tema):
             else:cab=cab.rstrip()+'\ntheme: '+tema
             return '---\n'+cab+'\n---'+md[fim+4:]
     return '---\ntheme: '+tema+'\n---\n\n'+md.lstrip()
-def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narracao=None,fluxos=None):
+def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narracao=None,fluxos=None,vlibras=True):
     tema=tema if tema in TEMAS else TEMA_PADRAO
     """Gera os arquivos do que estiver preenchido: apostila (MD/HTML/DOCX/EPUB/EPUB OpenDyslexic) e/ou apresentação (MD/HTML/PPTX)."""
     global _FONTES_CSS
     del AVISOS[:];_FONTES_CSS=None  # relê as fontes a cada geração (o app mantém o módulo carregado)
     gm=gm or '';sm=sm or ''
-    DECORATIVAS.clear();registrar_decorativas(gm);registrar_decorativas(sm)
+    DECORATIVAS.clear();DECORATIVAS_VISTAS.clear()
     tem_g,tem_s=bool(gm.strip()),bool(sm.strip())
     if not tem_g and not tem_s:raise ValueError('Nada para gerar: a apostila e a apresentação estão vazias.')
     os.makedirs(saida,exist_ok=True)
     P=lambda e,n:os.path.join(saida,n+prefixo+e)
     arqs=[];msg='';g='';sl=[]
     if tem_g:
-        gm_=sem_comentarios(gm);g=treinamento_html(gm_,barra,tema)
+        registrar_decorativas(gm)
+        gm_=sem_comentarios(gm);g=treinamento_html(gm_,barra,tema,vlibras)
         open(P('.md','Apostila_'),'w',encoding='utf-8').write(gm);open(P('.html','Apostila_'),'w',encoding='utf-8').write(g)
         arqs+=[P('.md','Apostila_'),P('.html','Apostila_')]
-        try:treinamento_docx(gm_,P('.docx','Apostila_'),rodape or title_of(gm_,''),tema);arqs.append(P('.docx','Apostila_'));msg+=' | docx: ok'
+        try:
+            registrar_decorativas(gm);treinamento_docx(gm_,P('.docx','Apostila_'),rodape or title_of(gm_,''),tema);arqs.append(P('.docx','Apostila_'));msg+=' | docx: ok'
         except Exception as e:msg+=' | docx: ERRO %s'%e
         ne=0
         for suf,fonte in(('.epub','atkinson'),('_OpenDyslexic.epub','opendyslexic')):
-            try:treinamento_epub(gm_,P(suf,'Apostila_'),rodape or title_of(gm_,''),tema,fonte);arqs.append(P(suf,'Apostila_'));ne+=1
+            try:registrar_decorativas(gm);treinamento_epub(gm_,P(suf,'Apostila_'),rodape or title_of(gm_,''),tema,fonte);arqs.append(P(suf,'Apostila_'));ne+=1
             except Exception as e:msg+=' | epub %s: ERRO %s'%(fonte,e)
         msg+=' | epub: %d'%ne
     else:msg+=' | apostila: vazia (não gerada)'
     if tem_s:
         sm=markdown_com_tema(sm,tema);t,sl=split_slides(sm);nr=_narr(narracao)
-        open(P('.md','Apresentacao_'),'w',encoding='utf-8').write(sm);open(P('.html','Apresentacao_'),'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema,nr['html'],nr['avancar'],_fluxos_dict(fluxos)))
+        registrar_decorativas(sm)
+        open(P('.md','Apresentacao_'),'w',encoding='utf-8').write(sm);open(P('.html','Apresentacao_'),'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema,nr['html'],nr['avancar'],_fluxos_dict(fluxos),vlibras))
         arqs+=[P('.md','Apresentacao_'),P('.html','Apresentacao_')]
-        try:slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape,tema,nr['pptx'],nr['avancar'],nr['duracoes']);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
+        try:registrar_decorativas(sm);slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape,tema,nr['pptx'],nr['avancar'],nr['duracoes']);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
         except Exception as e:msg+=' | pptx: ERRO %s'%e
         if nr['html'] or nr['pptx']:msg+=' | narração: %d slide(s)'%len(set(nr['html'])|set(nr['pptx']))
     else:msg+=' | apresentação: vazia (não gerada)'
@@ -1706,7 +1780,7 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
     return arqs,res
 if __name__=='__main__':
     a=argparse.ArgumentParser();a.add_argument('apostila',help="arquivo da apostila ('-' para não gerar)");a.add_argument('apresentacao',nargs='?',default='-',help="arquivo da apresentação ('-' ou omitido para não gerar)");a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.')
-    a.add_argument('--sem-embutir',action='store_true',help='não converter imagens para base64');a.add_argument('--tema',default=TEMA_PADRAO,choices=sorted(TEMAS),help='layout dos arquivos (padrão: %(default)s)');a.add_argument('--audios',default='',help='pasta com a narração por slide: 1.mp3, 2.ogg, 3.wav… (número do slide)');a.add_argument('--avancar',action='store_true',help='avançar os slides ao fim da narração');a=a.parse_args()
+    a.add_argument('--sem-embutir',action='store_true',help='não converter imagens para base64');a.add_argument('--sem-vlibras',action='store_true',help='não incluir o controle VLibras nos HTML gerados');a.add_argument('--tema',default=TEMA_PADRAO,choices=sorted(TEMAS),help='layout dos arquivos (padrão: %(default)s)');a.add_argument('--audios',default='',help='pasta com a narração por slide: 1.mp3, 2.ogg, 3.wav… (número do slide)');a.add_argument('--avancar',action='store_true',help='avançar os slides ao fim da narração');a=a.parse_args()
     ler=lambda f:'' if f in('-','') else open(f,encoding='utf-8').read()
     gm=ler(a.apostila);sm=ler(a.apresentacao)
     if not a.sem_embutir:
@@ -1722,7 +1796,7 @@ if __name__=='__main__':
             k=str(int(m.group(1))-1);cam=os.path.join(a.audios,f)
             narr['html'][k]=cam
             if m.group(2).lower()!='ogg' and (k not in narr['pptx'] or m.group(2).lower()=='mp3'):narr['pptx'][k]=cam
-    try:_,res=gerar(gm,sm,a.prefixo,a.rodape,a.barra,a.saida,a.tema,narr)
+    try:_,res=gerar(gm,sm,a.prefixo,a.rodape,a.barra,a.saida,a.tema,narr,vlibras=not a.sem_vlibras)
     except ValueError as e:print('ERRO: %s'%e);raise SystemExit(1)
     print(res)
     if 'ERRO' in res:raise SystemExit(1)

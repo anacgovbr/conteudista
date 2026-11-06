@@ -18,7 +18,7 @@
   const $ = id => document.getElementById(id);
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const A = () => window.AcessibilidadeTexto;
-  const IA = window.Opcoes ? Opcoes.ligado('acessibilidade_texto.ajuda_ia') : true;
+  const IA = () => window.Opcoes ? Opcoes.ligado('acessibilidade_texto.ajuda_ia') : true;
   const LIMITE_CURTA = 150;
   const anunciar = m => { try { if (window.UXFeedback && UXFeedback.anunciar) UXFeedback.anunciar(m); } catch (e) { /* */ } };
   const confirmar = (b, m) => { try { if (window.UXFeedback && UXFeedback.confirmar) UXFeedback.confirmar(b, m); else anunciar(m); } catch (e) { anunciar(m); } };
@@ -143,7 +143,7 @@ html.contraste .lj-campo textarea,html.contraste .lj-campo input,html.contraste 
       if (n >= 0) { e.preventDefault(); ativar(tabs[n], true); }
     });
   }
-  const abasHtml = (pfx, rotEu) => IA ? '<div class="lj-abas" role="tablist" aria-label="Como fazer">' +
+  const abasHtml = (pfx, rotEu) => IA() ? '<div class="lj-abas" role="tablist" aria-label="Como fazer">' +
     '<button type="button" role="tab" id="' + pfx + 'Ta" data-aba="eu" aria-selected="true" aria-controls="' + pfx + 'Pa">' + rotEu + '</button>' +
     '<button type="button" role="tab" id="' + pfx + 'Tb" data-aba="ia" aria-selected="false" tabindex="-1" aria-controls="' + pfx + 'Pb">Pedir ajuda a uma IA</button></div>' : '';
   const AVISO_IA = '<div class="lj-msg aten" role="note"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 1.5 21h21L12 2.5z" fill="#c2850c"/><path d="M12 9v5.5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="17.6" r="1.3" fill="#fff"/></svg>' +
@@ -218,8 +218,8 @@ html.contraste .lj-campo textarea,html.contraste .lj-campo input,html.contraste 
       '<div class="lj-grade"><div class="lj-mini"><div class="lj-img">' + (src ? '<img src="' + esc(src) + '" alt="">' : '<span>Imagem não incorporada ao texto</span>') + '</div>' +
       '<small>Linha ' + d.linha + ' · ' + esc(nome.length > 60 ? nome.slice(0, 57) + '\u2026' : nome) + '</small></div><div>' +
       abasHtml('ljd', 'Escrever eu mesmo') +
-      '<div id="ljdPa" role="' + (IA ? 'tabpanel' : 'region') + '" aria-labelledby="ljdTa"><p style="margin:0 0 12px">Diga o que a imagem mostra e por que ela está aqui. Quem usa leitor de tela vai ouvir esta descrição.</p></div>' +
-      (IA ? '<div id="ljdPb" role="tabpanel" aria-labelledby="ljdTb" hidden>' + AVISO_IA +
+      '<div id="ljdPa" role="' + (IA() ? 'tabpanel' : 'region') + '" aria-labelledby="ljdTa"><p style="margin:0 0 12px">Diga o que a imagem mostra e por que ela está aqui. Quem usa leitor de tela vai ouvir esta descrição.</p></div>' +
+      (IA() ? '<div id="ljdPb" role="tabpanel" aria-labelledby="ljdTb" hidden>' + AVISO_IA +
         '<div class="lj-passo"><span class="lj-num" aria-hidden="true">1</span><div><h3>Copie o pedido e a imagem e cole na IA</h3><div class="lj-botoes">' +
         '<button type="button" class="mini" data-c="pedido">Copiar pedido</button>' +
         (podeCopiarImg ? '<button type="button" class="sec mini" data-c="img">Copiar imagem</button>' : '') +
@@ -291,8 +291,8 @@ html.contraste .lj-campo textarea,html.contraste .lj-campo input,html.contraste 
     const antes = v.slice(alvo.inicio, alvo.fim), rAntes = resumoFrases(L, antes);
     const pedido = L.montarPedido('simplificar', { nome: nomeConteudo(), trecho: antes });
     const corpo = abasHtml('ljs', 'Escrever eu mesmo') +
-      '<div id="ljsPa" role="' + (IA ? 'tabpanel' : 'region') + '" aria-labelledby="ljsTa"><p style="margin:0 0 12px">Reescreva o trecho em frases curtas, com uma ideia em cada. Edite em <b>Depois</b>.</p></div>' +
-      (IA ? '<div id="ljsPb" role="tabpanel" aria-labelledby="ljsTb" hidden>' + AVISO_IA +
+      '<div id="ljsPa" role="' + (IA() ? 'tabpanel' : 'region') + '" aria-labelledby="ljsTa"><p style="margin:0 0 12px">Reescreva o trecho em frases curtas, com uma ideia em cada. Edite em <b>Depois</b>.</p></div>' +
+      (IA() ? '<div id="ljsPb" role="tabpanel" aria-labelledby="ljsTb" hidden>' + AVISO_IA +
         '<div class="lj-passo"><span class="lj-num" aria-hidden="true">1</span><div><h3>Copie o pedido e cole na IA</h3><div class="lj-botoes">' +
         '<button type="button" class="mini" data-c="pedido">Copiar pedido</button><button type="button" class="sec mini" data-c="ver" aria-expanded="false" aria-controls="ljsPed">Ver pedido</button></div>' +
         '<pre class="lj-pedido" id="ljsPed" tabindex="0" hidden>' + esc(pedido) + '</pre></div></div>' +

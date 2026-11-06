@@ -11,10 +11,10 @@ Só ele pode reprovar a publicação. Edge, Firefox e WebKit (Safari) são compl
 
 | Gatilho | O que acontece |
 |---|---|
-| **Push na `main`** (publicação) | Roda no **Google Chrome** antes de publicar. Se falhar, a página **não** é publicada. |
+| **Push na `main`** (publicação) | Mudanças em código rodam no **Google Chrome** antes de publicar. Se falhar, a página **não** é publicada. Alterações apenas de documentação não iniciam a publicação. |
 | **Pull request** | Roda no Chrome (bloqueia) e, em paralelo, em Edge, Firefox e WebKit (informativos). |
-| **Toda segunda-feira, 6h (Brasília)** | Roda nos quatro navegadores. Pega regressões causadas por atualização do Chrome. |
-| **Manual** | *Actions › Testes de navegador › Run workflow*. |
+| **Pacote de atualização** | Roda a verificação completa e Chrome uma vez; a publicação disparada em seguida não repete esses dois gates. |
+| **Manual** | *Actions › Testes de navegador › Run workflow* ou *Publicar página › Run workflow* (testes ligados por padrão). |
 
 O resultado aparece no **resumo da execução** (tabela por caso) e o relatório completo, com
 capturas de tela dos erros, fica como artefato `relatorio-testes-<navegador>`.
@@ -44,6 +44,20 @@ O script usa o Chrome já instalado (não baixa navegador) e mostra a versão de
 | 5 | Versão (CHANGELOG × `changelog.js` × `?v=` do `index.html`), documentação, sintaxe dos `.js`, gate no CI | 5.1–5.7 |
 | 6 | Geração (DOCX, EPUB, PPTX, HTML), teste de acessibilidade (inclusive com saída em cp1252, como no Windows), layout em 3 janelas | 6.1–6.3 |
 | 7 | Celular emulado no Chrome (Pixel 7): toque em Pausar, deslizar, último slide, botões de 44×44 px e barra dentro da tela | 7.1–7.7 |
+| 8 | Opções YAML, padrões, escolha da pessoa e restaurar | 8.1–8.6 |
+| 9 | Editor no celular, menus e importação | 9.1–9.14 |
+| 10 | Zoom nos arquivos gerados | 10.1–10.12 |
+| 11 | Biblioteca no navegador e Web Worker | 11.1–11.3 |
+| 12 | Painel Acessibilidade do texto | 12.1–12.18 |
+| 13 | Marcas no texto e balão | 13.1–13.18 |
+| 14 | Janelas de apoio e imagens decorativas | 14.1–14.17 |
+| 15 | Exemplo, tutorial, ajuda e prompt acessíveis | 15.1–15.9 |
+| 16 | Confirmação ao gerar, sugestões sem bloqueio, ações, foco, sessão e atalho | 16.1–16.9 |
+| 17 | Relatório JSON contra schema, exportações e axe-core WCAG 2.2 | 17.1–17.6 |
+| 18 | Configuração, rebaixamento de regras, importação/exportação JSON e glossário do conteúdo | 18.1–18.7 |
+| 19 | API local: rotas, formatos, ETag, RFC 9457, limites, CORS e taxa | 19.1 |
+| 20 | Apresentação em 320, 390, 768, 1024, 1366 e 1920 px; forced-colors, movimento reduzido, sem violações axe novas e orçamento 200 KiB/400 ms | 20.1–20.4 |
+| 21 | Painel dos arquivos, alt decorativo entre formatos, legendas, axe-core e VLibras sob demanda | 21.1–21.10 |
 
 Os áudios usados são tons sintéticos curtos (slides 1, 2, 3 e o último; o slide 4 fica sem narração de
 propósito). O teste **não** avalia a qualidade da voz.
@@ -58,7 +72,7 @@ Status possíveis: `OK`, `FALHA`/`ERRO` (reprovam), `INSTAVEL` (falhou e passou 
 
 ## Como acrescentar um teste
 
-1. Abra `testar_apresentacao.py` e escolha o grupo (funções `grupo1` … `grupo7`).
+1. Abra `testar_apresentacao.py` e escolha o grupo (funções `grupo1` … `grupo21`).
 2. Use `G.chk('id', 'descrição', condição, detalhe)`. Os auxiliares `esperar`, `permanece`, `tecla`,
    `estado` e `resumo` evitam esperas fixas (que deixam o teste instável).
 3. Para a próxima versão, acrescente os casos novos e, se um comportamento mudar de propósito,

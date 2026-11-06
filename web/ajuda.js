@@ -290,6 +290,9 @@
 <li><b>Ignorar</b> grava um comentário no texto, que não aparece nos arquivos gerados. A sugestão some só naquele trecho.</li>
 <li><kbd>Alt+Shift+N</kbd> vai ao próximo item a partir do cursor. A conferência roda 1 segundo depois que você para de digitar e não envia o texto para fora do navegador.</li>
 <li>Se houver itens para corrigir, um aviso aparece perto de <b>Gerar arquivos</b>. Você pode gerar os arquivos assim mesmo.</li>
+<li>Quando há itens para corrigir, <b>Gerar arquivos</b> pergunta se você quer <b>Conferir agora</b>, <b>Gerar assim mesmo</b> ou <b>Cancelar</b>. Sugestões não abrem confirmação. Marque <b>Não perguntar de novo nesta sessão</b> para ignorar as próximas confirmações até fechar a aba; <kbd>Alt+Shift+G</kbd> usa a mesma confirmação.</li>
+<li>Use <b>Relatório de acessibilidade</b> no painel ou em Arquivos gerados para baixar HTML, JSON ou Markdown. O relatório registra verificações automáticas e não substitui uma avaliação completa WCAG/eMAG.</li>
+<li><b>Configurar acessibilidade do texto</b> permite mudar sugestões, limite, regras e ajuda de IA. As regras só podem ser mantidas ou rebaixadas. Também é possível importar e exportar essas opções em JSON.</li>
 <li><b>Marcas no texto:</b> os trechos para corrigir ficam sublinhados no editor com uma linha ondulada vermelha, como num corretor ortográfico. Clique numa marca para ver a mensagem e as correções. Pelo teclado, <kbd>Alt+Shift+N</kbd> vai ao próximo item e mostra o balão; <kbd>Alt+Shift+I</kbd> leva o foco às correções do item no cursor; <kbd>Esc</kbd> volta ao texto. As marcas somem enquanto você digita e voltam 1 segundo depois.</li>
 <li>No rodapé do painel: <b>Marcar no texto</b> liga e desliga as marcas; <b>Marcar também as sugestões</b> sublinha as sugestões com uma linha pontilhada. As marcas não entram no texto nem nos arquivos gerados.</li></ul>
 <table><tr><th>Ação</th><th>Atalho</th></tr>
@@ -299,6 +302,7 @@
 <tr><td>Fechar o balão ou a janela</td><td><kbd>Esc</kbd></td></tr>
 <tr><td>Desfazer a correção</td><td><kbd>Ctrl+Z</kbd></td></tr></table>
 <p><b>Imagens decorativas:</b> a imagem marcada com <b>É decorativa</b> recebe o comentário <code>&lt;!-- linguagem-acessivel: decorativa --&gt;</code>. Nos arquivos gerados, ela sai sem descrição, para o leitor de tela pular; no PPTX, fica marcada como decorativa.</p>
+<p>Nos HTML gerados, o botão <b>Acessibilidade</b> abre o painel lateral (folha inferior no celular). As legendas das notas de narração começam ligadas. <b>VLibras</b> é opcional, só carrega quando ativado e precisa de internet; desligue a opção na geração para material interno.</p>
 <h4>Escrever conteúdo acessível</h4>
 <ol><li><b>Uma ideia por frase</b>, com até 20 palavras. O verificador sugere dividir a partir de 25.</li>
 <li><b>Siglas:</b> na primeira vez, escreva o nome completo e a sigla entre parênteses.</li>
