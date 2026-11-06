@@ -1,0 +1,24 @@
+@font-face{font-family:"__NOME__";src:url("../fonts/__BASE__-400.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+html{font-size:100%}
+body{font-family:"__NOME__",Verdana,Tahoma,Arial,sans-serif;font-size:1em;line-height:1.65;color:#111;background:#fff;margin:0;padding:0;text-align:left;hyphens:none;-webkit-hyphens:none;overflow-wrap:break-word}
+p{margin:0 0 1em}
+h1,h2,h3,h4{color:#0b3d6e;line-height:1.25;text-align:left;break-after:avoid;page-break-after:avoid}
+h1{font-size:1.8em}h2{font-size:1.45em;margin:1.4em 0 .6em}h3{font-size:1.15em;margin:1.2em 0 .4em}h4{font-size:1.05em}
+a{color:#0b3d6e;text-decoration:underline}
+table{width:100%;border-collapse:collapse;margin:1em 0;font-size:.95em;table-layout:fixed}
+th,td{border:1px solid #767676;padding:.4em .5em;text-align:left;vertical-align:top;word-break:break-word}
+th{background:#e8eef7;color:#111}
+figure{margin:1em 0;text-align:center}
+img{max-width:100%;height:auto}
+img.il{max-height:1.4em;vertical-align:middle}
+figcaption{font-size:.9em;color:#333;margin-top:.25em}
+blockquote{margin:1em 0;padding:.75em 1em;border-left:4px solid #555;background:#f4f4f4}
+pre{white-space:pre-wrap;overflow-wrap:break-word;background:#f4f4f4;padding:.75em;border:1px solid #ccc}
+code{font-family:Consolas,monospace;font-size:.9em}
+li.task{list-style:none;margin-left:-1.2em}
+.caixa{font-size:1.2em;margin-right:.35em}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.fluxo-t{font-weight:700;margin-bottom:.25em}
+.rodape{font-size:.9em;color:#333;border-top:1px solid #999;padding-top:.5em;margin-top:2em}
+nav ol{list-style:none;padding-left:1em}
+table,figure,blockquote,pre{break-inside:avoid;page-break-inside:avoid}

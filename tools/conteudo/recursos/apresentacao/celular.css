@@ -1,0 +1,17 @@
+
+html.estreito .s:before{width:8px}
+html.estreito .s:after{left:24px;bottom:16px;font-size:12px}
+html.estreito .in{left:24px;right:18px;top:72px;bottom:96px}
+html.estreito .s h1{font-size:30px;margin:0 0 16px;padding-bottom:8px}
+html.estreito .s h2{font-size:22px;margin:0 0 10px}
+html.estreito .s p,html.estreito .s li{font-size:20px;line-height:1.4;margin:5px 0}
+html.estreito .s ul,html.estreito .s ol{padding-left:26px}
+html.estreito .s li li{font-size:18px}
+html.estreito .s table{font-size:16px;margin:4px 0 8px}html.estreito .s th{padding:7px 8px}html.estreito .s td{padding:6px 8px}
+html.estreito .s blockquote{margin:10px 0 0;padding:10px 12px}html.estreito .s blockquote p{font-size:18px}
+html.estreito .s figure img{max-height:300px}html.estreito .s figcaption{font-size:13px}
+html.estreito .s .mw img.fxi{max-height:420px}html.estreito .s pre.code{font-size:14px}
+html.estreito .s details.fluxo-tabela,html.estreito .s details.fluxo-tabela table,html.estreito .s details.fluxo-tabela p{font-size:15px}
+html.estreito .s.title h1{font-size:38px}html.estreito .s.title h2{font-size:24px}html.estreito .s.title p{font-size:19px}
+html.estreito.sn .s.on .nt{left:24px;right:18px;bottom:92px;font-size:15px}
+html.estreito .s .tem-som{right:12px;top:80px}

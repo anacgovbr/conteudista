@@ -14,6 +14,11 @@ rm -rf "$TMP"; mkdir -p "$TMP"
 PY="${PYTHON:-python3}"; command -v "$PY" >/dev/null || PY=python
 etapa() { echo; echo "==> $*"; }
 
+etapa "Contratos dos módulos e carregamento do motor Python"
+"$PY" -m compileall -q tools/conteudo tools/testes
+"$PY" tools/testes/testar_modulos.py
+node tools/testes/testar_motor_python.mjs
+
 etapa "Gerador com o curso de exemplo (temas govbr e clássico, narração)"
 "$PY" -m py_compile tools/gerador.py
 "$PY" tools/gerador.py web/exemplo/treinamento.md web/exemplo/apresentacao.md --prefixo Exemplo --rodape "Teste" --saida "$TMP/govbr" --tema govbr

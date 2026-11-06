@@ -28,6 +28,14 @@ Página única que converte os arquivos Markdown de um conteúdo em:
 
 ```
 web/index.html           ← a página
+web/motor-python.js      ← inicialização do Pyodide e carregamento do pacote Python
+tools/gerador.py         ← API gerar e comando de geração; reexporta as funções existentes
+tools/conteudo/          ← Markdown, imagens, estado, fontes, áudio e exportadores por formato
+tools/conteudo/temas.py  ← paletas, tipografia e conversão de cores
+tools/conteudo/recursos/ ← CSS, JavaScript e HTML por funcionalidade, embutidos nos arquivos gerados
+tools/conteudo/arquivos.json ← manifesto dos módulos e recursos carregados no navegador
+tools/testes/grupos/     ← roteiro de navegador separado por funcionalidade
+tools/testes/casos/      ← exemplos mínimos de teste; o curso demonstrativo fica em web/exemplo
 web/editor.js            ← editor Markdown leve (sem dependências)
 web/opcoes.js            ← opções padrão (lê web/config/opcoes.yaml)
 web/config/opcoes.yaml   ← padrão de cada opção de ligar e desligar (edite aqui)
@@ -64,7 +72,6 @@ web/changelog.js         ← botão Novidades (lê o CHANGELOG.md)
 web/govbr.css            ← tema do Padrão Digital de Governo (gov.br/ds)
 CHANGELOG.md             ← histórico de versões da aplicação
 web/exemplo/             ← conteúdo de exemplo: guia de uso (apostila, apresentação com notas para narração e prompt padrão para IA)
-tools/gerador.py         ← motor de conversão (o mesmo do agente "Gerador de Cursos ANAC"), v3.9
 tools/fontes/            ← fontes de leitura (WOFF2), licenças OFL, manifesto.json, baixar-fontes.ps1 e verificar_fontes.py
 tools/testar_acessibilidade.py ← testes de acessibilidade das saídas (EPUB, DOCX, PPTX e HTML)
 tools/requirements.txt   ← python-docx, python-pptx, Pillow e lxml
@@ -116,14 +123,14 @@ Limitações conhecidas:
 - **Glossário por conteúdo:** `<!-- linguagem-acessivel: siglas QWER=Quadro de Registro -->`; as definições do conteúdo prevalecem sobre o glossário institucional e as siglas conhecidas.
 - Opções: `acessibilidade_texto` no `opcoes.yaml` (mostrar sugestões, limite de palavras por frase, aviso perto de Gerar arquivos). Código: `web/acessibilidade.js`. Testes: grupo 12 do roteiro do navegador.
 - **Janelas de apoio (1.82):** `web/acessibilidade-janelas.js` abre Descrever imagem, Simplificar trecho e Explicar sigla quando a correção tem `acao`. Descrever e Simplificar têm a aba **Pedir ajuda a uma IA**, que usa `montarPedido` e `lerResposta*` da biblioteca (pedidos versão 1.0). A IA fica fora do Conteudista. Opção `acessibilidade_texto.ajuda_ia`. Testes: grupo 14.
-- **Imagens decorativas:** o gerador lê `<!-- linguagem-acessivel: decorativa -->` antes da imagem (`DECORATIVAS` em `tools/gerador.py`): texto alternativo vazio sem aviso e, no PPTX, a marca de imagem decorativa.
+- **Imagens decorativas:** o gerador lê `<!-- linguagem-acessivel: decorativa -->` antes da imagem (`DECORATIVAS` em `tools/conteudo/contexto.py`): texto alternativo vazio sem aviso e, no PPTX, a marca de imagem decorativa.
 - **Marcas no texto (1.81):** `web/acessibilidade-marcas.js` desenha, numa camada transparente sobre o campo (mesma fonte, recuo e quebra de linha), sublinhado ondulado vermelho para o que é para corrigir e pontilhado âmbar para sugestões. Clique numa marca abre o balão com as correções; Alt+Shift+I leva o foco a ele. As marcas somem ao digitar e voltam com a próxima conferência. Resumo no rodapé do editor. Opções `marcas_no_texto` e `marcas_sugestoes`. Testes: grupo 13.
 
 ## Celular e zoom
 
 - **Editor no celular (até 700 px):** barra em no máximo duas linhas, com menus no padrão Dropdown do gov.br (H: títulos, código e listas; +: Inserir; ⋯: Mais), contagem em uma linha e **Imagens do texto** recolhida, aberta como folha inferior por **Inserir**. Os botões originais continuam no lugar, escondidos, e os menus acionam esses botões. Liga e desliga em `celular` no `opcoes.yaml`.
 - **Importar:** **Link** é a primeira aba e abre selecionada (`importar.aba_inicial: link`; `ultima` volta ao comportamento anterior). Erros do link em linguagem simples.
-- **Zoom nos arquivos gerados:** a apostila aceita a pinça e o Ctrl + roda do navegador. Na apresentação, o palco se ajusta à tela, então o zoom é próprio: pinça nativa no celular, toque duplo, Ctrl + roda, teclas + − 0 e botão **100% ↺**; com zoom, as setas movem a visão e o deslizar não troca de slide. Imagens e fluxos têm o botão **Ampliar** (lupa), que abre a imagem em tela cheia com zoom (`ZOOM_JS` e `ZOOM_CSS` em `tools/gerador.py`).
+- **Zoom nos arquivos gerados:** a apostila aceita a pinça e o Ctrl + roda do navegador. Na apresentação, o palco se ajusta à tela, então o zoom é próprio: pinça nativa no celular, toque duplo, Ctrl + roda, teclas + − 0 e botão **100% ↺**; com zoom, as setas movem a visão e o deslizar não troca de slide. Imagens e fluxos têm o botão **Ampliar** (lupa), que abre a imagem em tela cheia com zoom (recursos em `tools/conteudo/recursos/zoom/`).
 
 ## Biblioteca Linguagem Acessível (`web/lib/linguagem-acessivel/`)
 
@@ -153,14 +160,13 @@ As opções de ligar e desligar da página (salvar automático, lembrar links, g
 
 ## Manutenção
 
-- Layout dos arquivos gerados: dicionário `TEMAS` em `tools/gerador.py` (`govbr` = padrão, `classico` = original). Para um tema novo (ex.: ANAC), copie o bloco `govbr`, ajuste cores e fontes e acrescente a opção no campo **Layout (tema)** do `web/index.html`. Linha de comando: `--tema govbr|classico`.
+- Layout dos arquivos gerados: dicionário `TEMAS` em `tools/conteudo/temas.py` (`govbr` = padrão, `classico` = original). Para um tema novo (ex.: ANAC), copie o bloco `govbr`, ajuste cores e fontes e acrescente a opção no campo **Layout (tema)** do `web/index.html`. Linha de comando: `--tema govbr|classico`.
 
 - **Regra global de interface (botões):** a confirmação de ação concluída é só visual (botão verde com tick por 1,2 s: verde imediato, 1 s em verde e 0,2 s de esmaecimento; tick em SVG equidistante da borda e do texto). Nunca insira texto na tela; use `UXFeedback.confirmar(botao, mensagem)` em `web/ux-feedback.js`, que envia a mensagem a leitores de tela por uma região oculta.
 - A cada mudança, acrescente uma entrada curta no topo do `CHANGELOG.md` e atualize `VERSAO` em `web/changelog.js`.
 - O visual segue o Padrão Digital de Governo (https://www.gov.br/ds/). Ajuste cores e componentes em `web/govbr.css`.
 
-- Alterou o visual dos arquivos gerados? Edite `tools/gerador.py`; o workflow testa e republica.
-- Mantenha a mesma versão do `gerador.py` na PARTE 6 do `Pacote_Gerador_Cursos.txt` do agente.
+- Alterou o visual dos arquivos gerados? Edite o recurso da funcionalidade em `tools/conteudo/recursos/` ou as definições em `tools/conteudo/temas.py`; o workflow testa e republica. Arquivos novos precisam entrar em `tools/conteudo/arquivos.json`.
 - A versão 3.7 do gerador (1.56) preserva comentários HTML dentro de código, na apostila e na prévia; não trata exemplos de imagem escritos em código como imagens pendentes; e reinicia a numeração de cada lista numerada no DOCX.
 - A versão 3.8 do gerador (1.61) acrescenta o parâmetro opcional `fluxos` (imagens dos fluxos Mermaid, por código, para o HTML dos slides) e passa a desenhar no navegador, com todos os slides mensuráveis, os fluxos que ficam como código.
 - A página precisa de acesso a `cdn.jsdelivr.net` (motor Python e desenho dos fluxos Mermaid). O PrivateBin exige que a instância aceite chamadas de outros sites (CORS); se não aceitar, use o link autocontido.
@@ -218,7 +224,7 @@ A aba tem dois modos. **Notas dos slides** (`web/notas-locucao.js`) edita a narr
 
 | Item | Como funciona |
 |---|---|
-| Motor Piper (padrão pt-BR) | `web/locucao-piper-worker.js` (Web Worker) com `@mintplex-labs/piper-tts-web`; voz `pt_BR-faber-medium` (~63 MB, guardada no navegador); fonemas pelo espeak-ng pt-br embutido. Plano em `MIGRACAO-LOCUCAO.md` |
+| Motor Piper (padrão pt-BR) | `web/locucao-piper-worker.js` (Web Worker) com `@mintplex-labs/piper-tts-web`; voz `pt_BR-faber-medium` (~63 MB, guardada no navegador); fonemas pelo espeak-ng pt-br embutido. Selecionar uma voz Kokoro mantém a alternativa de locução, sem perder os áudios salvos. |
 | Motor Kokoro (mantido) | `web/locucao-worker.js` (Web Worker) com `kokoro-js@1.2.1`; WebGPU com fallback automático para WASM; teste de áudio após carregar; barra de progresso real do download |
 | Vozes pt-BR | `pf_dora`, `pm_alex`, `pm_santa`. O `kokoro-js` 1.2.1 e o `phonemizer` 1.2.1 só tratam inglês. Para pt-BR o worker tenta o espeak-ng em WebAssembly e, se indisponível, usa o fonemizador interno `ptbr-g2p.js`; seletor “Pronúncia em português” no painel Motor de voz |
 | Textos longos | Fragmentação por frases (≤ 250 caracteres em pt-BR), geração trecho a trecho, cancelamento |

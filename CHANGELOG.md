@@ -375,7 +375,7 @@
 ## 1.17 — 21/10/2026
 - Locução: novo motor **Piper** como padrão para português (voz **Faber**), com pronúncia pelo espeak-ng pt-br.
 - **Kokoro mantido** para inglês e para as vozes pt-BR experimentais; o motor é escolhido pela voz.
-- Plano de migração em `MIGRACAO-LOCUCAO.md`.
+- Plano de migração da locução registrado no histórico Git da versão.
 
 ## 1.16 — 21/10/2026
 - Gera arquivos mesmo com só o **treinamento** ou só a **apresentação** preenchidos (apenas do que foi preenchido).

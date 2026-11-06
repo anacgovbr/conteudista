@@ -33,6 +33,24 @@ powershell -ExecutionPolicy Bypass -File .\tools\testes\executar-testes.ps1 -Gru
 
 O script usa o Chrome já instalado (não baixa navegador) e mostra a versão dele. O relatório sai em `tools/testes/relatorio/relatorio.md` (e `.json`). Código de saída 0 = tudo certo.
 
+## Organização por funcionalidade
+
+O comando continua em `testar_apresentacao.py`; os casos e identificadores permanecem os mesmos.
+Os módulos de `grupos/` reúnem apresentação, geração, editor, acessibilidade do texto e
+acessibilidade dos arquivos. `suporte.py` concentra os utilitários compartilhados e `casos/`
+guarda os exemplos sintéticos, sem substituir o curso demonstrativo da aplicação.
+
+Para alterações no pacote Python e seu carregamento, os checks baratos são:
+
+```powershell
+python tools/testes/testar_modulos.py
+node tools/testes/testar_motor_python.mjs
+```
+
+Esses checks também fazem parte de `tools/verificar.sh`. Ao adicionar um módulo ou recurso
+ao motor, atualize `tools/conteudo/arquivos.json`; o teste confere se o manifesto está completo.
+Os recursos são publicados junto com o motor e continuam embutidos nos HTML exportados.
+
 ## O que é verificado
 
 | Grupo | Conteúdo | Casos |
@@ -72,7 +90,7 @@ Status possíveis: `OK`, `FALHA`/`ERRO` (reprovam), `INSTAVEL` (falhou e passou 
 
 ## Como acrescentar um teste
 
-1. Abra `testar_apresentacao.py` e escolha o grupo (funções `grupo1` … `grupo21`).
+1. Abra o módulo da funcionalidade em `grupos/` e escolha o grupo (funções `grupo1` … `grupo21`). O registro e a execução ficam em `testar_apresentacao.py`.
 2. Use `G.chk('id', 'descrição', condição, detalhe)`. Os auxiliares `esperar`, `permanece`, `tecla`,
    `estado` e `resumo` evitam esperas fixas (que deixam o teste instável).
 3. Para a próxima versão, acrescente os casos novos e, se um comportamento mudar de propósito,

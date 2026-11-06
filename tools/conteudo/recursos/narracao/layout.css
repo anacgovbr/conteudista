@@ -1,0 +1,6 @@
+#ini{position:fixed;inset:0;z-index:20;background:rgba(7,29,65,.82);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#fff;font-family:inherit}
+#ini .it{font-size:22px;font-weight:700;margin:0}
+#ini button{font-family:inherit;font-weight:600;font-size:22px;padding:14px 28px;border-radius:100em;border:0;background:#fff;color:#0b3d6e;cursor:pointer}
+#ini button.ini0{background:transparent;color:#fff;font-size:16px;text-decoration:underline;padding:8px 16px}
+#hud button[aria-pressed=true]{background:rgba(255,255,255,.4)}.s .tem-som{position:absolute;right:16px;top:12px;font-size:18px;opacity:.55}
+@media print{#ini{display:none}.s .tem-som{display:none}}
