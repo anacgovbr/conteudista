@@ -8,6 +8,8 @@ name: Aplicar pacote
 #    - se tudo passar: grava as mudanças no main, apaga o ZIP e dispara a publicação da página;
 #    - se algo falhar: não muda o código, apaga o ZIP e abre uma issue com o motivo.
 # Pacotes que alteram arquivos em .github/workflows são recusados (o GITHUB_TOKEN não pode alterá-los).
+# As permissões abaixo são declaradas aqui porque a organização fixa o padrão do token como somente leitura.
+
 on:
   push:
     branches: [main]
@@ -31,12 +33,15 @@ jobs:
     timeout-minutes: 40
     env:
       GH_TOKEN: ${{ github.token }}
-      RESUMO: ${{ runner.temp }}/resumo.md
     steps:
       - name: Baixar repositório (main atual)
         uses: actions/checkout@v5
         with:
           ref: main
+
+      # O contexto "runner" não existe em env do job; por isso o caminho do resumo é definido aqui.
+      - name: Definir o arquivo de resumo
+        run: echo "RESUMO=$RUNNER_TEMP/resumo.md" >> "$GITHUB_ENV"
 
       - name: Localizar o pacote
         id: loc
@@ -108,11 +113,13 @@ jobs:
           EXECUCAO: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           rm -f linguagem-acessivel.sarif
           git rm -q --cached "$PACOTE" && rm -f "$PACOTE"
           if [ "$CODIGO" = "0" ]; then
-            printf '%s\n' "$CAMINHOS" | while IFS= read -r c; do [ -n "$c" ] && git add -A -- "$c"; done
+            printf '%s\n' "$CAMINHOS" | while IFS= read -r c; do
+              if [ -n "$c" ]; then git add -A -- "$c"; fi
+            done
             MSG="$MENSAGEM"
           else
             MSG="chore: remove pacote $VERSAO (já estava aplicado)"
@@ -132,7 +139,7 @@ jobs:
         run: |
           git reset -q --hard HEAD
           git config user.name "github-actions[bot]"
-          git config user.email "41898+github-actions[bot]@users.noreply.github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm -q "$PACOTE"
           git commit -qm "chore: remove pacote com falha ($PACOTE)"
           git push origin HEAD:main || echo "Não foi possível remover o pacote automaticamente."
