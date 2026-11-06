@@ -5,6 +5,7 @@
 - **API Linguagem Acessível v1:** `lac servir`, rotas de conferir, ajustar, regras, pedidos, ajuda e saúde; OpenAPI 3.1, erros RFC 9457, CORS configurável, ETag, limites de corpo e taxa, sem registrar conteúdo.
 - **Configuração avançada:** janela para sugestões, limite, regras, confirmação, marcas e IA; importar/exportar JSON. O marcador `<!-- linguagem-acessivel: siglas QWER=Quadro de Registro -->` define o glossário do conteúdo.
 - **Arquivos HTML gerados:** painel lateral responsivo de acessibilidade, alto contraste, espaçamento WCAG 1.4.12, régua, leitura em voz alta, barra persistente e VLibras sob demanda. Legendas das notas de narração ligadas por padrão; VLibras pode ser desligado na geração.
+- **Barra da apresentação:** o botão **Notas** ocupa o lugar de Leitura na barra; o Modo leitura (L) passou para o menu **Mais opções**. Um único botão **Acessibilidade** (A) abre o painel com fonte de leitura, tamanho do texto, contraste, espaçamento, régua, animações, barra fixa, legendas, leitura em voz alta e VLibras.
 - **Auditoria ampliada:** grupos 16–21 cobrem geração, relatórios, API, configurações, axe-core, viewports de 320 a 1920 px, forced-colors, movimento reduzido e arquivos gerados.
 
 ## 1.84 - 05/11/2026
