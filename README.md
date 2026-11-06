@@ -127,7 +127,7 @@ Limitações conhecidas:
 
 ## Biblioteca Linguagem Acessível (`web/lib/linguagem-acessivel/`)
 
-Confere acessibilidade e linguagem simples em textos Markdown. É a base do editor, do gerador, do `lac` e da API HTTP local. Nesta versão (0.2.1) traz 11 regras. Para corrigir: `i1`, `i2`, `e1`, `e2`, `e3` e `k1`; sugestões: `f1`, `f2`, `f3`, `s1` e `n1`. O glossário pode vir do conteúdo, de `config.siglas` ou da lista institucional, nessa ordem.
+Confere acessibilidade e linguagem simples em textos Markdown. É a base do editor, do gerador, do `lac` e da API HTTP local. Nesta versão (0.3.0) traz 11 regras. Para corrigir: `i1`, `i2`, `e1`, `e2`, `e3` e `k1`; sugestões: `f1`, `f2`, `f3`, `s1` e `n1`. O glossário pode vir do conteúdo, de `config.siglas` ou da lista institucional, nessa ordem.
 
 - **Linha de comando `lac`** (`tools/lac/`): `lac c apostila.md`, `lac c -f relatorio apostila.md`, `lac c --config web/config/opcoes.yaml apostila.md`, `lac a -d apostila.md`, `lac p simplificar < trecho.txt`. No Windows: `tools\lac\lac.cmd`. `lac servir -p 8787` inicia a API local; OpenAPI 3.1 em `tools/lac/openapi.json`. CORS é negado por padrão; `LAC_CORS_ORIGINS` configura origens permitidas. O servidor não registra nem guarda conteúdo.
 

@@ -2,6 +2,11 @@
 
 Segue versionamento semântico. Mudar o id ou o código de uma regra, ou o formato do diagnóstico, é mudança incompatível (versão maior). Regra nova entra como versão menor.
 
+## 0.3.0 - 05/11/2026
+- Marcador de glossário por conteúdo: `<!-- linguagem-acessivel: siglas QWER=Quadro de Registro -->`; as definições do conteúdo prevalecem sobre as institucionais e as siglas conhecidas.
+- Configuração das regras por código estável; níveis de sugestão não podem ser promovidos para corrigir.
+- Modelo e renderizadores compartilhados do relatório de acessibilidade em JSON, HTML e Markdown, com schema próprio.
+
 ## 0.2.1 - 05/11/2026
 - Correção: `tipo: 'auto'` (e o `lac` sem `-t`) tratava como apresentação uma apostila que mostra exemplos da sintaxe de slides dentro de blocos de código, como a apostila de exemplo. Agora o código é ignorado na detecção.
 - Unidades de tamanho (KB, MB, GB, TB), QR e as extensões MD e TXT entram nas siglas conhecidas, que dispensam explicação.

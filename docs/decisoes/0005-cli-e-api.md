@@ -1,6 +1,6 @@
 # 0005 · Linha de comando `lac` e API com o mesmo modelo
 
-**Estado:** aceita e implementada na entrega 1.89. Linha de comando (`tools/lac/`) e API HTTP local v1 usam a biblioteca 0.2.1.
+**Estado:** aceita e implementada na entrega 1.89. Linha de comando (`tools/lac/`) e API HTTP local v1 usam a biblioteca 0.3.0.
 
 **Decisão.** A linha de comando (`linguagem-acessivel`, atalho `lac`, decisão H) e a API são camadas finas sobre a biblioteca, com os mesmos comandos, opções, atalhos de uma letra e formatos de saída (`texto`, `json`, `jsonl`, `sarif`, `resumo`, `relatorio`). A ajuda de ambas sai de um único `tools/lac/comandos.json`, que também gera o manual (`lac.1`), o autocompletar, `docs/lac.md` e `openapi.json`. Saída padrão no terminal: `texto`, com "corrigir" e "sugestão" escritos por extenso (decisão I).
 
