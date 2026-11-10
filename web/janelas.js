@@ -527,9 +527,15 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     const botao = $('jnArqOk'); botao.disabled = true;
     const abaAtual = ($('ps') && !$('ps').hidden) ? 's' : 'g';
     try {
+      let licencaImportada = '';
+      const documentos = [];
+      if (g.length) documentos.push({ chave: 'g', texto: await g[0].f.text() });
+      if (s.length) documentos.push({ chave: 's', texto: await s[0].f.text() });
+      if (documentos.length && window.resolverLicencaImportada) licencaImportada = resolverLicencaImportada(documentos).licenca;
       if (g.length) await receberArquivos([comoMd(g[0].f)].concat(im), 'g');
       if (s.length) await receberArquivos([comoMd(s[0].f)].concat(g.length ? [] : im), 's');
       if (!g.length && !s.length) await receberArquivos(im, abaAtual);
+      if (documentos.length) $('licenca').value = licencaImportada;
       const alvo = g.length ? 'g' : s.length ? 's' : abaAtual;
       if (typeof aba === 'function') aba(alvo);
       itens.length = 0; renderLista();

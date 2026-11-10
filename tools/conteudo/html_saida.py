@@ -3,6 +3,7 @@ from urllib.parse import unquote,unquote_to_bytes
 E=html.escape
 from .audio import MIME_AUDIO
 from .contexto import aviso, decorativa
+from . import licencas
 from .fontes import fontes_css
 from .markdown import blocks, mermaid_edges, plain, runs, slug, title_of
 from .recursos import ler_recurso
@@ -119,7 +120,7 @@ def painel_a11y(vlibras=True, legendas=False, leitura=False):
 
 A11Y_JS=ler_recurso('acessibilidade/painel.html')
 
-def treinamento_html(md,bar,tema=None,vlibras=True):
+def treinamento_html(md,bar,tema=None,vlibras=True,licenca=''):
     # Os temas ANAC 20 anos alteram somente a apresentação; a apostila permanece no padrão gov.br.
     T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema)
     toc=[];b=html_of(blocks(md),toc)
@@ -130,12 +131,13 @@ def treinamento_html(md,bar,tema=None,vlibras=True):
             e=hs[k+1].start() if k+1<len(hs) else len(b)
             b=b[:m.start()]+'<section class="gab-sec">'+m.group(0)+'<div id="gab" class="hid" aria-hidden="true" inert>'+b[m.end():e]+'</div></section>'+b[e:];break
     t=title_of(md,'Apostila');tc=''.join('<li class="lv%d"><a href="#%s">%s</a></li>'%(v,s,E(x)) for v,s,x in toc)
+    b += licencas.aviso_html(licenca)
     return ('<!DOCTYPE html><html lang="pt-BR" data-theme="light" data-leitura="padrao"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title>'
     '<script>%s</script><style>%s%s%s%s</style></head><body><a class="skip" href="#conteudo">Ir para o conteúdo</a>'
     '<header><span class="t">%s</span><span id="pg" role="status" aria-live="polite"></span><select id="th" aria-label="Tema"><option value="light">Tema claro</option><option value="dark">Tema escuro</option><option value="contrast">Alto contraste</option></select>'
     '%s%s<button type="button" id="a11yToggle" class="a11y-panel-toggle sec mini" aria-controls="a11yPanel" aria-expanded="false">Acessibilidade</button><button id="rs" type="button">Limpar checklists</button><button type="button" onclick="print()" title="Imprimir ou salvar em PDF em A4">Imprimir / PDF</button></header>'
     '<div class="wrap"><nav aria-label="Sumário"><ul>%s</ul></nav><main id="conteudo" tabindex="-1"><article>%s</article></main></div>%s<script>%s%s</script>%s%s</body></html>'
-    )%(E(t),LEITURA_HEAD,fontes_css(),tcss(CSS_G,T,T['extra_g']),CSS_G_A11Y+ZOOM_CSS,PAINEL_A11Y_CSS,E(bar or t),LEITURA_SEL,TAM_HTML,tc,b,painel_a11y(vlibras),LEITURA_JS+TAM_JS+ZOOM_JS,JS_G.replace('__K__',slug(t)[:40]),A11Y_JS,MER)
+    )%(E(t),LEITURA_HEAD,fontes_css(),tcss(CSS_G,T,T['extra_g']),CSS_G_A11Y+ZOOM_CSS,PAINEL_A11Y_CSS+licencas.CSS,E(bar or t),LEITURA_SEL,TAM_HTML,tc,b,painel_a11y(vlibras),LEITURA_JS+TAM_JS+ZOOM_JS,JS_G.replace('__K__',slug(t)[:40]),A11Y_JS,MER)
 
 ZOOM_CSS=ler_recurso('zoom/layout.css')
 
@@ -149,7 +151,7 @@ CSS_NARR=ler_recurso('narracao/layout.css')
 
 JS_NARR=ler_recurso('narracao/controles.js')
 
-def _anac_html_css(tema,n):
+def _anac_html_css(tema,n,licenciada=False):
     if not str(tema or '').startswith('anac20-'):return ''
     pasta=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'temas',tema)
     def data(nome):
@@ -160,8 +162,9 @@ def _anac_html_css(tema,n):
     regras=['.s{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:%s!important}'%tinta,
       '.s h1,.s h2,.s h3,.s p,.s li{color:%s!important}.s .in{position:relative;z-index:1}.s:not(.title) .in{padding-top:1.2vh}'%tinta,
       '.s table{background:rgba(255,255,255,.94);color:#193f52}.s table *{color:#193f52!important}.s .nt{color:%s!important}'%mut]
+    n_original=n-1 if licenciada else n
     for i in range(n):
-        fundo=imgs[0] if i==0 else imgs[3] if i==n-1 and 'title' else imgs[1 if i%2 else 2]
+        fundo=imgs[1 if i%2 else 2] if licenciada and i==n-1 else imgs[0] if i==0 else imgs[3] if i==n_original-1 else imgs[1 if i%2 else 2]
         if fundo:regras.append('.s:nth-child(%d){background-image:url("%s")!important}'%(i+1,fundo))
     if escuro:regras.append('.s.title .in{margin-left:37%;width:58%}.s.title h1{color:#fff!important}')
     else:regras.append('.s.title .in{margin-left:37%;width:58%}.s.title h1{color:#193f52!important}')
@@ -216,21 +219,24 @@ ICO_B.update({'nota':'M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c
 def _ic(k,cls=''):
     return '<svg class="ic%s" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="%s"/></svg>'%((' '+cls) if cls else '',ICO_B[k])
 
-def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True):
+def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True,licenca=''):
     """Monta o HTML da apresentação (com ou sem narração): ARIA, leitura, modo leitura, auto-ajuste e impressão A4."""
-    T=tema_de(tema);n=len(sl);secs=[]
+    T=tema_de(tema);n_original=len(sl);n=n_original+bool(licenca);secs=[]
     for k,(c,b,nt) in enumerate(sl):
         rot='Slide %d de %d'%(k+1,n)
         nota='<aside class="nt" role="note" aria-label="Notas do apresentador"><p class="nt-t">Notas do apresentador</p><p class="nt-x">%s</p></aside>'%E(nt) if (nt or '').strip() else ''
         legenda='<p class="a11y-caption">%s</p>'%E(nt) if audios and k in audios and (nt or '').strip() else ''
         secs.append('<section class="s %s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,rot,rot,html_of(b),nota,legenda))
+    if licenca:
+        rot='Slide %d de %d'%(n,n)
+        secs.append('<section class="s licenciamento" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div></section>'%(rot,rot,licencas.aviso_slide_html(licenca)))
     o=_fluxos_img(''.join(secs),fluxos)
-    css=fontes_css()+tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+_anac_html_css(tema,n)
+    css=fontes_css()+tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+_anac_html_css(tema,n,bool(licenca))+licencas.CSS
     narr=bool(audios);aud=''
     if narr:
         css+=CSS_NARR
         for k,cam in sorted(audios.items()):
-            if 0<=k<n:
+            if 0<=k<n_original:
                 mime=MIME_AUDIO.get(os.path.splitext(cam)[1].lower(),'audio/mpeg')
                 aud+='<audio class="narr" data-s="%d" preload="auto" src="data:%s;base64,%s"></audio>'%(k,mime,base64.b64encode(open(cam,'rb').read()).decode())
     css+=CSS_S_A11Y+CSS_BPLUS+CSS_ESTREITO+ZOOM_CSS+PAINEL_A11Y_CSS
@@ -264,9 +270,9 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
     '<div id="st" role="region" aria-roledescription="apresentação" aria-label="Apresentação" tabindex="-1">%s</div><div id="bar" aria-hidden="true"></div>%s%s%s%s%s%s</body></html>'
     )%(E(tema or TEMA_PADRAO),E(t),LEITURA_HEAD,SLIDES_MODO_HEAD,css,SLIDES_MODO_BODY,hud,o,ini,aud,painel_a11y(vlibras,narr,True),js,_mer_s(o),A11Y_JS)
 
-def slides_html(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True):
-    return _slides_doc(t,sl,foot,tema,audios,avancar,fluxos,vlibras)
+def slides_html(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True,licenca=''):
+    return _slides_doc(t,sl,foot,tema,audios,avancar,fluxos,vlibras,licenca)
 
-def _slides_html_narrado(t,sl,foot,tema,audios,avancar,fluxos=None,vlibras=True):
+def _slides_html_narrado(t,sl,foot,tema,audios,avancar,fluxos=None,vlibras=True,licenca=''):
     """Compatibilidade: a montagem é a mesma de slides_html (_slides_doc); a narração escuta o evento conteudista:slide."""
-    return _slides_doc(t,sl,foot,tema,audios,avancar,fluxos,vlibras)
+    return _slides_doc(t,sl,foot,tema,audios,avancar,fluxos,vlibras,licenca)

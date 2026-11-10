@@ -2,11 +2,12 @@ import re,html,os,base64,io,mimetypes,zipfile,hashlib,uuid,datetime
 from urllib.parse import unquote,unquote_to_bytes
 E=html.escape
 from .contexto import aviso, decorativa
+from . import licencas
 from .imagens import img_bytes, img_size
 from .markdown import blocks, mermaid_edges, runs, sem_comentarios
 from .temas import tema_de, thex, trgb
 
-def treinamento_docx(md,path,foot,tema=None):
+def treinamento_docx(md,path,foot,tema=None,licenca=''):
     # Os temas ANAC 20 anos alteram somente a apresentação; o DOCX permanece no padrão gov.br.
     # Leitura acessível (1.66): o DOCX é único, em Verdana 12 pt, entrelinha 1,5 e 6 pt após; T['docx_font'] não escolhe mais a fonte.
     T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema);C=lambda h:trgb(h,T);H=lambda h:thex(h,T);FONTE='Verdana'
@@ -145,6 +146,15 @@ def treinamento_docx(md,path,foot,tema=None):
             t=OxmlElement('w:t');t.text='Clique com o botão direito e escolha "Atualizar campo" para gerar o sumário.';r._r.append(t)
     d.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
     render(bl[hi:])
+    if licenca:
+        info=licencas.LICENCAS[licencas.validar(licenca)]
+        h=d.add_heading('Licenciamento',level=2)
+        for r in h.runs:r.font.color.rgb=PRI
+        p=d.add_paragraph();p.paragraph_format.keep_together=True
+        p.add_run(licencas.frase_declarativa(licenca)+' Consulte a licenca: ')
+        link(p,info['url'],info['url'])
+        nota=d.add_paragraph(licencas.RESSALVA);nota.paragraph_format.keep_together=True
+        for r in nota.runs:r.font.color.rgb=C('5A6676')
     fp=sec.footer.paragraphs[0];fp.text=foot or ' ';fp.runs[0].font.size=Pt(8);fp.runs[0].font.color.rgb=C('5A6676')
     s=d.settings.element;u=OxmlElement('w:updateFields');u.set(qn('w:val'),'true');s.append(u)
     for r_ in list(d.element.body.iter(qn('w:r')))+list(sec.footer._element.iter(qn('w:r'))):  # idioma pt-BR em todos os trechos (texto, links, tabelas, legendas)

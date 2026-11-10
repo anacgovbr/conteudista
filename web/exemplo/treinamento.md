@@ -299,6 +299,9 @@ O botão **Compartilhar link** aparece em três lugares, e todos abrem a mesma j
 | **Nome do conteúdo** | Compõe os nomes dos arquivos. É normalizado: sem acentos, com sublinhado no lugar de espaços |
 | **Rodapé (opcional)** | Aparece nos slides e no DOCX. Fica lembrado neste navegador |
 | **Layout (tema)** | Define a aparência dos arquivos |
+| **Licenciamento** | Opcional. Sem licenciamento por padrão; quando escolhido, a declaração aparece ao final da Apostila e em um slide final da Apresentação |
+
+Escolha uma licença somente se tiver autorização para licenciar o conteúdo. Atribuição (BY), compartilhar nos mesmos termos (SA), uso não comercial (NC) e sem derivações (ND). CC0 dedica o conteúdo ao domínio público. Confira os créditos e os direitos de materiais de terceiros.
 
 | Layout | Aplica-se a |
 |---|---|
@@ -327,7 +330,7 @@ A seção **Arquivos gerados** mostra o nome do conteúdo, a data e a hora, o ta
 
 - A seção abre sozinha a cada geração e pode ser recolhida com o controle **recolher**, à direita do título.
 - O botão **Histórico** guarda os pacotes anteriores neste navegador (os 10 mais recentes, por padrão; é possível escolher 5, 10, 20 ou 50).
-- O campo **Buscar** do Histórico filtra por nome, data e hora, tamanho, layout, rodapé, narração e tipo de arquivo. Várias palavras exigem todas; aspas buscam uma frase exata; `Esc` limpa a busca.
+- O campo **Buscar** do Histórico filtra por nome, data e hora, tamanho, layout, rodapé, licenciamento, narração e tipo de arquivo. Várias palavras exigem todas; aspas buscam uma frase exata; `Esc` limpa a busca.
 - **Exibir apostila** e **Exibir apresentação** mostram o arquivo na própria seção. O pacote em exibição aparece com os seus arquivos e o ZIP **acima da exibição**, para baixar exatamente a versão que está sendo vista.
 
 ### 8.4 Como abrir cada arquivo

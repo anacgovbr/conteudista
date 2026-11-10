@@ -3,11 +3,12 @@ from urllib.parse import unquote,unquote_to_bytes
 E=html.escape
 from .audio import MIME_AUDIO, _icone_som, _mp3_dur, _wav_dur
 from .contexto import aviso, decorativa
+from . import licencas
 from .imagens import img_bytes, img_size
 from .markdown import mermaid_edges, plain, runs
 from .temas import tema_de, thex
 
-def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None):
+def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None,licenca=''):
     T=tema_de(tema);H=lambda h:thex(h,T);FONTE=T['pptx_font']
     from pptx import Presentation
     from pptx.util import Inches,Pt
@@ -35,11 +36,13 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
         PRI=RGBColor.from_string('FFFFFF' if escuro else '163B57');ACC=RGBColor.from_string('D5A900');AC2=RGBColor.from_string('16B8C4')
         INK=RGBColor.from_string('FFFFFF' if escuro else '1F3545');WH=RGBColor.from_string('FFFFFF');MU=RGBColor.from_string('DCE8EE' if escuro else '607786');SOFT=RGBColor.from_string('14334A' if escuro else 'EFF7FA')
     P=Presentation();P.slide_width=Inches(13.333);P.slide_height=Inches(7.5);W=13.333;L=0.62;CW=W-2*L
+    n_original=len(sl)
+    if licenca:sl=list(sl)+[('licenciamento',licencas.blocos_slide(licenca),'')]
     pasta_modelo=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'temas',modelo) if modelo else ''
     def fundo_anac(s,idx,cls):
         if not modelo:return False
         if cls=='title' and idx==0:nome='capa.png'
-        elif cls=='title' and idx==len(sl)-1:nome='encerramento.png'
+        elif cls=='title' and idx==n_original-1:nome='encerramento.png'
         else:nome='conteudo-%s.png'%('a' if idx%2 else 'b')
         cam=os.path.join(pasta_modelo,nome)
         if os.path.isfile(cam):alt_pic(s.shapes.add_picture(cam,0,0,width=Inches(W),height=Inches(7.5)),'',True);return True
@@ -150,7 +153,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
             ntf=s.notes_slide.notes_text_frame;ntf.text=notes
             for pp in ntf.paragraphs:
                 for rr in pp.runs:rr.font.language_id=PT_BR
-        if audios and idx in audios:
+        if audios and idx<n_original and idx in audios:
             try:_pptx_audio(s,audios[idx],W,avancar,(duracoes or {}).get(idx))
             except Exception as e:print('AVISO: narração do slide %d não incluída no PPTX: %s'%(idx+1,e))
     P.core_properties.title=t;P.core_properties.language='pt-BR';P.save(path)

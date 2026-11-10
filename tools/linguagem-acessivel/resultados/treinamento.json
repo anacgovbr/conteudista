@@ -2,8 +2,8 @@
  "versao": "0.3.0",
  "resumo": {
   "corrigir": 0,
-  "sugestoes": 12,
-  "total": 12
+  "sugestoes": 13,
+  "total": 13
  },
  "itens": [
   [
@@ -51,42 +51,49 @@
   [
    "s1",
    "sugestao",
-   306,
+   304,
+   177,
+   "Explique a sigla CC0 na primeira vez em que ela aparece"
+  ],
+  [
+   "s1",
+   "sugestao",
+   309,
    5,
    "Explique a sigla ANAC na primeira vez em que ela aparece"
   ],
   [
    "f1",
    "sugestao",
-   324,
+   327,
    1,
    "Frase longa (31 palavras). Tente dividir em duas ou mais"
   ],
   [
    "s1",
    "sugestao",
-   356,
+   359,
    147,
    "Explique a sigla UA na primeira vez em que ela aparece"
   ],
   [
    "f1",
    "sugestao",
-   481,
+   484,
    1,
    "Frase longa (35 palavras). Tente dividir em duas ou mais"
   ],
   [
    "f1",
    "sugestao",
-   499,
+   502,
    57,
    "Frase longa (26 palavras). Tente dividir em duas ou mais"
   ],
   [
    "s1",
    "sugestao",
-   503,
+   506,
    11,
    "Explique a sigla OM na primeira vez em que ela aparece"
   ]

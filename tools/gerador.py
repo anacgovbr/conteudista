@@ -13,6 +13,7 @@ E=html.escape
 from conteudo.audio import (
     MIME_AUDIO, _icone_som, _mp3_dur, _narr, _wav_dur
 )
+from conteudo import licencas
 from conteudo.contexto import (
     AVISOS, DECORATIVAS, DECORATIVAS_VISTAS, DECOR_IMG_RX, DECOR_RX, aviso,
     decorativa, registrar_decorativas
@@ -55,11 +56,15 @@ from conteudo.temas import (
     thex, trgb
 )
 
-def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narracao=None,fluxos=None,vlibras=True):
+def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narracao=None,fluxos=None,vlibras=True,licenca=None):
     tema=tema if tema in TEMAS else TEMA_PADRAO
     """Gera os arquivos do que estiver preenchido: apostila (MD/HTML/DOCX/EPUB/EPUB OpenDyslexic) e/ou apresentação (MD/HTML/PPTX)."""
     del AVISOS[:];reiniciar_fontes()  # relê as fontes a cada geração (o app mantém o módulo carregado)
-    gm=gm or '';sm=sm or ''
+    gm,lic_g=licencas.separar_markdown(gm or '');sm,lic_s=licencas.separar_markdown(sm or '')
+    if licenca is None:
+        if lic_g and lic_s and lic_g!=lic_s:raise ValueError('A apostila e a apresentação têm licenças diferentes; informe --licenca para escolher uma licença para os dois documentos.')
+        licenca=lic_g or lic_s
+    licenca=licencas.validar(licenca)
     DECORATIVAS.clear();DECORATIVAS_VISTAS.clear()
     tem_g,tem_s=bool(gm.strip()),bool(sm.strip())
     if not tem_g and not tem_s:raise ValueError('Nada para gerar: a apostila e a apresentação estão vazias.')
@@ -68,24 +73,26 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
     arqs=[];msg='';g='';sl=[]
     if tem_g:
         registrar_decorativas(gm)
-        gm_=sem_comentarios(gm);g=treinamento_html(gm_,barra,tema,vlibras)
-        open(P('.md','Apostila_'),'w',encoding='utf-8').write(gm);open(P('.html','Apostila_'),'w',encoding='utf-8').write(g)
+        gm_=sem_comentarios(gm);g=treinamento_html(gm_,barra,tema,vlibras,licenca)
+        open(P('.md','Apostila_'),'w',encoding='utf-8').write(licencas.anexar_markdown(gm,licenca))
+        open(P('.html','Apostila_'),'w',encoding='utf-8').write(g)
         arqs+=[P('.md','Apostila_'),P('.html','Apostila_')]
         try:
-            registrar_decorativas(gm);treinamento_docx(gm_,P('.docx','Apostila_'),rodape or title_of(gm_,''),tema);arqs.append(P('.docx','Apostila_'));msg+=' | docx: ok'
+            registrar_decorativas(gm);treinamento_docx(gm_,P('.docx','Apostila_'),rodape or title_of(gm_,''),tema,licenca);arqs.append(P('.docx','Apostila_'));msg+=' | docx: ok'
         except Exception as e:msg+=' | docx: ERRO %s'%e
         ne=0
         for suf,fonte in(('.epub','atkinson'),('_OpenDyslexic.epub','opendyslexic')):
-            try:registrar_decorativas(gm);treinamento_epub(gm_,P(suf,'Apostila_'),rodape or title_of(gm_,''),tema,fonte);arqs.append(P(suf,'Apostila_'));ne+=1
+            try:registrar_decorativas(gm);treinamento_epub(gm_,P(suf,'Apostila_'),rodape or title_of(gm_,''),tema,fonte,licenca);arqs.append(P(suf,'Apostila_'));ne+=1
             except Exception as e:msg+=' | epub %s: ERRO %s'%(fonte,e)
         msg+=' | epub: %d'%ne
     else:msg+=' | apostila: vazia (não gerada)'
     if tem_s:
         sm=markdown_com_tema(sm,tema);t,sl=split_slides(sm);nr=_narr(narracao)
         registrar_decorativas(sm)
-        open(P('.md','Apresentacao_'),'w',encoding='utf-8').write(sm);open(P('.html','Apresentacao_'),'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema,nr['html'],nr['avancar'],_fluxos_dict(fluxos),vlibras))
+        open(P('.md','Apresentacao_'),'w',encoding='utf-8').write(licencas.anexar_markdown(sm,licenca,True))
+        open(P('.html','Apresentacao_'),'w',encoding='utf-8').write(slides_html(t,sl,rodape,tema,nr['html'],nr['avancar'],_fluxos_dict(fluxos),vlibras,licenca))
         arqs+=[P('.md','Apresentacao_'),P('.html','Apresentacao_')]
-        try:registrar_decorativas(sm);slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape,tema,nr['pptx'],nr['avancar'],nr['duracoes']);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
+        try:registrar_decorativas(sm);slides_pptx(t,sl,P('.pptx','Apresentacao_'),rodape,tema,nr['pptx'],nr['avancar'],nr['duracoes'],licenca);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
         except Exception as e:msg+=' | pptx: ERRO %s'%e
         if nr['html'] or nr['pptx']:msg+=' | narração: %d slide(s)'%len(set(nr['html'])|set(nr['pptx']))
     else:msg+=' | apresentação: vazia (não gerada)'
@@ -93,7 +100,7 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
     if AVISOS:res+=' | avisos: '+' / '.join(AVISOS[:6])+(' (+%d)'%(len(AVISOS)-6) if len(AVISOS)>6 else '')
     return arqs,res
 if __name__=='__main__':
-    a=argparse.ArgumentParser();a.add_argument('apostila',help="arquivo da apostila ('-' para não gerar)");a.add_argument('apresentacao',nargs='?',default='-',help="arquivo da apresentação ('-' ou omitido para não gerar)");a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.')
+    a=argparse.ArgumentParser();a.add_argument('apostila',help="arquivo da apostila ('-' para não gerar)");a.add_argument('apresentacao',nargs='?',default='-',help="arquivo da apresentação ('-' ou omitido para não gerar)");a.add_argument('--prefixo',default='Curso');a.add_argument('--rodape',default='');a.add_argument('--barra',default='');a.add_argument('--saida',default='.');a.add_argument('--licenca',choices=['']+sorted(licencas.LICENCAS),default=None,help='licenciamento opcional do conteúdo')
     a.add_argument('--sem-embutir',action='store_true',help='não converter imagens para base64');a.add_argument('--sem-vlibras',action='store_true',help='não incluir o controle VLibras nos HTML gerados');a.add_argument('--tema',default=TEMA_PADRAO,choices=sorted(TEMAS),help='layout dos arquivos (padrão: %(default)s)');a.add_argument('--audios',default='',help='pasta com a narração por slide: 1.mp3, 2.ogg, 3.wav… (número do slide)');a.add_argument('--avancar',action='store_true',help='avançar os slides ao fim da narração');a=a.parse_args()
     ler=lambda f:'' if f in('-','') else open(f,encoding='utf-8').read()
     gm=ler(a.apostila);sm=ler(a.apresentacao)
@@ -110,7 +117,7 @@ if __name__=='__main__':
             k=str(int(m.group(1))-1);cam=os.path.join(a.audios,f)
             narr['html'][k]=cam
             if m.group(2).lower()!='ogg' and (k not in narr['pptx'] or m.group(2).lower()=='mp3'):narr['pptx'][k]=cam
-    try:_,res=gerar(gm,sm,a.prefixo,a.rodape,a.barra,a.saida,a.tema,narr,vlibras=not a.sem_vlibras)
+    try:_,res=gerar(gm,sm,a.prefixo,a.rodape,a.barra,a.saida,a.tema,narr,vlibras=not a.sem_vlibras,licenca=a.licenca)
     except ValueError as e:print('ERRO: %s'%e);raise SystemExit(1)
     print(res)
     if 'ERRO' in res:raise SystemExit(1)

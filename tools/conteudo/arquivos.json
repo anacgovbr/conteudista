@@ -7,6 +7,7 @@
   "conteudo/fontes.py",
   "conteudo/html_saida.py",
   "conteudo/imagens.py",
+  "conteudo/licencas.py",
   "conteudo/markdown.py",
   "conteudo/pptx.py",
   "conteudo/recursos/__init__.py",

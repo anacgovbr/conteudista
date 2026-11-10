@@ -2,6 +2,7 @@ import re,html,os,base64,io,mimetypes,zipfile,hashlib,uuid,datetime
 from urllib.parse import unquote,unquote_to_bytes
 E=html.escape
 from .contexto import aviso, decorativa
+from . import licencas
 from .fontes import FONTES_DIR, LEITURAS, fontes_faces_unicas
 from .imagens import _ep_img_raw
 from .markdown import blocks, mermaid_edges, plain, runs, sem_comentarios, slug, title_of
@@ -91,7 +92,7 @@ def _ep_doc(title,body,tipo):
     return ('<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE html>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="pt-BR" xml:lang="pt-BR">\n'
             '<head>\n<meta charset="utf-8"/>\n<title>%s</title>\n<link rel="stylesheet" type="text/css" href="css/style.css"/>\n</head>\n<body epub:type="%s">\n%s\n</body>\n</html>\n')%(E(title),tipo,body)
 
-def treinamento_epub(md,path,foot,tema=None,fonte='atkinson'):
+def treinamento_epub(md,path,foot,tema=None,fonte='atkinson',licenca=''):
     """Apostila em EPUB 3 (XHTML + OPF + nav + NCX), com a fonte de leitura embutida e metadados de acessibilidade.
     O EPUB é claro e neutro (não usa os temas escuros); o tema não altera o EPUB."""
     from lxml import etree
@@ -118,6 +119,14 @@ def treinamento_epub(md,path,foot,tema=None,fonte='atkinson'):
         m=re.search(r'<h2 id="([^"]+)">',corpo);sid=m.group(1) if m else ''
         tit=plain(sec_[0][2]) if sec_[0][0]=='h' else titulo
         toc.append((nome,sid,tit,h3));arquivos.append(('s%02d'%n,nome,tit,'<section epub:type="chapter">\n%s\n</section>'%corpo,'bodymatter'))
+    if licenca:
+        lic=licencas.LICENCAS[licencas.validar(licenca)]
+        corpo=('<section epub:type="legalnotice">\n<h1 id="licenciamento">Licenciamento</h1>\n'
+               '<p>%s Consulte a licença: <a rel="license" href="%s">%s</a>.</p>\n<p>%s</p>\n</section>') % (
+                   E(licencas.frase_declarativa(licenca)),E(lic['url']),E(lic['url']),E(licencas.RESSALVA))
+        nome='licenciamento.xhtml'
+        arquivos.append(('licenca',nome,'Licenciamento',corpo,'backmatter'))
+        toc.append((nome,'licenciamento','Licenciamento',[]))
     # links internos (#id) apontam para o arquivo certo
     for _,nome,_,corpo,_ in arquivos:
         for i_ in re.findall(r'\bid="([^"]+)"',corpo):ids_arq.setdefault(i_,nome)
@@ -137,7 +146,7 @@ def treinamento_epub(md,path,foot,tema=None,fonte='atkinson'):
     docs['nav.xhtml']=_ep_doc('Sumário',nav_body,'frontmatter')
     for nome_,x in docs.items():etree.fromstring(x.encode('utf-8'))  # XHTML bem formado (erro interrompe só este EPUB)
     # fontes da família escolhida (somente ela) + licença
-    faces=fontes_faces_unicas(fonte);css=EPUB_CSS.split('\n',1)[1].replace('__NOME__',nome_f)
+    faces=fontes_faces_unicas(fonte);css=EPUB_CSS.split('\n',1)[1].replace('__NOME__',nome_f)+'\n'+licencas.CSS
     ff=''.join('@font-face{font-family:"%s";src:url("../fonts/%s") format("woff2");font-weight:%s;font-style:%s;font-display:swap}\n'%(nome_f,arq,peso,estilo) for peso,estilo,arq,_ in faces)
     css=ff+css
     ident='urn:uuid:%s'%uuid.uuid5(uuid.NAMESPACE_URL,'conteudista:apostila:%s:%s'%(titulo,fonte))
@@ -152,7 +161,7 @@ def treinamento_epub(md,path,foot,tema=None,fonte='atkinson'):
     spine=['<itemref idref="capa"/>','<itemref idref="nav"/>']+['<itemref idref="%s"/>'%idr for idr,nome,_,_,_ in arquivos[1:]]
     tem_img=cx.n_img>0;alt_ok=tem_img and cx.sem_alt==0
     if cx.sem_alt:aviso('EPUB: %d imagem(ns) sem texto alternativo; o recurso alternativeText não foi declarado.'%cx.sem_alt)
-    meta=['<dc:identifier id="pub-id">%s</dc:identifier>'%ident,'<dc:title>%s</dc:title>'%E(titulo_opf),'<dc:language>pt-BR</dc:language>','<dc:creator>Conteudista</dc:creator>',
+    meta=['<dc:identifier id="pub-id">%s</dc:identifier>'%ident,'<dc:title>%s</dc:title>'%E(titulo_opf),'<dc:language>pt-BR</dc:language>','<dc:creator>Conteudista</dc:creator>']+(['<dc:rights>%s — %s</dc:rights>'%(E(licencas.LICENCAS[licenca]['sigla']),E(licencas.LICENCAS[licenca]['url']))] if licenca else [])+[
           '<dc:date>%s</dc:date>'%agora.strftime('%Y-%m-%d'),'<meta property="dcterms:modified">%s</meta>'%agora.strftime('%Y-%m-%dT%H:%M:%SZ'),
           '<meta property="schema:accessMode">textual</meta>']+(['<meta property="schema:accessMode">visual</meta>'] if tem_img else [])+[
           '<meta property="schema:accessModeSufficient">textual</meta>','<meta property="schema:accessibilityFeature">structuralNavigation</meta>',

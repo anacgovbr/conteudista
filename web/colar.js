@@ -116,11 +116,16 @@ html.contraste .cl-ok{color:#0f8}
     const ok = $('clOk'); ok.disabled = true;
     try {
       if (window.Hist && Hist.registrar) await Hist.registrar('antes', 'Antes de colar texto');
-      for (const x of itens) {
-        const k = x[0], alvo = $(k); if (!alvo) continue;
-        alvo.value = x[1]; alvo.dispatchEvent(new Event('input', { bubbles: true }));
+      const lido = window.resolverLicencaImportada
+        ? resolverLicencaImportada(itens.map(x => ({ chave: x[0], texto: x[1] })))
+        : { documentos: itens.map(x => ({ chave: x[0], texto: x[1] })), licenca: '' };
+      for (const x of lido.documentos) {
+        const k = x.chave, alvo = $(k); if (!alvo) continue;
+        alvo.value = x.texto; alvo.dispatchEvent(new Event('input', { bubbles: true }));
         if (window.Hist && Hist.registrar) Hist.registrar('arquivo', 'Texto colado (' + (k === 'g' ? 'apostila' : 'apresenta\u00e7\u00e3o') + ')');
       }
+      $('licenca').value = lido.licenca;
+      $('licenca').dispatchEvent(new Event('change', { bubbles: true }));
       const destino = itens[0][0];
       if (typeof aba === 'function') aba(destino);
       itens.forEach(x => { campos[x[0]].value = ''; });

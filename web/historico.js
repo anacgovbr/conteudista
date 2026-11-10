@@ -28,6 +28,9 @@
 
   /* ---------------------------- Utilidades ---------------------------- */
   function hash(s) { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); } return (h >>> 0).toString(36); }
+  const hashTexto = d => hash((d.g || '') + '\u0001' + (d.s || ''));
+  const hashPacote = d => hash((d.g || '') + '\u0001' + (d.s || '') + '\u0001' + (d.licenca || ''));
+  const mesmaVersao = (v, d) => v.h === hashPacote(d) || (!v.licenca && v.h === hashTexto(d));
   const dataCurta = t => new Date(t).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' });
   const todas = async () => (await dbAll('versoes')).sort((a, b) => b.data - a.data);
   let cache = null; const invalidar = () => { cache = null; };
@@ -41,11 +44,11 @@
   }
   async function registrar_(origem, rotulo, d) {
     d = d || pacote(); if (!(d.g || '').trim() && !(d.s || '').trim()) return null;
-    const h = hash((d.g || '') + '\u0001' + (d.s || '')), l = await lista();
-    const igual = l.find(v => v.h === h);
-    if (l[0] && l[0].h === h && !['marco', 'arquivo', 'link'].includes(origem)) return null;  // nada mudou
+    const h = hashPacote(d), l = await lista();
+    const igual = l.find(v => mesmaVersao(v, d));
+    if (l[0] && mesmaVersao(l[0], d) && !['marco', 'arquivo', 'link'].includes(origem)) return null;  // nada mudou
     if (igual && ['sessao', 'antes', 'gerado', 'compartilhado'].includes(origem) && Date.now() - igual.data < 10 * 60 * 1000) return null;
-    const v = { data: Date.now(), origem, rotulo: rotulo || ORIGENS[origem] || origem, sess: SESS, h, g: d.g || '', s: d.s || '', p: d.p || '', r: d.r || '', b: d.b || '', tam: (d.g || '').length + (d.s || '').length };
+    const v = { data: Date.now(), origem, rotulo: rotulo || ORIGENS[origem] || origem, sess: SESS, h, g: d.g || '', s: d.s || '', p: d.p || '', r: d.r || '', b: d.b || '', licenca: d.licenca || '', tam: (d.g || '').length + (d.s || '').length };
     await dbPut('versoes', v); if (origem === 'sessao' || origem === 'marco') ultimaSessao = Date.now();
     invalidar(); await podar(); agendarUI();
     return v;
@@ -313,8 +316,8 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     $('hInfo').textContent = l.length + ' versão(ões) guardada(s) neste navegador · ' + nArq + ' de arquivos · ' + nLink + ' de links · limite ' + MAX_VERSOES + ' (as salvas não são apagadas automaticamente).';
   }
   async function obter(id) {
-    if (id === 'atual') { const d = pacote(); return { rotulo: 'Atual (editores)', data: Date.now(), g: d.g, s: d.s, p: d.p, r: d.r, b: d.b, atual: true }; }
-    if (id === 'rasc') { const d = pacote(); return { rotulo: 'Rascunho da Locução (não aplicado)', data: Date.now(), g: d.g, s: window.NotasSlides ? NotasSlides.sComRascunho() : d.s, p: d.p, r: d.r, b: d.b, atual: true, rasc: true }; }
+    if (id === 'atual') { const d = pacote(); return { rotulo: 'Atual (editores)', data: Date.now(), g: d.g, s: d.s, p: d.p, r: d.r, b: d.b, licenca: d.licenca, atual: true }; }
+    if (id === 'rasc') { const d = pacote(); return { rotulo: 'Rascunho da Locução (não aplicado)', data: Date.now(), g: d.g, s: window.NotasSlides ? NotasSlides.sComRascunho() : d.s, p: d.p, r: d.r, b: d.b, licenca: d.licenca, atual: true, rasc: true }; }
     return (await lista()).find(v => String(v.id) === String(id));
   }
   async function executar() {
@@ -342,7 +345,8 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   function baixarMd(v, sufixo) {
     const x = (v.p || 'Conteudo').replace(/[^\w.-]+/g, '_'), t = new Date(v.data).toISOString().slice(0, 16).replace(/[:T]/g, '-');
     [['Apostila_', v.g], ['Apresentacao_', v.s]].forEach(([n, c], i) => setTimeout(() => {
-      const u = URL.createObjectURL(new Blob([c || ''], { type: 'text/markdown' })), a = document.createElement('a'); a.href = u; a.download = n + x + '_' + sufixo + '_' + t + '.md'; a.click(); setTimeout(() => URL.revokeObjectURL(u), 4000);
+      const texto = window.markdownParaExportacao ? markdownParaExportacao(c || '', v.licenca || '', i === 1) : (c || '');
+      const u = URL.createObjectURL(new Blob([texto], { type: 'text/markdown' })), a = document.createElement('a'); a.href = u; a.download = n + x + '_' + sufixo + '_' + t + '.md'; a.click(); setTimeout(() => URL.revokeObjectURL(u), 4000);
     }, i * 400));
   }
 
@@ -396,7 +400,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     }
     try {
       if (!d || (!(d.g || '').trim() && !(d.s || '').trim())) throw new Error('O link não tem nenhum texto para comparar.');
-      const h = hash((d.g || '') + '\u0001' + (d.s || '')); let v = (await lista()).find(x => x.h === h);
+      const h = hashPacote(d); let v = (await lista()).find(x => mesmaVersao(x, d));
       const existente = v || null;
       if (!v) { await registrar('link', 'Link importado', d); invalidar(); v = (await lista()).find(x => x.h === h && x.origem === 'link'); }   // o registro devolvido não traz o id gerado pelo IndexedDB
       if (!v) throw new Error('Não foi possível guardar a versão.');

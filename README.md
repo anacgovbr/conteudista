@@ -14,7 +14,7 @@ Página única que converte os arquivos Markdown de um conteúdo em:
 |---|---|---|
 | Editor Markdown | Barra de ferramentas, **desfazer/refazer** próprio (Ctrl+Z, Ctrl+Y, Ctrl+Shift+Z e botões; cobre botões, arquivos e rascunhos), atalhos (Ctrl+B/I/E/K, Ctrl+Shift+1/2/3 títulos, Ctrl+Shift+7/8/9 listas, Alt+↑/↓ mover linha, Ctrl+Shift+D duplicar), modos Editar/Dividido/Prévia, tela cheia, prévia fiel ao gerador (inclusive slides) | Só na memória do navegador |
 | Tutorial, Ajuda e Atalhos | Tutorial guiado na primeira visita (ou botão ▶ Tutorial), com **reinício** (↺ no tutorial, botão na Ajuda ou `Alt+Shift+R`); Ajuda **com busca** e destaque dos termos (botão ou F1); atalhos `Alt+Shift+tecla` com janela de consulta (botão ⌨ Atalhos ou `Alt+Shift+K`) | — |
-| Gerar conteúdo | Apostila + apresentação em Markdown → 8 arquivos + ZIP (apostila MD, HTML, DOCX, EPUB e EPUB OpenDyslexic; apresentação MD, HTML e PPTX; PDF pela impressão do HTML). Se houver itens para corrigir, a pessoa escolhe conferir, gerar mesmo assim ou cancelar. O relatório pode ser incluído no ZIP | Só na memória do navegador |
+| Gerar conteúdo | Apostila + apresentação em Markdown → 8 arquivos + ZIP (apostila MD, HTML, DOCX, EPUB e EPUB OpenDyslexic; apresentação MD, HTML e PPTX; PDF pela impressão do HTML). O licenciamento Creative Commons é opcional; por padrão, não há declaração. Se houver itens para corrigir, a pessoa escolhe conferir, gerar mesmo assim ou cancelar. O relatório pode ser incluído no ZIP | Só na memória do navegador |
 | Imagens em base64 | Arraste, cole (Ctrl+V) ou insira pelo botão de imagem; no editor aparecem como `(img:N)` | No próprio texto `.md` |
 | Versões salvas | Salvamento automático ligado por padrão (recupera o último trabalho ao reabrir) e **versões salvas** (**Salvar ▾ → Guardar no navegador**), reunidas em **Versões** e em **Importar → Salvos**. O horário do último salvamento automático aparece sob a barra de ações | IndexedDB do navegador, só nesta máquina |
 | Salvar ▾ | Botão ao lado de **Gerar arquivos** que reúne as formas de guardar neste computador. Itens: **Guardar no navegador** (versão), **Baixar tudo (.zip)**, **Salvar na pasta** (grava os `.md` e os arquivos gerados numa pasta escolhida, Edge/Chrome) e **Baixar .md** | Navegador ou disco do usuário |
@@ -162,6 +162,8 @@ As opções de ligar e desligar da página (salvar automático, lembrar links, g
 
 - Layout dos arquivos gerados: dicionário `TEMAS` em `tools/conteudo/temas.py` (`govbr` = padrão, `classico` = original). Para um tema novo (ex.: ANAC), copie o bloco `govbr`, ajuste cores e fontes e acrescente a opção no campo **Layout (tema)** do `web/index.html`. Linha de comando: `--tema govbr|classico`.
 
+- **Licenciamento do conteúdo:** o seletor **Licenciamento**, ao lado de **Layout (tema)**, começa em **Sem licenciamento**. Quando escolhido, o aviso completo e discreto aparece ao final da Apostila e em um slide próprio ao final da Apresentação, inclusive nos formatos Markdown, HTML, DOCX, EPUB e PPTX. A escolha acompanha o trabalho salvo, as versões e os links; não é uma preferência global. Selecione uma licença apenas se tiver autorização para licenciar o conteúdo; indique os créditos necessários no próprio material. Marcas e materiais de terceiros não são abrangidos automaticamente.
+
 - **Regra global de interface (botões):** a confirmação de ação concluída é só visual (botão verde com tick por 1,2 s: verde imediato, 1 s em verde e 0,2 s de esmaecimento; tick em SVG equidistante da borda e do texto). Nunca insira texto na tela; use `UXFeedback.confirmar(botao, mensagem)` em `web/ux-feedback.js`, que envia a mensagem a leitores de tela por uma região oculta.
 - A cada mudança, acrescente uma entrada curta no topo do `CHANGELOG.md` e atualize `VERSAO` em `web/changelog.js`.
 - O visual segue o Padrão Digital de Governo (https://www.gov.br/ds/). Ajuste cores e componentes em `web/govbr.css`.
@@ -175,9 +177,11 @@ As opções de ligar e desligar da página (salvar automático, lembrar links, g
 
 ```
 pip install -r tools/requirements.txt
-python tools/gerador.py apostila.md apresentacao.md --prefixo Meu_Conteudo --rodape "SIGLA · ANAC" --saida saida
+python tools/gerador.py apostila.md apresentacao.md --prefixo Meu_Conteudo --rodape "SIGLA · ANAC" --licenca cc-by-4.0 --saida saida
 # só um dos dois: use '-' no lugar do arquivo ausente (ex.: python tools/gerador.py - apresentacao.md ...)
 ```
+
+Opções de `--licenca`: `cc-by-4.0`, `cc-by-sa-4.0`, `cc-by-nd-4.0`, `cc-by-nc-4.0`, `cc-by-nc-sa-4.0`, `cc-by-nc-nd-4.0` e `cc0-1.0`. Se omitido e os Markdown tiverem sido exportados pelo Conteudista, o gerador reaproveita o metadado de licença; sem seleção, não inclui aviso.
 
 ## Controles da apresentação HTML (B+)
 No celular em retrato (até 700 px), o Modo slides usa um palco de 480 px de largura que preenche a tela, com texto legível; em paisagem e em telas maiores o palco continua em 1280 × 720 ajustado à tela. A barra usa Pointer Events e estado centralizado, adaptando densidade e interação à largura e à entrada atual (mouse, teclado, toque ou caneta). Barra em pílula branca com ícones SVG, legenda com nome e atalho em cada botão, som da narração sempre visível e tela cheia flutuante no canto superior direito; some por completo após 2,5 s sem interação. Atalhos: `←` anterior · `→` próximo · `Espaço` reproduzir/pausar (a pausa vale também para o áudio da narração e é respeitada ao mudar de slide) · `G` ir para o slide (ou clique no contador) · `L` modo leitura/slides · `A` acessibilidade · `S` som da narração · `N` notas · `F` tela cheia · `M` mais opções · `?` ajuda · `Esc` fechar a camada atual. No toque, o primeiro toque revela os controles e o gesto horizontal navega entre slides.

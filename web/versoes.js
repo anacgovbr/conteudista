@@ -52,7 +52,7 @@
     const ico = '<svg viewBox="0 0 24 24" focusable="false"><rect x="3" y="4" width="8" height="16" rx="1"/><rect x="13" y="4" width="8" height="16" rx="1"/><path d="M5.5 9h3M5.5 13h3M15.5 9h3M15.5 13h3"/></svg>';
     drafts.innerHTML = '<ul class="sv-lista">' + l.map(v => {
       const n = esc(nomeDe(v.rotulo)), tam = v.tam || ((v.g || '').length + (v.s || '').length);
-      const bm = window.BuscaMeta, busca = [nomeDe(v.rotulo), v.p, v.r, bm ? bm.data(v.data) : '', bm ? bm.tam(tam) : fmtTam(tam), bm ? bm.tema(bm.temaDeMd(v.s)) : '', 'vers\u00e3o salva versao'].filter(Boolean).join(' ');
+      const bm = window.BuscaMeta, busca = [nomeDe(v.rotulo), v.p, v.r, v.licenca, bm ? bm.data(v.data) : '', bm ? bm.tam(tam) : fmtTam(tam), bm ? bm.tema(bm.temaDeMd(v.s)) : '', 'vers\u00e3o salva versao'].filter(Boolean).join(' ');
       return '<li class="sv-item" data-busca="' + esc(busca) + '"><span class="sv-ico" aria-hidden="true">' + ico + '</span>' +
         '<div class="sv-corpo"><p class="sv-tit">' + n + '</p><p class="sv-meta">' + new Date(v.data).toLocaleString('pt-BR') + ' \u00b7 ' + fmtTam(tam) + (v.p ? ' \u00b7 ' + esc(v.p) : '') + '</p></div>' +
         '<div class="sv-acoes"><button type="button" class="mini" data-a="ab" data-id="' + v.id + '" data-n="' + n + '" aria-label="Abrir ' + n + '">Abrir</button>' +
@@ -130,9 +130,9 @@
       for (const r of rs) {
         const g = r.g || '', s = r.s || '';
         if (!g.trim() && !s.trim()) continue;
-        const h = hash(g + '\u0001' + s), rot = '\u2605 ' + r.nome;
-        if (ja.has(h + '|' + rot)) continue;
-        await dbPut('versoes', { data: r.data || Date.now(), origem: 'marco', rotulo: rot, sess: 'migracao', h, g, s, p: r.p || '', r: r.r || '', b: r.b || '', tam: g.length + s.length });
+        const hTexto = hash(g + '\u0001' + s), h = hash(g + '\u0001' + s + '\u0001' + (r.licenca || '')), rot = '\u2605 ' + r.nome;
+        if (ja.has(h + '|' + rot) || (!r.licenca && ja.has(hTexto + '|' + rot))) continue;
+        await dbPut('versoes', { data: r.data || Date.now(), origem: 'marco', rotulo: rot, sess: 'migracao', h, g, s, p: r.p || '', r: r.r || '', b: r.b || '', licenca: r.licenca || '', tam: g.length + s.length });
         ja.add(h + '|' + rot); n++;
       }
       localStorage.setItem(FLAG, '1');            // so depois de migrar tudo; se algo falhar, tenta de novo na proxima abertura

@@ -25,7 +25,7 @@
   /* Texto que a busca do Historico consulta (nome, data, tamanho, layout, rodape, narracao e tipos de arquivo) */
   function buscaDe(p) {
     const bm = window.BuscaMeta, t = [];
-    t.push(p.prefixo, bm ? bm.data(p.data) : new Date(p.data).toLocaleString('pt-BR'), bm ? bm.tam(p.tam) : fmt(p.tam), bm ? bm.tema(p.tema) : temaRotulo(p.tema), p.rodape);
+    t.push(p.prefixo, bm ? bm.data(p.data) : new Date(p.data).toLocaleString('pt-BR'), bm ? bm.tam(p.tam) : fmt(p.tam), bm ? bm.tema(p.tema) : temaRotulo(p.tema), p.rodape, p.licenca);
     if (p.narracao) t.push('narração narracao com narração', p.narracao.voz, p.narracao.formato, p.narracao.avanco ? 'avanço automático' : '');
     (p.arquivos || []).forEach(f => {
       const n = f.nome, e = (n.split('.').pop() || '').toLowerCase();
@@ -201,7 +201,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
     const tam = arqs.reduce((a, f) => a + f.blob.size, 0), pref = ($('pref') && $('pref').value) || 'Conteudo';
     try {
       const gm = window.GeracaoMeta || {};
-      await tx('readwrite', s => s.add({ data: gm.data || Date.now(), prefixo: gm.prefixo || pref, tema: gm.tema || ($('tema') ? $('tema').value : ''), rodape: gm.rodape || ($('rod') ? $('rod').value.trim() : ''), narracao: gm.narracao || null, resumo: resumoDoLog(), tam, arquivos: arqs }));
+      await tx('readwrite', s => s.add({ data: gm.data || Date.now(), prefixo: gm.prefixo || pref, tema: gm.tema || ($('tema') ? $('tema').value : ''), rodape: gm.rodape || ($('rod') ? $('rod').value.trim() : ''), licenca: gm.licenca || ($('licenca') ? $('licenca').value : ''), narracao: gm.narracao || null, resumo: resumoDoLog(), tam, arquivos: arqs }));
       await podar(); listar();
       logApp('Arquivos gerados guardados neste navegador (' + fmt(tam) + ').', 'ok');
     } catch (e) { logApp('Não foi possível guardar os arquivos gerados no navegador (' + e.message + ').', 'wa'); }

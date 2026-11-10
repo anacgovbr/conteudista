@@ -390,9 +390,10 @@ flowchart LR
 | Nome do conteúdo | Compõe os nomes dos arquivos |
 | Rodapé, opcional | Aparece nos slides e no DOCX |
 | Layout | Define a aparência |
+| Licenciamento, opcional | Sem licenciamento por padrão; quando escolhido, a declaração fica no final dos documentos |
 | Gerar arquivos | Cria os oito arquivos e o ZIP |
 
-<!-- notas: Antes de gerar, ajuste três campos. O nome do conteúdo compõe os nomes dos arquivos e é normalizado, sem acentos e com sublinhado no lugar dos espaços. O rodapé, opcional, aparece nos slides e no documento do Word. O layout define a aparência. O botão Gerar arquivos cria a apostila, inclusive dois livros digitais EPUB, a apresentação e o pacote compactado. Se apenas um dos textos estiver preenchido, somente os arquivos dele são gerados. -->
+<!-- notas: Antes de gerar, ajuste os campos do conteúdo. O nome compõe os arquivos e é normalizado. O rodapé, opcional, aparece nos slides e no documento do Word. O layout define a aparência. O licenciamento é opcional e, se escolhido, acrescenta uma declaração no fim da apostila e um slide próprio no fim da apresentação. Escolha somente se tiver autorização e confira os direitos de materiais de terceiros. O botão Gerar arquivos cria a apostila, inclusive dois EPUB, a apresentação e o pacote compactado. Se apenas um dos textos estiver preenchido, somente os arquivos dele são gerados. -->
 
 ---
 

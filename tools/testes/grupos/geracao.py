@@ -64,6 +64,31 @@ def grupo6(amb, ctx, G):
         # sem linhas FAIL, o erro está no stderr (ex.: exceção do script): mostra o fim dele em vez de deixar o detalhe vazio
         detalhe = ' | '.join(falhas)[:400] or f'código {r.returncode}: ' + ' '.join((r.stderr or r.stdout).strip().splitlines()[-2:])[:350]
         G.chk(f'6.2-{tema}', f'Teste de acessibilidade das saídas (tema {tema})', r.returncode == 0, detalhe)
+    lic = amb.tmp / 'saida_licenciada'
+    r = rodar([sys.executable, str(suporte.GERADOR), str(EXEMPLO_TREINO), str(EXEMPLO_APRES), '--prefixo', 'Licenca', '--saida', str(lic), '--tema', 'govbr', '--licenca', 'cc-by-4.0'], cwd=RAIZ)
+    md_g = lic / 'Apostila_Licenca.md'; md_s = lic / 'Apresentacao_Licenca.md'
+    html_g = lic / 'Apostila_Licenca.html'; html_s = lic / 'Apresentacao_Licenca.html'
+    conteudo_g = html_g.read_text(encoding='utf-8') if html_g.exists() else ''
+    conteudo_s = html_s.read_text(encoding='utf-8') if html_s.exists() else ''
+    G.chk('6.4', 'CC BY: CLI gera o aviso final da Apostila e um slide final com URL oficial',
+          r.returncode == 0 and md_g.exists() and md_s.exists() and conteudo_g.count('class="licenciamento"') == 1
+          and conteudo_g.index('class="licenciamento"') < conteudo_g.index('</article>')
+          and conteudo_s.count('aria-label="Slide 40 de 40"') == 1
+          and 'https://creativecommons.org/licenses/by/4.0/' in conteudo_s
+          and (lic / 'Apostila_Licenca.docx').exists() and (lic / 'Apostila_Licenca.epub').exists()
+          and (lic / 'Apresentacao_Licenca.pptx').exists(), (r.stderr or r.stdout)[-300:])
+    r = rodar([sys.executable, str(RAIZ / 'tools' / 'testar_acessibilidade.py'), str(lic), '--prefixo', 'Licenca'], cwd=RAIZ)
+    G.chk('6.5', 'CC BY: DOCX, EPUB, PPTX e HTML mantêm as verificações de acessibilidade', r.returncode == 0,
+          ' '.join((r.stderr or r.stdout).strip().splitlines()[-2:])[:350])
+    c = amb.novo_contexto(viewport={'width': 1280, 'height': 720})
+    pg_lic = c.new_page(); erros_lic = []
+    pg_lic.on('pageerror', lambda e: erros_lic.append(str(e)))
+    pg_lic.goto(html_s.as_uri()); pg_lic.wait_for_timeout(500)
+    total = pg_lic.locator('.s').count()
+    for _ in range(total - 1): pg_lic.click('#n')
+    final = pg_lic.evaluate("() => { const s = document.querySelector('.s.on'); const a = s && s.querySelector('a[rel=license]'); const r = s && s.getBoundingClientRect(); return { nome: s && s.getAttribute('aria-label'), url: a && a.href, largura: r && r.width, altura: r && r.height, visivel: !!s && getComputedStyle(s).display !== 'none' }; }")
+    G.chk('6.6', 'CC BY: o último slide é acessível, visível e navegável no Chrome', total > 1 and final['nome'] == 'Slide %d de %d' % (total, total) and final['url'] == 'https://creativecommons.org/licenses/by/4.0/' and final['largura'] > 0 and final['altura'] > 0 and final['visivel'] and not erros_lic, final)
+    c.close()
     # regressão do Windows: o teste de acessibilidade tem de rodar com a saída em cp1252 (console/pipe padrão do Windows)
     r = subprocess.run([sys.executable, str(RAIZ / 'tools' / 'testar_acessibilidade.py'), str(amb.tmp / 'saida_govbr'), '--prefixo', 'Exemplo'],
                        capture_output=True, env=dict(os.environ, PYTHONIOENCODING='cp1252', PYTHONUTF8='0'), cwd=RAIZ)

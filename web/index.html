@@ -17,7 +17,7 @@ h2{color:var(--pri);font-size:18px;margin:0 0 10px}h3{color:var(--pri);font-size
 .note{color:var(--mu);margin:4px 0 10px;font-size:14px}
 .box{padding:10px 14px;border-radius:0 8px 8px 0;margin:0 0 12px}.priv{background:#e3f5e1;border-left:5px solid var(--ok)}.warn{background:#fff5c2;border-left:5px solid var(--wa)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}.row select#licenca{min-height:48px;font-size:max(1rem,1em)}.lic-aux{display:block;color:var(--mu);font-size:13px;line-height:1.35;margin-top:4px}html.contraste .lic-aux{color:#fff}
 .tabs{display:flex;gap:4px;margin:8px 0 0}.tabs button{border-radius:8px 8px 0 0!important;margin:0}
 .tabs button.off{background:#fff!important;color:var(--acc)!important;border:1px solid var(--line)!important;border-bottom:0!important}
 label{font-weight:600;font-size:13px;color:var(--pri);display:block;margin-bottom:4px}
@@ -47,9 +47,9 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
 </style>
 <link rel="stylesheet" href="govbr.css?v=1.66">
 <link rel="stylesheet" href="ds-botoes.css?v=1.66">
-<script src="opcoes.js?v=1.89"></script>
+<script src="opcoes.js?v=1.90"></script>
 <script src="editor.js?v=1.82"></script>
-<script src="ajuda.js?v=1.89" defer></script>
+<script src="ajuda.js?v=1.90" defer></script>
 </head>
 <body>
 <a class="br-skiplink" href="#conteudo">Ir para o conteúdo</a>
@@ -84,7 +84,17 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
     <div><label for="pref">Nome do conteúdo</label><input id="pref" type="text" value="Meu_Conteudo"></div>
     <div><label for="rod">Rodapé (slides e DOCX)</label><input id="rod" type="text" placeholder="Ex.: CDPP · GTPL · SAR/ANAC"></div>
     <div><label for="bar">Barra superior da apostila (HTML)</label><input id="bar" type="text" placeholder="Opcional (padrão: título da apostila)"></div>
-    <div><label for="tema">Layout (tema)</label><select id="tema" title="Padrão gov.br e Clássico valem para todos os arquivos. ANAC 20 anos muda só a apresentação (HTML e PPTX); a apostila segue o padrão gov.br."><option value="govbr">Padrão gov.br</option><option value="anac20-claro">ANAC 20 anos — claro</option><option value="anac20-escuro">ANAC 20 anos — escuro</option><option value="classico">Clássico</option></select></div>
+    <div><label for="tema">Layout (tema)</label><select id="tema" name="tema" title="Padrão gov.br e Clássico valem para todos os arquivos. ANAC 20 anos muda só a apresentação (HTML e PPTX); a apostila segue o padrão gov.br."><option value="govbr">Padrão gov.br</option><option value="anac20-claro">ANAC 20 anos — claro</option><option value="anac20-escuro">ANAC 20 anos — escuro</option><option value="classico">Clássico</option></select></div>
+    <div><label for="licenca">Licenciamento</label><select id="licenca" name="licenca" aria-describedby="licAux">
+        <option value="">Sem licenciamento</option>
+        <option value="cc-by-4.0" data-nome="Creative Commons Atribuição 4.0 Internacional" data-sigla="CC BY 4.0" data-url="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</option>
+        <option value="cc-by-sa-4.0" data-nome="Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional" data-sigla="CC BY-SA 4.0" data-url="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</option>
+        <option value="cc-by-nd-4.0" data-nome="Creative Commons Atribuição-SemDerivações 4.0 Internacional" data-sigla="CC BY-ND 4.0" data-url="https://creativecommons.org/licenses/by-nd/4.0/">CC BY-ND 4.0</option>
+        <option value="cc-by-nc-4.0" data-nome="Creative Commons Atribuição-NãoComercial 4.0 Internacional" data-sigla="CC BY-NC 4.0" data-url="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</option>
+        <option value="cc-by-nc-sa-4.0" data-nome="Creative Commons Atribuição-NãoComercial-CompartilhaIgual 4.0 Internacional" data-sigla="CC BY-NC-SA 4.0" data-url="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</option>
+        <option value="cc-by-nc-nd-4.0" data-nome="Creative Commons Atribuição-NãoComercial-SemDerivações 4.0 Internacional" data-sigla="CC BY-NC-ND 4.0" data-url="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</option>
+        <option value="cc0-1.0" data-nome="CC0 1.0 Universal" data-sigla="CC0 1.0" data-url="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</option>
+      </select><small class="lic-aux" id="licAux">Opcional. A informação aparece ao final da apostila e da apresentação.</small></div>
   </div>
   <p class="acoes-meta">
     <button id="ex" type="button" class="sec">Carregar exemplo</button>
@@ -283,14 +293,52 @@ async function zipLer(u8) {  // → Map(nome → Uint8Array); suporta armazenado
 
 /* =========================== Conteúdo (pacote) =========================== */
 const SEP = '<!-- conteudista:apresentacao -->';
-const pacote = () => ({ v: 1, g: $('g').value, s: $('s').value, p: $('pref').value, r: $('rod').value, b: $('bar').value });
-function aplicar(d) { $('g').value = d.g || ''; $('s').value = d.s || ''; $('pref').value = d.p || 'Meu_Conteudo'; $('rod').value = d.r || ''; $('bar').value = d.b || ''; statusImagens(); }
-function paraTexto(d) { return '<!-- conteudista:config ' + JSON.stringify({ p: d.p, r: d.r, b: d.b }) + ' -->\n' + d.g + '\n\n' + SEP + '\n\n' + d.s; }
+const RX_LIC = /\n\n(?:---\n\n)?<!-- conteudista:licenciamento:inicio=([a-z0-9.-]+) -->\n[\s\S]*?\n<!-- conteudista:licenciamento:fim -->\s*$/;
+function separarLicencaMarkdown(texto) {
+  let limpo = String(texto || ''), codigo = '';
+  while (true) {
+    const m = RX_LIC.exec(limpo); if (!m) break;
+    if (codigo && codigo !== m[1]) throw new Error('O Markdown contém mais de uma licença gerada. Revise os documentos antes de importar.');
+    if (![...$('licenca').options].some(o => o.value === m[1])) throw new Error('O Markdown contém um código de licença desconhecido.');
+    codigo = m[1]; limpo = limpo.slice(0, m.index).replace(/\s+$/, '');
+  }
+  return { texto: limpo, licenca: codigo };
+}
+function resolverLicencaImportada(documentos) {
+  const lidos = documentos.map(d => Object.assign({}, d, separarLicencaMarkdown(d.texto)));
+  const apostila = lidos.find(d => d.chave === 'g' && d.licenca), apresentacao = lidos.find(d => d.chave === 's' && d.licenca);
+  if (apostila && apresentacao && apostila.licenca !== apresentacao.licenca) {
+    const nome = codigo => [...$('licenca').options].find(o => o.value === codigo)?.text || codigo;
+    const usarApostila = confirm('Os documentos têm licenças diferentes.\n\nApostila: ' + nome(apostila.licenca) + '\nApresentação: ' + nome(apresentacao.licenca) + '\n\nOK: usar a licença da Apostila. Cancelar: usar a licença da Apresentação.');
+    return { documentos: lidos, licenca: usarApostila ? apostila.licenca : apresentacao.licenca };
+  }
+  return { documentos: lidos, licenca: (apostila || apresentacao || lidos[0] || {}).licenca || '' };
+}
+window.resolverLicencaImportada = resolverLicencaImportada;
+function markdownParaExportacao(texto, codigo, apresentacao) {
+  const base = separarLicencaMarkdown(texto).texto;
+  if (!codigo) return base;
+  const opcao = [...$('licenca').options].find(o => o.value === codigo);
+  if (!opcao || !opcao.dataset.url) throw new Error('Licença desconhecida.');
+  const declaracao = codigo === 'cc0-1.0' ? 'Este conteúdo foi dedicado ao domínio público por meio da CC0 1.0 Universal.' : 'Este conteúdo está disponível sob a licença ' + opcao.dataset.nome + ' (' + opcao.dataset.sigla + ').';
+  const sep = apresentacao ? '\n\n---\n\n' : '\n\n', titulo = apresentacao ? '# Licenciamento' : '## Licenciamento';
+  const bloco = '<!-- conteudista:licenciamento:inicio=' + codigo + ' -->\n\n' + titulo + '\n\n' + declaracao + '\n\nConsulte a licença: [' + opcao.dataset.url + '](' + opcao.dataset.url + ').\n\nMarcas e materiais de terceiros não estão abrangidos por esta declaração, salvo indicação expressa.\n\n<!-- conteudista:licenciamento:fim -->';
+  return base.replace(/\s+$/, '') + sep + bloco + '\n';
+}
+window.markdownParaExportacao = markdownParaExportacao;
+function pacote() { return { v: 1, g: $('g').value, s: $('s').value, p: $('pref').value, r: $('rod').value, b: $('bar').value, licenca: $('licenca').value || '' }; }
+function aplicar(d) { $('g').value = d.g || ''; $('s').value = d.s || ''; $('pref').value = d.p || 'Meu_Conteudo'; $('rod').value = d.r || ''; $('bar').value = d.b || ''; $('licenca').value = d.licenca || ''; statusImagens(); }
+function paraTexto(d) { return '<!-- conteudista:config ' + JSON.stringify({ p: d.p, r: d.r, b: d.b, licenca: d.licenca || '' }) + ' -->\n' + d.g + '\n\n' + SEP + '\n\n' + d.s; }
 function deTexto(t) {
   let cfg = {}; const m = t.match(/^<!-- conteudista:config (\{.*?\}) -->\n?/);
   if (m) { try { cfg = JSON.parse(m[1]); } catch {} t = t.slice(m[0].length); }
   const i = t.indexOf(SEP); const g = i < 0 ? t : t.slice(0, i), s = i < 0 ? '' : t.slice(i + SEP.length);
-  return { g: g.replace(/\s+$/, '\n'), s: s.replace(/^\s+/, ''), p: cfg.p, r: cfg.r, b: cfg.b };
+  const pg = separarLicencaMarkdown(g), ps = separarLicencaMarkdown(s), temCfg = Object.prototype.hasOwnProperty.call(cfg, 'licenca');
+  const licencaCfg = temCfg ? cfg.licenca || '' : '';
+  if (licencaCfg && ![...$('licenca').options].some(o => o.value === licencaCfg)) throw new Error('O link contém um código de licença desconhecido.');
+  const documentos = [pg.licenca, ps.licenca].filter(Boolean);
+  if (new Set(documentos).size > 1 || (temCfg && documentos.length && licencaCfg !== documentos[0])) throw new Error('A apostila e a apresentação têm licenças diferentes. Escolha uma licença única antes de importar.');
+  return { g: pg.texto.replace(/\s+$/, '\n'), s: ps.texto.replace(/^\s+/, ''), p: cfg.p, r: cfg.r, b: cfg.b, licenca: temCfg ? licencaCfg : documentos[0] || '' };
 }
 
 /* =========================== Imagens → base64 =========================== */
@@ -358,7 +406,13 @@ let alvo = 'g';
 async function receberArquivos(files, t) {
   files = [...files];
   const ims = files.filter(MDEditor.ehImagem), md = files.find(f => !MDEditor.ehImagem(f) && (/\.(md|markdown|txt)$/i.test(f.name) || (f.type || '').startsWith('text/')));
-  if (md) { if (window.Hist) await Hist.registrar('antes', 'Antes de carregar ' + md.name); $(t).value = await md.text(); sugerirPrefixo(); log('Arquivo carregado: ' + md.name, 'ok'); refreshEditors(); }
+  if (md) {
+    try {
+      const lido = separarLicencaMarkdown(await md.text());
+      if (window.Hist) await Hist.registrar('antes', 'Antes de carregar ' + md.name);
+      $(t).value = lido.texto; $('licenca').value = lido.licenca; sugerirPrefixo(); log('Arquivo carregado: ' + md.name, 'ok'); refreshEditors();
+    } catch (e) { log('Não foi possível importar o Markdown: ' + e.message, 'err'); return; }
+  }
   // 1) imagens citadas no texto por nome (ex.: ![x](figura.png)) → substituídas por base64
   const citadas = new Set(pendentes($('g').value + '\n' + $('s').value).map(nomeBase));
   const soltas = [];
@@ -391,6 +445,7 @@ document.querySelectorAll('.drop').forEach(d => {
 ['g', 's'].forEach(id => $(id).addEventListener('input', () => { statusImagens(); agendarAuto(); }));
 $('fmd').onchange = async e => { await receberArquivos(e.target.files, alvo); e.target.value = ''; };
 ['pref', 'rod', 'bar'].forEach(id => $(id).addEventListener('input', agendarAuto));
+$('licenca').addEventListener('change', agendarAuto);
 function sugerirPrefixo() {
   if (!['Meu_Curso', 'Meu_Conteudo'].includes($('pref').value)) return;
   const m = $('g').value.match(/^#\s+(.+)$/m); if (!m) return;
@@ -462,8 +517,8 @@ $('zdl').onclick = async () => {
   const p = pacote(), x = (p.p || 'Conteudo').replace(/[^\w.-]+/g, '_');
   if (!p.g.trim() && !p.s.trim()) { log('Nada para baixar.', 'wa'); return; }
   const arqs = [];
-  if (p.g.trim()) arqs.push({ nome: 'Apostila_' + x + '.md', dados: enc.encode(p.g) });
-  if (p.s.trim()) arqs.push({ nome: 'Apresentacao_' + x + '.md', dados: enc.encode(p.s) });
+  if (p.g.trim()) arqs.push({ nome: 'Apostila_' + x + '.md', dados: enc.encode(markdownParaExportacao(p.g, p.licenca, false)) });
+  if (p.s.trim()) arqs.push({ nome: 'Apresentacao_' + x + '.md', dados: enc.encode(markdownParaExportacao(p.s, p.licenca, true)) });
   for (const f of ultimos) if (!/\.(md|zip)$/i.test(f.nome)) arqs.push({ nome: f.nome, dados: new Uint8Array(await f.blob.arrayBuffer()) });
   const z = await zipCriar(arqs);
   baixar('Conteudo_' + x + '.zip', new Blob([z], { type: 'application/zip' }));
@@ -471,15 +526,15 @@ $('zdl').onclick = async () => {
 };
 $('mdl').onclick = () => {
   const p = pacote(), x = (p.p || 'Conteudo').replace(/[^\w.-]+/g, '_');
-  baixar('Apostila_' + x + '.md', new Blob([p.g], { type: 'text/markdown' }));
-  setTimeout(() => baixar('Apresentacao_' + x + '.md', new Blob([p.s], { type: 'text/markdown' })), 400);
+  baixar('Apostila_' + x + '.md', new Blob([markdownParaExportacao(p.g, p.licenca, false)], { type: 'text/markdown' }));
+  setTimeout(() => baixar('Apresentacao_' + x + '.md', new Blob([markdownParaExportacao(p.s, p.licenca, true)], { type: 'text/markdown' })), 400);
 };
 $('fsave').onclick = async () => {
   if (!window.showDirectoryPicker) { log('Seu navegador não permite escolher pasta; os arquivos serão baixados para Downloads.', 'wa'); $('mdl').click(); ultimos.forEach((f, i) => setTimeout(() => baixar(f.nome, f.blob), 900 + i * 400)); return; }
   try {
     const dir = await window.showDirectoryPicker({ mode: 'readwrite' });
     const p = pacote(), x = (p.p || 'Conteudo').replace(/[^\w.-]+/g, '_');
-    const arqs = [{ nome: 'Apostila_' + x + '.md', blob: new Blob([p.g]) }, { nome: 'Apresentacao_' + x + '.md', blob: new Blob([p.s]) }].concat(ultimos.filter(f => !f.nome.endsWith('.md')));
+    const arqs = [{ nome: 'Apostila_' + x + '.md', blob: new Blob([markdownParaExportacao(p.g, p.licenca, false)]) }, { nome: 'Apresentacao_' + x + '.md', blob: new Blob([markdownParaExportacao(p.s, p.licenca, true)]) }].concat(ultimos.filter(f => !f.nome.endsWith('.md')));
     for (const f of arqs) { const h = await dir.getFileHandle(f.nome, { create: true }); const w = await h.createWritable(); await w.write(f.blob); await w.close(); }
     log(arqs.length + ' arquivo(s) salvos na pasta "' + dir.name + '".', 'ok');
   } catch (e) { if (e.name !== 'AbortError') log('Não foi possível salvar na pasta: ' + e.message, 'err'); }
@@ -598,7 +653,7 @@ $('share').onclick = async () => {
       item = { tipo: 'PrivateBin (' + $('exp').selectedOptions[0].text + ($('burn').checked ? ', leitura única' : '') + (pw ? ', senha' : '') + info + ')', url: r.url, del: r.del, nome: d2.p, data: Date.now(), expira: (m => m ? Date.now() + m : 0)({ '1hour': 36e5, '1day': 864e5, '1week': 6048e5, '1month': 2592e6, '1year': 31536e6 }[$('exp').value]) };
       log('Enviado ao PrivateBin: ' + tamanho(r.tam) + ' cifrados.', 'ok');
     }
-    item.tema = $('tema').value; item.rodape = (d2.r || '').trim(); item.tam = n;
+    item.tema = $('tema').value; item.rodape = (d2.r || '').trim(); item.licenca = d2.licenca || ''; item.tam = n;
     sessaoLinks.unshift(item);
     if ($('keep').checked) await dbPut('links', item);
     if (window.Hist) Hist.registrar('compartilhado', 'Link criado: ' + item.tipo);
@@ -627,7 +682,7 @@ async function listarLinks() {
   const icoLink = '<svg viewBox="0 0 24 24" focusable="false"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>';
   $('links').innerHTML = '<ul class="sv-lista">' + l.map((x, i) => {
     const cur = linkCurto(x.url), rot = esc(x.nome || 'conteúdo');
-    const busca = [x.nome, x.tipo, x.expira ? 'expira em ' + BuscaMeta.data(x.expira) : /^(Autocontido|Link direto)/.test(x.tipo) ? 'não expira nao expira sem validade' : '', BuscaMeta.data(x.data), BuscaMeta.tema(x.tema), x.rodape, BuscaMeta.tam(x.tam), cur.tipo, cur.host, 'link'].filter(Boolean).join(' ');
+    const busca = [x.nome, x.tipo, x.expira ? 'expira em ' + BuscaMeta.data(x.expira) : /^(Autocontido|Link direto)/.test(x.tipo) ? 'não expira nao expira sem validade' : '', BuscaMeta.data(x.data), BuscaMeta.tema(x.tema), x.rodape, x.licenca, BuscaMeta.tam(x.tam), cur.tipo, cur.host, 'link'].filter(Boolean).join(' ');
     return '<li class="sv-item sv-link" data-busca="' + esc(busca) + '"><span class="sv-ico" aria-hidden="true">' + icoLink + '</span>' +
     '<div class="sv-corpo"><p class="sv-tit">' + esc(x.nome || 'Link') + '</p><p class="sv-meta">' + esc(detalhesLink(x)) + '</p>' +
     '<p class="sv-meta">' + new Date(x.data).toLocaleString('pt-BR') + ' · <a href="' + esc(x.url) + '" target="_blank" rel="noopener" title="Abrir o link em uma nova aba"><code>' + esc(cur.id) + '</code></a> ' + esc(cur.host) + '</p></div>' +
@@ -778,7 +833,7 @@ $('go').onclick = async () => {
     await prepararPython();
     const pref = ($('pref').value.trim() || 'Conteudo').replace(/[^\w.-]+/g, '_');
     py.globals.set('GM', $('g').value.trim() + '\n'); py.globals.set('SM', $('s').value.trim() + '\n');
-    py.globals.set('PREF', pref); py.globals.set('ROD', $('rod').value); py.globals.set('BAR', $('bar').value); py.globals.set('TEMA', $('tema').value);
+    py.globals.set('PREF', pref); py.globals.set('ROD', $('rod').value); py.globals.set('BAR', $('bar').value); py.globals.set('TEMA', $('tema').value); py.globals.set('LICENCA', $('licenca').value || '');
     py.globals.set('VLIBRAS', $('vlibrasGerar').checked);
     let narr = '';
     if (window.Narracao && $('s').value.trim()) { try { narr = await Narracao.preparar(py); } catch (e) { log('Narração não incluída: ' + e.message, 'wa'); narr = ''; } }
@@ -794,7 +849,7 @@ $('go').onclick = async () => {
     }
     py.globals.set('INCLUIR_RELATORIO', !!relatorioZip); py.globals.set('RELATORIO_HTML', relatorioZip);
     log('Gerando arquivos…');
-    const out = py.runPython("import sys, os, shutil, zipfile\nif '/app' not in sys.path: sys.path.insert(0, '/app')\nimport gerador\nshutil.rmtree('/saida', ignore_errors=True)\narqs, res = gerador.gerar(GM, SM, PREF, ROD, BAR, '/saida', TEMA, NARR or None, FLUXOS, VLIBRAS)\nzp = '/saida/Conteudo_%s.zip' % PREF\nwith zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:\n    [z.write(f, os.path.basename(f)) for f in arqs]\n    if INCLUIR_RELATORIO: z.writestr('Relatorio_Acessibilidade.html', RELATORIO_HTML)\n'\\n'.join([res] + arqs + [zp])");
+    const out = py.runPython("import sys, os, shutil, zipfile\nif '/app' not in sys.path: sys.path.insert(0, '/app')\nimport gerador\nshutil.rmtree('/saida', ignore_errors=True)\narqs, res = gerador.gerar(GM, SM, PREF, ROD, BAR, '/saida', TEMA, NARR or None, FLUXOS, VLIBRAS, LICENCA)\nzp = '/saida/Conteudo_%s.zip' % PREF\nwith zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:\n    [z.write(f, os.path.basename(f)) for f in arqs]\n    if INCLUIR_RELATORIO: z.writestr('Relatorio_Acessibilidade.html', RELATORIO_HTML)\n'\\n'.join([res] + arqs + [zp])");
     const linhas = out.split('\n'), res = linhas[0], files = linhas.slice(1);
     const la = window.AcessibilidadeTexto;
     const resultados = la ? ['g', 's'].map(k => la.resultado(k)).filter(Boolean) : [];
@@ -811,7 +866,7 @@ $('go').onclick = async () => {
       if (ext === 'html') h += '<button type="button" class="btn btn-arq btn-exibir" data-u="' + u + '" title="Exibir ' + nome + ' na tela">Exibir ' + (/^Apresentacao_/.test(nome) ? 'apresentação' : 'apostila') + '</button>';
     }
     py.runPython("import shutil; shutil.rmtree('/saida', ignore_errors=True)");
-    const meta = { data: Date.now(), prefixo: pref, tema: $('tema').value, rodape: $('rod').value.trim(), tam: ultimos.reduce((a, f) => a + f.blob.size, 0),
+    const meta = { data: Date.now(), prefixo: pref, tema: $('tema').value, rodape: $('rod').value.trim(), licenca: $('licenca').value || '', tam: ultimos.reduce((a, f) => a + f.blob.size, 0),
       narracao: narr ? { voz: (window.Locucao && Locucao.nomeVoz ? Locucao.nomeVoz($('narrVoz').value) : $('narrVoz').value), formato: $('narrFmt').value, avanco: $('narrAuto').checked } : null };
     window.GeracaoMeta = meta;
     $('res').innerHTML = '<div class="ger-atual">' + (window.Gerados && Gerados.metaHtml ? Gerados.metaHtml(meta) : '') + '<div class="file-links">' + h + '</div></div>';
@@ -913,10 +968,10 @@ statusImagens();
   try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}
 })();
 </script>
-<script src="motor-python.js?v=1.89"></script>
-<script src="historico.js?v=1.74"></script>
-<script src="changelog.js?v=1.89"></script>
-<script src="gerados.js?v=1.78"></script>
+<script src="motor-python.js?v=1.90"></script>
+<script src="historico.js?v=1.90"></script>
+<script src="changelog.js?v=1.90"></script>
+<script src="gerados.js?v=1.90"></script>
 <script src="audio-codec.js?v=1.66"></script>
 <script src="locucao.js?v=1.78"></script>
 <script src="narracao.js?v=1.78"></script>
@@ -926,17 +981,17 @@ statusImagens();
 <script src="ux-arquivos.js?v=1.66"></script>
 <script src="metadados.js?v=1.66"></script>
 <script src="dicas.js?v=1.66"></script>
-<script src="janelas.js?v=1.79"></script>
-<script src="versoes.js?v=1.66"></script>
-<script src="colar.js?v=1.79"></script>
+<script src="janelas.js?v=1.90"></script>
+<script src="versoes.js?v=1.90"></script>
+<script src="colar.js?v=1.90"></script>
 <script src="notas-locucao.js?v=1.78"></script>
 <script src="celular.js?v=1.79"></script>
-<script src="acessibilidade.js?v=1.89"></script>
-<script src="acessibilidade-marcas.js?v=1.89"></script>
-<script src="acessibilidade-janelas.js?v=1.89"></script>
-<script src="acessibilidade-geracao.js?v=1.89"></script>
-<script src="relatorio-acessibilidade.js?v=1.89"></script>
-<script src="acessibilidade-config.js?v=1.89"></script>
-<script src="vlibras.js?v=1.89"></script>
+<script src="acessibilidade.js?v=1.90"></script>
+<script src="acessibilidade-marcas.js?v=1.90"></script>
+<script src="acessibilidade-janelas.js?v=1.90"></script>
+<script src="acessibilidade-geracao.js?v=1.90"></script>
+<script src="relatorio-acessibilidade.js?v=1.90"></script>
+<script src="acessibilidade-config.js?v=1.90"></script>
+<script src="vlibras.js?v=1.90"></script>
 </body>
 </html>
