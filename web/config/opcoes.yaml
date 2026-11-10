@@ -98,12 +98,12 @@ narracao:  # Narração (aba Gerar)
   # Avançar os slides sozinho ao fim da narração [ligado | desligado]
   avancar_sozinho: desligado
   # Formato do áudio da narração [mp3 | ogg | wav]
-  formato_audio: mp3
+  formato_audio: ogg
 
 locucao:  # Locução
   # Locução: carregar os recursos de áudio ao abrir a página [ligado | desligado]
   carregar_audio_ao_abrir: desligado
   # Locução: formato do arquivo [mp3 | ogg | wav]
-  formato_audio: mp3
+  formato_audio: ogg
   # Locução: começar em "Notas dos slides" (desligado: texto livre) [ligado | desligado]
   notas_dos_slides: ligado
