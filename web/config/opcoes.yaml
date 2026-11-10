@@ -35,13 +35,13 @@ salvar:  # Salvar e Histórico
   # Guardar automaticamente cada geração no Histórico [ligado | desligado]
   guardar_cada_geracao: ligado
   # Quantas gerações o Histórico guarda [1 a 100]
-  limite_de_geracoes: 10
+  limite_de_geracoes: 20
 
 link:  # Link criptografado
   # Onde guardar o link criptografado [autocontido | privatebin]
   onde_guardar: autocontido
   # PrivateBin: prazo de validade do link [1_hora | 1_dia | 1_semana | 1_mes | 1_ano | nunca]
-  expira_em: 1_semana
+  expira_em: 1_mes
   # PrivateBin: apagar após a primeira leitura [ligado | desligado]
   apagar_apos_primeira_leitura: desligado
   # PrivateBin: enviar as imagens como anexo (ZIP) [ligado | desligado]
@@ -73,7 +73,7 @@ acessibilidade_texto:  # Acessibilidade do texto
   # Acessibilidade do texto: sublinhar no editor os trechos para corrigir [ligado | desligado]
   marcas_no_texto: ligado
   # Acessibilidade do texto: sublinhar também as sugestões (linha pontilhada) [ligado | desligado]
-  marcas_sugestoes: desligado
+  marcas_sugestoes: ligado
   # Nível das regras. Regras para corrigir podem virar sugestão ou ser desligadas; sugestões só podem ser desligadas.
   regras:
     i1: corrigir
