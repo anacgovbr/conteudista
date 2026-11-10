@@ -147,7 +147,7 @@ def grupo15(amb, ctx, G):
         G.chk('15.7', 'Tutorial: passo "3. Confira a acessibilidade" destaca o botão Acessibilidade', e['titulo'] == '3. Confira a acessibilidade' and e['cobre'], e)
         pg.keyboard.press('Escape'); pg.wait_for_timeout(200)
         pg.click('#ex'); pg.wait_for_timeout(500)
-        pg.wait_for_function("(() => { const g = AcessibilidadeTexto.resultado('g'), s = AcessibilidadeTexto.resultado('s'); return g && s && g.diagnosticos.length + s.diagnosticos.length > 0; })()", timeout=15000)
+        pg.wait_for_function("() => ['g', 's'].every(k => { const estado = AcessibilidadeTexto.estado(k); return estado && estado.resultado && estado.ta.value.includes('Conteudista na Prática') && estado.analisado === estado.ta.value; })", timeout=15000)
         pg.wait_for_timeout(1500)
         e = pg.evaluate("[AcessibilidadeTexto.resultado('g').resumo.corrigir, AcessibilidadeTexto.resultado('s').resumo.corrigir, document.getElementById('laAviso') ? !document.getElementById('laAviso').hidden : false]")
         G.chk('15.8', 'Carregar exemplo: o painel não acusa nada para corrigir e não há aviso perto de Gerar arquivos', e == [0, 0, False], e)

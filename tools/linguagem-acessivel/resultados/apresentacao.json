@@ -2,72 +2,8 @@
  "versao": "0.3.0",
  "resumo": {
   "corrigir": 0,
-  "sugestoes": 9,
-  "total": 9
+  "sugestoes": 0,
+  "total": 0
  },
- "itens": [
-  [
-   "n1",
-   "sugestao",
-   13,
-   145,
-   "Frase longa na narração (33 palavras). A legenda fica difícil de ler"
-  ],
-  [
-   "n1",
-   "sugestao",
-   25,
-   115,
-   "Frase longa na narração (37 palavras). A legenda fica difícil de ler"
-  ],
-  [
-   "n1",
-   "sugestao",
-   136,
-   40,
-   "Frase longa na narração (27 palavras). A legenda fica difícil de ler"
-  ],
-  [
-   "n1",
-   "sugestao",
-   190,
-   13,
-   "Frase longa na narração (44 palavras). A legenda fica difícil de ler"
-  ],
-  [
-   "s1",
-   "sugestao",
-   231,
-   11,
-   "Explique a sigla OM na primeira vez em que ela aparece"
-  ],
-  [
-   "n1",
-   "sugestao",
-   233,
-   62,
-   "Frase longa na narração (27 palavras). A legenda fica difícil de ler"
-  ],
-  [
-   "s1",
-   "sugestao",
-   405,
-   3,
-   "Explique a sigla ANAC na primeira vez em que ela aparece"
-  ],
-  [
-   "n1",
-   "sugestao",
-   430,
-   243,
-   "Frase longa na narração (30 palavras). A legenda fica difícil de ler"
-  ],
-  [
-   "n1",
-   "sugestao",
-   443,
-   172,
-   "Frase longa na narração (28 palavras). A legenda fica difícil de ler"
-  ]
- ]
+ "itens": []
 }

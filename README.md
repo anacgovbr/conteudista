@@ -202,12 +202,13 @@ O botão **Carregar exemplo** carrega `web/exemplo/treinamento.md` (apostila) e 
 
 | Arquivo | Conteúdo |
 |---|---|
-| `treinamento.md` | Apostila de 16 seções: Início rápido, funcionamento, percurso de aprendizado, edição, importação, formas de guardar, geração, locução e narração, o que cabe no Markdown, produção com IA, fluxo de trabalho, checklists, exercícios, gabarito e referências. Traz 5 fluxos Mermaid, 4 figuras, links para vídeos e o **prompt padrão para IA** (seção 11.3) |
+| `treinamento.md` | Apostila de 16 seções: Início rápido, funcionamento, percurso de aprendizado, edição, importação, formas de guardar, geração, locução e narração, o que cabe no Markdown, produção com IA, fluxo de trabalho, checklists, exercícios, gabarito e referências. Traz 5 fluxos Mermaid, 5 capturas de tela atuais, links para vídeos e o **prompt padrão para IA** (seção 11.3) |
 | `apresentacao.md` | 39 slides, um assunto por slide, com notas para narração (cerca de 17 minutos de áudio), 7 fluxos Mermaid e 3 figuras; inclui 5 slides sobre acessibilidade do texto |
 
 Manutenção do exemplo:
 
 - É texto comum: edite os dois `.md`. As figuras são PNG embutidas em base64, de modo que cada arquivo é autossuficiente.
+- As capturas mostram Licenciamento, o menu Salvar, Importar › Salvos, Arquivos gerados e o painel de revisão do editor. Use conteúdo demonstrativo sem dados pessoais; mantenha descrições e instruções equivalentes em texto. Não dependa da posição, da cor ou de números sobre a imagem.
 - O prompt padrão está em um único bloco de código (versão 1.1). Qualquer mudança na sintaxe aceita pelo gerador deve ser refletida nas seções 5 e 6 do prompt e na tabela da seção 10 da apostila. A versão 1.1 acrescentou à seção 4 as regras de acessibilidade e linguagem simples (itens 8 a 17) e à seção 8 a conferência correspondente. Ao mudar o texto do prompt, suba a versão.
 - O exemplo precisa ficar sem itens **para corrigir** (`node tools/lac/lac.mjs c -n c web/exemplo/*.md`); a publicação no GitHub confere. As sugestões que restam estão registradas em `tools/linguagem-acessivel/resultados/` (atualize com `node tools/linguagem-acessivel/testar.mjs --atualizar-exemplo` e revise o diff). Exemplos de texto "ruim" ficam em código, para não serem acusados.
 - Seções sobre acessibilidade: 5.6 (uso do painel e das marcas) e 10.6 (como escrever), além de 5 slides antes de "Gerar arquivos".
