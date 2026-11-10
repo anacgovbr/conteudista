@@ -73,7 +73,7 @@ acessibilidade_texto:  # Acessibilidade do texto
   # Acessibilidade do texto: sublinhar no editor os trechos para corrigir [ligado | desligado]
   marcas_no_texto: ligado
   # Acessibilidade do texto: sublinhar também as sugestões (linha pontilhada) [ligado | desligado]
-  marcas_sugestoes: ligado
+  marcas_sugestoes: desligado
   # Nível das regras. Regras para corrigir podem virar sugestão ou ser desligadas; sugestões só podem ser desligadas.
   regras:
     i1: corrigir
