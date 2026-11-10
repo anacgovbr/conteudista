@@ -13,3 +13,5 @@ site/
 tools/testes/relatorio/
 tools/testes/relatorio-*/
 linguagem-acessivel.sarif
+# pacote da release do lac (node tools/lac/empacotar.mjs)
+/dist/

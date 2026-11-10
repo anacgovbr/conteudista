@@ -11,7 +11,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import * as LA from '../../web/lib/linguagem-acessivel/index.js';
-import { C, comandoPor, opcaoPor, ajudaGeral, ajudaCurta, ajudaComando, completarBash, completarZsh } from './ajuda.mjs';
+import { C, VERSAO_LAC, comandoPor, opcaoPor, ajudaGeral, ajudaCurta, ajudaComando, completarBash, completarZsh } from './ajuda.mjs';
 import * as F from './formatos.mjs';
 
 const require = createRequire(import.meta.url);
@@ -19,6 +19,8 @@ const OpcoesYaml = require('../../web/opcoes.js');
 
 class ErroUso extends Error {}
 const sair = (codigo) => { process.exitCode = codigo; };
+/** Nomes em inglês que toda ferramenta de terminal aceita; as opções oficiais continuam --versao e --ajuda. */
+const ALIAS_LONGOS = { version: 'versao', help: 'ajuda' };
 
 /* ---------------------------------------------------------------- argumentos */
 export function lerArgumentos(argv) {
@@ -36,8 +38,8 @@ export function lerArgumentos(argv) {
     if (soArgs || x === '-' || !x.startsWith('-')) { if (!a.comando && !soArgs && x !== '-') a.comando = x; else a.args.push(x); continue; }
     if (x === '--') { soArgs = true; continue; }
     if (x.startsWith('--')) {
-      const [nome, ...r] = x.slice(2).split('='), o = C.opcoes.find(q => q.id === nome);
-      if (!o) throw new ErroUso('Opção desconhecida: --' + nome + '. Veja: lac h');
+      const [bruto, ...r] = x.slice(2).split('='), nome = ALIAS_LONGOS[bruto] || bruto, o = C.opcoes.find(q => q.id === nome);
+      if (!o) throw new ErroUso('Opção desconhecida: --' + bruto + '. Veja: lac h');
       i = toma(o, '--' + nome, r.length ? r.join('=') : undefined, i);
       continue;
     }
@@ -184,7 +186,7 @@ const COMANDOS = {
 export function principal(argv) {
   try {
     const a = lerArgumentos(argv);
-    if (a.op.versao) { process.stdout.write('lac ' + LA.VERSAO + ' · pedidos para IA ' + LA.VERSAO_PEDIDOS + '\n'); return 0; }
+    if (a.op.versao) { process.stdout.write('lac ' + VERSAO_LAC + ' · API v1 · biblioteca ' + LA.VERSAO + ' · pedidos para IA ' + LA.VERSAO_PEDIDOS + '\n'); return 0; }
     if (!a.comando) {
       if (a.op.ajuda) { process.stdout.write(ajudaGeral()); return 0; }
       process.stderr.write(ajudaCurta()); return 2;

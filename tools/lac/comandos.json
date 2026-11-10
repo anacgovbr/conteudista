@@ -3,6 +3,7 @@
   "programa": {
     "nome": "linguagem-acessivel",
     "atalho": "lac",
+    "versao": "1.0.0",
     "titulo": "Linguagem Acessível",
     "descricao": "Confere acessibilidade e linguagem simples em textos Markdown.",
     "uso": "lac <comando> [opções] [arquivo...]",

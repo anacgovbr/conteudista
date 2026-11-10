@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { createServer } from 'node:http';
 import * as LA from '../../web/lib/linguagem-acessivel/index.js';
 import * as F from './formatos.mjs';
-import { C, ajudaGeral, ajudaComando } from './ajuda.mjs';
+import { C, VERSAO_LAC, ajudaGeral, ajudaComando } from './ajuda.mjs';
 import { documentoOpenApi } from './openapi.mjs';
 
 const MAX_BODY = 1024 * 1024;
@@ -112,7 +112,7 @@ async function atender(req, res) {
   let caminho;
   try { caminho = decodeURIComponent(url.pathname); } catch { throw new ErroHttp(400, 'Caminho inválido', 'Confira os caracteres codificados no endereço.'); }
   if (caminho === '/v1/saude' && req.method === 'GET') {
-    json(res, 200, { estado: 'ok', biblioteca: LA.VERSAO, pedidos: LA.VERSAO_PEDIDOS }, cors); return;
+    json(res, 200, { estado: 'ok', api: 'v1', versao: VERSAO_LAC, biblioteca: LA.VERSAO, pedidos: LA.VERSAO_PEDIDOS }, cors); return;
   }
   if (caminho === '/v1/openapi.json' && req.method === 'GET') {
     json(res, 200, documentoOpenApi(), Object.assign({}, cors, { 'Cache-Control': 'public, max-age=300' })); return;

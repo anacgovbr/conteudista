@@ -107,7 +107,18 @@ t('atalhos de uma letra são únicos (comandos e opções)', () => {
   igual(new Set(ca).size, ca.length); igual(new Set(oa).size, oa.length);
 });
 t('completar bash e zsh', () => { verdade(/complete -F _lac lac/.test(lac(['completar', 'bash']).out)); verdade(/#compdef lac/.test(lac(['completar', 'zsh']).out)); });
-t('-v mostra a versão da biblioteca', () => verdade(lac(['-v']).out.startsWith('lac ' + LA.VERSAO)));
+t('-v e --version mostram lac, API, biblioteca e pedidos; --help equivale a -h', () => {
+  const esperado = 'lac ' + C.programa.versao + ' · API v1 · biblioteca ' + LA.VERSAO + ' · pedidos para IA ' + LA.VERSAO_PEDIDOS + '\n';
+  for (const opcao of ['-v', '--version', '--versao']) { const r = lac([opcao]); igual([r.cod, r.out], [0, esperado], opcao); }
+  const h = lac(['--help']); igual(h.cod, 0); igual(h.out, lac(['-h']).out); verdade(h.out.includes('lac · Linguagem Acessível ' + C.programa.versao));
+  igual(lac(['--nada']).cod, 2);
+});
+t('versão única: package.json, comandos.json, OpenAPI e CHANGELOG da release coincidem', () => {
+  const v = C.programa.versao, pkg = JSON.parse(fs.readFileSync(path.join(AQUI, 'package.json'), 'utf8')), api = JSON.parse(fs.readFileSync(path.join(AQUI, 'openapi.json'), 'utf8'));
+  verdade(/^\d+\.\d+\.\d+$/.test(v), 'versão fora do formato x.y.z: ' + v);
+  igual([pkg.version, api.info.version, C.api.versao.split('.')[0]], [v, C.api.versao, v.split('.')[0]]);
+  verdade(new RegExp('^## ' + v.replace(/\./g, '\\.') + ' - \\d\\d/\\d\\d/\\d{4}', 'm').test(fs.readFileSync(path.join(AQUI, 'CHANGELOG.md'), 'utf8')), 'tools/lac/CHANGELOG.md sem a seção ' + v);
+});
 t('docs/lac.md, manual e autocompletar em dia (se falhar: node tools/lac/gerar.mjs)', () => {
   for (const [a, c] of gerados()) igual(fs.existsSync(a) && fs.readFileSync(a, 'utf8').replace(/\r\n/g, '\n'), c, path.relative(RAIZ, a));
 });

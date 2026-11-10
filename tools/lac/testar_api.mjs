@@ -3,6 +3,7 @@ import { criarServidor } from './servidor.mjs';
 import { iniciarServidor } from './servidor.mjs';
 import { createServer } from 'node:http';
 import * as LA from '../../web/lib/linguagem-acessivel/index.js';
+import { C } from './ajuda.mjs';
 
 let ok = 0, falhas = 0;
 function afirmar(condicao, nome, detalhe = '') {
@@ -33,6 +34,7 @@ try {
   let resposta = await requisitar('/v1/saude', { headers: { Origin: 'https://cliente.example' } });
   const saude = await resposta.json();
   afirmar(resposta.status === 200 && saude.estado === 'ok' && resposta.headers.get('access-control-allow-origin') === 'https://cliente.example', 'saúde e CORS configurável');
+  afirmar(saude.api === 'v1' && saude.versao === C.programa.versao && saude.biblioteca === LA.VERSAO, 'saúde informa API v1, versão da release e da biblioteca');
 
   resposta = await requisitar('/v1/openapi.json');
   const api = await resposta.json();

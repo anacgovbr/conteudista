@@ -45,7 +45,7 @@ def comandos(grupo, saida):
         'estatico_web': [executar('testar_estaticos.py', '--modo', 'web')],
         'modulos': [executar('testar_modulos.py'), ['node', str(testes / 'testar_motor_python.mjs')]],
         'biblioteca': [['node', 'tools/linguagem-acessivel/testar.mjs']],
-        'lac': [['node', 'tools/lac/testar_lac.mjs'], ['node', 'tools/lac/testar_api.mjs']],
+        'lac': [['node', 'tools/lac/testar_lac.mjs'], ['node', 'tools/lac/testar_api.mjs'], ['node', 'tools/lac/testar_pacote.mjs']],
         'opcoes': [['node', 'tools/opcoes/testar_opcoes.js'], ['node', 'tools/opcoes/verificar_opcoes.js']],
         'pacote': [[python, 'tools/pacote/testar_pacote.py']],
         'workflows': [executar('testar_estaticos.py', '--modo', 'workflows')],

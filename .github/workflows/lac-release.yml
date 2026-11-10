@@ -1,0 +1,72 @@
+name: Release do lac e da API
+
+# Publica o pacote do lac (linha de comando e API local) quando se cria uma tag lac-vX.Y.Z.
+#   git tag lac-v1.0.0 && git push origin lac-v1.0.0
+# A tag precisa apontar para um commit do main e ter a mesma versão de tools/lac/comandos.json.
+# Os testes do lac, da API e do pacote rodam antes; se algo falhar, nada é publicado.
+# As permissões são declaradas aqui porque a organização fixa o padrão do token como somente leitura.
+
+on:
+  push:
+    tags: ["lac-v*"]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-lac
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Conferir a tag
+        id: tag
+        run: |
+          VERSAO=$(node -p "JSON.parse(require('fs').readFileSync('tools/lac/comandos.json','utf8')).programa.versao")
+          if [ "$TAG" != "lac-v$VERSAO" ]; then
+            echo "::error::A tag $TAG não corresponde à versão $VERSAO de tools/lac/comandos.json."; exit 1
+          fi
+          git fetch origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::A tag $TAG precisa apontar para um commit do main."; exit 1
+          fi
+          echo "versao=$VERSAO" >> "$GITHUB_OUTPUT"
+
+      - name: Testar a biblioteca, o lac, a API e o pacote
+        run: |
+          node tools/linguagem-acessivel/testar.mjs
+          node tools/lac/testar_lac.mjs
+          node tools/lac/testar_api.mjs
+          node tools/lac/testar_pacote.mjs
+
+      - name: Montar o pacote
+        run: node tools/lac/empacotar.mjs --saida dist
+
+      - name: Extrair as notas da versão
+        env:
+          VERSAO: ${{ steps.tag.outputs.versao }}
+        run: |
+          awk -v v="$VERSAO" '$0 ~ "^## " v " " {dentro=1; next} /^## / {dentro=0} dentro' tools/lac/CHANGELOG.md > notas.md
+          if [ ! -s notas.md ]; then echo "::error::tools/lac/CHANGELOG.md sem a seção $VERSAO."; exit 1; fi
+          {
+            echo
+            echo "Pacote: \`lac-$VERSAO.tar.gz\` (Node.js 18 ou mais novo, sem dependências). Confira com \`sha256sum -c SHA256SUMS\`."
+            echo "Documentação: [docs/lac.md](https://github.com/${GITHUB_REPOSITORY}/blob/${TAG}/docs/lac.md)."
+          } >> notas.md
+
+      - name: Criar a release
+        env:
+          VERSAO: ${{ steps.tag.outputs.versao }}
+        run: |
+          gh release create "$TAG" "dist/lac-$VERSAO.tar.gz" dist/SHA256SUMS \
+            --title "lac $VERSAO · API v1" --notes-file notas.md --verify-tag

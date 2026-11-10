@@ -44,6 +44,7 @@ etapa "Biblioteca Linguagem Acessível e linha de comando lac"
 node tools/linguagem-acessivel/testar.mjs
 node tools/lac/testar_lac.mjs
 node tools/lac/testar_api.mjs
+node tools/lac/testar_pacote.mjs
 
 etapa "Conteúdo de exemplo: nada para corrigir"
 node tools/lac/lac.mjs c -n c web/exemplo/treinamento.md web/exemplo/apresentacao.md

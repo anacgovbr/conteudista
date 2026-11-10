@@ -6,14 +6,16 @@ Confere acessibilidade e linguagem simples em textos Markdown. Funciona com pipe
 
 ## Instalar
 
+- **Pacote da release:** baixe `lac-1.0.0.tar.gz` em *Releases* (tag `lac-v1.0.0`), confira com `SHA256SUMS` e extraia. Precisa só do Node.js 18 ou mais novo; não há dependências para instalar. Depois: `node lac-1.0.0/tools/lac/lac.mjs c apostila.md`.
 - **Windows:** `tools\lac\lac.cmd c apostila.md` (ou acrescente `tools\lac` ao PATH e use `lac`).
 - **Linux e macOS:** `node tools/lac/lac.mjs c apostila.md`, ou `npm link` dentro de `tools/lac` para ter `lac` e `linguagem-acessivel` no PATH.
 - **Manual:** `man ./tools/lac/lac.1`. **Autocompletar:** `source <(lac completar bash)` ou `zsh`.
+- **Versões:** `lac -v` (ou `--version`) mostra a do `lac` e da API (1.0.0), da biblioteca (0.3.0) e dos pedidos para IA. A API v1 só muda de forma compatível; mudanças incompatíveis exigem `/v2`. Histórico em `tools/lac/CHANGELOG.md`.
 
 ## Ajuda
 
 ```text
-lac · Linguagem Acessível 0.3.0
+lac · Linguagem Acessível 1.0.0
 Confere acessibilidade e linguagem simples em textos Markdown.
 
 Uso:  lac <comando> [opções] [arquivo...]

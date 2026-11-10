@@ -11,3 +11,4 @@ Cada decisão importante do projeto fica registrada em uma página curta: contex
 | [0005](0005-cli-e-api.md) | Linha de comando `lac` e API com o mesmo modelo | Aceita; `lac` e API v1 na entrega 1.89 |
 | [0006](0006-regras-de-linguagem.md) | Regras de linguagem simples como sugestão; glossário de siglas | Aceita (biblioteca 0.2.0) |
 | [0007](0007-api-local-v1.md) | API v1 local: sem estado, CORS fechado por padrão e OpenAPI gerado | Aceita (1.89) |
+| [0008](0008-primeira-release-lac.md) | Primeira release do `lac` e da API v1: versão própria, tag `lac-vX.Y.Z` e pacote verificado | Aceita (lac 1.0.0) |

@@ -43,7 +43,7 @@ docs/OPCOES.md           ← lista das opções (gerada)
 tools/opcoes/            ← verificação e testes das opções (Node, sem dependências)
 web/lib/linguagem-acessivel/ ← biblioteca de acessibilidade e linguagem simples (módulo ES, sem dependências)
 tools/linguagem-acessivel/   ← testes e geração da documentação da biblioteca
-tools/lac/               ← linha de comando lac (comandos.json é a fonte única da ajuda e da futura API)
+tools/lac/               ← linha de comando lac e API local v1 (comandos.json é a fonte única da ajuda, do manual e do OpenAPI)
 tools/pacote/            ← pacotes de atualização: criar, aplicar, testar e cdt (Termux)
 tools/verificar.sh       ← verificação completa sem navegador (usada pelos fluxos do GitHub)
 pacotes/                 ← pasta opcional para enviar os pacotes .zip
@@ -136,7 +136,7 @@ Limitações conhecidas:
 
 Confere acessibilidade e linguagem simples em textos Markdown. É a base do editor, do gerador, do `lac` e da API HTTP local. Nesta versão (0.3.0) traz 11 regras. Para corrigir: `i1`, `i2`, `e1`, `e2`, `e3` e `k1`; sugestões: `f1`, `f2`, `f3`, `s1` e `n1`. O glossário pode vir do conteúdo, de `config.siglas` ou da lista institucional, nessa ordem.
 
-- **Linha de comando `lac`** (`tools/lac/`): `lac c apostila.md`, `lac c -f relatorio apostila.md`, `lac c --config web/config/opcoes.yaml apostila.md`, `lac a -d apostila.md`, `lac p simplificar < trecho.txt`. No Windows: `tools\lac\lac.cmd`. `lac servir -p 8787` inicia a API local; OpenAPI 3.1 em `tools/lac/openapi.json`. CORS é negado por padrão; `LAC_CORS_ORIGINS` configura origens permitidas. O servidor não registra nem guarda conteúdo.
+- **Linha de comando `lac` e API v1** (`tools/lac/`, versão 1.0.0): `lac c apostila.md`, `lac c -f relatorio apostila.md`, `lac c --config web/config/opcoes.yaml apostila.md`, `lac a -d apostila.md`, `lac p simplificar < trecho.txt`; `lac -v` mostra as versões. No Windows: `tools\lac\lac.cmd`. `lac servir -p 8787` inicia a API local; OpenAPI 3.1 em `tools/lac/openapi.json`. CORS é negado por padrão; `LAC_CORS_ORIGINS` configura origens permitidas. O servidor não registra nem guarda conteúdo. **Release:** a tag `lac-vX.Y.Z` publica `lac-X.Y.Z.tar.gz` e `SHA256SUMS` (fluxo `lac-release.yml`); para montar o pacote localmente, `node tools/lac/empacotar.mjs`. Ver `docs/lac.md`, `tools/lac/CHANGELOG.md` e a decisão 0008.
 
 - Uso, contrato e estrutura: `web/lib/linguagem-acessivel/README.md`. Regras e marcadores: `docs/linguagem-acessivel/`.
 - Testes (sem dependências): `node tools/linguagem-acessivel/testar.mjs`. Rodam antes de cada publicação; o conteúdo de exemplo não pode ter nenhum item "para corrigir".

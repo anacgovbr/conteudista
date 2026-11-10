@@ -3,11 +3,14 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { VERSAO } from '../../web/lib/linguagem-acessivel/index.js';
+import { VERSAO as VERSAO_BIBLIOTECA } from '../../web/lib/linguagem-acessivel/index.js';
 
 const AQUI = path.dirname(fileURLToPath(import.meta.url));
 export const C = JSON.parse(fs.readFileSync(path.join(AQUI, 'comandos.json'), 'utf8'));
 const P = C.programa;
+/** Versão da release do lac e da API (a da biblioteca é outra e vem de web/lib/linguagem-acessivel). */
+export const VERSAO_LAC = P.versao;
+const VERSAO = VERSAO_LAC;
 export const comandoPor = x => C.comandos.find(c => c.id === x || (c.atalho && c.atalho === x));
 export const opcaoPor = x => C.opcoes.find(o => o.id === x || (o.curta && o.curta === x));
 const pad = (s, n) => s + ' '.repeat(Math.max(1, n - s.length));
@@ -109,9 +112,11 @@ compdef _lac lac linguagem-acessivel 2>/dev/null || _lac "$@"
 export function markdown() {
   const l = ['# lac · linha de comando da Linguagem Acessível', '', '> Página gerada por `node tools/lac/gerar.mjs` a partir de `tools/lac/comandos.json`. Não edite à mão.', '',
     P.descricao + ' Funciona com pipes, como qualquer ferramenta Unix, e usa os mesmos comandos, opções e formatos da API.', '',
-    '## Instalar', '', '- **Windows:** `tools\\lac\\lac.cmd c apostila.md` (ou acrescente `tools\\lac` ao PATH e use `lac`).',
+    '## Instalar', '', '- **Pacote da release:** baixe `lac-' + VERSAO_LAC + '.tar.gz` em *Releases* (tag `lac-v' + VERSAO_LAC + '`), confira com `SHA256SUMS` e extraia. Precisa só do Node.js 18 ou mais novo; não há dependências para instalar. Depois: `node lac-' + VERSAO_LAC + '/tools/lac/lac.mjs c apostila.md`.',
+    '- **Windows:** `tools\\lac\\lac.cmd c apostila.md` (ou acrescente `tools\\lac` ao PATH e use `lac`).',
     '- **Linux e macOS:** `node tools/lac/lac.mjs c apostila.md`, ou `npm link` dentro de `tools/lac` para ter `lac` e `linguagem-acessivel` no PATH.',
-    '- **Manual:** `man ./tools/lac/lac.1`. **Autocompletar:** `source <(lac completar bash)` ou `zsh`.', '',
+    '- **Manual:** `man ./tools/lac/lac.1`. **Autocompletar:** `source <(lac completar bash)` ou `zsh`.',
+    '- **Versões:** `lac -v` (ou `--version`) mostra a do `lac` e da API (' + VERSAO_LAC + '), da biblioteca (' + VERSAO_BIBLIOTECA + ') e dos pedidos para IA. A API v1 só muda de forma compatível; mudanças incompatíveis exigem `/v2`. Histórico em `tools/lac/CHANGELOG.md`.', '',
     '## Ajuda', '', '```text', ajudaGeral().trimEnd(), '```', '', '## Comandos', ''];
   for (const c of C.comandos) l.push('### ' + c.id + (c.atalho ? ' (`' + c.atalho + '`)' : ''), '', '```text', ajudaComando(c.id).trimEnd(), '```', '');
   l.push('## Formatos de saída', '', '| Formato | Uso | Na API |', '|---|---|---|',
