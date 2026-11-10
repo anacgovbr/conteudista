@@ -2,6 +2,11 @@
 
 Versão da linha de comando `lac` e da API HTTP local. A biblioteca Linguagem Acessível tem versão própria (`web/lib/linguagem-acessivel/CHANGELOG.md`). Mudanças que quebrem a API `/v1` só entram em uma nova versão principal, com `/v2`.
 
+## Instalador Linux - 10/11/2026
+
+- Instalação por usuário com um comando curl, sem sudo: `tools/lac/instalar.sh`, disponível no branch `main`. Baixa a release publicada 1.0.0, confere SHA-256 e cria os comandos em `~/.local/bin`. Não modifica o shell, instala Node.js ou inicia a API; explica como adicionar a pasta ao PATH.
+- Testes Linux cobrem instalação, repetição, espaços no caminho, arquivos e links de terceiros, versão inválida, Node.js antigo e falhas de download/checksum. O pacote das próximas releases também inclui o script. A tag e os arquivos publicados da release 1.0.0 não foram substituídos.
+
 ## 1.0.0 - 10/11/2026
 Primeira release pública.
 

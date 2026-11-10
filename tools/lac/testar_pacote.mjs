@@ -34,7 +34,7 @@ try {
   });
   await t('traz o lac, a biblioteca, a documentação e o manual', () => {
     const l = listar(raiz);
-    for (const a of ['LEIA-ME.md', 'docs/lac.md', 'tools/lac/lac.mjs', 'tools/lac/lac.1', 'tools/lac/openapi.json', 'tools/lac/CHANGELOG.md', 'web/opcoes.js', 'web/lib/linguagem-acessivel/index.js', 'tools/lac/completar/lac.bash']) verdade(l.includes(a), 'falta ' + a);
+    for (const a of ['LEIA-ME.md', 'docs/lac.md', 'tools/lac/instalar.sh', 'tools/lac/lac.mjs', 'tools/lac/lac.1', 'tools/lac/openapi.json', 'tools/lac/CHANGELOG.md', 'web/opcoes.js', 'web/lib/linguagem-acessivel/index.js', 'tools/lac/completar/lac.bash']) verdade(l.includes(a), 'falta ' + a);
   });
   await t('não leva testes nem ferramentas de desenvolvimento', () => {
     const l = listar(raiz);
@@ -69,6 +69,85 @@ try {
       igual(c.status, 200);
     } finally { await new Promise(ok => { filho.once('exit', ok); filho.kill(); }); }
   });
+  if (process.platform === 'linux') {
+    const mock = path.join(TMP, 'mock');
+    fs.mkdirSync(mock);
+    fs.writeFileSync(path.join(mock, 'curl'), `#!/usr/bin/env bash
+set -eu
+saida=""
+url=""
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    -o) saida="$2"; shift ;;
+    https://*) url="$1" ;;
+  esac
+  shift
+done
+if [ "\${LAC_TEST_FAIL:-}" = download ]; then echo "curl: falha simulada" >&2; exit 22; fi
+if [ "\${LAC_TEST_FAIL:-}" = checksum ] && [[ "$url" == */SHA256SUMS ]]; then
+  printf '%064d  lac-${VERSAO}.tar.gz\\n' 0 > "$saida"
+else
+  cp "$LAC_TEST_FIXTURE/\${url##*/}" "$saida"
+fi
+`, { mode: 0o755 });
+    const instalar = (home, extras = {}) => spawnSync('bash', [path.join(raiz, 'tools', 'lac', 'instalar.sh')], {
+      encoding: 'utf8',
+      env: { ...process.env, HOME: home, PATH: mock + ':' + process.env.PATH, LAC_VERSION: VERSAO, LAC_TEST_FIXTURE: path.dirname(r.arquivo), ...extras },
+    });
+    const home = path.join(TMP, 'usuario com espacos');
+    await t('instalador Linux cria os dois comandos sem sudo; repeticao preserva a pasta', () => {
+      let p = instalar(home);
+      igual(p.status, 0, p.stderr);
+      verdade(p.stdout.includes('export PATH='), 'precisa orientar sobre o PATH');
+      for (const nome of ['lac', 'linguagem-acessivel']) {
+        const comando = path.join(home, '.local', 'bin', nome);
+        verdade(fs.lstatSync(comando).isSymbolicLink(), nome);
+        const v = spawnSync(comando, ['-v'], { encoding: 'utf8' });
+        igual(v.status, 0, v.stderr);
+        verdade(v.stdout.startsWith('lac ' + VERSAO + ' '), v.stdout);
+      }
+      const marcador = path.join(home, '.local', 'share', 'lac', 'lac-' + VERSAO, '.instalado-pelo-lac');
+      const antes = fs.statSync(marcador).mtimeMs;
+      p = instalar(home);
+      igual(p.status, 0, p.stderr);
+      igual(fs.statSync(marcador).mtimeMs, antes);
+      verdade(!fs.existsSync(path.join(home, '.bashrc')), 'nao deve modificar o shell');
+    });
+    await t('falha de download ou checksum nao instala comandos', () => {
+      for (const falha of ['download', 'checksum']) {
+        const h = path.join(TMP, falha);
+        const p = instalar(h, { LAC_TEST_FAIL: falha });
+        verdade(p.status !== 0, 'precisa falhar: ' + falha);
+        verdade(p.stderr.includes('lac:') || p.stderr.includes('curl:'), p.stderr);
+        verdade(!fs.existsSync(path.join(h, '.local')), 'nao deve instalar apos ' + falha);
+      }
+    });
+    await t('conflito com arquivo ou link de terceiros nao sobrescreve comandos', () => {
+      for (const tipo of ['arquivo', 'link']) {
+        const h = path.join(TMP, 'conflito-' + tipo);
+        const bin = path.join(h, '.local', 'bin');
+        fs.mkdirSync(bin, { recursive: true });
+        const arquivo = path.join(bin, 'lac');
+        if (tipo === 'arquivo') fs.writeFileSync(arquivo, 'terceiro');
+        else fs.symlinkSync('/nao-existe/comando-de-terceiros', arquivo);
+        const p = instalar(h);
+        verdade(p.status !== 0 && p.stderr.includes('lac:'), p.stderr);
+        igual(tipo === 'arquivo' ? fs.readFileSync(arquivo, 'utf8') : fs.readlinkSync(arquivo),
+          tipo === 'arquivo' ? 'terceiro' : '/nao-existe/comando-de-terceiros');
+      }
+    });
+    await t('versao invalida e Node.js antigo sao erros explicitos antes da instalacao', () => {
+      let p = instalar(path.join(TMP, 'versao-invalida'), { LAC_VERSION: '../invalida' });
+      verdade(p.status !== 0 && p.stderr.includes('LAC_VERSION'), p.stderr);
+      const antigo = path.join(TMP, 'node-antigo');
+      fs.mkdirSync(antigo);
+      fs.writeFileSync(path.join(antigo, 'node'), '#!/usr/bin/env bash\nexit 1\n', { mode: 0o755 });
+      p = instalar(path.join(TMP, 'node-invalido'), { PATH: antigo + ':' + mock + ':' + process.env.PATH });
+      verdade(p.status !== 0 && p.stderr.includes('Node.js 18'), p.stderr);
+    });
+  } else {
+    console.log('  aviso: testes do instalador Linux executam somente no Linux (CI/WSL).');
+  }
 } catch (e) {
   f++; n++; console.log('  FALHA montagem do pacote\n        ' + (e && e.stack || e));
 } finally {

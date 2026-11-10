@@ -138,6 +138,14 @@ Confere acessibilidade e linguagem simples em textos Markdown. É a base do edit
 
 - **Linha de comando `lac` e API v1** (`tools/lac/`, versão 1.0.0): `lac c apostila.md`, `lac c -f relatorio apostila.md`, `lac c --config web/config/opcoes.yaml apostila.md`, `lac a -d apostila.md`, `lac p simplificar < trecho.txt`; `lac -v` mostra as versões. No Windows: `tools\lac\lac.cmd`. `lac servir -p 8787` inicia a API local; OpenAPI 3.1 em `tools/lac/openapi.json`. CORS é negado por padrão; `LAC_CORS_ORIGINS` configura origens permitidas. O servidor não registra nem guarda conteúdo. **Release:** a tag `lac-vX.Y.Z` publica `lac-X.Y.Z.tar.gz` e `SHA256SUMS` (fluxo `lac-release.yml`); para montar o pacote localmente, `node tools/lac/empacotar.mjs`. Ver `docs/lac.md`, `tools/lac/CHANGELOG.md` e a decisão 0008.
 
+**Instalar no Linux com um comando (Node.js 18+, sem sudo):**
+
+```bash
+bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/anacgovbr/conteudista/main/tools/lac/instalar.sh | bash'
+```
+
+O comando executa um script remoto do projeto, baixa a release 1.0.0 e confere o SHA-256 antes de instalar. Cria `lac` e `linguagem-acessivel` em `~/.local/bin`, sem iniciar a API ou mudar a configuração do shell. Se necessário, execute `export PATH="$HOME/.local/bin:$PATH"`. Depois, use `lac -v` ou `lac servir`. Para inspecionar o script antes de executá-lo e ver requisitos e remoção, consulte [a instalação do lac](docs/lac.md#instalar).
+
 - Uso, contrato e estrutura: `web/lib/linguagem-acessivel/README.md`. Regras e marcadores: `docs/linguagem-acessivel/`.
 - Testes (sem dependências): `node tools/linguagem-acessivel/testar.mjs`. Rodam antes de cada publicação; o conteúdo de exemplo não pode ter nenhum item "para corrigir".
 - Decisões de projeto: `docs/decisoes/`.

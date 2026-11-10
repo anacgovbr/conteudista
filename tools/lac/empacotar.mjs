@@ -20,6 +20,7 @@ export const ARQUIVOS = [
   'web/opcoes.js',
   'web/lib/linguagem-acessivel',
   'docs/lac.md',
+  'tools/lac/instalar.sh',
 ];
 
 const LEIA_ME = v => `# lac ${v}
@@ -32,6 +33,7 @@ Precisa do Node.js 18 ou mais novo. Não há nada para instalar.
     node tools/lac/lac.mjs -v                 versões
 
 No Windows: tools\\lac\\lac.cmd. Para usar só "lac": npm link, dentro de tools/lac.
+No Linux, instalacao por usuario: veja o comando curl em docs/lac.md.
 Documentação completa: docs/lac.md · manual: man ./tools/lac/lac.1 · novidades: tools/lac/CHANGELOG.md
 `;
 

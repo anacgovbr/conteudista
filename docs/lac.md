@@ -6,6 +6,22 @@ Confere acessibilidade e linguagem simples em textos Markdown. Funciona com pipe
 
 ## Instalar
 
+### Linux: um comando
+
+Com Node.js 18+, Bash, curl, tar e sha256sum instalados, execute **sem sudo**:
+
+```bash
+bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/anacgovbr/conteudista/main/tools/lac/instalar.sh | bash'
+```
+
+O comando executa um script remoto do projeto. Para inspecionar antes, baixe a mesma URL com `curl -fsSL -o instalar-lac.sh URL`, leia o arquivo e execute `bash instalar-lac.sh`.
+O instalador baixa a release 1.0.0 e confere o SHA-256 antes de instalar em `~/.local/share/lac/lac-1.0.0`; cria `lac` e `linguagem-acessivel` em `~/.local/bin`. Repetir o comando reutiliza a instalação e não sobrescreve comandos de terceiros. O checksum detecta corrupção do pacote, mas não substitui uma assinatura independente de autenticidade.
+
+Se a pasta não estiver no PATH, o instalador orienta a executar `export PATH="$HOME/.local/bin:$PATH"` e a guardar essa linha na configuração do shell. Não instala Node.js, não muda arquivos do shell e não abre a API. Depois: `lac -v`, `lac c apostila.md` ou `lac servir`.
+Para escolher outra release publicada: prefixe o comando com `export LAC_VERSION=X.Y.Z;`. Para remover esta instalação, apague apenas os dois links criados em `~/.local/bin` e a pasta `~/.local/share/lac/lac-1.0.0`, depois de conferir que pertencem ao lac.
+
+### Pacote e outros sistemas
+
 - **Pacote da release:** baixe `lac-1.0.0.tar.gz` em *Releases* (tag `lac-v1.0.0`), confira com `SHA256SUMS` e extraia. Precisa só do Node.js 18 ou mais novo; não há dependências para instalar. Depois: `node lac-1.0.0/tools/lac/lac.mjs c apostila.md`.
 - **Windows:** `tools\lac\lac.cmd c apostila.md` (ou acrescente `tools\lac` ao PATH e use `lac`).
 - **Linux e macOS:** `node tools/lac/lac.mjs c apostila.md`, ou `npm link` dentro de `tools/lac` para ter `lac` e `linguagem-acessivel` no PATH.

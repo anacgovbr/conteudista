@@ -62,6 +62,11 @@ jobs:
             echo
             echo "Pacote: \`lac-$VERSAO.tar.gz\` (Node.js 18 ou mais novo, sem dependências). Confira com \`sha256sum -c SHA256SUMS\`."
             echo "Documentação: [docs/lac.md](https://github.com/${GITHUB_REPOSITORY}/blob/${TAG}/docs/lac.md)."
+            echo
+            echo 'Linux (Node.js 18+, sem sudo):'
+            echo '```bash'
+            printf "export LAC_VERSION=%s; bash -o pipefail -c 'curl -fsSL https://raw.githubusercontent.com/anacgovbr/conteudista/main/tools/lac/instalar.sh | bash'\n" "$VERSAO"
+            echo '```'
           } >> notas.md
 
       - name: Criar a release
