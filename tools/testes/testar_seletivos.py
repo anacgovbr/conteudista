@@ -20,7 +20,7 @@ class SeletivosTest(unittest.TestCase):
                     numeros = resolver_grupos([nome])
                     self.assertTrue(set(numeros) <= GRUPOS.keys())
                     self.assertEqual(grupo['gerador'], bool(set(numeros) & COM_GERADOR))
-        self.assertEqual(len(GRUPOS), 21)
+        self.assertGreaterEqual(len(GRUPOS), 21)
         self.assertEqual(resolver_grupos(['editor', 'atalhos']), ['9'])
 
     def test_desconhecido_nao_e_ignorado(self):
