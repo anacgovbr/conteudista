@@ -307,14 +307,14 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
       }
     }
     if (d) {
-      if (!confirm('Excluir este pacote de arquivos guardado?')) return;
+      if (!(await (window.Dialogo ? Dialogo.confirmar({ titulo: 'Excluir este pacote de arquivos?', descricao: 'Os arquivos deste pacote guardados neste navegador serão apagados. Esta ação não pode ser desfeita.', rotulo: 'Excluir', perigo: true }) : Promise.resolve(confirm('Excluir este pacote de arquivos guardado?'))))) return;
       const id = +d.dataset.del;
       await tx('readwrite', s => s.delete(id));
       if (pkgId === id) fecharExibicaoDoPacote();
       listar();
     }
   });
-  $('gerLimpar').onclick = async () => { if (!confirm('Apagar todos os pacotes de arquivos gerados guardados neste navegador?')) return; await tx('readwrite', s => s.clear()); fecharExibicaoDoPacote(); listar(); };
+  $('gerLimpar').onclick = async () => { if (!(await (window.Dialogo ? Dialogo.confirmar({ titulo: 'Apagar todos os pacotes de arquivos?', descricao: 'Todos os arquivos gerados guardados neste navegador serão apagados. Esta ação não pode ser desfeita.', rotulo: 'Apagar todos', perigo: true }) : Promise.resolve(confirm('Apagar todos os pacotes de arquivos gerados guardados neste navegador?'))))) return; await tx('readwrite', s => s.clear()); fecharExibicaoDoPacote(); listar(); };
   const logEl = $('log');
   if (logEl) new MutationObserver(() => { if (/Dados locais apagados/.test(logEl.lastChild && logEl.lastChild.textContent || '')) tx('readwrite', s => s.clear()).then(() => { fecharExibicaoDoPacote(); listar(); }).catch(() => {}); }).observe(logEl, { childList: true });
   listar();

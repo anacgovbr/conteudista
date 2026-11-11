@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.94 - 10/11/2026
+- **Figuras sem leitura dupla:** quando a legenda repete a descrição da imagem, o leitor de tela lê o texto uma só vez.
+- **Tamanho do texto até 200% (WCAG 1.4.4):** o Modo leitura da apresentação passa a ir de 90% a 200%.
+- **Rótulo visível "Tema" (WCAG 3.3.2):** o seletor de tema da apostila tem rótulo na tela.
+- **Menu Mais opções e barra da apresentação (WCAG 4.1.2):** papéis coerentes com o uso pelo teclado.
+- **Janelas no padrão gov.br:** excluir pacote, apagar pacotes, apagar os dados do navegador e a senha de um link abrem janelas próprias, com foco em Cancelar, Esc para cancelar e erro no próprio campo, em vez das caixas do navegador.
 ## 1.93 - 10/11/2026
 - **Mensagens anunciadas (WCAG 4.1.3):** a área de mensagens da geração passa a ser lida pelo leitor de tela, sem precisar ir até ela.
 - **Links que abrem em nova aba (eMAG 1.9):** nos arquivos HTML gerados, links externos avisam "(abre em nova aba)" ao leitor de tela.

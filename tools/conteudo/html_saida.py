@@ -69,7 +69,7 @@ def html_of(bl,toc=None,_ctx=None):
             decor=decorativa(b[2],b[1])
             if not b[1].strip() and not decor:aviso('Imagem sem descrição (texto alternativo vazio): %s'%(b[2][:60]+'…' if len(b[2])>60 else b[2]))
             alt='' if decor else b[1]
-            o.append('<figure><img src="%s" alt="%s">%s</figure>'%(E(b[2]),E(alt),'<figcaption>%s</figcaption>'%E(b[1]) if b[1] and not decor else ''))
+            o.append('<figure><img src="%s" alt="%s">%s</figure>'%(E(b[2]),E(alt),'<figcaption aria-hidden="true">%s</figcaption>'%E(b[1]) if b[1] and not decor else ''))
         elif k=='table':o.append(_tabela_html(b[1],ctx['tit'],cap or ''));cap=None
         elif k=='list':o.append(lst_html(b[1]))
         elif k=='quote':o.append('<blockquote class="%s">%s</blockquote>'%(b[1],html_of(b[2],None,ctx)))
@@ -150,7 +150,7 @@ def treinamento_html(md,bar,tema=None,vlibras=True,licenca=''):
     b += licencas.aviso_html(licenca)
     return ('<!DOCTYPE html><html lang="pt-BR" data-theme="light" data-leitura="padrao"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>%s</title>'
     '<script>%s</script><style>%s%s%s%s</style></head><body><a class="skip" href="#conteudo">Ir para o conteúdo</a>'
-    '<header><span class="t">%s</span><span id="pg" role="status" aria-live="polite"></span><select id="th" aria-label="Tema"><option value="light">Tema claro</option><option value="dark">Tema escuro</option><option value="contrast">Alto contraste</option></select>'
+    '<header><span class="t">%s</span><span id="pg" role="status" aria-live="polite"></span><label for="th" class="lt">Tema</label><select id="th"><option value="light">Tema claro</option><option value="dark">Tema escuro</option><option value="contrast">Alto contraste</option></select>'
     '%s%s<button type="button" id="a11yToggle" class="a11y-panel-toggle sec mini" aria-controls="a11yPanel" aria-expanded="false">Acessibilidade</button><button id="rs" type="button">Limpar checklists</button><button type="button" onclick="print()" title="Imprimir ou salvar em PDF em A4">Imprimir / PDF</button></header>'
     '<div class="wrap"><nav aria-label="Sumário"><ul>%s</ul></nav><main id="conteudo" tabindex="-1"><article>%s</article></main></div>%s<script>%s%s</script>%s%s</body></html>'
     )%(E(t),LEITURA_HEAD,fontes_css(),tcss(CSS_G,T,T['extra_g']),CSS_G_A11Y+ZOOM_CSS,PAINEL_A11Y_CSS+licencas.CSS,E(bar or t),LEITURA_SEL,TAM_HTML,tc,b,painel_a11y(vlibras),LEITURA_JS+TAM_JS+ZOOM_JS,JS_G.replace('__K__',slug(t)[:40]),A11Y_JS,MER)
@@ -256,7 +256,7 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
                 mime=MIME_AUDIO.get(os.path.splitext(cam)[1].lower(),'audio/mpeg')
                 aud+='<audio class="narr" data-s="%d" preload="auto" src="data:%s;base64,%s"></audio>'%(k,mime,base64.b64encode(open(cam,'rb').read()).decode())
     css+=CSS_S_A11Y+CSS_BPLUS+CSS_ESTREITO+ZOOM_CSS+PAINEL_A11Y_CSS
-    hud=('<div id="hud" role="toolbar" aria-label="Controles da apresentação" class="bplus" data-estado="visible">'
+    hud=('<div id="hud" role="group" aria-label="Controles da apresentação" class="bplus" data-estado="visible">'
          '<button id="p" type="button" aria-label="Slide anterior" aria-keyshortcuts="ArrowLeft" data-dica="Slide anterior · ←">'+_ic('prev')+'</button>'
          '<button id="bp" type="button" aria-label="Reproduzir apresentação" aria-keyshortcuts="Space" data-on="false" data-dica="Reproduzir · Espaço">'+_ic('play','i-off')+_ic('pause','i-on')+'</button>'
          '<button id="n" type="button" aria-label="Próximo slide" aria-keyshortcuts="ArrowRight" data-dica="Próximo slide · →">'+_ic('next')+'</button>'

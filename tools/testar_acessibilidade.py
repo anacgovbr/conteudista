@@ -136,6 +136,8 @@ def testar_apostila_html(cam, exigir_fontes):
     ok("btnOuvir.setAttribute('aria-pressed'" in h and 'function pararLeitura(' in h, n + ': leitura em voz alta com Parar (WCAG 1.4.2)')
     ok(all('nova aba' in m for m in re.findall(r'<a [^>]*target="_blank"[^>]*>.*?</a>', h, re.S)), n + ': links que abrem em nova aba avisam (eMAG 1.9)')
     ok('aria-label="Tabela"' not in h, n + ': tabelas com nome proprio, nao so "Tabela" (WCAG 2.4.6)')
+    ok('<label for="th" class="lt">Tema</label>' in h, n + ': seletor de tema com rotulo visivel (WCAG 3.3.2)')  # nbr17225-1.94
+    ok(not re.search(r'<img [^>]*alt="([^"]+)"[^>]*><figcaption>\1</figcaption>', h), n + ': legenda igual a descricao nao e lida duas vezes')
     testar_zoom(h, n, slides=False)
 
 def testar_zoom(h, n, slides):
@@ -221,7 +223,7 @@ def testar_slides_html(cam, exigir_fontes):
     ok('function irLeitura(' in h and 'function slideLeitura(' in h, n + ': anterior/próximo/seletor funcionam no Modo leitura')
     ok(all(re.search(r'<button id="%s"[^>]*class="[^"]*\bmi\b[^"]*"[^>]*>(?:<svg class="ic[^"]*"[^>]*aria-hidden="true"[^>]*><path d="[^"]+"/></svg>)+<span class="mi-t">' % b, h) for b in ('bLer', 'imp')) and "(b1.querySelector('.mi-t')||b1).textContent" not in h, n + ': itens do menu Mais opções (Modo leitura, Imprimir) com ícone SVG decorativo e rótulo em texto')
     ok(h.count('id="a11yToggle"') == 1 and 'id="ba11y' not in h and 'id="a11y"' not in h and re.search(r'<button id="a11yToggle" type="button" aria-label="Acessibilidade" aria-keyshortcuts="A" aria-haspopup="dialog"', h) is not None and re.search(r'<dialog id="a11yPanel".*id="leitura".*id="tamR".*data-a11y="contraste"', h, re.S) is not None, n + ': um único botão de Acessibilidade (A) na barra, que abre o painel com fonte, tamanho do texto e demais ajustes')
-    ok('id="hud" role="toolbar"' in h and 'aria-label="Controles da apresentação"' in h, n + ': barra B+ como toolbar rotulada')
+    ok('id="hud" role="group"' in h and 'aria-label="Controles da apresentação"' in h, n + ': barra B+ como grupo rotulado')
     ok('pointerdown' in h and 'pointercancel' in h, n + ': B+ sobre Pointer Events')
     ok('conteudista:narrfim' in h and 'function tempoLeitura(' in h and ',5000)}' not in h, n + ': avanço automático espera a narração ou o tempo de leitura (sem tempo fixo de 5 s)')
     ok('conteudista:retomar' in h and "if(ativo()){D.dispatchEvent(new CustomEvent('conteudista:pausou'));parar();return}" in h, n + ': Pausar também pausa a narração e Reproduzir retoma do mesmo ponto')
@@ -256,6 +258,8 @@ def testar_slides_html(cam, exigir_fontes):
     ff = re.findall(r'@font-face\{font-family:"([^"]+)";src:url\(data:font/woff2;base64,', h)
     if exigir_fontes or ff: ok(len(ff) == (len(faces_esperadas('atkinson')) or 4) + (len(faces_esperadas('opendyslexic')) or 4), n + ': fontes de leitura embutidas, sem arquivo repetido')
     ok('#hud.bplus>.cnt{padding:0 12px;border:1px dashed #888888;' in h, n + ': borda do contador com contraste de 3,54:1 (WCAG 1.4.11)')
+    ok('TAMS=[90,100,110,125,150,175,200]' in h, n + ': tamanho do texto ate 200% no Modo leitura (WCAG 1.4.4)')
+    ok(not re.search(r'<img [^>]*alt="([^"]+)"[^>]*><figcaption>\1</figcaption>', h), n + ': legenda igual a descricao nao e lida duas vezes')
     testar_zoom(h, n, slides=True)
     ok('.s{font-family:var(--leitura)}' in h, n + ': slides usam var(--leitura)')
 

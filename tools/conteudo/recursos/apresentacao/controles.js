@@ -75,7 +75,7 @@ function sobre(v){UI.sobre=v;if(v)cancelarInatividade();else programarInatividad
 [hud,b2].forEach(function(el){if(!el)return;el.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse')sobre(true)});el.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')sobre(false)});el.addEventListener('focusin',function(){if(UI.estado==='hidden')setEstado('visible');cancelarInatividade()});el.addEventListener('focusout',function(){setTimeout(programarInatividade,0)})});
 addEventListener('scroll',posDica,true);
 D.addEventListener('conteudista:modo',function(){fecharSilencioso();esconderDica(true);setEstado('visible');programarInatividade()});
-var TAMS=[90,100,110,125,150],TK='conteudista.leitura.tamanho',ti=1,tamM=$('tamM'),tamR=$('tamR'),tamP=$('tamP'),tamS=$('tamS');
+var TAMS=[90,100,110,125,150,175,200],TK='conteudista.leitura.tamanho',ti=1,tamM=$('tamM'),tamR=$('tamR'),tamP=$('tamP'),tamS=$('tamS');
 function tamSalvo(){var v=100;try{v=parseInt(localStorage.getItem(TK),10)}catch(e){}var k=TAMS.indexOf(v);return k<0?1:k}
 function aplicarTam(k,avisar){ti=Math.max(0,Math.min(TAMS.length-1,k));var v=TAMS[ti];H.style.setProperty('--lt',String(v/100));try{localStorage.setItem(TK,String(v))}catch(e){}
 if(tamR){tamR.textContent=v+'%';tamR.setAttribute('aria-label','Tamanho do texto: '+v+'%. Voltar a 100%')}if(tamM)tamM.setAttribute('aria-disabled',ti===0?'true':'false');if(tamP)tamP.setAttribute('aria-disabled',ti===TAMS.length-1?'true':'false');
