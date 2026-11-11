@@ -410,7 +410,7 @@ async function receberArquivos(files, t) {
     try {
       const lido = separarLicencaMarkdown(await md.text());
       if (window.Hist) await Hist.registrar('antes', 'Antes de carregar ' + md.name);
-      $(t).value = lido.texto; $('licenca').value = lido.licenca; sugerirPrefixo(); log('Arquivo carregado: ' + md.name, 'ok'); refreshEditors();
+      $(t).value = lido.texto; if (lido.licenca) $('licenca').value = lido.licenca; sugerirPrefixo(); log('Arquivo carregado: ' + md.name, 'ok'); refreshEditors();
     } catch (e) { log('Não foi possível importar o Markdown: ' + e.message, 'err'); return; }
   }
   // 1) imagens citadas no texto por nome (ex.: ![x](figura.png)) → substituídas por base64

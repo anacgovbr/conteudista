@@ -4,6 +4,7 @@
    - Após cada "Gerar arquivos", guarda os 8 arquivos + ZIP (Blobs) deste navegador (apostila: MD, HTML, DOCX, EPUB e EPUB OpenDyslexic)
    - Lista com download de cada arquivo/ZIP, visualização do HTML e exclusão
    - Mantém os últimos N pacotes (padrão 10) e mostra o espaço usado
+   - 1.90: o botão "Histórico" fica fora do <summary> de "Arquivos gerados" (WCAG 4.1.2)
    Integra-se sem alterar os outros arquivos: só precisa de <script src="gerados.js"></script>.
    ===================================================================================== */
 (function () {
@@ -25,7 +26,7 @@
   /* Texto que a busca do Historico consulta (nome, data, tamanho, layout, rodape, narracao e tipos de arquivo) */
   function buscaDe(p) {
     const bm = window.BuscaMeta, t = [];
-    t.push(p.prefixo, bm ? bm.data(p.data) : new Date(p.data).toLocaleString('pt-BR'), bm ? bm.tam(p.tam) : fmt(p.tam), bm ? bm.tema(p.tema) : temaRotulo(p.tema), p.rodape, p.licenca);
+    t.push(p.prefixo, bm ? bm.data(p.data) : new Date(p.data).toLocaleString('pt-BR'), bm ? bm.tam(p.tam) : fmt(p.tam), bm ? bm.tema(p.tema) : temaRotulo(p.tema), p.rodape);
     if (p.narracao) t.push('narração narracao com narração', p.narracao.voz, p.narracao.formato, p.narracao.avanco ? 'avanço automático' : '');
     (p.arquivos || []).forEach(f => {
       const n = f.nome, e = (n.split('.').pop() || '').toLowerCase();
@@ -40,7 +41,6 @@
     if (t) itens.push('<span class="m">' + esc(t) + '</span>');
     return '<div class="ger-info"><p class="ger-nome">' + esc(p.prefixo || 'Conteudo') + '</p>' + (itens.length ? '<p class="ger-meta">' + itens.join(' \u00b7 ') + '</p>' : '') + '</div>';
   }
-
   /* ---------------------------- Banco ---------------------------- */
   let dbP = null;
   function db() {
@@ -54,7 +54,6 @@
     return dbP;
   }
   async function tx(modo, fn) { const d = await db(); return new Promise((ok, err) => { const t = d.transaction('pacotes', modo), r = fn(t.objectStore('pacotes')); t.oncomplete = () => ok(r && r.result); t.onerror = () => err(t.error); t.onabort = () => err(t.error); }); }
-
   /* ---------------------------- Interface ---------------------------- */
   const st = document.createElement('style');
   st.textContent = `#gerBox{margin-top:16px;border:1px solid #cccccc;border-radius:10px;padding:12px 14px;background:#f8f8f8}
@@ -102,10 +101,11 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
 .ger-win #gerBox{margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important}
 .ger-win table{margin-top:8px}.ger-win td{vertical-align:top;font-size:13px}
 .ger-win #drafts{margin:0}
-.ger-tit{display:flex;align-items:center;gap:10px}
+.ger-acoes{float:right;position:relative;z-index:1;margin:6px 0 0 12px}
 .ger-tb.mde-tb{display:inline-flex!important;padding:0!important;background:transparent!important;border:0!important;flex:0 0 auto}
 .ger-ph{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0}.ger-ph .note{margin:0}
-@media(max-width:700px){.ger-back{padding:0;align-items:stretch}.ger-win{border-radius:0;width:100%;min-height:100%;padding:0 14px 18px}.ger-top h2{font-size:16px}}`;
+@media(max-width:700px){.ger-back{padding:0;align-items:stretch}.ger-win{border-radius:0;width:100%;min-height:100%;padding:0 14px 18px}.ger-top h2{font-size:16px}}
+@media print{.ger-acoes{display:none!important}}`;
   document.head.appendChild(stJanela);
   const gerBack = document.createElement('div');
   gerBack.className = 'ger-back'; gerBack.id = 'gerBack'; gerBack.hidden = true;
@@ -149,18 +149,20 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
   $('gerFechar').onclick = () => fecharGer();
   gerBack.addEventListener('click', e => { if (e.target === gerBack) fecharGer(); });
   addEventListener('keydown', e => { if (e.key === 'Escape' && !gerBack.hidden) { e.preventDefault(); e.stopPropagation(); fecharGer(); } }, true);
-  // Botao "Historico" ao lado do titulo de "Arquivos gerados" (mesmo visual do botao da barra do editor)
+  // Botao "Historico" de "Arquivos gerados" (1.90): fica FORA do <summary>, numa barra logo antes da secao,
+  // alinhada a direita. Controle interativo dentro de <summary> nao e anunciado corretamente (WCAG 4.1.2).
   let btnHist = null;
   (function () {
-    const dx = $('dxRes'), sum = dx && dx.querySelector(':scope > summary'), tit = sum && sum.querySelector(':scope > h3');
-    if (!sum || !tit || $('gerHistBtn')) return;
-    const grp = document.createElement('div'); grp.className = 'summary-title ger-tit';
+    const dx = $('dxRes'), sum = dx && dx.querySelector(':scope > summary');
+    if (!dx || !sum || !dx.parentNode || $('gerHistBtn')) return;
+    const grp = document.createElement('div'); grp.className = 'ger-acoes';
     const tb = document.createElement('span'); tb.className = 'mde-tb ger-tb';
     const b = document.createElement('button'); b.type = 'button'; b.id = 'gerHistBtn'; b.className = 'hbtn';
     b.title = 'Hist\u00f3rico: arquivos gerados e rascunhos'; b.setAttribute('aria-label', 'Hist\u00f3rico de arquivos gerados e rascunhos');
     b.innerHTML = icoHist + '<span class="ht"> Hist\u00f3rico</span>';
-    tb.appendChild(b); sum.insertBefore(grp, tit); grp.append(tit, tb);
-    b.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); abrirGer(); });
+    tb.appendChild(b); grp.appendChild(tb);
+    dx.parentNode.insertBefore(grp, dx);
+    b.addEventListener('click', e => { e.preventDefault(); abrirGer(); });
     btnHist = b;
   })();
   // Contagens nos titulos das secoes, na linha do painel e no tooltip do botao
@@ -181,7 +183,6 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
   $('gerLim').value = (window.Opcoes ? Opcoes.ler(LIM, '10') : localStorage.getItem(LIM)) || '10';
   $('gerAtivo').onchange = () => localStorage.setItem(ATIVO, $('gerAtivo').checked ? '1' : '0');
   $('gerLim').onchange = async () => { localStorage.setItem(LIM, $('gerLim').value); await podar(); listar(); };
-
   /* ---------------------------- Captura após "Gerar arquivos" ---------------------------- */
   const salvos = new WeakSet(); let ultimaAssin = '', tCap = null;
   async function arquivosAtuais() {
@@ -201,19 +202,17 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
     const tam = arqs.reduce((a, f) => a + f.blob.size, 0), pref = ($('pref') && $('pref').value) || 'Conteudo';
     try {
       const gm = window.GeracaoMeta || {};
-      await tx('readwrite', s => s.add({ data: gm.data || Date.now(), prefixo: gm.prefixo || pref, tema: gm.tema || ($('tema') ? $('tema').value : ''), rodape: gm.rodape || ($('rod') ? $('rod').value.trim() : ''), licenca: gm.licenca || ($('licenca') ? $('licenca').value : ''), narracao: gm.narracao || null, resumo: resumoDoLog(), tam, arquivos: arqs }));
+      await tx('readwrite', s => s.add({ data: gm.data || Date.now(), prefixo: gm.prefixo || pref, tema: gm.tema || ($('tema') ? $('tema').value : ''), rodape: gm.rodape || ($('rod') ? $('rod').value.trim() : ''), narracao: gm.narracao || null, resumo: resumoDoLog(), tam, arquivos: arqs }));
       await podar(); listar();
       logApp('Arquivos gerados guardados neste navegador (' + fmt(tam) + ').', 'ok');
     } catch (e) { logApp('Não foi possível guardar os arquivos gerados no navegador (' + e.message + ').', 'wa'); }
   }
   new MutationObserver(() => { if (res.querySelector('a[download]')) { clearTimeout(tCap); tCap = setTimeout(capturar, 400); } }).observe(res, { childList: true, subtree: true });
-
   async function podar() {
     const lim = +$('gerLim').value || 10, l = (await tx('readonly', s => s.getAllKeys())) || [];
     l.sort((a, b) => a - b);
     for (const id of l.slice(0, Math.max(0, l.length - lim))) await tx('readwrite', s => s.delete(id));
   }
-
   /* ---------------------------- Lista ---------------------------- */
   const urls = new Map();
   function urlDe(chave, blob) { if (!urls.has(chave)) urls.set(chave, URL.createObjectURL(blob)); return urls.get(chave); }
@@ -289,7 +288,6 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
     anunciarPkg('Exibindo a ' + tipoDe(b.dataset.pv) + '.');
     rolarPara(pkg);
   });
-
   $('gerLista').addEventListener('click', async e => {
     const v = e.target.closest('[data-ver]'), d = e.target.closest('[data-del]'); if (v) fecharGer(true);
     if (v) {
@@ -319,10 +317,8 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
   $('gerLimpar').onclick = async () => { if (!confirm('Apagar todos os pacotes de arquivos gerados guardados neste navegador?')) return; await tx('readwrite', s => s.clear()); fecharExibicaoDoPacote(); listar(); };
   const logEl = $('log');
   if (logEl) new MutationObserver(() => { if (/Dados locais apagados/.test(logEl.lastChild && logEl.lastChild.textContent || '')) tx('readwrite', s => s.clear()).then(() => { fecharExibicaoDoPacote(); listar(); }).catch(() => {}); }).observe(logEl, { childList: true });
-
   listar();
   window.Gerados = { listar, capturar, abrir: abrirGer, fechar: fecharGer, metaHtml, temaRotulo };
 })();
-
 /* 1.76: a apresentação sempre abre em slides. Apaga a escolha de Modo leitura gravada por versões anteriores (vale também para arquivos do Histórico). */
 try { localStorage.removeItem('conteudista.apresentacao.modo'); } catch (e) { /* sem acesso ao armazenamento */ }
