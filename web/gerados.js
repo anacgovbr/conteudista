@@ -148,7 +148,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
   }
   $('gerFechar').onclick = () => fecharGer();
   gerBack.addEventListener('click', e => { if (e.target === gerBack) fecharGer(); });
-  addEventListener('keydown', e => { if (e.key === 'Escape' && !gerBack.hidden) { e.preventDefault(); e.stopPropagation(); fecharGer(); } }, true);
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !gerBack.hidden && !document.querySelector('dialog.dlg-gov[open]')) { e.preventDefault(); e.stopPropagation(); fecharGer(); } }, true);
   // Botao "Historico" de "Arquivos gerados" (1.90): fica FORA do <summary>, numa barra logo antes da secao,
   // alinhada a direita. Controle interativo dentro de <summary> nao e anunciado corretamente (WCAG 4.1.2).
   let btnHist = null;

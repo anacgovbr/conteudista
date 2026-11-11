@@ -287,7 +287,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   function fecharHist() { limparLinkBox(); back.hidden = true; document.body.style.overflow = ''; const v = voltarA; voltarA = null; if (v && v.focus && document.contains(v)) v.focus(); }
   back.addEventListener('click', e => { if (e.target === back) fecharHist(); });
   addEventListener('keydown', e => {
-    if (e.key !== 'Escape' || back.hidden) return;
+    if (e.key !== 'Escape' || back.hidden || document.querySelector('dialog.dlg-gov[open]')) return;
     e.preventDefault(); e.stopPropagation();
     if (!$('hLinkBox').hidden) fecharLinkBox(true); else fecharHist();   // Esc fecha primeiro o painel Importar link
   }, true);
@@ -337,7 +337,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   }
   async function restaurar(id) {
     const v = await obter(id); if (v && v.rasc) { log('Para levar o rascunho das notas à apresentação, use Aplicar à apresentação na aba Locução.', 'wa'); return; } if (!v || v.atual) { log('Escolha uma versão guardada para restaurar.', 'wa'); return; }
-    if (!confirm('Substituir o conteúdo dos editores pela versão:\n' + v.rotulo + ' (' + dataCurta(v.data) + ')?\n\nO conteúdo atual será guardado no histórico antes.')) return;
+    if (!await Dialogo.perguntar('Substituir o conteúdo dos editores pela versão:\n' + v.rotulo + ' (' + dataCurta(v.data) + ')?\n\nO conteúdo atual será guardado no histórico antes.')) return;
     await registrar('antes', 'Antes de restaurar');
     aplicar(v); fecharHist(); log('Versão restaurada: ' + v.rotulo + ' (' + dataCurta(v.data) + '). Ctrl+Z no editor também desfaz.', 'ok');
     await registrar('restaurado', 'Restaurada: ' + v.rotulo);
@@ -354,12 +354,12 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   $('hFechar').onclick = fecharHist;
   ['hDoc', 'hModo', 'hCtx'].forEach(id => $(id).onchange = () => { if ($('hRes').innerHTML) executar(); });
   $('hTroca').onclick = () => { const a = $('hA').value; $('hA').value = $('hB').value; $('hB').value = a; if ($('hRes').innerHTML) executar(); };
-  $('hMarca').onclick = async () => { const n = prompt('Nome desta versão (ex.: "Versão enviada para revisão"):', 'Versão de ' + new Date().toLocaleString('pt-BR')); if (n === null) return; const v = await registrar('marco', '★ ' + (n.trim() || 'Versão marcada')); if (v) { await montarSelects(); $('hA').value = String(v.id); log('Versão salva.', 'ok'); } };
+  $('hMarca').onclick = async () => { const n = await Dialogo.pedir('Nome desta versão (ex.: "Versão enviada para revisão"):', 'Versão de ' + new Date().toLocaleString('pt-BR')); if (n === null) return; const v = await registrar('marco', '★ ' + (n.trim() || 'Versão marcada')); if (v) { await montarSelects(); $('hA').value = String(v.id); log('Versão salva.', 'ok'); } };
   $('hResA').onclick = () => restaurar($('hA').value);
   $('hResB').onclick = () => restaurar($('hB').value);
   $('hBx').onclick = async () => { const A = await obter($('hA').value), B = await obter($('hB').value); if (A) baixarMd(A, 'A'); if (B) setTimeout(() => baixarMd(B, 'B'), 900); };
-  $('hDel').onclick = async () => { const v = await obter($('hA').value); if (!v || v.atual) return; if (!confirm('Excluir do histórico a versão:\n' + v.rotulo + ' (' + dataCurta(v.data) + ')?')) return; await dbDel('versoes', v.id); invalidar(); await montarSelects(); $('hRes').innerHTML = ''; log('Versão excluída do histórico.', 'ok'); };
-  $('hLimpa').onclick = async () => { if (!confirm('Apagar TODO o histórico de versões deste navegador?')) return; await dbClear('versoes'); invalidar(); await montarSelects(); $('hRes').innerHTML = ''; log('Histórico apagado.', 'ok'); };
+  $('hDel').onclick = async () => { const v = await obter($('hA').value); if (!v || v.atual) return; if (!await Dialogo.perguntar('Excluir do histórico a versão:\n' + v.rotulo + ' (' + dataCurta(v.data) + ')?')) return; await dbDel('versoes', v.id); invalidar(); await montarSelects(); $('hRes').innerHTML = ''; log('Versão excluída do histórico.', 'ok'); };
+  $('hLimpa').onclick = async () => { if (!await Dialogo.perguntar('Apagar TODO o histórico de versões deste navegador?')) return; await dbClear('versoes'); invalidar(); await montarSelects(); $('hRes').innerHTML = ''; log('Histórico apagado.', 'ok'); };
 
   /* ---------------------------- Importar link (1.65) ---------------------------- */
   const linkBox = $('hLinkBox'), linkUrl = $('hLinkUrl'), linkSenhaC = $('hLinkSenhaC'), linkSenha = $('hLinkSenha'), linkMsg = $('hLinkMsg'), linkOk = $('hLinkOk'), btnLink = $('hImpLink');

@@ -651,8 +651,8 @@
         });
         card.querySelector('[data-a="ver"]').onclick = localizar;
         card.querySelector('[data-a="ins"]').onclick = () => { const alt = card.querySelector('input').value.replace(/[\[\]]/g, ''); ins('![' + alt + '](img:' + n + ')'); };
-        card.querySelector('[data-a="rm"]').onclick = () => {
-          if (!confirm('Remover esta imagem do texto (todas as ocorrências)? Use Ctrl+Z para desfazer.')) return;
+        card.querySelector('[data-a="rm"]').onclick = async () => {
+          if (!await Dialogo.perguntar('Remover esta imagem do texto (todas as ocorrências)? Use Ctrl+Z para desfazer.')) return;
           const pc = ta.selectionStart; ta.focus(); ta.setSelectionRange(0, ta.value.length);
           ins(ta.value.replace(new RegExp('\\n?!\\[[^\\]]*\\]\\(img:' + n + '\\)\\n?', 'g'), m => m.startsWith('\n') && m.endsWith('\n') ? '\n' : ''), 0, 0);
           const q = Math.min(pc, ta.value.length); ta.setSelectionRange(q, q); galeria();

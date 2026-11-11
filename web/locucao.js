@@ -391,7 +391,7 @@
   $('locCarregar').onclick = () => { carregarRecursos().then(ok => { if (!ok) status('Não foi possível preparar esta voz agora; ao gerar, uma voz alternativa será usada se necessário.'); }); };
   $('locAtivar').onclick = () => { motorDe($('locVoz').value).falhou = false; return ativarMotorDaVoz().catch(() => status('Não foi possível preparar esta voz agora. Verifique a conexão e tente novamente.')); };
   $('locRemModelo').onclick = async () => {
-    if (!confirm('Remover do navegador as vozes baixadas?\nElas serão baixadas de novo no próximo uso. O histórico de áudios não é apagado.')) return;
+    if (!await Dialogo.perguntar('Remover do navegador as vozes baixadas?\nElas serão baixadas de novo no próximo uso. O histórico de áudios não é apagado.')) return;
     encerrarMotor(); encerrarPiper();
     try { for (const k of await caches.keys()) if (/transformers|kokoro|onnx|piper/i.test(k)) await caches.delete(k); } catch { /* sem Cache API */ }
     try {
@@ -632,10 +632,10 @@
     if (fonte === 'slides') return slidesDe(s).map(limparMd).filter(Boolean).join('\n\n');
     return slidesDe(s).map(p => { const m = p.match(/<!--\s*notas:\s*([\s\S]*?)-->/); return m ? limparMd(m[1]) : ''; }).filter(Boolean).join('\n\n');
   }
-  $('locImportar').onclick = () => {
+  $('locImportar').onclick = async () => {
     const f = $('locFonte').value, t = textoDoCurso(f);
     if (!t) { $('locAviso').innerHTML = '<div class="aviso wa">Nada para importar: ' + (f === 'notas' ? 'a apresentação não tem notas do apresentador' : f === 'slides' ? 'a apresentação está vazia' : 'a apostila está vazia') + ' na aba Conteúdo.</div>'; return; }
-    if ($('locTexto').value.trim() && !confirm('Substituir o texto atual pelo conteúdo importado?')) return;
+    if ($('locTexto').value.trim() && !await Dialogo.perguntar('Substituir o texto atual pelo conteúdo importado?')) return;
     $('locTexto').value = t; contar(); $('locAviso').innerHTML = ''; if (window.UXFeedback) UXFeedback.anunciar('Texto importado. Revise antes de gerar.');
   };
 
@@ -664,13 +664,13 @@
       $('locTexto').value = it.text; preencherVozes($('locIdioma'), $('locVoz'), it.voice); localStorage.setItem(PREF.voz, $('locVoz').value); atualizarMotorUI();
       $('locVel').value = it.speed; velTxt(); if (it.pausa !== undefined) $('locPausa').value = String(it.pausa); contar(); $('locTexto').focus();
     } else if (b.dataset.a === 'excluir') {
-      if (!confirm('Excluir este áudio do histórico?')) return;
+      if (!await Dialogo.perguntar('Excluir este áudio do histórico?')) return;
       await removerDoHistorico(id);
       if (itemAtual === id) { if (currentAudioUrl) URL.revokeObjectURL(currentAudioUrl); currentAudioUrl = null; currentBlob = null; $('locAudio').removeAttribute('src'); $('locAudio').load(); $('locBaixar').disabled = true; $('locInfo').textContent = 'Nenhum áudio.'; $('locAviso').innerHTML = ''; itemAtual = null; }
       carregarHistorico();
     }
   });
-  $('locLimparHist').onclick = async () => { if (!confirm('Apagar TODOS os áudios do histórico?')) return; await tx('readwrite', s => s.clear()); carregarHistorico(); };
+  $('locLimparHist').onclick = async () => { if (!await Dialogo.perguntar('Apagar TODOS os áudios do histórico?')) return; await tx('readwrite', s => s.clear()); carregarHistorico(); };
   async function usoArmazenamento() {
     try { if (!navigator.storage || !navigator.storage.estimate) return; const e = await navigator.storage.estimate(); $('locUso').textContent = 'Espaço usado neste navegador: ' + fmtTam(e.usage || 0) + '.'; } catch { /* sem estimativa */ }
   }

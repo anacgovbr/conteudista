@@ -174,7 +174,7 @@
   $('narrHist').onclick = abrirHistorico;
   $('ahFechar').onclick = fecharHistorico;
   back.addEventListener('click', e => { if (e.target === back) fecharHistorico(); });
-  addEventListener('keydown', e => { if (e.key === 'Escape' && !back.hidden) { e.preventDefault(); e.stopPropagation(); fecharHistorico(); } }, true);
+  addEventListener('keydown', e => { if (e.key === 'Escape' && !back.hidden && !document.querySelector('dialog.dlg-gov[open]')) { e.preventDefault(); e.stopPropagation(); fecharHistorico(); } }, true);
   let tBusca = null; $('ahBusca').oninput = () => { clearTimeout(tBusca); tBusca = setTimeout(listar, 150); };
   $('ahLista').addEventListener('click', async e => {
     const b = e.target.closest('button[data-a]'); if (!b) return;
@@ -193,13 +193,13 @@
       resumo(); info(); logApp('Narração: voz ' + L().nomeVoz($('narrVoz').value).split(' · ')[0] + ' a ' + String($('narrVel').value).replace('.', ',') + '× selecionada a partir do histórico.', 'ok');
       fecharHistorico();
     } else if (b.dataset.a === 'excluir') {
-      if (!confirm('Excluir este áudio do histórico?')) return;
+      if (!await Dialogo.perguntar('Excluir este áudio do histórico?')) return;
       await tx('readwrite', s => s.delete(id));
       if (ahAtual === id) { const a = $('ahAudio'); a.pause(); a.removeAttribute('src'); a.load(); ahAtual = null; }
       listar();
     }
   });
-  $('ahLimpar').onclick = async () => { if (!confirm('Apagar TODOS os áudios do histórico deste navegador?')) return; await tx('readwrite', s => s.clear()); const a = $('ahAudio'); a.pause(); a.removeAttribute('src'); a.load(); ahAtual = null; listar(); };
+  $('ahLimpar').onclick = async () => { if (!await Dialogo.perguntar('Apagar TODOS os áudios do histórico deste navegador?')) return; await tx('readwrite', s => s.clear()); const a = $('ahAudio'); a.pause(); a.removeAttribute('src'); a.load(); ahAtual = null; listar(); };
 
   /* ---------------------------- Geração ---------------------------- */
   function barra(p) { const c = $('narrBarC'); if (p === null) { c.style.display = 'none'; return; } c.style.display = 'block'; $('narrBar').style.width = p + '%'; }

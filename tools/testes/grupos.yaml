@@ -34,7 +34,7 @@
     "locucao": {"tipo": "estatico", "gerador": false},
     "narracao": {"tipo": "navegador", "numeros": [1, 2, 3, 4], "gerador": true},
     "tutorial": {"tipo": "navegador", "numeros": [15], "gerador": false},
-    "web": {"tipo": "navegador", "numeros": [8, 9, 11, 12, 13, 14, 15, 16, 17, 18], "gerador": true},
+    "web": {"tipo": "navegador", "numeros": [8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 23], "gerador": true},
     "carregamento": {"tipo": "navegador", "numeros": [8], "gerador": false}
   },
   "regras": [

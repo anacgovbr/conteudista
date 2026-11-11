@@ -41,9 +41,10 @@ def grupo8(amb, ctx, G):
                   e['modo'] == 'p' and not e['auto'] and e['mode'] == 'pb' and not e['anexo'], e)
             pg.evaluate("localStorage.setItem('mde.modo', 'e')"); pg.reload(); e = ler_estado(pg)
             G.chk('8.5', 'A escolha da pessoa prevalece sobre o YAML', e['modo'] == 'e', e)
-            pg.once('dialog', lambda d: d.accept())
+            pg.click('#btnRestaurar')
+            pg.wait_for_selector('dialog.dlg-gov[open]', timeout=5000)
             with pg.expect_navigation(timeout=15000):
-                pg.click('#btnRestaurar')
+                pg.click('dialog.dlg-gov [data-d="sim"]')
             e = ler_estado(pg)
             G.chk('8.6', 'Restaurar padrão volta ao YAML', e['modo'] == 'p' and pg.evaluate("localStorage.getItem('mde.modo')") is None, e)
             pg.close()

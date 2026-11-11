@@ -1,4 +1,8 @@
 # Novidades do Conteudista
+## 1.97 - 11/11/2026
+- **Mais caixas do navegador trocadas por janelas do padrão gov.br (WCAG 3.3.2 e 4.1.2):** restaurar o padrão das opções, remover uma imagem do texto, restaurar, excluir e limpar versões do histórico, e excluir ou limpar áudios da Locução e da narração. Salvar uma versão com nome usa um campo de texto com rótulo. As janelas abrem com o foco em Cancelar, Esc cancela e o foco volta ao botão que as abriu.
+- **Esc numa confirmação aberta sobre outra janela:** em Versões, Arquivos e rascunhos e Áudios gerados, o Esc agora fecha só a confirmação. Antes, a janela de baixo fechava junto e a confirmação ficava aberta.
+- Novos testes de navegador: grupo 23 (abas e áreas de arquivo pelo teclado, mensagens anunciadas) e mais 6 casos no grupo 24.
 ## 1.96 - 11/11/2026
 - **Mais seis sugestões no painel Acessibilidade** (biblioteca Linguagem Acessível 0.5.0): fluxo sem explicação em texto, linha em negrito usada como título, lista feita com "•" ou "–", tabela sem a linha "Tabela:" de legenda, referência só pela cor, forma ou posição ("clique no botão verde", "à direita") e link para vídeo ou áudio sem dizer se há legenda ou transcrição. Título e lista podem ser corrigidos com um clique.
 ## 1.95 - 11/11/2026
