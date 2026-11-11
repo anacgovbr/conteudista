@@ -109,9 +109,15 @@ $('dimpC').addEventListener('click',fecharImp);
 dlg.addEventListener('pointerdown',function(e){if(e.target===dlg)fecharImp()});
 dlg.addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();e.stopPropagation();fecharImp();return}if(e.key==='Tab'){var q=focaveis();if(!q.length)return;var a=q[0],z=q[q.length-1];if(e.shiftKey&&(D.activeElement===a||D.activeElement===$('dimpT'))){e.preventDefault();z.focus()}else if(!e.shiftKey&&D.activeElement===z){e.preventDefault();a.focus()}}e.stopPropagation()})}
 addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&!e.altKey&&(e.key==='p'||e.key==='P')&&!$('ini')){e.preventDefault();e.stopPropagation();if(!aberta())abrirImp()}},true);
-addEventListener('keydown',function(e){if(aberta()||painelA11y()||e.ctrlKey||e.metaKey||e.altKey||e.defaultPrevented||$('ini'))return;var k=e.key;
+/* 1.91 (WCAG 2.1.4): atalhos de uma tecla so com o foco na apresentacao e com interruptor no painel. Desligados: Alt+Shift e a letra. */
+function atalhosOn(){try{return localStorage.getItem('conteudista.gerados.atalhos')!=='0'}catch(e){return true}}
+function noPalco(t){return !t||t===B||t===H||t===D||!!(t.closest&&t.closest('#st,#hud,#b2,#zr,#bmais-menu,#irpara'))}
+var TECLA_ALT={Space:' '};
+addEventListener('keydown',function(e){if(aberta()||painelA11y()||e.ctrlKey||e.metaKey||e.defaultPrevented||$('ini'))return;var alt=e.altKey&&e.shiftKey;if(e.altKey&&!alt)return;var k=e.key;
+if(alt){var mc=/^Key([A-Z])$/.exec(e.code||'');k=mc?mc[1].toLowerCase():(TECLA_ALT[e.code]||'');if(!k)return}
+else if(k.length===1&&(!atalhosOn()||!noPalco(e.target)))return;
 if(k==='Escape'){if(dica&&!dica.hidden){e.preventDefault();esconderDica(true);return}if(UI.estado==='menu-open'){e.preventDefault();fecharCamadas(bmais);return}if(UI.estado==='pick-open'){e.preventDefault();fecharCamadas(cb);return}return}
-if(campo(e.target))return;setEntrada('keyboard');mostrar('keyboard');var ctl=/^(button|a|summary)$/i.test(e.target.tagName||'');
+if(campo(e.target))return;setEntrada('keyboard');mostrar('keyboard');var ctl=!alt&&/^(button|a|summary)$/i.test(e.target.tagName||'');
 if(camadaAberta()&&/^(Arrow|Page|Home$|End$)/.test(k))return;
 if(k==='?'){e.preventDefault();if(!menu||menu.hidden)alternarMenu();var hk=$('atalhosB');if(hk)hk.focus();return}
 if(k==='m'||k==='M'){e.preventDefault();alternarMenu();return}if(k==='a'||k==='A'){e.preventDefault();alternarA11y();return}

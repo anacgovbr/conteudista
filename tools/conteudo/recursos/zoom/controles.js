@@ -82,9 +82,15 @@ function zoomEm(z,cx,cy,an){var r=st.getBoundingClientRect(),e=escala();if(cx===
 var px=(cx-r.left)/e,py=(cy-r.top)/e;z=Math.max(1,Math.min(4,z));var qx=(px-sx)/sz,qy=(py-sy)/sz;sx=px-qx*z;sy=py-qy*z;sz=z;aplicar(an)}
 function resetar(an){if(sz===1&&!H.classList.contains('zoom-slide'))return;sz=1;aplicar(an)}
 addEventListener('wheel',function(e){if(!e.ctrlKey||lendo()||camada())return;e.preventDefault();var d=e.deltaMode===1?e.deltaY*16:e.deltaY;zoomEm(sz*Math.exp(-d*.0025),e.clientX,e.clientY,'adiar')},{passive:false});
-addEventListener('keydown',function(e){if(lb||camada()||lendo()||e.altKey||e.metaKey||campo(e.target))return;var k=e.key,feito=true;
-if(k==='+'||k==='='||k==='Add')zoomEm(sz*1.25,undefined,undefined,true);else if(k==='-'||k==='_'||k==='Subtract'){if(sz===1&&!e.ctrlKey)feito=false;else zoomEm(sz/1.25,undefined,undefined,true)}
-else if(k==='0'){if(sz===1&&!e.ctrlKey)feito=false;else resetar(true)}
+/* 1.91 (WCAG 2.1.4): + - 0 so com o foco na apresentacao e com o interruptor ligado. Desligados: Alt+Shift e a tecla, ou Ctrl+roda e o botao 100%. */
+function atalhosOn(){try{return localStorage.getItem('conteudista.gerados.atalhos')!=='0'}catch(e){return true}}
+function noPalco(t){return !t||t===D.body||t===H||t===D||!!(t.closest&&t.closest('#st,#hud,#b2,#zr,#bmais-menu,#irpara'))}
+var ZALT={Equal:'+',NumpadAdd:'+',Minus:'-',NumpadSubtract:'-',Digit0:'0',Numpad0:'0'};
+addEventListener('keydown',function(e){if(lb||camada()||lendo()||e.metaKey||campo(e.target))return;var alt=e.altKey&&e.shiftKey;if(e.altKey&&!alt)return;var k=e.key,feito=true;
+if(alt){k=ZALT[e.code]||'';if(!k)return}else if(!e.ctrlKey&&k.length===1&&(!atalhosOn()||!noPalco(e.target)))return;
+var mod=e.ctrlKey||alt;
+if(k==='+'||k==='='||k==='Add')zoomEm(sz*1.25,undefined,undefined,true);else if(k==='-'||k==='_'||k==='Subtract'){if(sz===1&&!mod)feito=false;else zoomEm(sz/1.25,undefined,undefined,true)}
+else if(k==='0'){if(sz===1&&!mod)feito=false;else resetar(true)}
 else if(sz>1&&!e.ctrlKey&&k==='ArrowLeft'){sx+=80;aplicar()}else if(sz>1&&!e.ctrlKey&&k==='ArrowRight'){sx-=80;aplicar()}
 else if(sz>1&&!e.ctrlKey&&k==='ArrowUp'){sy+=80;aplicar()}else if(sz>1&&!e.ctrlKey&&k==='ArrowDown'){sy-=80;aplicar()}
 else if(sz>1&&k==='Escape')resetar(true);else feito=false;

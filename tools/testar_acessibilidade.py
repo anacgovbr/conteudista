@@ -133,6 +133,7 @@ def testar_apostila_html(cam, exigir_fontes):
     ok('id="pg" role="status" aria-live="polite"' in h, n + ': #pg com aria-live')
     ok('justify' not in re.sub(r'justify-content|justify-self|justify-items', '', h.split('</style>')[0]), n + ': sem text-align: justify')
     ok('<main id="conteudo" tabindex="-1">' in h and 'class="skip"' in h, n + ': link "Ir para o conteúdo"')
+    ok("btnOuvir.setAttribute('aria-pressed'" in h and 'function pararLeitura(' in h, n + ': leitura em voz alta com Parar (WCAG 1.4.2)')
     testar_zoom(h, n, slides=False)
 
 def testar_zoom(h, n, slides):
@@ -207,6 +208,8 @@ def testar_slides_html(cam, exigir_fontes):
     for b, k in (('p', 'ArrowLeft'), ('n', 'ArrowRight'), ('bp', 'Space'), ('bmais', 'M'), ('b1', 'N'), ('b2', 'F'), ('imp', 'Control+P'), ('bLer', 'L'), ('a11yToggle', 'A')):
         ok(re.search(r'<button id="%s"[^>]*aria-keyshortcuts="%s"' % (b, re.escape(k)), h) is not None, '%s: #%s com aria-keyshortcuts="%s"' % (n, b, k))
     for b in ('b1', 'b2'): ok(re.search(r'<button id="%s" type="button" aria-pressed="false"' % b, h) is not None, '%s: #%s com aria-pressed' % (n, b))
+    ok("localStorage.getItem('conteudista.gerados.atalhos')" in h and 'function noPalco(' in h and 'data-a11y="atalhos"' in h, n + ': atalhos de uma tecla so com o foco na apresentacao e com interruptor no painel (WCAG 2.1.4)')
+    ok("btnOuvir.setAttribute('aria-pressed'" in h and 'function pararLeitura(' in h, n + ': leitura em voz alta com Parar (WCAG 1.4.2)')
     ok(re.search(r'<button id="b1" type="button" aria-pressed="false" class="md" aria-label="Notas" aria-keyshortcuts="N"', h) is not None and re.search(r'<button id="bLer" class="mi md" type="button" aria-keyshortcuts="L"', h) is not None, n + ': Notas na barra (nome acessível, aria-pressed e atalho N) e Modo leitura/slides no menu Mais opções (atalho L)')
     ok('body.modo-leitura #hud{position:sticky' not in h and 'body.modo-leitura #hud button{' not in h, n + ': Modo leitura usa a mesma barra B+ (sem a barra antiga que rolava com o texto)')
     ok(re.search(r'<div id="tam" class="tam" role="group" aria-labelledby="tamL">', h) is not None and 'id="tamS" class="vh" role="status" aria-live="polite"' in h, n + ': controle de tamanho do texto rotulado, com aviso por leitor de tela')

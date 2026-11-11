@@ -1,4 +1,7 @@
 # Novidades do Conteudista
+## 1.91 - 10/11/2026
+- **Atalhos de uma tecla na apresentação (WCAG 2.1.4):** N, S, L, F, M, A, G, ?, Espaço, +, − e 0 só funcionam com o foco na apresentação ou na barra, nunca no painel, em campos ou em janelas. Novo interruptor **Atalhos de uma tecla** no painel Acessibilidade; desligado, use Alt+Shift e a letra. Setas, Page Up/Down, Home, End e Esc continuam iguais.
+- **Leitura em voz alta (WCAG 1.4.2):** enquanto lê, o botão vira **Parar leitura**. A leitura para ao clicar de novo, ao fechar o painel e ao mudar de slide ou de modo.
 ## 1.90 - 10/11/2026
 - **Licenciamento opcional do conteúdo:** seletor Creative Commons ao lado de Layout, sem licença por padrão; declaração ao final da Apostila e em slide final próprio da Apresentação, com link oficial. A escolha é preservada em versões, links e arquivos Markdown.
 - **Geração:** suporte a CC BY, BY-SA, BY-ND, BY-NC, BY-NC-SA, BY-NC-ND 4.0 e CC0 1.0 em HTML, DOCX, EPUB, PPTX e Markdown; CLI aceita `--licenca`.
