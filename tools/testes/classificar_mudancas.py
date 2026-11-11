@@ -30,7 +30,7 @@ def carregar_config(caminho=CONFIG):
             raise ValueError('Metadados de grupo invalidos')
         if grupo['tipo'] == 'navegador' and not grupo.get('numeros'):
             raise ValueError('Grupo de navegador sem identificadores')
-        if grupo['tipo'] == 'navegador' and (not isinstance(grupo['numeros'], list) or any(type(numero) is not int or not 1 <= numero <= 21 for numero in grupo['numeros'])):
+        if grupo['tipo'] == 'navegador' and (not isinstance(grupo['numeros'], list) or any(type(numero) is not int or not 1 <= numero <= 99 for numero in grupo['numeros'])):
             raise ValueError('Identificador de navegador invalido')
     if set(dados.get('minimos', [])) - dados['grupos'].keys():
         raise ValueError('Teste minimo desconhecido')

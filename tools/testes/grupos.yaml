@@ -30,7 +30,7 @@
     "acessibilidade": {"tipo": "navegador", "numeros": [11, 12, 13, 14, 16, 17, 18], "gerador": true},
     "marcas": {"tipo": "navegador", "numeros": [12, 13], "gerador": false},
     "opcoes_web": {"tipo": "navegador", "numeros": [8, 18], "gerador": false},
-    "apresentacao": {"tipo": "navegador", "numeros": [1, 2, 3, 4, 7, 10, 20, 21], "gerador": true},
+    "apresentacao": {"tipo": "navegador", "numeros": [1, 2, 3, 4, 7, 10, 20, 21, 22], "gerador": true},
     "locucao": {"tipo": "estatico", "gerador": false},
     "narracao": {"tipo": "navegador", "numeros": [1, 2, 3, 4], "gerador": true},
     "tutorial": {"tipo": "navegador", "numeros": [15], "gerador": false},
