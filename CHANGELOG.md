@@ -1,4 +1,8 @@
 # Novidades do Conteudista
+## 1.92 - 10/11/2026
+- **Áreas de arquivo pelo teclado (WCAG 2.1.1):** as áreas "Arraste o .md … ou clique para selecionar" recebem o foco com Tab e abrem o seletor com Enter ou Espaço.
+- **Abas Apostila e Apresentação (WCAG 4.1.2):** agora são anunciadas como abas, com a aba selecionada; as setas, Home e End trocam de aba.
+- **Botão Histórico (WCAG 4.1.2):** saiu de dentro do título recolhível de **Arquivos gerados** e fica logo acima dele, sem abrir ou fechar a seção ao ser usado.
 ## 1.91 - 10/11/2026
 - **Atalhos de uma tecla na apresentação (WCAG 2.1.4):** N, S, L, F, M, A, G, ?, Espaço, +, − e 0 só funcionam com o foco na apresentação ou na barra, nunca no painel, em campos ou em janelas. Novo interruptor **Atalhos de uma tecla** no painel Acessibilidade; desligado, use Alt+Shift e a letra. Setas, Page Up/Down, Home, End e Esc continuam iguais.
 - **Leitura em voz alta (WCAG 1.4.2):** enquanto lê, o botão vira **Parar leitura**. A leitura para ao clicar de novo, ao fechar o painel e ao mudar de slide ou de modo.
