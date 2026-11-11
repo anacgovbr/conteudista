@@ -37,6 +37,14 @@ def grupo22(amb, ctx, G):
     pg.reload(); pg.wait_for_selector('#st .s.on', state='attached', timeout=15000)
     pg.evaluate("() => { const x = document.getElementById('ini'); if (x) x.remove(); }")
     ler = lambda: pg.evaluate("document.body.classList.contains('modo-leitura')")
+    def esperar_ler(v):
+        try: pg.wait_for_function("v => document.body.classList.contains('modo-leitura') === v", arg=v, timeout=3000)
+        except Exception: pass
+        return ler()
+    def esperar_slide(k):
+        try: pg.wait_for_function("k => [...document.querySelectorAll('#st .s')].findIndex(s => s.classList.contains('on')) === k", arg=k, timeout=3000)
+        except Exception: pass
+        return slide()
     slide = lambda: pg.evaluate("[...document.querySelectorAll('#st .s')].findIndex(s => s.classList.contains('on'))")
     sem_foco = lambda: pg.evaluate("() => { if (document.activeElement) document.activeElement.blur(); }")
     abrir = lambda: (pg.click('#a11yToggle'), pg.wait_for_function("document.getElementById('a11yPanel').open", timeout=5000))
@@ -51,16 +59,16 @@ def grupo22(amb, ctx, G):
     G.chk('22.2', 'Com o foco no painel, a tecla L não muda o modo', not ler())
     fechar()
     # 22.3 ligado + foco na apresentacao
-    sem_foco(); pg.keyboard.press('l'); a = ler(); pg.keyboard.press('l'); b = ler()
+    sem_foco(); pg.keyboard.press('l'); a = esperar_ler(True); pg.wait_for_timeout(300); pg.keyboard.press('l'); b = esperar_ler(False)
     G.chk('22.3', 'Ligado e com o foco na apresentação, L liga e desliga o Modo leitura', a and not b, {'1o': a, '2o': b})
     # 22.4 desligado: letras nao agem; Alt+Shift age; setas continuam
     abrir(); cx.uncheck(); guardado = pg.evaluate("localStorage.getItem('conteudista.gerados.atalhos')"); fechar()
     sem_foco(); pg.keyboard.press('l'); l_unica = ler()
     s0 = slide(); pg.keyboard.press('n'); pg.keyboard.press('Space')
     G.chk('22.4', 'Desligado (guardado), L, N e Espaço não agem', guardado == '0' and not l_unica, {'guardado': guardado, 'leitura': l_unica})
-    pg.keyboard.press('Alt+Shift+L'); alt_on = ler(); pg.keyboard.press('Alt+Shift+L'); alt_off = ler()
+    pg.keyboard.press('Alt+Shift+L'); alt_on = esperar_ler(True); pg.wait_for_timeout(300); pg.keyboard.press('Alt+Shift+L'); alt_off = esperar_ler(False)
     G.chk('22.5', 'Desligado, Alt+Shift+L liga e desliga o Modo leitura', alt_on and not alt_off, {'on': alt_on, 'off': alt_off})
-    sem_foco(); pg.keyboard.press('ArrowRight'); s1 = slide()
+    sem_foco(); pg.keyboard.press('ArrowRight'); s1 = esperar_slide(s0 + 1)
     G.chk('22.6', 'Desligado, as setas continuam mudando de slide', s1 == s0 + 1, {'antes': s0, 'depois': s1})
     ks = pg.evaluate("(document.getElementById('bLer') || {}).getAttribute ? document.getElementById('bLer').getAttribute('aria-keyshortcuts') : ''")
     G.chk('22.7', 'Desligado, aria-keyshortcuts anuncia Alt+Shift (bLer = Alt+Shift+L)', ks == 'Alt+Shift+L', ks)
@@ -75,7 +83,7 @@ def grupo22(amb, ctx, G):
     p1, t1 = bt.get_attribute('aria-pressed'), bt.inner_text().strip()
     bt.click(); p2 = bt.get_attribute('aria-pressed'); c2 = pg.evaluate('window.__fala.cancelou')
     G.chk('22.9', 'Ouvir vira "Parar leitura" (aria-pressed) e o 2º clique interrompe', p1 == 'true' and 'Parar' in t1 and p2 == 'false' and c2 >= 2, {'p1': p1, 't1': t1, 'p2': p2, 'cancel': c2})
-    bt.click(); c3 = pg.evaluate('window.__fala.cancelou'); fechar(); p3 = bt.get_attribute('aria-pressed'); c4 = pg.evaluate('window.__fala.cancelou')
+    bt.click(); c3 = pg.evaluate('window.__fala.cancelou'); fechar(); pg.wait_for_function("() => { const b = document.querySelector('#a11yPanel [data-a11y=ouvir]'); return !b || b.getAttribute('aria-pressed') === 'false' || (window.__t22 = (window.__t22 || 0) + 1) > 30; }", polling=100, timeout=5000); p3 = bt.get_attribute('aria-pressed'); c4 = pg.evaluate('window.__fala.cancelou')
     G.chk('22.10', 'Fechar o painel (Esc) interrompe a leitura', p3 == 'false' and c4 > c3, {'p': p3, 'antes': c3, 'depois': c4})
     abrir(); bt.click(); c5 = pg.evaluate('window.__fala.cancelou')
     pg.evaluate("document.dispatchEvent(new CustomEvent('conteudista:slide'))")
