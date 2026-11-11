@@ -48,7 +48,7 @@ def grupo22(amb, ctx, G):
     slide = lambda: pg.evaluate("[...document.querySelectorAll('#st .s')].findIndex(s => s.classList.contains('on'))")
     sem_foco = lambda: pg.evaluate("() => { if (document.activeElement) document.activeElement.blur(); }")
     abrir = lambda: (pg.click('#a11yToggle'), pg.wait_for_function("document.getElementById('a11yPanel').open", timeout=5000))
-    fechar = lambda: (pg.keyboard.press('Escape'), pg.wait_for_function("!document.getElementById('a11yPanel').open", timeout=5000))
+    fechar = lambda: (pg.keyboard.press('Escape'), pg.wait_for_function("!document.getElementById('a11yPanel').open", timeout=5000), pg.evaluate("() => new Promise(r => requestAnimationFrame(() => setTimeout(r, 120)))"))
 
     # 22.1 interruptor
     abrir()
