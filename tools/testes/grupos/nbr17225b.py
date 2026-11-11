@@ -77,7 +77,10 @@ def grupo24(amb, ctx, G):
         G.chk('24.2', 'Apagar dados abre janela (alertdialog) com titulo, foco em Cancelar e sem confirm() nativo',
               info['role'] == 'alertdialog' and bool(info['tit']) and info['foco'] == 'Cancelar' and not nativos, {'info': info, 'nativos': nativos})
 
+        pg.evaluate("window.__esc = []; document.addEventListener('keydown', e => window.__esc.push([e.key, Math.round(performance.now()), document.querySelectorAll('dialog.dlg-gov[open]').length]), true)")
+
         def fechou_por_esc():
+            pg.bring_to_front()
             pg.keyboard.press('Escape')
             try:
                 pg.wait_for_function(SEM_DIALOGO, timeout=2500)
@@ -85,12 +88,12 @@ def grupo24(amb, ctx, G):
             except Exception:
                 return False
         esc = fechou_por_esc()
+        diag = pg.evaluate("({ teclas: window.__esc, abertas: document.querySelectorAll('dialog.dlg-gov[open]').length, foco: (document.activeElement.textContent || document.activeElement.tagName).slice(0, 20), pagina_com_foco: document.hasFocus(), agora: Math.round(performance.now()) })")
         if not esc:
             pg.click('dialog.dlg-gov [data-d="nao"]')
         pg.wait_for_function(SEM_DIALOGO, timeout=10000)
         auto = pg.evaluate("localStorage.getItem('conteudista.auto')")
-        G.chk('24.3', 'Esc cancela sem apagar e devolve o foco', esc and auto != '0', {'auto': auto, 'fechou_por_esc': esc})
-
+        G.chk('24.3', 'Esc cancela sem apagar e devolve o foco', esc and auto != '0', {'auto': auto, 'fechou_por_esc': esc, 'diag': diag})
         pg.evaluate("document.getElementById('gerLimpar').click()")
         pg.wait_for_selector('dialog.dlg-gov[open]', timeout=5000)
         pg.click('dialog.dlg-gov [data-d="nao"]')

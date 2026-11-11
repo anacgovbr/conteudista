@@ -3,6 +3,7 @@
    no lugar de confirm() e prompt() do navegador (WCAG 2.4.3, 3.3.1, 3.3.2, 4.1.2).
    - <dialog> modal com role="alertdialog", titulo e descricao ligados por aria-labelledby/-describedby.
    - Confirmacao: foco inicial em Cancelar (acao segura); Esc cancela; o foco volta para onde estava.
+   - Esc tratado no keydown (captura), sem depender do evento nativo "cancel" do <dialog>.
    - Texto e senha: campo com rotulo; erro no proprio campo (aria-invalid); Enter confirma.
    - Se outro modulo substituir window.confirm ou window.prompt (ex.: testes), usa essa resposta.
    API: Dialogo.confirmar({titulo, descricao, rotulo, perigo}) -> Promise<boolean>
@@ -48,13 +49,24 @@
       if (inp) { d.querySelector('label').textContent = o.campo || (tipoCampo === 'password' ? 'Senha' : 'Resposta'); if (o.valor != null) inp.value = String(o.valor); }
       document.body.appendChild(d);
       let feito = false;
+      // Esc: tratado aqui (captura no document), para nao depender do evento "cancel" nativo do <dialog>.
+      // So a janela do topo reage, e o Esc nao segue para outros modulos (ex.: Versoes continua aberta).
+      const aoTeclar = e => {
+        if (e.key !== 'Escape') return;
+        const abertas = document.querySelectorAll('dialog.dlg-gov[open]');
+        if (abertas.length && abertas[abertas.length - 1] !== d) return;
+        e.preventDefault(); e.stopPropagation();
+        fim(comCampo ? null : false);
+      };
       const fim = v => {
         if (feito) return; feito = true;
+        document.removeEventListener('keydown', aoTeclar, true);
         try { d.close(); } catch (e) { /* ja fechado */ }
         d.remove();
         if (volta && volta.isConnected && volta.focus) volta.focus();
         ok(v);
       };
+      document.addEventListener('keydown', aoTeclar, true);
       d.addEventListener('cancel', e => { e.preventDefault(); fim(comCampo ? null : false); });
       d.addEventListener('click', e => {
         const b = e.target.closest ? e.target.closest('[data-d]') : null; if (!b) return;
