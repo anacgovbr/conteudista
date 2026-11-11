@@ -61,9 +61,13 @@ def _ep_tabela(rows,cx,cap=''):
     return t+'</tbody></table>'
 
 def _ep_blocks(bl,cx,toc=None):
-    o=[]
+    o=[];cap=None
     for b in bl:
         k=b[0]
+        if k=='p' and re.match(r'(?i)^tabela\s*:\s*\S',b[1]):
+            if cap is not None:o.append('<p>'+_ep_inl('Tabela: '+cap,cx)+'</p>')
+            cap=re.sub(r'(?i)^tabela\s*:\s*','',b[1]).strip();continue
+        if cap is not None and k!='table':o.append('<p>'+_ep_inl('Tabela: '+cap,cx)+'</p>');cap=None
         if k=='h':
             sid=cx.uid(slug(b[2]));lv=min(b[1],6)
             if toc is not None and lv==3:toc.append((sid,plain(b[2])))
@@ -76,7 +80,7 @@ def _ep_blocks(bl,cx,toc=None):
             alt='' if decor else b[1]
             if src:o.append('<figure><img src="%s" alt="%s"/>%s</figure>'%(E(src),E(alt),'<figcaption>%s</figcaption>'%E(b[1]) if b[1] and not decor else ''))
             else:o.append('<p>%s</p>'%E('[Imagem não incluída%s]'%(': '+b[1] if b[1] else ''),quote=False));aviso('Imagem remota ou ilegível não incluída no EPUB: %s'%b[2][:60])
-        elif k=='table':o.append(_ep_tabela(b[1],cx))
+        elif k=='table':o.append(_ep_tabela(b[1],cx,cap or ''));cap=None
         elif k=='list':o.append(_ep_list(b[1],cx))
         elif k=='quote':o.append('<blockquote class="%s">%s</blockquote>'%(E(b[1] or ''),_ep_blocks(b[2],cx,toc)))
         elif k=='code':
@@ -86,6 +90,7 @@ def _ep_blocks(bl,cx,toc=None):
                 if rows and len(rows)>1:o.append('<div class="fluxo"><p class="fluxo-t">Fluxo</p>%s</div>'%_ep_tabela(rows,cx))
                 else:o.append('<pre><code>%s</code></pre>'%E(b[2],quote=False))
             else:o.append('<pre><code>%s</code></pre>'%E(b[2],quote=False))
+    if cap is not None:o.append('<p>'+_ep_inl('Tabela: '+cap,cx)+'</p>')
     return '\n'.join(o)
 
 def _ep_doc(title,body,tipo):

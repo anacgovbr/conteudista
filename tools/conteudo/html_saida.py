@@ -24,7 +24,9 @@ def inl(t):
         if c:h='<code>'+h+'</code>'
         if i:h='<em>'+h+'</em>'
         if b:h='<strong>'+h+'</strong>'
-        if u:h='<a href="%s" target="_blank" rel="noopener">%s</a>'%(E(u),h)
+        if u:
+            if re.match(r'(?i)https?://',u):h='<a href="%s" target="_blank" rel="noopener noreferrer">%s<span class="vh"> (abre em nova aba)</span></a>'%(E(u),h)
+            else:h='<a href="%s">%s</a>'%(E(u),h)
         s+=h
     return s
 
@@ -38,12 +40,28 @@ def lst_html(it):
         return '<%s>%s</%s>'%(tag,o,tag),k
     return rec(0,it[0][0])[0]
 
-def html_of(bl,toc=None):
-    o=[]
+_TB=[0]
+def _tabela_html(r,nome,cap=''):
+    "1.93 (WCAG 1.3.1/2.4.6): cada tabela com nome proprio; 'Tabela: texto' antes da tabela vira legenda (caption)."
+    _TB[0]+=1;n=_TB[0]
+    if cap:
+        cid='tbc%d'%n
+        t='<div class="tbl" role="region" aria-labelledby="%s" tabindex="0"><table><caption id="%s">%s</caption>'%(cid,cid,inl(cap))
+    else:
+        t='<div class="tbl" role="region" aria-label="%s" tabindex="0"><table>'%E(('Tabela %d — %s'%(n,nome)) if nome else 'Tabela %d'%n)
+    t+='<thead><tr>'+''.join('<th scope="col">%s</th>'%inl(x) for x in r[0])+'</tr></thead><tbody>'
+    t+=''.join('<tr>'+''.join('<td>%s</td>'%inl(x) for x in y)+'</tr>' for y in r[1:])
+    return t+'</tbody></table></div>'
+def html_of(bl,toc=None,_ctx=None):
+    o=[];ctx=_ctx if _ctx is not None else {'tit':''};cap=None
     for b in bl:
         k=b[0]
+        if k=='p' and re.match(r'(?i)^tabela\s*:\s*\S',b[1]):
+            if cap is not None:o.append('<p>'+inl('Tabela: '+cap)+'</p>')
+            cap=re.sub(r'(?i)^tabela\s*:\s*','',b[1]).strip();continue
+        if cap is not None and k!='table':o.append('<p>'+inl('Tabela: '+cap)+'</p>');cap=None
         if k=='h':
-            sid=slug(b[2])
+            sid=slug(b[2]);ctx['tit']=plain(b[2])
             if toc is not None and b[1] in(2,3):toc.append((b[1],sid,plain(b[2])))
             o.append('<h%d id="%s">%s</h%d>'%(b[1],sid,inl(b[2]),b[1]))
         elif k=='p':o.append('<p>'+inl(b[1])+'</p>')
@@ -52,14 +70,12 @@ def html_of(bl,toc=None):
             if not b[1].strip() and not decor:aviso('Imagem sem descrição (texto alternativo vazio): %s'%(b[2][:60]+'…' if len(b[2])>60 else b[2]))
             alt='' if decor else b[1]
             o.append('<figure><img src="%s" alt="%s">%s</figure>'%(E(b[2]),E(alt),'<figcaption>%s</figcaption>'%E(b[1]) if b[1] and not decor else ''))
-        elif k=='table':
-            r=b[1];t='<div class="tbl" role="region" aria-label="Tabela" tabindex="0"><table><thead><tr>'+''.join('<th scope="col">%s</th>'%inl(c) for c in r[0])+'</tr></thead><tbody>'
-            t+=''.join('<tr>'+''.join('<td>%s</td>'%inl(c) for c in x)+'</tr>' for x in r[1:]);o.append(t+'</tbody></table></div>')
+        elif k=='table':o.append(_tabela_html(b[1],ctx['tit'],cap or ''));cap=None
         elif k=='list':o.append(lst_html(b[1]))
-        elif k=='quote':o.append('<blockquote class="%s">%s</blockquote>'%(b[1],html_of(b[2])))
+        elif k=='quote':o.append('<blockquote class="%s">%s</blockquote>'%(b[1],html_of(b[2],None,ctx)))
         elif k=='code':o.append(_mermaid_html(b[2]) if b[1]=='mermaid' else '<pre class="code" tabindex="0"><code>%s</code></pre>'%E(b[2]))
+    if cap is not None:o.append('<p>'+inl('Tabela: '+cap)+'</p>')
     return '\n'.join(o)
-
 def _tabela_fluxo(code,foco=True):
     "Alternativa textual do fluxo Mermaid: tabela De / Condição / Para."
     try:rows=mermaid_edges(code)
@@ -123,7 +139,7 @@ A11Y_JS=ler_recurso('acessibilidade/painel.html')
 def treinamento_html(md,bar,tema=None,vlibras=True,licenca=''):
     # Os temas ANAC 20 anos alteram somente a apresentação; a apostila permanece no padrão gov.br.
     T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema)
-    toc=[];b=html_of(blocks(md),toc)
+    _TB[0]=0;toc=[];b=html_of(blocks(md),toc)
     hs=list(re.finditer(r'<h2 id="[^"]+">(.*?)</h2>',b))
     for k,m in enumerate(hs):
         if 'gabarito' in m.group(1).lower():
@@ -221,7 +237,7 @@ def _ic(k,cls=''):
 
 def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True,licenca=''):
     """Monta o HTML da apresentação (com ou sem narração): ARIA, leitura, modo leitura, auto-ajuste e impressão A4."""
-    T=tema_de(tema);n_original=len(sl);n=n_original+bool(licenca);secs=[]
+    _TB[0]=0;T=tema_de(tema);n_original=len(sl);n=n_original+bool(licenca);secs=[]
     for k,(c,b,nt) in enumerate(sl):
         rot='Slide %d de %d'%(k+1,n)
         nota='<aside class="nt" role="note" aria-label="Notas do apresentador"><p class="nt-t">Notas do apresentador</p><p class="nt-x">%s</p></aside>'%E(nt) if (nt or '').strip() else ''

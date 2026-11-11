@@ -1,4 +1,9 @@
 # Novidades do Conteudista
+## 1.93 - 10/11/2026
+- **Mensagens anunciadas (WCAG 4.1.3):** a área de mensagens da geração passa a ser lida pelo leitor de tela, sem precisar ir até ela.
+- **Links que abrem em nova aba (eMAG 1.9):** nos arquivos HTML gerados, links externos avisam "(abre em nova aba)" ao leitor de tela.
+- **Tabelas com nome próprio (WCAG 1.3.1 e 2.4.6):** cada tabela é anunciada com número e título da seção, em vez de só "Tabela". Uma linha **Tabela: texto** logo antes da tabela vira a legenda dela (HTML e EPUB).
+- **Sumário em telas estreitas (WCAG 1.4.10):** na apostila, o sumário não some mais abaixo de 900 px nem com zoom de 400%; ele aparece no topo, com rolagem própria.
 ## 1.92 - 10/11/2026
 - **Áreas de arquivo pelo teclado (WCAG 2.1.1):** as áreas "Arraste o .md … ou clique para selecionar" recebem o foco com Tab e abrem o seletor com Enter ou Espaço.
 - **Abas Apostila e Apresentação (WCAG 4.1.2):** agora são anunciadas como abas, com a aba selecionada; as setas, Home e End trocam de aba.

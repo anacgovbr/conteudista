@@ -120,7 +120,7 @@ def testar_apostila_html(cam, exigir_fontes):
     ok(not re.search(r'@font-face\{font-family:"(Atkinson|OpenDyslexic)[^}]*https?:', h), n + ': sem CDN para Atkinson/OpenDyslexic')
     ok('--leitura:Verdana,Tahoma,Arial,sans-serif' in h and '--leitura:"OpenDyslexic",Verdana,Tahoma,Arial,sans-serif' in h, n + ': padrão Verdana e fallback')
     ok('<th scope="col">' in h and '<th>' not in h, n + ': scope="col" em todos os th')
-    ok('<div class="tbl" role="region" aria-label="Tabela" tabindex="0">' in h, n + ': tabelas em região rolável focável')
+    ok(re.search(r'<div class="tbl" role="region" aria-(?:label|labelledby)="[^"]+" tabindex="0"><table>', h) is not None, n + ': tabelas em regiao rolavel focavel, com nome proprio')
     ok('class="fluxo-tabela"' in h and 'Tabela do fluxo' in h and 'class="fluxo-print"' in h, n + ': alternativa em tabela para Mermaid (tela e impressão)')
     if 'id="gab"' in h: ok("aria-expanded" in h and "setAttribute('inert'" in h, n + ': gabarito com aria-expanded e inert')
     else: print('INFO ' + n + ': sem gabarito neste conteúdo')
@@ -134,6 +134,8 @@ def testar_apostila_html(cam, exigir_fontes):
     ok('justify' not in re.sub(r'justify-content|justify-self|justify-items', '', h.split('</style>')[0]), n + ': sem text-align: justify')
     ok('<main id="conteudo" tabindex="-1">' in h and 'class="skip"' in h, n + ': link "Ir para o conteúdo"')
     ok("btnOuvir.setAttribute('aria-pressed'" in h and 'function pararLeitura(' in h, n + ': leitura em voz alta com Parar (WCAG 1.4.2)')
+    ok(all('nova aba' in m for m in re.findall(r'<a [^>]*target="_blank"[^>]*>.*?</a>', h, re.S)), n + ': links que abrem em nova aba avisam (eMAG 1.9)')
+    ok('aria-label="Tabela"' not in h, n + ': tabelas com nome proprio, nao so "Tabela" (WCAG 2.4.6)')
     testar_zoom(h, n, slides=False)
 
 def testar_zoom(h, n, slides):
@@ -210,6 +212,8 @@ def testar_slides_html(cam, exigir_fontes):
     for b in ('b1', 'b2'): ok(re.search(r'<button id="%s" type="button" aria-pressed="false"' % b, h) is not None, '%s: #%s com aria-pressed' % (n, b))
     ok("localStorage.getItem('conteudista.gerados.atalhos')" in h and 'function noPalco(' in h and 'data-a11y="atalhos"' in h, n + ': atalhos de uma tecla so com o foco na apresentacao e com interruptor no painel (WCAG 2.1.4)')
     ok("btnOuvir.setAttribute('aria-pressed'" in h and 'function pararLeitura(' in h, n + ': leitura em voz alta com Parar (WCAG 1.4.2)')
+    ok(all('nova aba' in m for m in re.findall(r'<a [^>]*target="_blank"[^>]*>.*?</a>', h, re.S)), n + ': links que abrem em nova aba avisam (eMAG 1.9)')
+    ok('aria-label="Tabela"' not in h, n + ': tabelas com nome proprio, nao so "Tabela" (WCAG 2.4.6)')
     ok(re.search(r'<button id="b1" type="button" aria-pressed="false" class="md" aria-label="Notas" aria-keyshortcuts="N"', h) is not None and re.search(r'<button id="bLer" class="mi md" type="button" aria-keyshortcuts="L"', h) is not None, n + ': Notas na barra (nome acessível, aria-pressed e atalho N) e Modo leitura/slides no menu Mais opções (atalho L)')
     ok('body.modo-leitura #hud{position:sticky' not in h and 'body.modo-leitura #hud button{' not in h, n + ': Modo leitura usa a mesma barra B+ (sem a barra antiga que rolava com o texto)')
     ok(re.search(r'<div id="tam" class="tam" role="group" aria-labelledby="tamL">', h) is not None and 'id="tamS" class="vh" role="status" aria-live="polite"' in h, n + ': controle de tamanho do texto rotulado, com aviso por leitor de tela')
