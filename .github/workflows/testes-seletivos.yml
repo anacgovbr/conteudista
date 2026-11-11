@@ -125,7 +125,20 @@ jobs:
       - name: Instalar gerador somente quando necessário
         if: needs.classificar.outputs.gerador_navegador == 'true'
         run: pip install -r tools/requirements.txt
-      - run: python -m playwright install --with-deps chrome
+      - name: Instalar o Google Chrome
+        run: |
+          for tentativa in 1 2 3; do
+            timeout 300 python -m playwright install --with-deps chrome && break
+            if [ "$tentativa" = 3 ]; then
+              if command -v google-chrome >/dev/null; then
+                echo "::warning::apt sem rede; usando o Chrome ja instalado no runner"
+              else
+                echo "::error::nao foi possivel instalar o navegador"; exit 1
+              fi
+            else
+              sleep 20
+            fi
+          done
       - uses: actions/download-artifact@v5
         with:
           name: selecao-testes

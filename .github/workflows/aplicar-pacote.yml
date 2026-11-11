@@ -78,7 +78,18 @@ jobs:
         if: steps.aplicar.outputs.codigo == '0'
         run: |
           pip install -r tools/requirements.txt -r tools/testes/requirements.txt
-          python -m playwright install --with-deps chrome
+          for tentativa in 1 2 3; do
+            timeout 300 python -m playwright install --with-deps chrome && break
+            if [ "$tentativa" = 3 ]; then
+              if command -v google-chrome >/dev/null; then
+                echo "::warning::apt sem rede; usando o Chrome ja instalado no runner"
+              else
+                echo "::error::nao foi possivel instalar o navegador"; exit 1
+              fi
+            else
+              sleep 20
+            fi
+          done
 
       - name: Verificar tudo sem navegador
         id: verificar

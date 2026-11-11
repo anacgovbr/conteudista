@@ -65,11 +65,16 @@ def grupo24(amb, ctx, G):
     srv, url = _servidor()
     try:
         pg = ctx.new_page(); erros = []; nativos = []
+        # O tutorial abre sozinho 700 ms depois da carga e pode disputar o foco com as janelas.
+        # O grupo 24 nao testa o tutorial: ele fica desligado nesta pagina.
+        pg.add_init_script("try { localStorage.setItem('conteudista.tour', '1'); } catch (e) {}")
         pg.on('pageerror', lambda e: erros.append(str(e)))
         pg.on('dialog', lambda d: (nativos.append(d.message), d.dismiss()))
         pg.goto(url); pg.wait_for_selector('#dclear', state='attached', timeout=20000)
-        pg.keyboard.press('Escape'); pg.wait_for_timeout(300)
         G.chk('24.1', 'Modulo Dialogo carregado', pg.evaluate('!!window.Dialogo'))
+        # Um clique real na aba Apostila garante foco e ativacao da pagina antes do Esc.
+        # O botao #dclear fica na secao oculta #secShare, entao ele e acionado por JS.
+        pg.click('#tg')
         pg.evaluate("document.getElementById('dclear').click()")
         pg.wait_for_selector('dialog.dlg-gov[open]', timeout=5000)
         info = pg.evaluate("""() => { const d = document.querySelector('dialog.dlg-gov[open]');
