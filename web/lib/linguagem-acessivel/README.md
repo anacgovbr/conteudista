@@ -42,6 +42,12 @@ const pedido = montarPedido('simplificar', { nome: 'Curso X', trecho: '...' }); 
 | `f3` | Texto em maiúsculas | Sugestão |
 | `s1` | Sigla sem explicação | Sugestão |
 | `n1` | Frase longa na narração | Sugestão |
+| `i3` | Descrição longa (mais de 150 caracteres) | Sugestão |
+| `i4` | Descrição que começa com "imagem de" | Sugestão |
+| `e4` | Título vazio | Sugestão |
+| `e5` | Mais de um título de nível 1 (só apostila) | Sugestão |
+| `k2` | Links iguais para lugares diferentes | Sugestão |
+| `k3` | Link para arquivo sem o formato | Sugestão |
 
 Detalhes e exemplos: `docs/linguagem-acessivel/`.
 

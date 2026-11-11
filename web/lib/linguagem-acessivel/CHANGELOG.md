@@ -2,6 +2,9 @@
 
 Segue versionamento semântico. Mudar o id ou o código de uma regra, ou o formato do diagnóstico, é mudança incompatível (versão maior). Regra nova entra como versão menor.
 
+## 0.4.0 - 11/11/2026
+- Seis regras novas, todas como sugestão: `i3` descrição longa (mais de 150 caracteres), `i4` descrição que começa com "imagem de" (correção segura: remove o início), `e4` título vazio, `e5` mais de um título de nível 1 na apostila, `k2` links iguais para lugares diferentes e `k3` link para arquivo sem o formato no texto (correção segura: acrescenta "(PDF)", "(DOCX)" etc.).
+- Formatos de arquivo CSV, DOC, XLS, PPT, ODT, ODS, ODP e RAR entram nas siglas conhecidas.
 ## 0.3.0 - 05/11/2026
 - Marcador de glossário por conteúdo: `<!-- linguagem-acessivel: siglas QWER=Quadro de Registro -->`; as definições do conteúdo prevalecem sobre as institucionais e as siglas conhecidas.
 - Configuração das regras por código estável; níveis de sugestão não podem ser promovidos para corrigir.

@@ -131,7 +131,7 @@ t('ignorar s1 no bloco também vale para a sigla nos blocos seguintes', () => ig
 console.log('5. Contrato e API');
 t('selecionar: área, grupo, código e nome', () => {
   igual(LA.selecionar('a').length, REGRAS.filter(r => r.area === 'acessibilidade').length);
-  igual(LA.selecionar('k'), ['link-vago']); igual(LA.selecionar(['i1', 'titulo-pula-nivel']), ['imagem-sem-descricao', 'titulo-pula-nivel']);
+  igual(LA.selecionar('k'), ['link-vago', 'links-ambiguos', 'link-arquivo-sem-formato']); igual(LA.selecionar(['i1', 'titulo-pula-nivel']), ['imagem-sem-descricao', 'titulo-pula-nivel']);
   igual(LA.selecionar('l').length, 5);
 });
 t('selecionar: valor desconhecido gera erro que lista as opções', () => { try { LA.selecionar('x9'); throw 0; } catch (e) { igual(e.codigo, 'selecao-desconhecida'); } });

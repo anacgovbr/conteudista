@@ -95,7 +95,7 @@ t('ajustar é idempotente e preserva CRLF', () => { const crlf = RUIM.replace(/\
 t('-d mostra a diferença no formato unificado', () => { const d = lac(['a', '-d'], RUIM).out; verdade(/^--- \(entrada\)\n\+\+\+ /.test(d) && /\n-### B\n\+## B\n/.test(d), d); igual(lac(['a', '-d'], BOM).out, ''); });
 
 console.log('6. regras, explicar, pedido, ajuda');
-t('regras lista todas; -g filtra; json sem exemplos', () => { igual(lac(['r']).out.trim().split('\n').length, LA.regras().length); igual(lac(['r', '-g', 'k']).out.trim().split('\n').length, 1); verdade(JSON.parse(lac(['r', '-f', 'json']).out).every(r => !r.exemplos)); });
+t('regras lista todas; -g filtra; json sem exemplos', () => { igual(lac(['r']).out.trim().split('\n').length, LA.regras().length); igual(lac(['r', '-g', 'k']).out.trim().split('\n').length, LA.selecionar('k').length); verdade(JSON.parse(lac(['r', '-f', 'json']).out).every(r => !r.exemplos)); });
 t('explicar por código e por nome', () => { verdade(/^f1 · Frase longa/.test(lac(['e', 'f1']).out)); igual(lac(['e', 'link-vago']).cod, 0); igual(JSON.parse(lac(['e', 'i1', '-f', 'json']).out).codigo, 'i1'); });
 t('pedido simplificar usa a entrada e o --nome', () => { const o = lac(['p', 'simplificar', '--nome', 'Curso X'], 'Trecho longo.').out; verdade(o.includes('"Curso X"') && o.includes('Trecho longo.') && /SIMPLIFICAR TRECHO \(versão 1\.0\)/.test(o)); });
 t('pedido descrever funciona sem entrada', () => { const r = lac(['p', 'descrever', '--legenda', 'Fluxo']); igual(r.cod, 0); verdade(r.out.includes('"Fluxo"') && r.out.includes('sem texto próximo')); });

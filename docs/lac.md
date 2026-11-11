@@ -26,7 +26,7 @@ Para escolher outra release publicada: prefixe o comando com `export LAC_VERSION
 - **Windows:** `tools\lac\lac.cmd c apostila.md` (ou acrescente `tools\lac` ao PATH e use `lac`).
 - **Linux e macOS:** `node tools/lac/lac.mjs c apostila.md`, ou `npm link` dentro de `tools/lac` para ter `lac` e `linguagem-acessivel` no PATH.
 - **Manual:** `man ./tools/lac/lac.1`. **Autocompletar:** `source <(lac completar bash)` ou `zsh`.
-- **Versões:** `lac -v` (ou `--version`) mostra a do `lac` e da API (1.0.0), da biblioteca (0.3.0) e dos pedidos para IA. A API v1 só muda de forma compatível; mudanças incompatíveis exigem `/v2`. Histórico em `tools/lac/CHANGELOG.md`.
+- **Versões:** `lac -v` (ou `--version`) mostra a do `lac` e da API (1.0.0), da biblioteca (0.4.0) e dos pedidos para IA. A API v1 só muda de forma compatível; mudanças incompatíveis exigem `/v2`. Histórico em `tools/lac/CHANGELOG.md`.
 
 ## Ajuda
 

@@ -48,3 +48,15 @@ ATENÇÃO: O PRAZO TERMINA NA SEXTA-FEIRA.
 O processo começa com o pedido. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. A área técnica confere os documentos, verifica os prazos e registra o andamento no sistema. 
 
 <!-- notas: Nesta etapa, depois de receber o pedido com todos os documentos exigidos pelo regulamento, a área técnica faz a análise completa e, em seguida, encaminha o processo à coordenação. -->
+
+## Casos das regras 0.4.0
+
+![Imagem de um fluxo de aprovação com três etapas](fluxo-i4.png)
+
+![Fluxo de aprovação do pedido de certificação: o requerente envia os documentos, a área técnica confere, a coordenação revisa o parecer e a diretoria publica a decisão](longa-i3.png)
+
+##
+
+Baixe o [relatório anual](https://exemplo.gov.br/relatorio.pdf).
+
+Leia o [manual de casos](https://exemplo.gov.br/a.html) e depois o [manual de casos](https://exemplo.gov.br/b.html).

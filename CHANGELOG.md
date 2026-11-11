@@ -1,4 +1,6 @@
 # Novidades do Conteudista
+## 1.95 - 11/11/2026
+- **Seis sugestões novas no painel Acessibilidade** (biblioteca Linguagem Acessível 0.4.0): descrição de imagem longa demais, descrição que começa com "imagem de", título vazio, mais de um título principal na apostila, links com o mesmo texto para lugares diferentes e link para arquivo (PDF, DOCX, planilha) sem o formato no texto. "Imagem de" e o formato do arquivo podem ser corrigidos com um clique.
 ## 1.94 - 10/11/2026
 - **Figuras sem leitura dupla:** quando a legenda repete a descrição da imagem, o leitor de tela lê o texto uma só vez.
 - **Tamanho do texto até 200% (WCAG 1.4.4):** o Modo leitura da apresentação passa a ir de 90% a 200%.

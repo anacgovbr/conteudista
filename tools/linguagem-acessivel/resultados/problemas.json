@@ -1,8 +1,8 @@
 {
  "resumo": {
   "corrigir": 9,
-  "sugestoes": 7,
-  "total": 16
+  "sugestoes": 12,
+  "total": 21
  },
  "itens": [
   [
@@ -166,6 +166,56 @@
    "Frase longa na narração (29 palavras). A legenda fica difícil de ler",
    [
     "simplificar"
+   ]
+  ],
+  [
+   "i4",
+   "sugestao",
+   54,
+   1,
+   "Não comece a descrição com \"imagem de\" ou \"foto de\"",
+   [
+    "remover*"
+   ]
+  ],
+  [
+   "i3",
+   "sugestao",
+   56,
+   1,
+   "A descrição tem 166 caracteres. Deixe até 150 e passe o resto para a descrição detalhada",
+   [
+    "descrever"
+   ]
+  ],
+  [
+   "e4",
+   "sugestao",
+   58,
+   1,
+   "Este título está vazio. Escreva o título ou apague a linha",
+   [
+    "escrever"
+   ]
+  ],
+  [
+   "k3",
+   "sugestao",
+   60,
+   9,
+   "Este link abre um arquivo PDF. Diga isso no texto do link",
+   [
+    "formato*"
+   ]
+  ],
+  [
+   "k2",
+   "sugestao",
+   62,
+   68,
+   "O texto \"manual de casos\" já leva a outro endereço. Use textos diferentes para destinos diferentes",
+   [
+    "editar"
    ]
   ]
  ]

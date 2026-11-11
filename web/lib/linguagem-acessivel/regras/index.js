@@ -11,9 +11,16 @@ import paragrafoLongo from './paragrafo-longo.js';
 import textoEmMaiusculas from './texto-em-maiusculas.js';
 import siglaSemExplicacao from './sigla-sem-explicacao.js';
 import narracaoFraseLonga from './narracao-frase-longa.js';
+import descricaoLonga from './descricao-longa.js';
+import descricaoRedundante from './descricao-redundante.js';
+import tituloVazio from './titulo-vazio.js';
+import tituloPrincipal from './titulo-principal.js';
+import linksAmbiguos from './links-ambiguos.js';
+import linkArquivoSemFormato from './link-arquivo-sem-formato.js';
 
 export const REGRAS = Object.freeze([imagemSemDescricao, descricaoVaga, tituloPulaNivel, slideSemTitulo, tabelaSemCabecalho, linkVago,
-  fraseLonga, paragrafoLongo, textoEmMaiusculas, siglaSemExplicacao, narracaoFraseLonga]);
+  fraseLonga, paragrafoLongo, textoEmMaiusculas, siglaSemExplicacao, narracaoFraseLonga,
+  descricaoLonga, descricaoRedundante, tituloVazio, tituloPrincipal, linksAmbiguos, linkArquivoSemFormato]);
 
 // Áreas e grupos (letra única em todo o conjunto, para os atalhos)
 export const AREAS = Object.freeze({ a: 'acessibilidade', l: 'linguagem' });

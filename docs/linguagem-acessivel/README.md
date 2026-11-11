@@ -1,6 +1,6 @@
 # Linguagem Acessível · regras
 
-Versão da biblioteca: 0.3.0.
+Versão da biblioteca: 0.4.0.
 
 > Página gerada por `node tools/linguagem-acessivel/gerar_docs.mjs`. Não edite à mão: mude a regra ou `mensagens/pt-BR.js`.
 
@@ -17,6 +17,12 @@ Versão da biblioteca: 0.3.0.
 | `f3` | [Texto em maiúsculas](regras/f3-texto-em-maiusculas.md) | Frases | Sugestão | WCAG 1.4.8 |
 | `s1` | [Sigla sem explicação](regras/s1-sigla-sem-explicacao.md) | Siglas | Sugestão | WCAG 3.1.4 · Lei 15.263/2025 |
 | `n1` | [Frase longa na narração](regras/n1-narracao-frase-longa.md) | Narração | Sugestão | WCAG 1.2.2 · Lei 15.263/2025 |
+| `i3` | [Descrição longa](regras/i3-descricao-longa.md) | Imagens | Sugestão | WCAG 1.1.1 · eMAG 3.6 |
+| `i4` | [Descrição que começa com "imagem de"](regras/i4-descricao-redundante.md) | Imagens | Sugestão | WCAG 1.1.1 |
+| `e4` | [Título vazio](regras/e4-titulo-vazio.md) | Estrutura | Sugestão | WCAG 2.4.6, 1.3.1 · eMAG 1.3 |
+| `e5` | [Mais de um título principal](regras/e5-titulo-principal.md) | Estrutura | Sugestão | WCAG 1.3.1, 2.4.6 · eMAG 1.3 |
+| `k2` | [Links iguais para lugares diferentes](regras/k2-links-ambiguos.md) | Links | Sugestão | WCAG 2.4.4, 2.4.9 · eMAG 3.5 |
+| `k3` | [Link para arquivo sem o formato](regras/k3-link-arquivo-sem-formato.md) | Links | Sugestão | WCAG 2.4.4 · eMAG 3.5 |
 
 ## Marcadores no texto
 

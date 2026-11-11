@@ -32,5 +32,5 @@ export default {
     WCAG: 'Diretrizes de Acessibilidade para Conteúdo Web',
   },
   conhecidas: ['CEP', 'CNH', 'GB', 'KB', 'MB', 'QR', 'TB', 'CNPJ', 'CPF', 'CSS', 'DOCX', 'EPUB', 'GIF', 'HTML', 'HTTP', 'HTTPS', 'JPEG', 'JPG', 'JSON', 'MD', 'MP3', 'MP4', 'OGG', 'OK',
-    'PDF', 'PNG', 'PPTX', 'RG', 'SMS', 'SVG', 'TV', 'TXT', 'URL', 'USB', 'WAV', 'WEBP', 'XLSX', 'ZIP'],
+    'PDF', 'PNG', 'PPTX', 'RG', 'SMS', 'SVG', 'TV', 'TXT', 'URL', 'USB', 'WAV', 'WEBP', 'XLSX', 'ZIP', 'CSV', 'DOC', 'XLS', 'PPT', 'ODT', 'ODS', 'ODP', 'RAR'],
 };
