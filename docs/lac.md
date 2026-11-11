@@ -26,7 +26,7 @@ Para escolher outra release publicada: prefixe o comando com `export LAC_VERSION
 - **Windows:** `tools\lac\lac.cmd c apostila.md` (ou acrescente `tools\lac` ao PATH e use `lac`).
 - **Linux e macOS:** `node tools/lac/lac.mjs c apostila.md`, ou `npm link` dentro de `tools/lac` para ter `lac` e `linguagem-acessivel` no PATH.
 - **Manual:** `man ./tools/lac/lac.1`. **Autocompletar:** `source <(lac completar bash)` ou `zsh`.
-- **Versões:** `lac -v` (ou `--version`) mostra a do `lac` e da API (1.0.0), da biblioteca (0.4.0) e dos pedidos para IA. A API v1 só muda de forma compatível; mudanças incompatíveis exigem `/v2`. Histórico em `tools/lac/CHANGELOG.md`.
+- **Versões:** `lac -v` (ou `--version`) mostra a do `lac` e da API (1.0.0), da biblioteca (0.5.0) e dos pedidos para IA. A API v1 só muda de forma compatível; mudanças incompatíveis exigem `/v2`. Histórico em `tools/lac/CHANGELOG.md`.
 
 ## Ajuda
 
@@ -51,6 +51,7 @@ O que conferir
   -g  grupo   a acessibilidade  l linguagem
               i imagens  e estrutura  k links
               f frases   s siglas     n narração
+              c sentido  m mídia
   -r  regra   código ou nome          f1  frase-longa
   -n  nível   c corrigir  s sugestão
 
@@ -91,7 +92,7 @@ Confere um ou mais arquivos Markdown (ou a entrada) e lista o que corrigir e as 
 Uso:  lac c [opções] [arquivo...]
 
 Opções
-  -g  --grupo <lista>       O que conferir: área, grupo ou regra (a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração)
+  -g  --grupo <lista>       O que conferir: área, grupo ou regra (a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração · c sentido · m mídia)
   -r  --regra <lista>       Regra: código ou nome (f1, frase-longa…)
   -n  --nivel <c|s>         Só um nível (c corrigir · s sugestão)
   -f  --formato <formato>   Formato da saída (texto json jsonl sarif resumo relatorio)
@@ -122,7 +123,7 @@ Aplica só as correções que não mudam o sentido (por exemplo, o nível de um 
 Uso:  lac a [opções] [arquivo]
 
 Opções
-  -g  --grupo <lista>       O que conferir: área, grupo ou regra (a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração)
+  -g  --grupo <lista>       O que conferir: área, grupo ou regra (a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração · c sentido · m mídia)
   -r  --regra <lista>       Regra: código ou nome (f1, frase-longa…)
   -t  --tipo <tipo>         Tipo do texto (auto apostila apresentacao)
       --config <arquivo YAML> Lê opções e níveis de regra de um arquivo YAML (web/config/opcoes.yaml ou outro arquivo compatível)
@@ -147,7 +148,7 @@ Lista as regras com código, nome, grupo e nível.
 Uso:  lac r [opções]
 
 Opções
-  -g  --grupo <lista>       O que conferir: área, grupo ou regra (a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração)
+  -g  --grupo <lista>       O que conferir: área, grupo ou regra (a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração · c sentido · m mídia)
   -f  --formato <formato>   Formato da saída (texto json)
 
 Exemplos

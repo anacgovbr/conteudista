@@ -3,7 +3,7 @@
    técnica (WCAG, eMAG, lei) fica só em "porque". Use {nome} para inserir dados. */
 export default {
   niveis: { corrigir: 'Para corrigir', sugestao: 'Sugestão' },
-  grupos: { imagens: 'Imagens', estrutura: 'Estrutura', links: 'Links', frases: 'Frases', siglas: 'Siglas', narracao: 'Narração' },
+  grupos: { imagens: 'Imagens', estrutura: 'Estrutura', links: 'Links', frases: 'Frases', siglas: 'Siglas', narracao: 'Narração', sentido: 'Sentido', midia: 'Mídia' },
   areas: { acessibilidade: 'Acessibilidade', linguagem: 'Linguagem simples' },
   regras: {
     'imagem-sem-descricao': {
@@ -137,6 +137,44 @@ export default {
       variantes: { formato: 'Este link abre um arquivo {formato}. Diga isso no texto do link' },
       porque: 'Antes de clicar, a pessoa precisa saber que vai baixar um arquivo e qual programa vai abri-lo. (WCAG 2.4.4, eMAG 3.5)',
       correcoes: { formato: 'Acrescentar o formato' },
+    },
+    'fluxo-sem-texto': {
+      titulo: 'Fluxo sem explicação em texto',
+      mensagem: 'Explique o fluxo em texto, logo abaixo dele',
+      porque: 'Quem usa leitor de tela não vê o desenho do fluxo. Um parágrafo ou uma lista com as etapas, na ordem, passa a mesma informação. (WCAG 1.1.1, 1.3.1)',
+      correcoes: { descrever: 'Explicar o fluxo' },
+    },
+    'titulo-falso': {
+      titulo: 'Negrito usado como título',
+      mensagem: 'Esta linha parece um título. Use # para marcar o título',
+      variantes: { texto: '"{texto}" parece um título. Use # para que ele entre no sumário e na navegação' },
+      porque: 'O leitor de tela só reconhece como título o que foi marcado como título. O negrito muda a aparência, mas não a estrutura. (WCAG 1.3.1, eMAG 1.3)',
+      correcoes: { converter: 'Transformar em título' },
+    },
+    'lista-falsa': {
+      titulo: 'Lista feita com símbolos',
+      mensagem: 'Use - no início de cada item para fazer uma lista',
+      porque: 'Com símbolos como "•", o leitor de tela não anuncia a lista nem quantos itens ela tem. (WCAG 1.3.1)',
+      correcoes: { converter: 'Transformar em lista' },
+    },
+    'tabela-sem-legenda': {
+      titulo: 'Tabela sem legenda',
+      mensagem: 'Escreva, na linha acima da tabela, "Tabela:" e o que ela mostra',
+      porque: 'A legenda diz o assunto da tabela antes de a pessoa ouvir as linhas. Ela também dá nome à tabela na navegação. (WCAG 1.3.1, 2.4.6)',
+      correcoes: { legenda: 'Escrever legenda' },
+    },
+    'referencia-sensorial': {
+      titulo: 'Referência só pela cor, forma ou posição',
+      mensagem: 'Não use só a cor, a forma ou a posição para indicar algo',
+      variantes: { texto: '"{texto}" depende de ver a tela. Diga também o nome do elemento' },
+      porque: 'Quem não vê a tela, ou não distingue as cores, não encontra "o botão verde" ou "o item à direita". (WCAG 1.3.3, 1.4.1)',
+      correcoes: { reescrever: 'Reescrever' },
+    },
+    'midia-sem-alternativa': {
+      titulo: 'Vídeo ou áudio sem indicação de legenda',
+      mensagem: 'Diga se o vídeo ou o áudio tem legenda ou transcrição',
+      porque: 'Pessoas surdas ou com deficiência auditiva precisam de legenda ou transcrição. Avise antes, para a pessoa saber se vai conseguir acompanhar. (WCAG 1.2.1, 1.2.2)',
+      correcoes: { indicar: 'Indicar legenda ou transcrição' },
     },
   },
 };

@@ -35,6 +35,10 @@
     'editar-texto-do-link': 'Escreva entre os colchetes [ ] aonde o link leva.',
     'escrever-titulo': 'Escreva o título do slide no início, começando com # e um espaço.',
     'editar-cabecalho': 'Escreva na primeira linha da tabela o nome de cada coluna.',
+    'escrever-legenda': 'Escreva, na linha acima da tabela, "Tabela:" e o que ela mostra. Deixe uma linha em branco antes da tabela.',
+    'descrever-fluxo': 'Escreva, logo abaixo do fluxo, um parágrafo ou uma lista com as etapas na ordem.',
+    'reescrever-sensorial': 'Diga o nome do elemento (por exemplo, o botão Enviar), não só a cor, a forma ou a posição.',
+    'indicar-alternativa': 'Diga, perto do link, se o vídeo ou o áudio tem legenda e onde está a transcrição.',
   };
   const SVG = {
     btn: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="4.5" r="1.8"/><path d="M5 8.5h14M12 8.5v5.5M12 14l-3.5 6.5M12 14l3.5 6.5"/></svg>',

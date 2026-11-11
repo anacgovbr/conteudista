@@ -1,8 +1,8 @@
 {
  "resumo": {
   "corrigir": 9,
-  "sugestoes": 12,
-  "total": 21
+  "sugestoes": 19,
+  "total": 28
  },
  "itens": [
   [
@@ -216,6 +216,76 @@
    "O texto \"manual de casos\" já leva a outro endereço. Use textos diferentes para destinos diferentes",
    [
     "editar"
+   ]
+  ],
+  [
+   "i5",
+   "sugestao",
+   66,
+   1,
+   "Explique o fluxo em texto, logo abaixo dele",
+   [
+    "descrever"
+   ]
+  ],
+  [
+   "e6",
+   "sugestao",
+   71,
+   1,
+   "\"Prazos de análise\" parece um título. Use # para que ele entre no sumário e na navegação",
+   [
+    "converter"
+   ]
+  ],
+  [
+   "e7",
+   "sugestao",
+   75,
+   1,
+   "Use - no início de cada item para fazer uma lista",
+   [
+    "converter"
+   ]
+  ],
+  [
+   "e8",
+   "sugestao",
+   78,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra",
+   [
+    "legenda"
+   ]
+  ],
+  [
+   "c1",
+   "sugestao",
+   82,
+   11,
+   "\"botão verde\" depende de ver a tela. Diga também o nome do elemento",
+   [
+    "reescrever"
+   ]
+  ],
+  [
+   "k3",
+   "sugestao",
+   84,
+   12,
+   "Este link abre um arquivo MP4. Diga isso no texto do link",
+   [
+    "formato*"
+   ]
+  ],
+  [
+   "m1",
+   "sugestao",
+   84,
+   12,
+   "Diga se o vídeo ou o áudio tem legenda ou transcrição",
+   [
+    "indicar"
    ]
   ]
  ]

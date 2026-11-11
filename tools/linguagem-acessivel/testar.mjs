@@ -64,7 +64,7 @@ for (const r of REGRAS) {
 }
 t('códigos e ids únicos; código = letra do grupo + número', () => {
   igual(new Set(REGRAS.map(r => r.codigo)).size, REGRAS.length); igual(new Set(REGRAS.map(r => r.id)).size, REGRAS.length);
-  const letra = { imagens: 'i', estrutura: 'e', links: 'k', frases: 'f', siglas: 's', narracao: 'n' };
+  const letra = { imagens: 'i', estrutura: 'e', links: 'k', frases: 'f', siglas: 's', narracao: 'n', sentido: 'c', midia: 'm' };
   REGRAS.forEach(r => verdade(r.codigo[0] === letra[r.grupo], r.codigo));
 });
 t('regra nova de linguagem entra como sugestão (f, s, n)', () => REGRAS.filter(r => r.area === 'linguagem').forEach(r => igual(r.nivel, 'sugestao', r.codigo)));

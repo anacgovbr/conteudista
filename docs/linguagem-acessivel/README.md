@@ -1,6 +1,6 @@
 # Linguagem Acessível · regras
 
-Versão da biblioteca: 0.4.0.
+Versão da biblioteca: 0.5.0.
 
 > Página gerada por `node tools/linguagem-acessivel/gerar_docs.mjs`. Não edite à mão: mude a regra ou `mensagens/pt-BR.js`.
 
@@ -23,6 +23,12 @@ Versão da biblioteca: 0.4.0.
 | `e5` | [Mais de um título principal](regras/e5-titulo-principal.md) | Estrutura | Sugestão | WCAG 1.3.1, 2.4.6 · eMAG 1.3 |
 | `k2` | [Links iguais para lugares diferentes](regras/k2-links-ambiguos.md) | Links | Sugestão | WCAG 2.4.4, 2.4.9 · eMAG 3.5 |
 | `k3` | [Link para arquivo sem o formato](regras/k3-link-arquivo-sem-formato.md) | Links | Sugestão | WCAG 2.4.4 · eMAG 3.5 |
+| `i5` | [Fluxo sem explicação em texto](regras/i5-fluxo-sem-texto.md) | Imagens | Sugestão | WCAG 1.1.1, 1.3.1 |
+| `e6` | [Negrito usado como título](regras/e6-titulo-falso.md) | Estrutura | Sugestão | WCAG 1.3.1 · eMAG 1.3 |
+| `e7` | [Lista feita com símbolos](regras/e7-lista-falsa.md) | Estrutura | Sugestão | WCAG 1.3.1 |
+| `e8` | [Tabela sem legenda](regras/e8-tabela-sem-legenda.md) | Estrutura | Sugestão | WCAG 1.3.1, 2.4.6 · eMAG 3.10 |
+| `c1` | [Referência só pela cor, forma ou posição](regras/c1-referencia-sensorial.md) | Sentido | Sugestão | WCAG 1.3.3, 1.4.1 |
+| `m1` | [Vídeo ou áudio sem indicação de legenda](regras/m1-midia-sem-alternativa.md) | Mídia | Sugestão | WCAG 1.2.1, 1.2.2 |
 
 ## Marcadores no texto
 

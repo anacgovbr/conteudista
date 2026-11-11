@@ -10,7 +10,7 @@
     "regra": { "type": "string", "pattern": "^[a-z]+(-[a-z]+)*$", "description": "Id estável da regra (nunca muda)." },
     "codigo": { "type": "string", "pattern": "^[a-z][0-9]+$", "description": "Código curto: letra do grupo + número." },
     "area": { "enum": ["acessibilidade", "linguagem"] },
-    "grupo": { "enum": ["imagens", "estrutura", "links", "frases", "siglas", "narracao"] },
+    "grupo": { "enum": ["imagens", "estrutura", "links", "frases", "siglas", "narracao", "sentido", "midia"] },
     "nivel": { "enum": ["corrigir", "sugestao"] },
     "variante": { "type": "string" },
     "inicio": { "type": "integer", "minimum": 0 },

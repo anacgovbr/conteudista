@@ -60,3 +60,25 @@ O processo começa com o pedido. A área técnica confere os documentos, verific
 Baixe o [relatório anual](https://exemplo.gov.br/relatorio.pdf).
 
 Leia o [manual de casos](https://exemplo.gov.br/a.html) e depois o [manual de casos](https://exemplo.gov.br/b.html).
+
+## Casos das regras 0.5.0
+
+```mermaid
+flowchart LR
+  A[Pedido] --> B[Análise]
+```
+
+**Prazos de análise**
+
+O pedido é analisado em dez dias.
+
+• Primeiro documento
+• Segundo documento
+
+| Etapa | Prazo |
+|---|---|
+| Análise | 10 dias |
+
+Clique no botão verde para enviar.
+
+Assista ao [vídeo de apresentação](https://exemplo.gov.br/apresentacao.mp4).

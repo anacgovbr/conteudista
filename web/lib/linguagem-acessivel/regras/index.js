@@ -17,14 +17,22 @@ import tituloVazio from './titulo-vazio.js';
 import tituloPrincipal from './titulo-principal.js';
 import linksAmbiguos from './links-ambiguos.js';
 import linkArquivoSemFormato from './link-arquivo-sem-formato.js';
+import fluxoSemTexto from './fluxo-sem-texto.js';
+import tituloFalso from './titulo-falso.js';
+import listaFalsa from './lista-falsa.js';
+import tabelaSemLegenda from './tabela-sem-legenda.js';
+import referenciaSensorial from './referencia-sensorial.js';
+import midiaSemAlternativa from './midia-sem-alternativa.js';
 
 export const REGRAS = Object.freeze([imagemSemDescricao, descricaoVaga, tituloPulaNivel, slideSemTitulo, tabelaSemCabecalho, linkVago,
   fraseLonga, paragrafoLongo, textoEmMaiusculas, siglaSemExplicacao, narracaoFraseLonga,
-  descricaoLonga, descricaoRedundante, tituloVazio, tituloPrincipal, linksAmbiguos, linkArquivoSemFormato]);
+  descricaoLonga, descricaoRedundante, tituloVazio, tituloPrincipal, linksAmbiguos, linkArquivoSemFormato,
+  fluxoSemTexto, tituloFalso, listaFalsa, tabelaSemLegenda, referenciaSensorial, midiaSemAlternativa]);
 
 // Áreas e grupos (letra única em todo o conjunto, para os atalhos)
 export const AREAS = Object.freeze({ a: 'acessibilidade', l: 'linguagem' });
 export const GRUPOS = Object.freeze({
   i: { id: 'imagens', area: 'acessibilidade' }, e: { id: 'estrutura', area: 'acessibilidade' }, k: { id: 'links', area: 'acessibilidade' },
   f: { id: 'frases', area: 'linguagem' }, s: { id: 'siglas', area: 'linguagem' }, n: { id: 'narracao', area: 'linguagem' },
+  c: { id: 'sentido', area: 'acessibilidade' }, m: { id: 'midia', area: 'acessibilidade' },
 });

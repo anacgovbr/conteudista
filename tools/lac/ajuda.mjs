@@ -27,6 +27,7 @@ export function ajudaGeral() {
     '  -g  grupo   a acessibilidade  l linguagem',
     '              i imagens  e estrutura  k links',
     '              f frases   s siglas     n narração',
+    '              c sentido  m mídia',
     '  -' + r.curta + '  regra   código ou nome          f1  frase-longa',
     '  -' + n.curta + '  nível   c corrigir  s sugestão', '',
     'Opções');
@@ -77,7 +78,7 @@ export function completarBash() {
 _lac() {
   local cur prev; cur="\${COMP_WORDS[COMP_CWORD]}"; prev="\${COMP_WORDS[COMP_CWORD-1]}"
   case "$prev" in
-    -g|--grupo) COMPREPLY=($(compgen -W "a l i e k f s n acessibilidade linguagem imagens estrutura links frases siglas narracao" -- "$cur")); return;;
+    -g|--grupo) COMPREPLY=($(compgen -W "a l i e k f s n c m acessibilidade linguagem imagens estrutura links frases siglas narracao sentido midia" -- "$cur")); return;;
     -n|--nivel) COMPREPLY=($(compgen -W "c s" -- "$cur")); return;;
     -f|--formato) COMPREPLY=($(compgen -W "texto json jsonl sarif resumo relatorio" -- "$cur")); return;;
     -t|--tipo) COMPREPLY=($(compgen -W "auto apostila apresentacao" -- "$cur")); return;;

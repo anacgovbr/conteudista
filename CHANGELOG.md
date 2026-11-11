@@ -1,4 +1,6 @@
 # Novidades do Conteudista
+## 1.96 - 11/11/2026
+- **Mais seis sugestões no painel Acessibilidade** (biblioteca Linguagem Acessível 0.5.0): fluxo sem explicação em texto, linha em negrito usada como título, lista feita com "•" ou "–", tabela sem a linha "Tabela:" de legenda, referência só pela cor, forma ou posição ("clique no botão verde", "à direita") e link para vídeo ou áudio sem dizer se há legenda ou transcrição. Título e lista podem ser corrigidos com um clique.
 ## 1.95 - 11/11/2026
 - **Seis sugestões novas no painel Acessibilidade** (biblioteca Linguagem Acessível 0.4.0): descrição de imagem longa demais, descrição que começa com "imagem de", título vazio, mais de um título principal na apostila, links com o mesmo texto para lugares diferentes e link para arquivo (PDF, DOCX, planilha) sem o formato no texto. "Imagem de" e o formato do arquivo podem ser corrigidos com um clique.
 ## 1.94 - 10/11/2026

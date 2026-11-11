@@ -1,9 +1,94 @@
 {
- "versao": "0.4.0",
+ "versao": "0.5.0",
  "resumo": {
   "corrigir": 0,
-  "sugestoes": 0,
-  "total": 0
+  "sugestoes": 12,
+  "total": 12
  },
- "itens": []
+ "itens": [
+  [
+   "e8",
+   "sugestao",
+   31,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
+  ],
+  [
+   "e8",
+   "sugestao",
+   44,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
+  ],
+  [
+   "e8",
+   "sugestao",
+   146,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
+  ],
+  [
+   "e8",
+   "sugestao",
+   173,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
+  ],
+  [
+   "e8",
+   "sugestao",
+   237,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
+  ],
+  [
+   "m1",
+   "sugestao",
+   239,
+   38,
+   "Diga se o vídeo ou o áudio tem legenda ou transcrição"
+  ],
+  [
+   "e8",
+   "sugestao",
+   247,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
+  ],
+  [
+   "e8",
+   "sugestao",
+   357,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
+  ],
+  [
+   "e8",
+   "sugestao",
+   402,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
+  ],
+  [
+   "e8",
+   "sugestao",
+   418,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
+  ],
+  [
+   "e8",
+   "sugestao",
+   509,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
+  ],
+  [
+   "e8",
+   "sugestao",
+   523,
+   1,
+   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
+  ]
+ ]
 }

@@ -2,6 +2,9 @@
 
 Segue versionamento semântico. Mudar o id ou o código de uma regra, ou o formato do diagnóstico, é mudança incompatível (versão maior). Regra nova entra como versão menor.
 
+## 0.5.0 - 11/11/2026
+- Seis regras novas, todas como sugestão: `i5` fluxo (Mermaid) sem explicação em texto, `e6` linha em negrito usada como título, `e7` lista feita com "•" ou "–", `e8` tabela sem a linha "Tabela:" de legenda, `c1` referência só pela cor, forma ou posição ("botão verde", "à direita") e `m1` link para vídeo ou áudio sem indicar legenda ou transcrição.
+- Grupos novos: `c` sentido e `m` mídia (área acessibilidade). O esquema do diagnóstico passa a aceitar os grupos `sentido` e `midia`.
 ## 0.4.0 - 11/11/2026
 - Seis regras novas, todas como sugestão: `i3` descrição longa (mais de 150 caracteres), `i4` descrição que começa com "imagem de" (correção segura: remove o início), `e4` título vazio, `e5` mais de um título de nível 1 na apostila, `k2` links iguais para lugares diferentes e `k3` link para arquivo sem o formato no texto (correção segura: acrescenta "(PDF)", "(DOCX)" etc.).
 - Formatos de arquivo CSV, DOC, XLS, PPT, ODT, ODS, ODP e RAR entram nas siglas conhecidas.

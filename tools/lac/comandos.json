@@ -237,7 +237,7 @@
       "curta": "g",
       "valor": "lista",
       "descricao": "O que conferir: área, grupo ou regra",
-      "valores": "a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração",
+      "valores": "a acessibilidade · l linguagem · i imagens · e estrutura · k links · f frases · s siglas · n narração · c sentido · m mídia",
       "api": "grupo / g"
     },
     {

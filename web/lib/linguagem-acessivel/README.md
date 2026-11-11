@@ -23,7 +23,7 @@ const pedido = montarPedido('simplificar', { nome: 'Curso X', trecho: '...' }); 
 | Opção | Valores |
 |---|---|
 | `tipo` | `auto` (padrão), `apostila`, `apresentacao` |
-| `regras` | área (`a`, `l`), grupo (`i`, `e`, `k`, `f`, `s`, `n`), código (`i1`) ou nome (`link-vago`); vazio = todas |
+| `regras` | área (`a`, `l`), grupo (`i`, `e`, `k`, `f`, `s`, `n`, `c`, `m`), código (`i1`) ou nome (`link-vago`); vazio = todas |
 | `nivel` | `corrigir` / `c` ou `sugestao` / `s` |
 | `config` | `{ limiteFraseLonga, limiteFraseNarracao, limiteParagrafo, sugestoes, regras, siglas, siglasConhecidas }` |
 
@@ -48,6 +48,12 @@ const pedido = montarPedido('simplificar', { nome: 'Curso X', trecho: '...' }); 
 | `e5` | Mais de um título de nível 1 (só apostila) | Sugestão |
 | `k2` | Links iguais para lugares diferentes | Sugestão |
 | `k3` | Link para arquivo sem o formato | Sugestão |
+| `i5` | Fluxo sem explicação em texto | Sugestão |
+| `e6` | Negrito usado como título | Sugestão |
+| `e7` | Lista feita com símbolos | Sugestão |
+| `e8` | Tabela sem legenda ("Tabela:") | Sugestão |
+| `c1` | Referência só pela cor, forma ou posição | Sugestão |
+| `m1` | Vídeo ou áudio sem indicação de legenda | Sugestão |
 
 Detalhes e exemplos: `docs/linguagem-acessivel/`.
 
