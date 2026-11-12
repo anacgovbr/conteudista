@@ -1016,6 +1016,7 @@ statusImagens();
   if (location.hash.startsWith('#cx=') || $('g').value || $('s').value) return;
   try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}
 })();
+if (window.Temas) Temas.iniciar();
 </script>
 <script src="motor-python.js?v=1.100"></script>
 <script src="historico.js?v=1.100"></script>
