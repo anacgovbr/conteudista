@@ -18,6 +18,7 @@ h2{color:var(--pri);font-size:18px;margin:0 0 10px}h3{color:var(--pri);font-size
 .box{padding:10px 14px;border-radius:0 8px 8px 0;margin:0 0 12px}.priv{background:#e3f5e1;border-left:5px solid var(--ok)}.warn{background:#fff5c2;border-left:5px solid var(--wa)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:12px 0}.row select#licenca{min-height:48px;font-size:max(1rem,1em)}.lic-aux{display:block;color:var(--mu);font-size:13px;line-height:1.35;margin-top:4px}html.contraste .lic-aux{color:#fff}
+.tema-linha{display:flex;gap:8px;align-items:stretch}.tema-linha select{flex:1;min-width:0}.tema-linha .mini{flex:none;white-space:nowrap}
 .tabs{display:flex;gap:4px;margin:8px 0 0}.tabs button{border-radius:8px 8px 0 0!important;margin:0}
 .tabs button.off{background:#fff!important;color:var(--acc)!important;border:1px solid var(--line)!important;border-bottom:0!important}
 label{font-weight:600;font-size:13px;color:var(--pri);display:block;margin-bottom:4px}
@@ -47,10 +48,10 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
 </style>
 <link rel="stylesheet" href="govbr.css?v=1.66">
 <link rel="stylesheet" href="ds-botoes.css?v=1.66">
-<script src="opcoes.js?v=1.97"></script>
-<script src="dialogo.js?v=1.97"></script>
-<script src="editor.js?v=1.97"></script>
-<script src="ajuda.js?v=1.97" defer></script>
+<script src="opcoes.js?v=1.98"></script>
+<script src="dialogo.js?v=1.98"></script>
+<script src="editor.js?v=1.98"></script>
+<script src="ajuda.js?v=1.98" defer></script>
 </head>
 <body>
 <a class="br-skiplink" href="#conteudo">Ir para o conteúdo</a>
@@ -85,7 +86,7 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
     <div><label for="pref">Nome do conteúdo</label><input id="pref" type="text" value="Meu_Conteudo"></div>
     <div><label for="rod">Rodapé (slides e DOCX)</label><input id="rod" type="text" placeholder="Ex.: CDPP · GTPL · SAR/ANAC"></div>
     <div><label for="bar">Barra superior da apostila (HTML)</label><input id="bar" type="text" placeholder="Opcional (padrão: título da apostila)"></div>
-    <div><label for="tema">Layout (tema)</label><select id="tema" name="tema" title="Padrão gov.br e Clássico valem para todos os arquivos. ANAC 20 anos muda só a apresentação (HTML e PPTX); a apostila segue o padrão gov.br."><option value="govbr">Padrão gov.br</option><option value="anac20-claro">ANAC 20 anos — claro</option><option value="anac20-escuro">ANAC 20 anos — escuro</option><option value="classico">Clássico</option></select></div>
+    <div><label for="tema">Layout (tema)</label><div class="tema-linha"><select id="tema" name="tema" aria-describedby="temaAux" title="Padrão gov.br e Clássico valem para todos os arquivos. ANAC 20 anos muda só a apresentação (HTML e PPTX); a apostila segue o padrão gov.br."><option value="govbr">Padrão gov.br</option><option value="anac20-claro">ANAC 20 anos — claro</option><option value="anac20-escuro">ANAC 20 anos — escuro</option><option value="classico">Clássico</option></select><button type="button" id="btnTemas" class="sec mini" aria-haspopup="dialog" title="Criar, editar, importar e comparar temas personalizados">Temas…</button></div><small class="lic-aux" id="temaAux">Os temas personalizados mudam a apostila e a apresentação; DOCX, EPUB e PPTX usam um subconjunto compatível com a leitura.</small></div>
     <div><label for="licenca">Licenciamento</label><select id="licenca" name="licenca" aria-describedby="licAux">
         <option value="">Sem licenciamento</option>
         <option value="cc-by-4.0" data-nome="Creative Commons Atribuição 4.0 Internacional" data-sigla="CC BY 4.0" data-url="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</option>
@@ -329,9 +330,28 @@ function markdownParaExportacao(texto, codigo, apresentacao) {
   return base.replace(/\s+$/, '') + sep + bloco + '\n';
 }
 window.markdownParaExportacao = markdownParaExportacao;
-function pacote() { return { v: 1, g: $('g').value, s: $('s').value, p: $('pref').value, r: $('rod').value, b: $('bar').value, licenca: $('licenca').value || '' }; }
-function aplicar(d) { $('g').value = d.g || ''; $('s').value = d.s || ''; $('pref').value = d.p || 'Meu_Conteudo'; $('rod').value = d.r || ''; $('bar').value = d.b || ''; $('licenca').value = d.licenca || ''; statusImagens(); }
-function paraTexto(d) { return '<!-- conteudista:config ' + JSON.stringify({ p: d.p, r: d.r, b: d.b, licenca: d.licenca || '' }) + ' -->\n' + d.g + '\n\n' + SEP + '\n\n' + d.s; }
+function pacote() {
+  const d = { v: 1, g: $('g').value, s: $('s').value, p: $('pref').value, r: $('rod').value, b: $('bar').value, licenca: $('licenca').value || '', tema: $('tema').value || 'govbr' };
+  if (window.Temas && Temas.dadosAtuais) {
+    try { const t = Temas.dadosAtuais(d.tema); if (t) d.tema_dados = t; } catch (e) { /* tema avulso indisponível */ }
+  }
+  return d;
+}
+async function pacoteComTema() {
+  const d = pacote();
+  if (window.Temas && Temas.snapshotPacote) {
+    try { const s = await Temas.snapshotPacote(d.tema); if (s) { d.tema = s.tema || d.tema; if (s.tema_dados) d.tema_dados = s.tema_dados; } }
+    catch (e) { log('O tema não pôde ser incluído no pacote: ' + e.message, 'wa'); }
+  }
+  return d;
+}
+function aplicar(d) {
+  $('g').value = d.g || ''; $('s').value = d.s || ''; $('pref').value = d.p || 'Meu_Conteudo'; $('rod').value = d.r || ''; $('bar').value = d.b || ''; $('licenca').value = d.licenca || '';
+  const tema = { tema: d.tema || '', tema_dados: d.tema_dados || null };
+  if (window.Temas) Temas.aplicarSnapshot(tema); else if (tema.tema || tema.tema_dados) window.__temaPendente = tema;
+  statusImagens();
+}
+function paraTexto(d) { return '<!-- conteudista:config ' + JSON.stringify({ p: d.p, r: d.r, b: d.b, licenca: d.licenca || '', tema: d.tema || '', ...(d.tema_dados ? { tema_dados: d.tema_dados } : {}) }) + ' -->\n' + d.g + '\n\n' + SEP + '\n\n' + d.s; }
 function deTexto(t) {
   let cfg = {}; const m = t.match(/^<!-- conteudista:config (\{.*?\}) -->\n?/);
   if (m) { try { cfg = JSON.parse(m[1]); } catch {} t = t.slice(m[0].length); }
@@ -341,7 +361,7 @@ function deTexto(t) {
   if (licencaCfg && ![...$('licenca').options].some(o => o.value === licencaCfg)) throw new Error('O link contém um código de licença desconhecido.');
   const documentos = [pg.licenca, ps.licenca].filter(Boolean);
   if (new Set(documentos).size > 1 || (temCfg && documentos.length && licencaCfg !== documentos[0])) throw new Error('A apostila e a apresentação têm licenças diferentes. Escolha uma licença única antes de importar.');
-  return { g: pg.texto.replace(/\s+$/, '\n'), s: ps.texto.replace(/^\s+/, ''), p: cfg.p, r: cfg.r, b: cfg.b, licenca: temCfg ? licencaCfg : documentos[0] || '' };
+  return { g: pg.texto.replace(/\s+$/, '\n'), s: ps.texto.replace(/^\s+/, ''), p: cfg.p, r: cfg.r, b: cfg.b, licenca: temCfg ? licencaCfg : documentos[0] || '', tema: cfg.tema || '', tema_dados: cfg.tema_dados || null };
 }
 
 /* =========================== Imagens → base64 =========================== */
@@ -473,8 +493,17 @@ let dbp = null;
 function db() {
   if (dbp) return dbp;
   dbp = new Promise((ok, err) => {
-    const r = indexedDB.open('conteudista', 2);
-    r.onupgradeneeded = () => { const d = r.result, n = [...d.objectStoreNames]; if (!n.includes('rascunhos')) d.createObjectStore('rascunhos', { keyPath: 'nome' }); if (!n.includes('links')) d.createObjectStore('links', { keyPath: 'id', autoIncrement: true }); if (!n.includes('versoes')) d.createObjectStore('versoes', { keyPath: 'id', autoIncrement: true }); };
+    const r = indexedDB.open('conteudista', 3);
+    r.onupgradeneeded = () => {
+      const d = r.result, n = [...d.objectStoreNames];
+      if (!n.includes('rascunhos')) d.createObjectStore('rascunhos', { keyPath: 'nome' });
+      if (!n.includes('links')) d.createObjectStore('links', { keyPath: 'id', autoIncrement: true });
+      if (!n.includes('versoes')) d.createObjectStore('versoes', { keyPath: 'id', autoIncrement: true });
+      // v3 (1.98): temas personalizados, versões de tema e imagens de fundo separadas do registro do tema.
+      if (!n.includes('temas')) d.createObjectStore('temas', { keyPath: 'id' });
+      if (!n.includes('temas_versoes')) d.createObjectStore('temas_versoes', { keyPath: 'id', autoIncrement: true });
+      if (!n.includes('tema_imagens')) d.createObjectStore('tema_imagens', { keyPath: 'id' });
+    };
     r.onsuccess = () => ok(r.result); r.onerror = () => err(r.error);
   });
   return dbp;
@@ -512,17 +541,18 @@ $('autost').textContent = $('auto').checked ? 'Ativado: as alterações são sal
 $('keep').checked = (window.Opcoes ? Opcoes.ler('conteudista.keep', '1') : localStorage.getItem('conteudista.keep')) !== '0';
 $('keep').onchange = () => localStorage.setItem('conteudista.keep', $('keep').checked ? '1' : '0');
 $('dclear').onclick = async () => {
-  if (!(await (window.Dialogo ? Dialogo.confirmar({ titulo: 'Apagar os dados deste navegador?', descricao: 'Rascunhos, histórico de versões, links lembrados e preferências serão apagados. Esta ação não pode ser desfeita.', rotulo: 'Apagar dados', perigo: true }) : Promise.resolve(confirm('Apagar todos os rascunhos, histórico de versões, links lembrados e preferências deste navegador?'))))) return;
-  await dbClear('rascunhos'); await dbClear('links'); await dbClear('versoes'); if (window.Hist) Hist.atualizar(); ['conteudista.keep', 'mde.modo', 'conteudista.tour'].forEach(k => localStorage.removeItem(k));
-  localStorage.setItem('conteudista.auto', '0'); $('keep').checked = false; listarRascunhos(); listarLinks(); log('Dados locais apagados.', 'ok');
+  if (!(await (window.Dialogo ? Dialogo.confirmar({ titulo: 'Apagar os dados deste navegador?', descricao: 'Rascunhos, histórico de versões, temas personalizados, imagens de tema, links lembrados e preferências serão apagados. Esta ação não pode ser desfeita.', rotulo: 'Apagar dados', perigo: true }) : Promise.resolve(confirm('Apagar todos os rascunhos, histórico de versões, temas, links lembrados e preferências deste navegador?'))))) return;
+  await dbClear('rascunhos'); await dbClear('links'); await dbClear('versoes'); await dbClear('temas'); await dbClear('temas_versoes'); await dbClear('tema_imagens'); if (window.Hist) Hist.atualizar(); ['conteudista.keep', 'mde.modo', 'conteudista.tour', 'conteudista.tema'].forEach(k => localStorage.removeItem(k));
+  localStorage.setItem('conteudista.auto', '0'); $('keep').checked = false; if (window.Temas) Temas.atualizarSeletor('govbr'); listarRascunhos(); listarLinks(); log('Dados locais apagados.', 'ok');
 };
 function baixar(nome, blob) { const u = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = u; a.download = nome; a.click(); setTimeout(() => URL.revokeObjectURL(u), 4000); }
 $('zdl').onclick = async () => {
-  const p = pacote(), x = (p.p || 'Conteudo').replace(/[^\w.-]+/g, '_');
+  const p = await pacoteComTema(), x = (p.p || 'Conteudo').replace(/[^\w.-]+/g, '_');
   if (!p.g.trim() && !p.s.trim()) { log('Nada para baixar.', 'wa'); return; }
   const arqs = [];
   if (p.g.trim()) arqs.push({ nome: 'Apostila_' + x + '.md', dados: enc.encode(markdownParaExportacao(p.g, p.licenca, false)) });
   if (p.s.trim()) arqs.push({ nome: 'Apresentacao_' + x + '.md', dados: enc.encode(markdownParaExportacao(p.s, p.licenca, true)) });
+  if (p.tema_dados) arqs.push({ nome: 'Tema_' + x + '.json', dados: enc.encode(JSON.stringify(p.tema_dados, null, 2)) });
   for (const f of ultimos) if (!/\.(md|zip)$/i.test(f.nome)) arqs.push({ nome: f.nome, dados: new Uint8Array(await f.blob.arrayBuffer()) });
   const z = await zipCriar(arqs);
   baixar('Conteudo_' + x + '.zip', new Blob([z], { type: 'application/zip' }));
@@ -627,9 +657,9 @@ let sessaoLinks = [];
 $('mode').onchange = () => { const pb = $('mode').value === 'pb'; $('pbopts').hidden = !pb; $('pwnote').hidden = !pb; };
 $('pwnote').hidden = true;
 $('share').onclick = async () => {
-  const d = pacote(); if (!d.g.trim() && !d.s.trim()) { log('Nada para compartilhar.', 'wa'); return; }
+  const d = await pacoteComTema(); if (!d.g.trim() && !d.s.trim()) { log('Nada para compartilhar.', 'wa'); return; }
   const fal = await embutirTudo(true); if (fal.length) log('Atenção: imagens não embutidas ficarão como referência externa: ' + fal.join(', '), 'wa');
-  const d2 = pacote(), pw = $('pw').value;
+  const d2 = await pacoteComTema(), pw = $('pw').value;
   const n = await estimarTamanho();
   log('Criando link criptografado (' + tamanho(n) + ')…');
   $('share').disabled = true;
@@ -830,14 +860,18 @@ $('go').onclick = async () => {
   if (!$('g').value.trim()) log('Apostila vazia: serão gerados apenas os arquivos da apresentação.', 'wa');
   else if (!$('s').value.trim()) log('Apresentação vazia: serão gerados apenas os arquivos da apostila.', 'wa');
   try {
+    if (window.Temas && !(await Temas.garantirContraste($('tema').value))) { log('Geração cancelada: o contraste do tema precisa ser corrigido ou autorizado.', 'wa'); return; }
     if (window.AcessibilidadeGeracao && !(await AcessibilidadeGeracao.antesDeGerar())) return;
     $('go').disabled = true;
     const fal = await embutirTudo(true);
     if (fal.length) log('Imagens não embutidas (aparecerão como [imagem] no DOCX/PPTX): ' + fal.join(', '), 'wa');
     await prepararPython();
     const pref = ($('pref').value.trim() || 'Conteudo').replace(/[^\w.-]+/g, '_');
+    const temaSel = $('tema').value || 'govbr';
+    let temaJson = '';
+    if (window.Temas) { try { temaJson = await Temas.jsonParaGeracao(temaSel); } catch (e) { log('O tema personalizado não pôde ser preparado: ' + e.message, 'wa'); } }
     py.globals.set('GM', $('g').value.trim() + '\n'); py.globals.set('SM', $('s').value.trim() + '\n');
-    py.globals.set('PREF', pref); py.globals.set('ROD', $('rod').value); py.globals.set('BAR', $('bar').value); py.globals.set('TEMA', $('tema').value); py.globals.set('LICENCA', $('licenca').value || '');
+    py.globals.set('PREF', pref); py.globals.set('ROD', $('rod').value); py.globals.set('BAR', $('bar').value); py.globals.set('TEMA', temaJson || temaSel); py.globals.set('TEMA_JSON', temaJson); py.globals.set('LICENCA', $('licenca').value || '');
     py.globals.set('VLIBRAS', $('vlibrasGerar').checked);
     let narr = '';
     if (window.Narracao && $('s').value.trim()) { try { narr = await Narracao.preparar(py); } catch (e) { log('Narração não incluída: ' + e.message, 'wa'); narr = ''; } }
@@ -853,7 +887,7 @@ $('go').onclick = async () => {
     }
     py.globals.set('INCLUIR_RELATORIO', !!relatorioZip); py.globals.set('RELATORIO_HTML', relatorioZip);
     log('Gerando arquivos…');
-    const out = py.runPython("import sys, os, shutil, zipfile\nif '/app' not in sys.path: sys.path.insert(0, '/app')\nimport gerador\nshutil.rmtree('/saida', ignore_errors=True)\narqs, res = gerador.gerar(GM, SM, PREF, ROD, BAR, '/saida', TEMA, NARR or None, FLUXOS, VLIBRAS, LICENCA)\nzp = '/saida/Conteudo_%s.zip' % PREF\nwith zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:\n    [z.write(f, os.path.basename(f)) for f in arqs]\n    if INCLUIR_RELATORIO: z.writestr('Relatorio_Acessibilidade.html', RELATORIO_HTML)\n'\\n'.join([res] + arqs + [zp])");
+    const out = py.runPython("import sys, os, shutil, zipfile\nif '/app' not in sys.path: sys.path.insert(0, '/app')\nimport gerador\nshutil.rmtree('/saida', ignore_errors=True)\narqs, res = gerador.gerar(GM, SM, PREF, ROD, BAR, '/saida', TEMA, NARR or None, FLUXOS, VLIBRAS, LICENCA)\nzp = '/saida/Conteudo_%s.zip' % PREF\nwith zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:\n    [z.write(f, os.path.basename(f)) for f in arqs]\n    if TEMA_JSON: z.writestr('Tema_%s.json' % PREF, TEMA_JSON)\n    if INCLUIR_RELATORIO: z.writestr('Relatorio_Acessibilidade.html', RELATORIO_HTML)\n'\\n'.join([res] + arqs + [zp])");
     const linhas = out.split('\n'), res = linhas[0], files = linhas.slice(1);
     const la = window.AcessibilidadeTexto;
     const resultados = la ? ['g', 's'].map(k => la.resultado(k)).filter(Boolean) : [];
@@ -896,7 +930,7 @@ $('go').onclick = async () => {
 /* =========================== Tamanho antes do envio =========================== */
 let tTam = null, ultimoTam = 0;
 async function estimarTamanho() {
-  const d = pacote(); if (!d.g.trim() && !d.s.trim()) { $('tam').innerHTML = 'Tamanho estimado: —'; ultimoTam = 0; return 0; }
+  const d = await pacoteComTema(); if (!d.g.trim() && !d.s.trim()) { $('tam').innerHTML = 'Tamanho estimado: —'; ultimoTam = 0; return 0; }
   const bruto = enc.encode(d.g + d.s).length;
   let alvo, n, extra = '';
   if ($('mode').value === 'self') {
@@ -933,24 +967,32 @@ setTimeout(() => {
   new MutationObserver(() => { if ($('links').querySelector('table')) abrirSecao($('links')); }).observe($('links'), { childList: true, subtree: true });
 }, 1500);
 document.addEventListener('focusin', e => { if (e.target.closest && e.target.closest('details.sx:not([open])') && !e.target.matches('summary') && !e.target.closest('#dxRes > summary')) abrirSecao(e.target); });
-addEventListener('hashchange', () => { const a = location.hash && document.querySelector(location.hash); if (a) abrirSecao(a); });
+addEventListener('hashchange', () => {
+  const h = location.hash || '';
+  if (!h || h.startsWith('#tema=')) return;
+  let a = null;
+  try { a = document.querySelector(h); } catch (e) { return; }
+  if (a) abrirSecao(a);
+});
 $('tema').value = (window.Opcoes ? Opcoes.ler('conteudista.tema', 'govbr') : localStorage.getItem('conteudista.tema')) || 'govbr';
 $('vlibrasGerar').checked = window.Opcoes ? Opcoes.ligado('acessibilidade_arquivos.vlibras') : true;
 function aplicarTemaNoMarkdown(tema) {
+  const chave = window.Temas && Temas.chaveMarkdown ? Temas.chaveMarkdown(tema) : tema;
   let md = $('s').value || '';
   if (/^---\s*\n/.test(md)) {
     const fim = md.indexOf('\n---', 4);
     if (fim >= 0) {
       let cab = md.slice(4, fim);
-      cab = /^theme\s*:/m.test(cab) ? cab.replace(/^theme\s*:.*$/m, 'theme: ' + tema) : cab.replace(/\s*$/, '') + '\ntheme: ' + tema;
+      cab = /^theme\s*:/m.test(cab) ? cab.replace(/^theme\s*:.*$/m, 'theme: ' + chave) : cab.replace(/\s*$/, '') + '\ntheme: ' + chave;
       $('s').value = '---\n' + cab + '\n---' + md.slice(fim + 4);
     }
-  } else $('s').value = '---\ntheme: ' + tema + '\n---\n\n' + md.replace(/^\s+/, '');
+  } else $('s').value = '---\ntheme: ' + chave + '\n---\n\n' + md.replace(/^\s+/, '');
   $('s').dispatchEvent(new Event('input', { bubbles: true }));
 }
 $('tema').onchange = () => {
   localStorage.setItem('conteudista.tema', $('tema').value);
   aplicarTemaNoMarkdown($('tema').value);
+  if (window.Temas) Temas.aoSelecionar($('tema').value);
   log('Layout aplicado à apresentação HTML/PPTX e registrado no frontmatter do Markdown.', 'ok');
 };
 $('btnContraste').onclick = () => { const on = document.documentElement.classList.toggle('contraste'); localStorage.setItem('conteudista.contraste', on ? '1' : '0'); };
@@ -972,30 +1014,31 @@ statusImagens();
   try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}
 })();
 </script>
-<script src="motor-python.js?v=1.97"></script>
-<script src="historico.js?v=1.97"></script>
-<script src="changelog.js?v=1.97"></script>
-<script src="gerados.js?v=1.97"></script>
+<script src="motor-python.js?v=1.98"></script>
+<script src="historico.js?v=1.98"></script>
+<script src="changelog.js?v=1.98"></script>
+<script src="gerados.js?v=1.98"></script>
 <script src="audio-codec.js?v=1.66"></script>
-<script src="locucao.js?v=1.97"></script>
-<script src="narracao.js?v=1.97"></script>
+<script src="locucao.js?v=1.98"></script>
+<script src="narracao.js?v=1.98"></script>
 <script src="ui-ajustes.js?v=1.66"></script>
 <script src="ux-feedback.js?v=1.82"></script>
 <script src="ux-expansiveis.js?v=1.66"></script>
 <script src="ux-arquivos.js?v=1.66"></script>
 <script src="metadados.js?v=1.66"></script>
 <script src="dicas.js?v=1.66"></script>
-<script src="janelas.js?v=1.97"></script>
-<script src="versoes.js?v=1.97"></script>
-<script src="colar.js?v=1.97"></script>
+<script src="janelas.js?v=1.98"></script>
+<script src="temas.js?v=1.98"></script>
+<script src="versoes.js?v=1.98"></script>
+<script src="colar.js?v=1.98"></script>
 <script src="notas-locucao.js?v=1.78"></script>
 <script src="celular.js?v=1.79"></script>
-<script src="acessibilidade.js?v=1.97"></script>
-<script src="acessibilidade-marcas.js?v=1.97"></script>
-<script src="acessibilidade-janelas.js?v=1.97"></script>
-<script src="acessibilidade-geracao.js?v=1.97"></script>
-<script src="relatorio-acessibilidade.js?v=1.97"></script>
-<script src="acessibilidade-config.js?v=1.97"></script>
-<script src="vlibras.js?v=1.97"></script>
+<script src="acessibilidade.js?v=1.98"></script>
+<script src="acessibilidade-marcas.js?v=1.98"></script>
+<script src="acessibilidade-janelas.js?v=1.98"></script>
+<script src="acessibilidade-geracao.js?v=1.98"></script>
+<script src="relatorio-acessibilidade.js?v=1.98"></script>
+<script src="acessibilidade-config.js?v=1.98"></script>
+<script src="vlibras.js?v=1.98"></script>
 </body>
 </html>

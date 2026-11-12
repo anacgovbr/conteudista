@@ -1036,6 +1036,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
   window.HistoricoArquivos = { abrir: () => hist.abrir(), fechar: () => hist.fechar() };
   window.Compartilhar = { abrir: () => cmp.abrir(), fechar: () => cmp.fechar() };
   window.AbrirJanela = { abrir: k => importar.abrir(k), fechar: () => importar.fechar() };
+  window.Janelas = { criarJanela };
 })();
 
 /* Secao "Arquivos gerados": o botao Historico do cabecalho abre a janela "Historico de arquivos" */

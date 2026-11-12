@@ -25,6 +25,18 @@ Arquivo: `web/config/opcoes.yaml`. Ele define como cada opção **começa**. Se 
 | `layout` | Layout (tema) dos arquivos gerados | govbr · anac20_claro · anac20_escuro · classico | `govbr` | sim |
 | `alto_contraste` | Alto contraste no aplicativo | ligado · desligado | `desligado` | sim |
 
+## Temas
+
+| Opção | O que faz | Valores | Padrão | Lembrada no navegador |
+|---|---|---|---|---|
+| `contraste_minimo` | Contraste mínimo dos pares essenciais do tema | aa · aaa | `aa` | sim |
+| `corrigir_contraste` | Corrigir automaticamente as cores com contraste insuficiente ao salvar | ligado · desligado | `ligado` | sim |
+| `variantes_automaticas` | Gerar as variantes escura e de alto contraste a partir do tema base | ligado · desligado | `ligado` | sim |
+| `limite_imagem_kb` | Tamanho máximo de cada imagem de fundo do tema | 512 a 4096 | `2048` | sim |
+| `limite_total_kb` | Tamanho máximo somado das imagens de um tema | 1024 a 12288 | `6144` | sim |
+| `guardar_versoes` | Guardar uma versão sempre que salvar o tema | ligado · desligado | `ligado` | sim |
+| `limite_versoes` | Quantas versões de cada tema guardar | 1 a 100 | `20` | sim |
+
 ## acessibilidade_arquivos
 
 | Opção | O que faz | Valores | Padrão | Lembrada no navegador |

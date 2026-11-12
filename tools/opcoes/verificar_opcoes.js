@@ -26,7 +26,7 @@ function grupos() {
     return raizes.indexOf(ap[0]) - raizes.indexOf(bp[0]) || ap.length - bp.length;
   }));
 }
-const TITULOS = { editor: 'Editor', 'editor.imagens': 'Editor · imagens', aplicativo: 'Aplicativo', salvar: 'Salvar e Histórico', link: 'Link criptografado', importar: 'Importar', celular: 'Celular', acessibilidade_texto: 'Acessibilidade do texto', narracao: 'Narração (aba Gerar)', locucao: 'Locução' };
+const TITULOS = { editor: 'Editor', 'editor.imagens': 'Editor · imagens', aplicativo: 'Aplicativo', temas: 'Temas', salvar: 'Salvar e Histórico', link: 'Link criptografado', importar: 'Importar', celular: 'Celular', acessibilidade_texto: 'Acessibilidade do texto', narracao: 'Narração (aba Gerar)', locucao: 'Locução' };
 const aceitos = r => r.tipo === 'chave' ? 'ligado | desligado' : r.tipo === 'numero' ? r.min + ' a ' + r.max : Object.keys(r.valores).join(' | ');
 function yamlExemplo() {
   const o = ['# yaml-language-server: $schema=opcoes.schema.json',

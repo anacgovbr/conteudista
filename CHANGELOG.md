@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.98 - 11/11/2026
+- **Temas personalizados para a apostila e a apresentação:** novo recurso de primeira classe, derivado do Design System gov.br. Cores, fontes, tamanhos, posição dos títulos, imagens de fundo, Mermaid, posições e demais parâmetros CSS ficam num editor com prévia. A capa, a finalização, a tela interna clara, a tela interna escura e o licenciamento têm ajustes próprios; a imagem de fundo pode ser removida ou ter a opacidade reduzida para isolar a leitura.
+- **Acessibilidade:** contraste WCAG conferido nos pares essenciais antes de gerar, com correção automática ou autorização explícita; variantes escura e de alto contraste; fontes de leitura Atkinson Hyperlegible Next e OpenDyslexic; o aplicativo continua no padrão gov.br.
+- **Persistência e compartilhamento:** temas guardados no IndexedDB do navegador, com rascunho automático, duplicação, exclusão, importação de JSON ou link, cópia, download e link com snapshot. As versões guardadas podem ser comparadas por seção, com modo JSON avançado.
+- **Arquivos gerados:** o tema chega ao HTML da apostila e da apresentação e ao PPTX (cores, fontes e posições). DOCX e EPUB mantêm a leitura acessível e recebem apenas o subconjunto seguro; o EPUB continua claro e neutro e não muda com o tema.
+- **Testes:** novo grupo 25 de navegador, cobrindo catálogo, seletor, janela, salvamento, versões, link, imagem de fundo e gate de contraste.
 ## 1.97 - 11/11/2026
 - **Mais caixas do navegador trocadas por janelas do padrão gov.br (WCAG 3.3.2 e 4.1.2):** restaurar o padrão das opções, remover uma imagem do texto, restaurar, excluir e limpar versões do histórico, e excluir ou limpar áudios da Locução e da narração. Salvar uma versão com nome usa um campo de texto com rótulo. As janelas abrem com o foco em Cancelar, Esc cancela e o foco volta ao botão que as abriu.
 - **Esc numa confirmação aberta sobre outra janela:** em Versões, Arquivos e rascunhos e Áudios gerados, o Esc agora fecha só a confirmação. Antes, a janela de baixo fechava junto e a confirmação ficava aberta.

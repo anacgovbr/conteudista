@@ -1,0 +1,415 @@
+{
+  "versao": 1,
+  "padrao": "govbr",
+  "telas": ["capa", "interna_clara", "interna_escura", "finalizacao", "licenciamento"],
+  "temas": {
+    "govbr": {
+      "id": "govbr",
+      "nome": "Padrão gov.br",
+      "descricao": "Design System do Governo Federal. Vale para a apostila e a apresentação.",
+      "embutido": true,
+      "base": "govbr",
+      "paleta": {
+        "primaria": "#0c326f",
+        "destaque": "#1351b4",
+        "apoio": "#168821",
+        "alerta": "#8a5c00",
+        "erro": "#e52207",
+        "fundo": "#f8f8f8",
+        "superficie": "#ffffff",
+        "texto": "#333333",
+        "texto_suave": "#636363",
+        "linha": "#cccccc",
+        "suave": "#edf5ff"
+      },
+      "fontes": {
+        "titulo": "Rawline, Raleway, Segoe UI, Arial, sans-serif",
+        "texto": "Rawline, Raleway, Segoe UI, Arial, sans-serif",
+        "tamanho_base": 23,
+        "tamanho_titulo": 40,
+        "tamanho_h2": 26,
+        "entrelinha": 1.45,
+        "espacamento": 0
+      },
+      "telas": {
+        "capa": {
+          "fundo": "#0c326f",
+          "texto": "#ffffff",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 58,
+          "titulo_deslocamento_x": 37,
+          "titulo_deslocamento_y": 0
+        },
+        "interna_clara": {
+          "fundo": "#ffffff",
+          "texto": "#333333",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        },
+        "interna_escura": {
+          "fundo": "#071d41",
+          "texto": "#ffffff",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        },
+        "finalizacao": {
+          "fundo": "#0c326f",
+          "texto": "#ffffff",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 58,
+          "titulo_deslocamento_x": 37,
+          "titulo_deslocamento_y": 0
+        },
+        "licenciamento": {
+          "fundo": "#f8f8f8",
+          "texto": "#333333",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        }
+      },
+      "imagens": {
+        "tamanho_base": 100,
+        "arredondamento": 0,
+        "sombra": false
+      },
+      "mermaid": {
+        "tema": "default",
+        "escala": 100,
+        "fundo": "#ffffff"
+      },
+      "posicoes": {
+        "margem": 60,
+        "topo": 44,
+        "base": 60,
+        "titulo_espaco": 22
+      }
+    },
+    "classico": {
+      "id": "classico",
+      "nome": "Clássico",
+      "descricao": "Layout original do Conteudista, anterior ao Design System gov.br.",
+      "embutido": true,
+      "base": "classico",
+      "paleta": {
+        "primaria": "#0b3d6e",
+        "destaque": "#0a7cc1",
+        "apoio": "#19a974",
+        "alerta": "#9a5b00",
+        "erro": "#e52207",
+        "fundo": "#f6f8fb",
+        "superficie": "#ffffff",
+        "texto": "#1b2430",
+        "texto_suave": "#5a6676",
+        "linha": "#dfe5ee",
+        "suave": "#eef4fa"
+      },
+      "fontes": {
+        "titulo": "Segoe UI, Roboto, Arial, sans-serif",
+        "texto": "Segoe UI, Roboto, Arial, sans-serif",
+        "tamanho_base": 23,
+        "tamanho_titulo": 40,
+        "tamanho_h2": 26,
+        "entrelinha": 1.45,
+        "espacamento": 0
+      },
+      "telas": {
+        "capa": {
+          "fundo": "#0b3d6e",
+          "texto": "#ffffff",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        },
+        "interna_clara": {
+          "fundo": "#ffffff",
+          "texto": "#1b2430",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        },
+        "interna_escura": {
+          "fundo": "#0d1b2a",
+          "texto": "#ffffff",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        },
+        "finalizacao": {
+          "fundo": "#0b3d6e",
+          "texto": "#ffffff",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        },
+        "licenciamento": {
+          "fundo": "#f6f8fb",
+          "texto": "#1b2430",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        }
+      },
+      "imagens": {
+        "tamanho_base": 100,
+        "arredondamento": 8,
+        "sombra": false
+      },
+      "mermaid": {
+        "tema": "default",
+        "escala": 100,
+        "fundo": "#ffffff"
+      },
+      "posicoes": {
+        "margem": 60,
+        "topo": 44,
+        "base": 60,
+        "titulo_espaco": 22
+      }
+    },
+    "anac20-claro": {
+      "id": "anac20-claro",
+      "nome": "ANAC 20 anos — claro",
+      "descricao": "Fundo institucional claro. Muda a apresentação (HTML e PPTX); a apostila segue o padrão gov.br.",
+      "embutido": true,
+      "base": "anac20-claro",
+      "paleta": {
+        "primaria": "#193f52",
+        "destaque": "#d5a900",
+        "apoio": "#168821",
+        "alerta": "#8a5c00",
+        "erro": "#e52207",
+        "fundo": "#f8f8f8",
+        "superficie": "#ffffff",
+        "texto": "#193f52",
+        "texto_suave": "#526d7c",
+        "linha": "#cccccc",
+        "suave": "#edf5ff"
+      },
+      "fontes": {
+        "titulo": "Rawline, Raleway, Segoe UI, Arial, sans-serif",
+        "texto": "Rawline, Raleway, Segoe UI, Arial, sans-serif",
+        "tamanho_base": 23,
+        "tamanho_titulo": 40,
+        "tamanho_h2": 26,
+        "entrelinha": 1.45,
+        "espacamento": 0
+      },
+      "telas": {
+        "capa": {
+          "fundo": "#193f52",
+          "texto": "#193f52",
+          "imagem": "temas/anac20-claro/capa.png",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 58,
+          "titulo_deslocamento_x": 37,
+          "titulo_deslocamento_y": 0
+        },
+        "interna_clara": {
+          "fundo": "#ffffff",
+          "texto": "#193f52",
+          "imagem": "temas/anac20-claro/conteudo-a.png",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        },
+        "interna_escura": {
+          "fundo": "#071d41",
+          "texto": "#ffffff",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        },
+        "finalizacao": {
+          "fundo": "#193f52",
+          "texto": "#193f52",
+          "imagem": "temas/anac20-claro/encerramento.png",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 58,
+          "titulo_deslocamento_x": 37,
+          "titulo_deslocamento_y": 0
+        },
+        "licenciamento": {
+          "fundo": "#f8f8f8",
+          "texto": "#193f52",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        }
+      },
+      "imagens": {
+        "tamanho_base": 100,
+        "arredondamento": 8,
+        "sombra": false
+      },
+      "mermaid": {
+        "tema": "default",
+        "escala": 100,
+        "fundo": "#ffffff"
+      },
+      "posicoes": {
+        "margem": 60,
+        "topo": 44,
+        "base": 60,
+        "titulo_espaco": 22
+      }
+    },
+    "anac20-escuro": {
+      "id": "anac20-escuro",
+      "nome": "ANAC 20 anos — escuro",
+      "descricao": "Fundo institucional escuro. Muda a apresentação (HTML e PPTX); a apostila segue o padrão gov.br.",
+      "embutido": true,
+      "base": "anac20-escuro",
+      "paleta": {
+        "primaria": "#ffffff",
+        "destaque": "#d5a900",
+        "apoio": "#16b8c4",
+        "alerta": "#ffc266",
+        "erro": "#ff8a80",
+        "fundo": "#071d41",
+        "superficie": "#0d2a4f",
+        "texto": "#ffffff",
+        "texto_suave": "#dce8ee",
+        "linha": "#2f4d6e",
+        "suave": "#14334a"
+      },
+      "fontes": {
+        "titulo": "Rawline, Raleway, Segoe UI, Arial, sans-serif",
+        "texto": "Rawline, Raleway, Segoe UI, Arial, sans-serif",
+        "tamanho_base": 23,
+        "tamanho_titulo": 40,
+        "tamanho_h2": 26,
+        "entrelinha": 1.45,
+        "espacamento": 0
+      },
+      "telas": {
+        "capa": {
+          "fundo": "#071d41",
+          "texto": "#ffffff",
+          "imagem": "temas/anac20-escuro/capa.png",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 58,
+          "titulo_deslocamento_x": 37,
+          "titulo_deslocamento_y": 0
+        },
+        "interna_clara": {
+          "fundo": "#ffffff",
+          "texto": "#193f52",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        },
+        "interna_escura": {
+          "fundo": "#071d41",
+          "texto": "#ffffff",
+          "imagem": "temas/anac20-escuro/conteudo-a.png",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        },
+        "finalizacao": {
+          "fundo": "#071d41",
+          "texto": "#ffffff",
+          "imagem": "temas/anac20-escuro/encerramento.png",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 58,
+          "titulo_deslocamento_x": 37,
+          "titulo_deslocamento_y": 0
+        },
+        "licenciamento": {
+          "fundo": "#f8f8f8",
+          "texto": "#193f52",
+          "imagem": "",
+          "imagem_opacidade": 100,
+          "imagem_posicao": "center",
+          "titulo_alinhamento": "left",
+          "titulo_largura": 100,
+          "titulo_deslocamento_x": 0,
+          "titulo_deslocamento_y": 0
+        }
+      },
+      "imagens": {
+        "tamanho_base": 100,
+        "arredondamento": 8,
+        "sombra": false
+      },
+      "mermaid": {
+        "tema": "dark",
+        "escala": 100,
+        "fundo": "#071d41"
+      },
+      "posicoes": {
+        "margem": 60,
+        "topo": 44,
+        "base": 60,
+        "titulo_espaco": 22
+      }
+    }
+  }
+}

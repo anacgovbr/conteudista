@@ -5,12 +5,13 @@ from .contexto import aviso, decorativa
 from . import licencas
 from .imagens import img_bytes, img_size
 from .markdown import blocks, mermaid_edges, runs, sem_comentarios
-from .temas import tema_de, thex, trgb
+from .temas import tema_de, thex, trgb, eh_personalizado, hex_legado
 
 def treinamento_docx(md,path,foot,tema=None,licenca=''):
     # Os temas ANAC 20 anos alteram somente a apresentação; o DOCX permanece no padrão gov.br.
     # Leitura acessível (1.66): o DOCX é único, em Verdana 12 pt, entrelinha 1,5 e 6 pt após; T['docx_font'] não escolhe mais a fonte.
-    T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema);C=lambda h:trgb(h,T);H=lambda h:thex(h,T);FONTE='Verdana'
+    T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema);custom=eh_personalizado(T)
+    H=lambda h:hex_legado(h,T) if custom else thex(h,T);C=lambda h:trgb(h,T) if not custom else trgb(hex_legado(h,T),T);FONTE='Verdana'
     from docx import Document
     from docx.shared import Pt,RGBColor,Cm
     from docx.enum.text import WD_BREAK

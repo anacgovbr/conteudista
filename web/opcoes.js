@@ -28,6 +28,21 @@
       chave: 'conteudista.tema', controles: ['tema'], rotulo: 'Layout (tema) dos arquivos gerados' },
     { caminho: 'aplicativo.alto_contraste', tipo: 'chave', padrao: 'desligado', valores: LIG,
       chave: 'conteudista.contraste', controles: ['btnContraste'], rotulo: 'Alto contraste no aplicativo' },
+
+    { caminho: 'temas.contraste_minimo', tipo: 'escolha', padrao: 'aa', valores: { aa: 'aa', aaa: 'aaa' },
+      chave: 'conteudista.temas.contraste', controles: [], rotulo: 'Contraste mínimo dos pares essenciais do tema' },
+    { caminho: 'temas.corrigir_contraste', tipo: 'chave', padrao: 'ligado', valores: LIG,
+      chave: 'conteudista.temas.corrigir', controles: [], rotulo: 'Corrigir automaticamente as cores com contraste insuficiente ao salvar' },
+    { caminho: 'temas.variantes_automaticas', tipo: 'chave', padrao: 'ligado', valores: LIG,
+      chave: 'conteudista.temas.variantes', controles: [], rotulo: 'Gerar as variantes escura e de alto contraste a partir do tema base' },
+    { caminho: 'temas.limite_imagem_kb', tipo: 'numero', padrao: 2048, min: 512, max: 4096,
+      chave: 'conteudista.temas.limiteImagem', controles: [], rotulo: 'Tamanho máximo de cada imagem de fundo do tema' },
+    { caminho: 'temas.limite_total_kb', tipo: 'numero', padrao: 6144, min: 1024, max: 12288,
+      chave: 'conteudista.temas.limiteTotal', controles: [], rotulo: 'Tamanho máximo somado das imagens de um tema' },
+    { caminho: 'temas.guardar_versoes', tipo: 'chave', padrao: 'ligado', valores: LIG,
+      chave: 'conteudista.temas.versoes', controles: [], rotulo: 'Guardar uma versão sempre que salvar o tema' },
+    { caminho: 'temas.limite_versoes', tipo: 'numero', padrao: 20, min: 1, max: 100,
+      chave: 'conteudista.temas.limiteVersoes', controles: [], rotulo: 'Quantas versões de cada tema guardar' },
     { caminho: 'acessibilidade_arquivos.vlibras', tipo: 'chave', padrao: 'ligado', valores: LIG,
       chave: 'conteudista.acessibilidade.arquivos.vlibras', controles: ['vlibrasGerar'], rotulo: 'Incluir VLibras nos arquivos HTML gerados (carrega somente quando solicitado)' },
 
@@ -107,6 +122,7 @@
     'data-off': '"Sem narração" de cada slide (faz parte do texto, não é preferência)',
     'laGerarSessao': 'checkbox temporário da confirmação de acessibilidade ao gerar (vale só nesta sessão)',
     'data-caminho': 'identificador dinâmico dos controles gerados a partir do REGISTRO de opções',
+    'data-tema-campo': 'campo do editor de temas (faz parte do tema, não é preferência)',
   };
 
   const POR_CAMINHO = new Map(REGISTRO.map(r => [r.caminho, r]));

@@ -6,14 +6,28 @@ from .contexto import aviso, decorativa
 from . import licencas
 from .imagens import img_bytes, img_size
 from .markdown import mermaid_edges, plain, runs
-from .temas import tema_de, thex
+from .temas import tema_de, thex, paleta, eh_personalizado, papeis_slides, contraste, hex_legado
+
+def _imagem_bytes(src):
+    "Imagem de fundo do tema: data URI (editor) ou arquivo institucional em tools/temas."
+    src=str(src or '')
+    if src.startswith('data:image/'):
+        try:return base64.b64decode(src.split(',',1)[1])
+        except Exception:return None
+    m=re.match(r'^temas/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)$',src)
+    if m:
+        cam=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'temas',m.group(1),m.group(2))
+        if os.path.isfile(cam):return open(cam,'rb').read()
+    return None
 
 def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None,licenca=''):
-    T=tema_de(tema);H=lambda h:thex(h,T);FONTE=T['pptx_font']
+    T=tema_de(tema);custom=eh_personalizado(T);PAL=paleta(T);FONTE=T['pptx_font']
+    FONTE_TITULO=(T['fontes']['titulo'].split(',')[0].strip("'\" ") if custom else FONTE)
     from pptx import Presentation
     from pptx.util import Inches,Pt
     from pptx.dml.color import RGBColor
-    C=lambda h:RGBColor.from_string(thex(h,T))
+    def H(h):return hex_legado(h,T) if custom else thex(h,T)
+    def C(h):return RGBColor.from_string(H(h))
     from pptx.enum.shapes import MSO_SHAPE
     from pptx.enum.text import MSO_ANCHOR
     from pptx.enum.lang import MSO_LANGUAGE_ID
@@ -36,6 +50,11 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
         PRI=RGBColor.from_string('FFFFFF' if escuro else '163B57');ACC=RGBColor.from_string('D5A900');AC2=RGBColor.from_string('16B8C4')
         INK=RGBColor.from_string('FFFFFF' if escuro else '1F3545');WH=RGBColor.from_string('FFFFFF');MU=RGBColor.from_string('DCE8EE' if escuro else '607786');SOFT=RGBColor.from_string('14334A' if escuro else 'EFF7FA')
     P=Presentation();P.slide_width=Inches(13.333);P.slide_height=Inches(7.5);W=13.333;L=0.62;CW=W-2*L
+    papeis=papeis_slides(sl,bool(licenca)) if custom else None
+    pos=T.get('posicoes') or {}
+    def px(v):return max(0.15,float(v or 0)/96.0)
+    if custom:
+        L=px(pos.get('margem',60));CW=W-2*L
     n_original=len(sl)
     if licenca:sl=list(sl)+[('licenciamento',licencas.blocos_slide(licenca),'')]
     pasta_modelo=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'temas',modelo) if modelo else ''
@@ -49,10 +68,36 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
         return False
     def rect(s,x,y,w,h,col,shape=MSO_SHAPE.RECTANGLE):
         r=s.shapes.add_shape(shape,Inches(x),Inches(y),Inches(w),Inches(h));r.fill.solid();r.fill.fore_color.rgb=col;r.line.fill.background();r.shadow.inherit=False;return r
-    def addruns(par,t,size,color,bold=False):
+    def _alpha(shape,pct):
+        "Transparência do véu sobre a imagem de fundo (0–100)."
+        from pptx.oxml import parse_xml
+        from pptx.oxml.ns import qn
+        sf=shape.fill._xPr.find(qn('a:solidFill'))
+        clr=sf.find(qn('a:srgbClr')) if sf is not None else None
+        if clr is None:return
+        for velho in clr.findall(qn('a:alpha')):clr.remove(velho)
+        clr.append(parse_xml('<a:alpha xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" val="%d"/>'%int(pct*1000)))
+    def fundo_custom(s,papel):
+        "Fundo do papel de tela: cor, imagem (cover) e véu da cor de fundo conforme a opacidade."
+        tela=T['telas'].get(papel) or T['telas']['interna_clara']
+        rect(s,0,0,W,7.5,C(tela['fundo']))
+        raw=_imagem_bytes(tela.get('imagem'))
+        if raw:
+            iw,ih=img_size(raw)
+            if iw/max(ih,1)>W/7.5:
+                ww,hh=7.5*iw/max(ih,1),7.5
+                x={'left':0,'right':W-ww}.get(tela.get('imagem_posicao'),(W-ww)/2);y=0
+            else:
+                ww,hh=W,W*ih/max(iw,1)
+                x=0;y={'top':0,'bottom':7.5-hh}.get(tela.get('imagem_posicao'),(7.5-hh)/2)
+            alt_pic(s.shapes.add_picture(io.BytesIO(raw),Inches(x),Inches(y),width=Inches(ww),height=Inches(hh)),'',True)
+            op=max(0,min(100,int(tela.get('imagem_opacidade',100))))
+            if op<100:_alpha(rect(s,0,0,W,7.5,C(tela['fundo'])),100-op)
+        return tela
+    def addruns(par,t,size,color,bold=False,fonte=None):
         for x,b,i,c,u in runs(t):
             if c==2:decorativa(u,x);x='[%s]'%(x or 'imagem');u=None;c=0
-            r=par.add_run();r.text=x;f=r.font;f.size=Pt(size);f.bold=bool(b) or bold;f.italic=bool(i);f.name='Consolas' if c else FONTE;f.language_id=PT_BR
+            r=par.add_run();r.text=x;f=r.font;f.size=Pt(size);f.bold=bool(b) or bold;f.italic=bool(i);f.name='Consolas' if c else (fonte or FONTE);f.language_id=PT_BR
             f.color.rgb=ACC if (u and color==INK) else (PRI if (b and color==INK) else color)
             if u:r.hyperlink.address=u;f.underline=True
     def tbox(s,x,y,w,h):
@@ -82,7 +127,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
         if k=='p':
             tb,tf=tbox(s,x,y,w,h);esp(tf.paragraphs[0],1.2,6);addruns(tf.paragraphs[0],b[1],size,col)
         elif k=='h':
-            tb,tf=tbox(s,x,y,w,h);esp(tf.paragraphs[0],1.1,4);addruns(tf.paragraphs[0],b[2],size+4,ACC if col==INK else col,True)
+            tb,tf=tbox(s,x,y,w,h);esp(tf.paragraphs[0],1.1,4);addruns(tf.paragraphs[0],b[2],size+4,ACC if col==INK else col,True,FONTE_TITULO)
         elif k=='list':
             tb,tf=tbox(s,x,y,w,h);n=0
             for dp,od,ck,t in b[1]:
@@ -102,7 +147,10 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                     addruns(tf.paragraphs[0],r[ci] if ci<len(r) else '',ts,WH if ri==0 else INK,ri==0)
                     c.fill.solid();c.fill.fore_color.rgb=PRI if ri==0 else (SOFT if ri%2==0 else WH)
         elif k=='quote':
-            bg,bd={'info':(C('EAF1F8'),C('0A7CC1')),'tip':(C('E9F6F0'),C('1E7B4F')),'warning':(C('FFF4E0'),C('9A5B00'))}.get(b[1],(C('E9F6F0'),AC2))
+            if custom:
+                bg=C(PAL['suave']);bd={'info':ACC,'tip':AC2,'warning':C(PAL['alerta'])}.get(b[1],AC2)
+            else:
+                bg,bd={'info':(C('EAF1F8'),C('0A7CC1')),'tip':(C('E9F6F0'),C('1E7B4F')),'warning':(C('FFF4E0'),C('9A5B00'))}.get(b[1],(C('E9F6F0'),AC2))
             rect(s,x,y,w,h-0.05,bg);rect(s,x,y,0.08,h-0.05,bd)
             yy=y+0.1
             for q in b[2]:draw(s,q,yy,max(MIN_CORPO,size-1),col,x+0.2,w-0.3);yy+=est(q,max(MIN_CORPO,size-1))
@@ -115,40 +163,65 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                 decor=decorativa(b[2],b[1])
                 alt_pic(s.shapes.add_picture(io.BytesIO(raw),Inches(x+(w-ww)/2),Inches(y),Inches(ww),Inches(hh)),'' if decor else b[1],decor)
                 if b[1]:
-                    tb,tf=tbox(s,x,y+hh+0.03,w,0.32);tf.paragraphs[0].alignment=2;addruns(tf.paragraphs[0],b[1],12,MU)
+                    tb,tf=tbox(s,x,y+hh+0.03,w,0.32);tf.paragraphs[0].alignment=2;addruns(tf.paragraphs[0],b[1],12,col if custom else MU)
         elif k=='code':
             if b[1]=='mermaid':draw(s,('table',mermaid_edges(b[2])),y,size,col,x,w)
             else:
                 tb,tf=tbox(s,x,y,w,h);r=tf.paragraphs[0].add_run();r.text=b[2];r.font.name='Consolas';r.font.size=Pt(12);r.font.color.rgb=col;r.font.language_id=PT_BR
         return h
     for idx,(cls,bl,notes) in enumerate(sl):
-        s=P.slides.add_slide(P.slide_layouts[6]);istitle=cls=='title';tem_fundo=fundo_anac(s,idx,cls)
-        if not tem_fundo:
-            if istitle:rect(s,0,0,W,7.5,PRI);rect(s,0,0,0.15,7.5,DEST)
-            else:
-                if cls=='highlight':rect(s,0,0,W,7.5,C('F2F7FC'))
-                rect(s,0,0,0.15,7.5,PRI)
+        s=P.slides.add_slide(P.slide_layouts[6])
+        if custom:
+            papel=papeis[idx];tela=fundo_custom(s,papel);istitle=papel in ('capa','finalizacao')
+            rect(s,0,0,0.12,7.5,DEST);cor_txt=C(tela['texto'])
+        else:
+            istitle=cls=='title';tem_fundo=fundo_anac(s,idx,cls)
+            if not tem_fundo:
+                if istitle:rect(s,0,0,W,7.5,PRI);rect(s,0,0,0.15,7.5,DEST)
+                else:
+                    if cls=='highlight':rect(s,0,0,W,7.5,C('F2F7FC'))
+                    rect(s,0,0,0.15,7.5,PRI)
         h1=[b for b in bl if b[0]=='h' and b[1]==1];rest=[b for b in bl if not(b[0]=='h' and b[1]==1)]
         if istitle:
             sub=[b for b in rest if b[0]=='h'];body=[b for b in rest if b[0]!='h'];y=2.2
-            if modelo and idx==0:L0=5.15;CW0=7.35
+            if custom:
+                L0=min(W-1.2,L+(float(tela.get('titulo_deslocamento_x',0))/100.0)*CW)
+                CW0=max(1.5,min(W-L0-0.3,CW*(float(tela.get('titulo_largura',100))/100.0)))
+                y=max(0.5,min(4.6,2.2+float(tela.get('titulo_deslocamento_y',0))/100.0*3.0))
+                fs_t=max(28,min(60,round(float(T['fontes']['tamanho_titulo'])*1.15)))
+                fs_sub=max(18,min(32,round(float(T['fontes']['tamanho_h2'])*1.05)))
+                fs_body=max(16,min(24,round(float(T['fontes']['tamanho_base'])*0.9)))
+            elif modelo and idx==0:L0=5.15;CW0=7.35
             elif modelo and idx==len(sl)-1:L0=0.85;CW0=11.63;y=4.65
             else:L0=L;CW0=CW
             if h1:
-                tb,tf=tbox(s,L0,y,CW0,1.3);tf.vertical_anchor=MSO_ANCHOR.BOTTOM;esp(tf.paragraphs[0],1.1,0);addruns(tf.paragraphs[0],h1[0][2],50,(WH if not modelo or escuro else PRI),True);y+=1.4
+                tb,tf=tbox(s,L0,y,CW0,1.3);tf.vertical_anchor=MSO_ANCHOR.BOTTOM;esp(tf.paragraphs[0],1.1,0)
+                addruns(tf.paragraphs[0],h1[0][2],fs_t if custom else 50,cor_txt if custom else (WH if not modelo or escuro else PRI),True,FONTE_TITULO);y+=1.4
                 rect(s,L0,y,min(CW0,len(plain(h1[0][2]))*0.36),0.06,DEST);y+=0.25
-            for b in sub:tb,tf=tbox(s,L0,y,CW0,0.7);addruns(tf.paragraphs[0],b[2],28,(C('D6ECFF') if not modelo else (WH if escuro else INK)),True);y+=0.75
-            for b in body:y+=draw(s,b,y,20,(WH if escuro else INK) if modelo else C('E8F2FB'),L0,CW0)
+            for b in sub:
+                tb,tf=tbox(s,L0,y,CW0,0.7);addruns(tf.paragraphs[0],b[2],fs_sub if custom else 28,cor_txt if custom else (C('D6ECFF') if not modelo else (WH if escuro else INK)),True,FONTE_TITULO);y+=0.75
+            for b in body:y+=draw(s,b,y,fs_body if custom else 20,cor_txt if custom else ((WH if escuro else INK) if modelo else C('E8F2FB')),L0,CW0)
         else:
-            y=0.62 if modelo else 0.45
-            if h1:
-                tb,tf=tbox(s,L,y,CW,0.9);tf.vertical_anchor=MSO_ANCHOR.BOTTOM;esp(tf.paragraphs[0],1.1,0);addruns(tf.paragraphs[0],h1[0][2],34,PRI,True);y+=0.95
-                rect(s,L,y,CW,0.05,ACC);y+=0.25
-            avail=6.75-y;size=22
-            while size>MIN_CORPO and sum(est(b,size) for b in rest)>avail:size-=1  # se não couber em 16 pt, o texto flui (não volta a 12 pt)
-            for b in rest:y+=draw(s,b,y,size,INK)
-        tb,tf=tbox(s,L,7.05,8,0.3);addruns(tf.paragraphs[0],foot,11,(WH if modelo and escuro else MU) if modelo else (C('CFE3F5') if istitle else MU))
-        tb,tf=tbox(s,W-1.5,7.05,1,0.3);addruns(tf.paragraphs[0],'%d / %d'%(idx+1,len(sl)),11,C('CFE3F5') if istitle else MU)
+            if custom:
+                y=max(0.3,px(pos.get('topo',44)))
+                if h1:
+                    fs=max(24,min(44,round(float(T['fontes']['tamanho_titulo'])*0.85)))
+                    tb,tf=tbox(s,L,y,CW,0.9);tf.vertical_anchor=MSO_ANCHOR.BOTTOM;esp(tf.paragraphs[0],1.1,0);addruns(tf.paragraphs[0],h1[0][2],fs,cor_txt,True,FONTE_TITULO);y+=0.95
+                    rect(s,L,y,CW,0.05,DEST);y+=0.25
+                avail=max(0.8,7.5-px(pos.get('base',60))-y);size=max(MIN_CORPO,min(28,round(float(T['fontes']['tamanho_base']))))
+                while size>MIN_CORPO and sum(est(b,size) for b in rest)>avail:size-=1
+                for b in rest:y+=draw(s,b,y,size,cor_txt)
+            else:
+                y=0.62 if modelo else 0.45
+                if h1:
+                    tb,tf=tbox(s,L,y,CW,0.9);tf.vertical_anchor=MSO_ANCHOR.BOTTOM;esp(tf.paragraphs[0],1.1,0);addruns(tf.paragraphs[0],h1[0][2],34,PRI,True,FONTE_TITULO);y+=0.95
+                    rect(s,L,y,CW,0.05,ACC);y+=0.25
+                avail=6.75-y;size=22
+                while size>MIN_CORPO and sum(est(b,size) for b in rest)>avail:size-=1  # se não couber em 16 pt, o texto flui (não volta a 12 pt)
+                for b in rest:y+=draw(s,b,y,size,INK)
+        cor_rod=cor_txt if custom else ((WH if modelo and escuro else MU) if modelo else (C('CFE3F5') if istitle else MU))
+        tb,tf=tbox(s,L,7.05,8,0.3);addruns(tf.paragraphs[0],foot,11,cor_rod)
+        tb,tf=tbox(s,W-1.5,7.05,1,0.3);addruns(tf.paragraphs[0],'%d / %d'%(idx+1,len(sl)),11,cor_rod)
         if notes:
             ntf=s.notes_slide.notes_text_frame;ntf.text=notes
             for pp in ntf.paragraphs:

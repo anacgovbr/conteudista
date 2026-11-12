@@ -34,6 +34,7 @@
   "conteudo/recursos/epub/layout.css",
   "conteudo/recursos/narracao/controles.js",
   "conteudo/recursos/narracao/layout.css",
+  "conteudo/recursos/temas/padroes.json",
   "conteudo/recursos/zoom/controles.js",
   "conteudo/recursos/zoom/layout.css",
   "conteudo/temas.py"

@@ -1,7 +1,7 @@
 import re,html,os,base64,io,mimetypes,zipfile,hashlib,uuid,datetime
 from urllib.parse import unquote,unquote_to_bytes
 E=html.escape
-from .temas import TEMAS, TEMA_PADRAO
+from .temas import TEMAS, TEMA_PADRAO, chave_markdown
 
 def slug(s):
     s=re.sub(r'<[^>]+>','',s).lower().translate(str.maketrans('áàâãäéèêëíìîïóòôõöúùûüçñ','aaaaaeeeeiiiiooooouuuucn'))
@@ -140,7 +140,7 @@ def notas_para_narracao(md):
 
 def markdown_com_tema(md,tema):
     """Insere ou atualiza `theme` no frontmatter YAML sem alterar o restante do Markdown."""
-    md=md or '';tema=tema if tema in TEMAS else TEMA_PADRAO
+    md=md or '';tema=chave_markdown(tema)
     if md.startswith('---\n'):
         fim=md.find('\n---',4)
         if fim!=-1:

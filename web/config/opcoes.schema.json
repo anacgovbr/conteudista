@@ -72,6 +72,80 @@
         }
       }
     },
+    "temas": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contraste_minimo": {
+          "description": "Contraste mínimo dos pares essenciais do tema",
+          "default": "aa",
+          "enum": [
+            "aa",
+            "aaa"
+          ]
+        },
+        "corrigir_contraste": {
+          "description": "Corrigir automaticamente as cores com contraste insuficiente ao salvar",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "variantes_automaticas": {
+          "description": "Gerar as variantes escura e de alto contraste a partir do tema base",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "limite_imagem_kb": {
+          "description": "Tamanho máximo de cada imagem de fundo do tema",
+          "default": 2048,
+          "type": "integer",
+          "minimum": 512,
+          "maximum": 4096
+        },
+        "limite_total_kb": {
+          "description": "Tamanho máximo somado das imagens de um tema",
+          "default": 6144,
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 12288
+        },
+        "guardar_versoes": {
+          "description": "Guardar uma versão sempre que salvar o tema",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "limite_versoes": {
+          "description": "Quantas versões de cada tema guardar",
+          "default": 20,
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
     "acessibilidade_arquivos": {
       "type": "object",
       "additionalProperties": false,

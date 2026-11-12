@@ -53,12 +53,13 @@ from conteudo.recursos import (
 )
 from conteudo.temas import (
     TEMAS, TEMA_PADRAO, _GOV_MAP, _cor, tcss, tema_de,
-    thex, trgb
+    thex, trgb, nome_de
 )
 
 def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narracao=None,fluxos=None,vlibras=True,licenca=None):
-    tema=tema if tema in TEMAS else TEMA_PADRAO
     """Gera os arquivos do que estiver preenchido: apostila (MD/HTML/DOCX/EPUB/EPUB OpenDyslexic) e/ou apresentação (MD/HTML/PPTX)."""
+    tema_t=tema_de(tema)
+    tema=tema if (isinstance(tema,str) and tema in TEMAS) else tema_t
     del AVISOS[:];reiniciar_fontes()  # relê as fontes a cada geração (o app mantém o módulo carregado)
     gm,lic_g=licencas.separar_markdown(gm or '');sm,lic_s=licencas.separar_markdown(sm or '')
     if licenca is None:
@@ -96,7 +97,7 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
         except Exception as e:msg+=' | pptx: ERRO %s'%e
         if nr['html'] or nr['pptx']:msg+=' | narração: %d slide(s)'%len(set(nr['html'])|set(nr['pptx']))
     else:msg+=' | apresentação: vazia (não gerada)'
-    res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d | imagens: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'),len(IMG.findall(CODIGO_RX.sub('',gm)))+len(IMG.findall(CODIGO_RX.sub('',sm))))+' | tema: '+tema
+    res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d | imagens: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'),len(IMG.findall(CODIGO_RX.sub('',gm)))+len(IMG.findall(CODIGO_RX.sub('',sm))))+' | tema: '+nome_de(tema_t)
     if AVISOS:res+=' | avisos: '+' / '.join(AVISOS[:6])+(' (+%d)'%(len(AVISOS)-6) if len(AVISOS)>6 else '')
     return arqs,res
 if __name__=='__main__':

@@ -27,6 +27,22 @@ aplicativo:  # Aplicativo
   # Alto contraste no aplicativo [ligado | desligado]
   alto_contraste: desligado
 
+temas:  # Temas
+  # Contraste mínimo dos pares essenciais do tema [aa | aaa]
+  contraste_minimo: aa
+  # Corrigir automaticamente as cores com contraste insuficiente ao salvar [ligado | desligado]
+  corrigir_contraste: ligado
+  # Gerar as variantes escura e de alto contraste a partir do tema base [ligado | desligado]
+  variantes_automaticas: ligado
+  # Tamanho máximo de cada imagem de fundo do tema [512 a 4096 KB]
+  limite_imagem_kb: 2048
+  # Tamanho máximo somado das imagens de um tema [1024 a 12288 KB]
+  limite_total_kb: 6144
+  # Guardar uma versão sempre que salvar o tema [ligado | desligado]
+  guardar_versoes: ligado
+  # Quantas versões de cada tema guardar [1 a 100]
+  limite_versoes: 20
+
 salvar:  # Salvar e Histórico
   # Salvar automaticamente neste navegador [ligado | desligado]
   automaticamente: ligado

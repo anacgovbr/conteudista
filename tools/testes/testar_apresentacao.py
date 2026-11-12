@@ -40,6 +40,7 @@ from grupos.acessibilidade_texto import grupo11, grupo12, grupo13, grupo14
 from grupos.acessibilidade_arquivos import grupo16, grupo17, grupo18, grupo20, grupo21
 from grupos.nbr17225 import grupo22
 from grupos.nbr17225b import grupo23, grupo24
+from grupos.temas import grupo25
 from classificar_mudancas import carregar_config
 
 GRUPOS = {
@@ -67,6 +68,7 @@ GRUPOS = {
     '22': ('NBR 17225 nivel A: atalhos de uma tecla e leitura com Parar (1.91)', grupo22, 'desktop'),
     '23': ('NBR 17225: abas, areas de arquivo e mensagens (1.97)', grupo23, 'desktop'),
     '24': ('NBR 17225: janelas no lugar de confirm e prompt (1.94 e 1.97)', grupo24, 'desktop'),
+    '25': ('Temas personalizados: editor, link, versoes e contraste (1.98)', grupo25, 'desktop'),
 }
 
 COM_GERADOR = {'1', '2', '3', '4', '6', '7', '10', '14', '20', '21', '22'}
