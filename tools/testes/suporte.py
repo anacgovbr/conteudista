@@ -190,7 +190,8 @@ ALINHAMENTO_JS = """() => { const ta = ED.g.textarea, c = document.querySelector
   for (const sp of c.querySelectorAll('.la-m')) { const d = AcessibilidadeTexto.resultado('g').diagnosticos[+sp.dataset.i];
     const m = document.createElement('div'); ['fontFamily','fontSize','lineHeight','paddingTop','paddingLeft','paddingRight','letterSpacing','tabSize','wordSpacing'].forEach(k => m.style[k] = cs[k]);
     Object.assign(m.style, { position: 'absolute', top: '0', left: '-9999px', whiteSpace: 'pre-wrap', overflowWrap: 'break-word', boxSizing: 'border-box', width: ta.clientWidth + 'px' });
-    m.textContent = ta.value.slice(0, d.inicio); const s = document.createElement('span'); s.textContent = 'x'; m.appendChild(s); document.body.appendChild(m);
+    m.textContent = ta.value.slice(0, d.inicio); const s = document.createElement('span');
+    s.textContent = ta.value.slice(d.inicio, d.fim) || 'x'; m.appendChild(s); document.body.appendChild(m);
     r.push(Math.abs(sp.offsetTop - s.offsetTop) + Math.abs(sp.offsetLeft - s.offsetLeft)); m.remove(); }
   return { n: r.length, max: Math.max(0, ...r), larg: [ta.clientWidth, c.clientWidth], alt: [ta.scrollHeight, c.scrollHeight] }; }"""
 
