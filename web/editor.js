@@ -226,7 +226,7 @@
 .mde-gi .ac button.rm{background:#fff!important;color:#e52207!important;border-color:#e8b4ae!important}
 .mde-gi.nu{opacity:.6}.mde-gi.nu .mt::after{content:' · não usada';color:#8a5c00}
 .mde-ge{padding:4px 12px 10px;color:#636363;font:13px "Segoe UI",Arial,sans-serif}
-@media(max-width:900px){.mde-body{flex-direction:column;height:auto;resize:none}.mde-ta{min-height:300px}.mde-pv{border-left:0;border-top:1px solid #cccccc;min-height:300px}}`;
+@media(max-width:900px){.mde-body{flex-direction:column;height:auto;resize:none}.mde-ta{min-height:300px}.mde-pv{border-left:0;border-top:1px solid #cccccc;min-height:300px}.mde-ln{display:none}.mde-ln-camada{display:none}.mde-ln-visao{display:none}}`;
   function injectCSS() { if (document.getElementById('mde-css')) return; const s = document.createElement('style'); s.id = 'mde-css'; s.textContent = CSS; document.head.appendChild(s); }
 
   /* ---------------------------- Editor ---------------------------- */
