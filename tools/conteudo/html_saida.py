@@ -153,7 +153,7 @@ def treinamento_html(md,bar,tema=None,vlibras=True,licenca=''):
     '<header><span class="t">%s</span><span id="pg" role="status" aria-live="polite"></span><label for="th" class="lt">Tema</label><select id="th"><option value="light">Tema claro</option><option value="dark">Tema escuro</option><option value="contrast">Alto contraste</option></select>'
     '%s%s<button type="button" id="a11yToggle" class="a11y-panel-toggle sec mini" aria-controls="a11yPanel" aria-expanded="false">Acessibilidade</button><button id="rs" type="button">Limpar checklists</button><button type="button" onclick="print()" title="Imprimir ou salvar em PDF em A4">Imprimir / PDF</button></header>'
     '<div class="wrap"><nav aria-label="Sumário"><ul>%s</ul></nav><main id="conteudo" tabindex="-1"><article>%s</article></main></div>%s<script>%s%s</script><script>window.CONTEUDISTA_MERMAID=%s</script>%s%s</body></html>'
-    )%(E(t),LEITURA_HEAD,fontes_css(),tcss(CSS_G,T,T['extra_g']),CSS_G_A11Y+ZOOM_CSS,PAINEL_A11Y_CSS+licencas.CSS+css_apostila(T),E(bar or t),LEITURA_SEL,TAM_HTML,tc,b,painel_a11y(vlibras),LEITURA_JS+TAM_JS+ZOOM_JS,JS_G.replace('__K__',slug(t)[:40]),A11Y_JS,mermaid_config(T),MER)
+    )%(E(t),LEITURA_HEAD,fontes_css(),tcss(CSS_G,T,T['extra_g']),CSS_G_A11Y+ZOOM_CSS,PAINEL_A11Y_CSS+licencas.CSS+css_apostila(T),E(bar or t),LEITURA_SEL,TAM_HTML,tc,b,painel_a11y(vlibras),LEITURA_JS+TAM_JS+ZOOM_JS,JS_G.replace('__K__',slug(t)[:40]),mermaid_config(T),A11Y_JS,MER)
 
 ZOOM_CSS=ler_recurso('zoom/layout.css')
 
