@@ -1,4 +1,9 @@
 # Novidades do Conteudista
+## 1.100 - 12/11/2026
+- **Régua de linhas corrigida:** alinhamento exato dos números e da linha atual mesmo com linhas longas que quebram em várias linhas visuais (padding do textarea descontado do espelho de medição).
+- **Temas no seletor de Layout:** o botão "Temas…" foi removido; a opção "Gerenciar temas…" agora está dentro do `<select id="tema">`. Ao escolher, abre a janela de temas sem alterar o tema atual nem o Markdown.
+- **Edição de temas embutidos:** na aba "Meus temas" aparece a seção "Temas embutidos" com botão "Editar cópia" para cada um — cria uma cópia pessoal editável sem tocar no original.
+- **Exportação/importação YAML:** botões "Baixar YAML" ao lado de "Baixar JSON"; o YAML traz as imagens de fundo em base64 (data URI). O importador aceita JSON ou YAML automaticamente.
 ## 1.99 - 12/11/2026
 - **Régua de linhas no editor:** números alinhados ao texto, linha atual destacada e marcadores discretos de títulos e blocos de código, com a rolagem sincronizada. A régua some sozinha no modo somente prévia e acompanha o alto contraste.
 - **Recolhimento de blocos:** H1 a H3, blocos de código e Mermaid podem ser recolhidos pela régua ou por Ctrl+Shift+[; Ctrl+Shift+] e Esc expandem tudo. O conteúdo recolhido aparece numa visão compacta somente para leitura, e um clique em qualquer linha volta a editar no ponto clicado, sem alterar o Markdown guardado, a seleção ou o histórico.

@@ -42,7 +42,7 @@
 .mde-ln-veu:focus-visible{outline:2px solid #1351b4;outline-offset:-2px}
 .mde-ln-veu .mde-ln-veu-i{font-size:14px;line-height:1}
 .mde-ln-veu .mde-ln-veu-t{overflow:hidden;text-overflow:ellipsis}
-.mde-ln-esp{position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none;white-space:pre-wrap;overflow-wrap:break-word;word-break:normal;box-sizing:border-box}
+.mde-ln-esp{position:absolute;left:-9999px;top:0;visibility:hidden;pointer-events:none;white-space:pre-wrap;overflow-wrap:break-word;word-break:normal;box-sizing:content-box;padding:0}
 .mde-sr{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}
 .mde[data-m="p"] .mde-ln,.mde[data-m="p"] .mde-ln-camada,.mde[data-m="p"] .mde-ln-visao{display:none}
 html.contraste .mde-ln{background:#000;color:#fff;border-right-color:#fff}
@@ -264,16 +264,19 @@ html.contraste .mde-ln-veu:hover{background:#333333}
     function medir() {
       clearTimeout(tMedir);
       if (!ta.isConnected) return;
-      const largura = ta.clientWidth;
+      const cs = getComputedStyle(ta);
+      const pL = parseFloat(cs.paddingLeft) || 0, pR = parseFloat(cs.paddingRight) || 0;
+      const largura = ta.clientWidth - pL - pR;
       if (!largura) return;                       // editor escondido: mede quando aparecer
-      const v = ta.value, ls = v.split('\n'), cs = getComputedStyle(ta);
+      const v = ta.value, ls = v.split('\n');
       LINHA = parseFloat(cs.lineHeight) || 20;
       const assin = ls.length + ':' + v.length + ':' + largura + ':' + cs.lineHeight + ':' + cs.fontSize;
       if (assin !== assinatura) {
         assinatura = assin;
         espelho.style.width = largura + 'px';
+        espelho.style.padding = '0';
         ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'letterSpacing',
-          'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'tabSize', 'wordSpacing']
+          'tabSize', 'wordSpacing']
           .forEach(k => { espelho.style[k] = cs[k]; });
         espelho.textContent = '';
         const frag = document.createDocumentFragment();
@@ -330,8 +333,9 @@ html.contraste .mde-ln-veu:hover{background:#333333}
       if (!cur) return;
       const y = inicios[li], h = alturas[li];
       if (!op.atual || y == null || h == null) { cur.style.display = 'none'; return; }
+      const pt = parseFloat(getComputedStyle(dentro).paddingTop) || 0;
       cur.style.display = '';
-      cur.style.top = y + 'px';
+      cur.style.top = (y + pt) + 'px';
       cur.style.height = Math.max(1, h) + 'px';
     }
 

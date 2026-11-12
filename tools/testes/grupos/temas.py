@@ -24,7 +24,7 @@ def _servidor():
 
 def _abrir(pg, url):
     pg.goto(url)
-    pg.wait_for_selector('#btnTemas', state='attached', timeout=20000)
+    pg.wait_for_selector('#tema', state='attached', timeout=20000)
     pg.wait_for_function("window.Temas && document.querySelectorAll('#tema option').length >= 4", timeout=20000)
 
 
@@ -172,7 +172,60 @@ def grupo25(amb, ctx, G):
         G.chk('25.14', 'Tema personalizado salvo continua selecionado depois de recarregar a pagina',
               e['valor'] == 'custom:teste-25' and e['salvo'] == 'custom:teste-25' and 'personalizado' in e['selo'].lower(), e)
 
-        G.chk('25.15', 'Nenhum erro de JavaScript durante o fluxo de temas', not erros, erros)
+        # O seletor agora leva ao gerenciamento de temas, no lugar do botão ao lado.
+        pg.evaluate("Temas.abrir('meus')")
+        pg.wait_for_selector('#jnTemasBack:not([hidden])', timeout=10000)
+        ger = pg.evaluate("""() => {
+            const sel = document.getElementById('tema');
+            const op = [...sel.options].find(o => o.value === '__abrir__');
+            if (!op) return { op: false };
+            const antes = { valor: sel.value, salvo: localStorage.getItem('conteudista.tema') };
+            sel.value = '__abrir__';
+            sel.dispatchEvent(new Event('change', { bubbles: true }));
+            return { op: op.textContent, antes };
+        }""")
+        pg.wait_for_timeout(400)
+        dep = pg.evaluate("""() => ({
+            valor: document.getElementById('tema').value,
+            salvo: localStorage.getItem('conteudista.tema'),
+            md: document.getElementById('s').value.includes('theme: __abrir__'),
+            janela: !document.getElementById('jnTemasBack').hidden
+        })""")
+        G.chk('25.15', 'Opcao Gerenciar temas abre a janela sem trocar o tema nem o Markdown',
+              bool(ger.get('op')) and dep['janela'] and dep['valor'] == ger['antes']['valor']
+              and dep['salvo'] == ger['antes']['salvo'] and not dep['md'], {'ger': ger, 'dep': dep})
+
+        alvo_yaml = '#tmLista .tm-item[data-valor="custom:teste-25"] button[data-a="exportar-yaml"]'
+        pg.wait_for_selector(alvo_yaml, timeout=10000)
+        with pg.expect_download() as info:
+            pg.click(alvo_yaml)
+        dl = info.value
+        arq = amb.tmp / 'tema-25.yaml'
+        dl.save_as(arq)
+        texto = arq.read_text(encoding='utf-8')
+        alvo_img = '#tmLista .tm-item[data-valor="custom:teste-img"] button[data-a="exportar-yaml"]'
+        pg.wait_for_selector(alvo_img, timeout=10000)
+        with pg.expect_download() as info2:
+            pg.click(alvo_img)
+        arq2 = amb.tmp / 'tema-img.yaml'
+        info2.value.save_as(arq2)
+        texto_img = arq2.read_text(encoding='utf-8')
+        G.chk('25.16', 'Baixar YAML gera o tema legivel e com as imagens em base64',
+              dl.suggested_filename.endswith('.yaml') and 'tema:' in texto and 'primaria' in texto
+              and 'data:image/' in texto_img, {'nome': dl.suggested_filename,
+              'ini': texto[:40], 'img': 'data:image/' in texto_img})
+
+        volta = pg.evaluate("""async (yaml) => {
+            const antes = await Temas.carregar('custom:teste-25');
+            const r = await Temas.importarTexto(yaml, { salvar: true, conflito: 'duplicar' });
+            const novo = await Temas.carregar('custom:' + r.id);
+            return { id: r.id, nome: novo.nome, cor: novo.paleta.primaria,
+                     igual: novo.paleta.primaria === antes.paleta.primaria && novo.paleta.destaque === antes.paleta.destaque };
+        }""", texto)
+        G.chk('25.17', 'YAML exportado volta pelo importador com as mesmas cores',
+              bool(volta['igual']) and volta['id'] != 'teste-25', volta)
+
+        G.chk('25.18', 'Nenhum erro de JavaScript durante o fluxo de temas', not erros, erros)
         pg.close()
     finally:
         srv.shutdown()

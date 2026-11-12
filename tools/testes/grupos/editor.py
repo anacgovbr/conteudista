@@ -239,7 +239,7 @@ def grupo26(amb, ctx, G):
         at = [x for x in e['linhas'] if x['at']]
         G.chk('26.4', 'Linha atual destacada na régua e no texto, sem esconder o cursor',
               len(at) == 1 and at[0]['l'] == 4 and at[0]['num'] == '5'
-              and e['cur'] and e['cur']['vis'] and abs(e['cur']['top'] + 12 - at[0]['top']) < 1, {'at': at, 'cur': e['cur']})
+              and e['cur'] and e['cur']['vis'] and abs(e['cur']['top'] - at[0]['top']) < 1, {'at': at, 'cur': e['cur']})
 
         G.chk('26.5', 'Marcadores nos títulos e nos blocos de código, com controle de recolhimento',
               sorted(b['i'] for b in e['botoes']) == [0, 3, 7] and all('Recolher' in b['t'] for b in e['botoes']), e['botoes'])
@@ -337,6 +337,45 @@ def grupo26(amb, ctx, G):
         G.chk('26.14', 'Linha que quebra em várias linhas visuais mantém os números alinhados',
               alt[1]['h'] > 30 and abs(alt[2]['top'] - (alt[1]['top'] + alt[1]['h'])) < 1, {'h1': alt[1]['h'], 'top2': alt[2]['top']})
 
+        # Alinhamento real: a marca da linha atual precisa cair sobre o texto, inclusive
+        # depois de uma linha longa que quebra em várias linhas visuais.
+        _texto_26(pg, "# Título\n" + ('palavra ' * 90).strip() + "\nfinal")
+        pg.wait_for_timeout(250)
+        pos = pg.evaluate(r"""() => {
+            const box = document.querySelector('#pg .mde');
+            const ta = box.querySelector('.mde-ta'), cs = getComputedStyle(ta);
+            const larg = ta.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0);
+            const esp = document.createElement('div');
+            ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'lineHeight', 'letterSpacing',
+             'whiteSpace', 'overflowWrap', 'wordBreak', 'direction'].forEach(k => { esp.style[k] = cs[k]; });
+            Object.assign(esp.style, { position: 'absolute', left: '-9999px', top: '0', width: larg + 'px',
+                boxSizing: 'content-box', padding: '0', margin: '0' });
+            document.body.appendChild(esp);
+            let acc = 0; const tops = [], alts = [];
+            ta.value.split('\n').forEach(l => {
+                const d = document.createElement('div');
+                d.textContent = l === '' ? '\u200b' : l;
+                esp.appendChild(d); tops.push(acc); alts.push(d.offsetHeight); acc += d.offsetHeight; d.remove();
+            });
+            esp.remove();
+            const p = ta.value.split('\n').slice(0, 2).join('\n').length + 1;
+            ta.focus(); ta.setSelectionRange(p, p);
+            ta.dispatchEvent(new Event('keyup', { bubbles: true }));
+            return { tops: tops, alts: alts };
+        }""")
+        pg.wait_for_timeout(300)
+        marca = pg.evaluate(r"""() => {
+            const cur = document.querySelector('#pg .mde-ln-cur');
+            const dentro = document.querySelector('#pg .mde-ln-in');
+            return { top: parseFloat(cur.style.top), alt: parseFloat(cur.style.height),
+                     pad: parseFloat(getComputedStyle(dentro).paddingTop) || 0 };
+        }""")
+        esperado = pos['tops'][2] + marca['pad']
+        G.chk('26.15', 'A linha atual cai sobre a linha do texto, mesmo depois de quebra de linha',
+              pos['alts'][1] > 30 and abs(marca['top'] - esperado) <= 2
+              and abs(marca['alt'] - pos['alts'][2]) <= 1,
+              {'marca': marca, 'esperado': esperado, 'tops': pos['tops'][:3], 'alts': pos['alts'][:3]})
+
         _texto_26(pg, TEXTO_26)
         pg.click('#pg .mde-tb [data-m="p"]')
         pg.wait_for_timeout(300)
@@ -347,11 +386,11 @@ def grupo26(amb, ctx, G):
         pg.click('#pg .mde-tb [data-m="s"]')
         pg.wait_for_timeout(400)
         volta = pg.evaluate("() => document.querySelectorAll('#pg .mde-ln-l').length")
-        G.chk('26.15', 'No modo somente prévia a régua some e volta ao dividir a tela',
+        G.chk('26.16', 'No modo somente prévia a régua some e volta ao dividir a tela',
               oculta['regua'] == 'none' and oculta['camada'] == 'none'
               and oculta['visao'] == 'none' and volta == 12, {'oculta': oculta, 'volta': volta})
 
-        G.chk('26.16', 'Nenhum erro de JavaScript na régua de linhas', not erros, erros)
+        G.chk('26.17', 'Nenhum erro de JavaScript na régua de linhas', not erros, erros)
         pg.close()
     finally:
         srv.shutdown()

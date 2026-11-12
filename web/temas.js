@@ -661,6 +661,7 @@
     if (temaAvulso && !customs.some(t => t.id === temaAvulso.id)) {
       html += '<optgroup label="Recebido por link"><option value="custom:' + esc(temaAvulso.id) + '">' + esc(temaAvulso.nome) + ' (do link)</option></optgroup>';
     }
+    html += '<optgroup label="Gerenciar"><option value="__abrir__">Editar, criar ou importar tema\u2026</option></optgroup>';
     sel.innerHTML = html;
     let alvo = atual;
     if (![...sel.options].some(o => o.value === alvo)) {
@@ -673,6 +674,17 @@
   }
 
   async function aoSelecionar(valor) {
+    if (valor === '__abrir__') {
+      const sel = $('tema');
+      if (sel) {
+        let ant = '';
+        try { ant = localStorage.getItem('conteudista.tema') || ''; } catch (e) { ant = ''; }
+        if (!ant || ant === '__abrir__' || ![...sel.options].some(o => o.value === ant)) ant = 'govbr';
+        sel.value = ant; textoAux(ant);
+      }
+      abrir('meus');
+      return;
+    }
     textoAux(valor);
     if (!String(valor || '').startsWith('custom:')) return;
     const T = await temaDe(valor);
@@ -949,7 +961,7 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     if (!janela) return;
     const bt = janela.bt;
     if (k === 'meus') {
-      bt.innerHTML = '<button type="button" class="go mini" id="tmNovoTema">Novo tema</button><button type="button" class="sec mini" id="tmAbrirImportar">Importar JSON</button>';
+      bt.innerHTML = '<button type="button" class="go mini" id="tmNovoTema">Novo tema</button><button type="button" class="sec mini" id="tmAbrirImportar">Importar JSON ou YAML</button>';
       $('tmNovoTema').onclick = () => novoEditor();
       $('tmAbrirImportar').onclick = () => janela.ativar('importar', true);
     } else if (k === 'editor') {
@@ -1026,6 +1038,11 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
           if (!r) throw new Error('O tema não foi encontrado.');
           baixarJSON(r.tema);
           msg('JSON do tema baixado.', 'ok');
+        } else if (b.dataset.a === 'exportar-yaml') {
+          const ry = await temaResolvido(valor);
+          if (!ry) throw new Error('O tema não foi encontrado.');
+          baixarYAML(ry.tema);
+          msg('YAML do tema baixado.', 'ok');
         } else if (b.dataset.a === 'copiar') {
           const r = await temaResolvido(valor);
           if (!r) throw new Error('O tema não foi encontrado.');
@@ -1053,6 +1070,167 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
         const m = $('tmMeusMsg'); if (m) { m.textContent = 'Link copiado.'; m.className = 'tm-msg ok'; }
       };
     }, 0);
+  }
+
+  /*
+   * YAML: troca simples para quem prefere editar o tema à mão. Só cobre o que o
+   * tema usa (objetos, listas, textos, números, booleanos e textos de várias linhas),
+   * sem dependência externa. As imagens entram sempre em base64.
+   */
+  function _yamlTexto(v) {
+    const s = String(v);
+    if (!s) return "''";
+    if (/[\n\r\t]/.test(s)) return '|';
+    if (/^[\s]|[\s]$/.test(s) || /[:#\[\]{}&*?|<>=!%@`"',]/.test(s) ||
+      /^(true|false|null|yes|no|on|off|~)$/i.test(s) || /^[-+]?[\d.]/.test(s) || /^-/.test(s)) {
+      return '"' + s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"';
+    }
+    return s;
+  }
+
+  function _yamlDump(obj, ind) {
+    ind = ind || 0;
+    const p = '  '.repeat(ind);
+    if (obj === null || obj === undefined) return 'null';
+    if (typeof obj === 'boolean') return obj ? 'true' : 'false';
+    if (typeof obj === 'number') return Number.isFinite(obj) ? String(obj) : 'null';
+    if (typeof obj === 'string') {
+      const t = _yamlTexto(obj);
+      if (t !== '|') return t;
+      return '|\n' + obj.split(/\r?\n/).map(l => p + '  ' + l).join('\n');
+    }
+    if (Array.isArray(obj)) {
+      if (!obj.length) return '[]';
+      return '\n' + obj.map(v => {
+        const d = _yamlDump(v, ind + 1);
+        return p + '- ' + (d.charAt(0) === '\n' ? d.slice(1).replace(/^ {2}/, '') : d);
+      }).join('\n');
+    }
+    if (typeof obj === 'object') {
+      const ks = Object.keys(obj);
+      if (!ks.length) return '{}';
+      return '\n' + ks.map(k => {
+        const d = _yamlDump(obj[k], ind + 1);
+        return p + _yamlTexto(k) + ':' + (d.charAt(0) === '\n' ? d : ' ' + d);
+      }).join('\n');
+    }
+    return _yamlTexto(obj);
+  }
+
+  function _yamlLimpar(txt) {
+    return String(txt).replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n');
+  }
+
+  function _yamlParse(txt) {
+    const ls = _yamlLimpar(txt).split('\n');
+    const vazio = l => !l.trim() || l.trim().charAt(0) === '#';
+    const recuo = l => l.length - l.replace(/^ +/, '').length;
+    function valor(s) {
+      s = String(s).trim();
+      if (!s) return null;
+      if (s.charAt(0) === '"' && s.charAt(s.length - 1) === '"' && s.length > 1) {
+        return s.slice(1, -1).replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+      }
+      if (s.charAt(0) === "'" && s.charAt(s.length - 1) === "'" && s.length > 1) return s.slice(1, -1);
+      if (s === 'null' || s === '~') return null;
+      if (/^(true|yes|on)$/i.test(s)) return true;
+      if (/^(false|no|off)$/i.test(s)) return false;
+      if (/^[-+]?\d+$/.test(s)) return parseInt(s, 10);
+      if (/^[-+]?(\d+\.\d*|\.\d+)([eE][-+]?\d+)?$/.test(s)) return parseFloat(s);
+      if (s === '[]') return [];
+      if (s === '{}') return {};
+      return s;
+    }
+    function bloco(i, base) {
+      if (i >= ls.length) return { i, v: null };
+      const primeiro = ls[i];
+      const rec = recuo(primeiro);
+      const lista = /^\s*-(\s|$)/.test(primeiro) && rec >= base - 1;
+      if (lista) {
+        const arr = [];
+        while (i < ls.length) {
+          if (vazio(ls[i])) { i++; continue; }
+          const r = recuo(ls[i]);
+          if (r < base || !/^\s*-(\s|$)/.test(ls[i])) break;
+          const resto = ls[i].slice(r + 1).trim();
+          i++;
+          if (!resto) {
+            const s = bloco(i, r + 1);
+            i = s.i; arr.push(s.v);
+          } else {
+            const dois = resto.indexOf(': ');
+            const so = resto.indexOf(':');
+            if (so > 0 && (so === resto.length - 1 || dois === so)) {
+              const obj = {};
+              const k = valor(resto.slice(0, so));
+              const v = resto.slice(so + 1).trim();
+              if (v) obj[k] = valor(v);
+              else { const s = bloco(i, r + 2); i = s.i; obj[k] = s.v; }
+              while (i < ls.length && !vazio(ls[i]) && recuo(ls[i]) > r && !/^\s*-(\s|$)/.test(ls[i])) {
+                const l2 = ls[i].trim();
+                const p2 = l2.indexOf(':');
+                if (p2 < 0) { i++; continue; }
+                const k2 = valor(l2.slice(0, p2));
+                const r2 = l2.slice(p2 + 1).trim();
+                i++;
+                if (r2) obj[k2] = valor(r2);
+                else { const s2 = bloco(i, recuo(ls[i - 1]) + 1); i = s2.i; obj[k2] = s2.v; }
+              }
+              arr.push(obj);
+            } else {
+              arr.push(valor(resto));
+              while (i < ls.length && !vazio(ls[i]) && recuo(ls[i]) > r) { arr.push(valor(ls[i].trim())); i++; }
+            }
+          }
+        }
+        return { i, v: arr };
+      }
+      const obj = {};
+      while (i < ls.length) {
+        if (vazio(ls[i])) { i++; continue; }
+        const r = recuo(ls[i]);
+        if (r < base) break;
+        const l = ls[i].trim();
+        const p = l.indexOf(':');
+        if (p < 0) { i++; continue; }
+        const k = valor(l.slice(0, p));
+        const resto = l.slice(p + 1).trim();
+        i++;
+        if (resto === '|' || resto === '|-') {
+          const linhas = [];
+          while (i < ls.length && (vazio(ls[i]) || recuo(ls[i]) > r)) {
+            linhas.push(ls[i].replace(/^ {0,2}/, '').trim()); i++;
+          }
+          while (linhas.length && !linhas[linhas.length - 1]) linhas.pop();
+          obj[k] = linhas.join('\n');
+        } else if (resto) {
+          obj[k] = valor(resto);
+        } else {
+          const alvo = i;
+          let profundidade = -1;
+          for (let j = alvo; j < ls.length; j++) {
+            if (vazio(ls[j])) continue;
+            profundidade = recuo(ls[j]); break;
+          }
+          if (profundidade <= r) { obj[k] = null; }
+          else { const s = bloco(i, profundidade); i = s.i; obj[k] = s.v; }
+        }
+      }
+      return { i, v: obj };
+    }
+    const s = bloco(0, 0);
+    return s.v;
+  }
+
+  function baixarYAML(T) {
+    const nome = 'Tema_' + (slug(T.nome) || 'personalizado') + '.yaml';
+    const txt = '# Tema do Conteudista\n' + 'tema:' + _yamlDump(T, 1) + '\n';
+    const blob = new Blob([txt], { type: 'text/yaml;charset=utf-8' });
+    if (typeof baixar === 'function') baixar(nome, blob);
+    else {
+      const u = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = u; a.download = nome; a.click(); setTimeout(() => URL.revokeObjectURL(u), 4000);
+    }
   }
 
   function baixarJSON(T) {
@@ -1091,12 +1269,12 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     let acoes = '<button type="button" class="sec mini" data-a="usar">Usar</button>';
     if (t.embutido) {
       acoes += '<button type="button" class="sec mini" data-a="duplicar">Duplicar para editar</button>';
-      acoes += '<button type="button" class="sec mini" data-a="exportar">Baixar JSON</button><button type="button" class="sec mini" data-a="copiar">Copiar JSON</button>';
+      acoes += '<button type="button" class="sec mini" data-a="exportar">Baixar JSON</button><button type="button" class="sec mini" data-a="exportar-yaml">Baixar YAML</button><button type="button" class="sec mini" data-a="copiar">Copiar JSON</button>';
     } else if (t._avulso) {
       acoes += '<button type="button" class="go mini" data-a="salvar-avulso">Guardar nos meus temas</button>';
-      acoes += '<button type="button" class="sec mini" data-a="exportar">Baixar JSON</button><button type="button" class="sec mini" data-a="copiar">Copiar JSON</button><button type="button" class="sec mini" data-a="link">Link</button>';
+      acoes += '<button type="button" class="sec mini" data-a="exportar">Baixar JSON</button><button type="button" class="sec mini" data-a="exportar-yaml">Baixar YAML</button><button type="button" class="sec mini" data-a="copiar">Copiar JSON</button><button type="button" class="sec mini" data-a="link">Link</button>';
     } else {
-      acoes += '<button type="button" class="sec mini" data-a="editar">Editar</button><button type="button" class="sec mini" data-a="duplicar">Duplicar</button><button type="button" class="sec mini" data-a="exportar">Baixar JSON</button><button type="button" class="sec mini" data-a="copiar">Copiar JSON</button><button type="button" class="sec mini" data-a="link">Link</button><button type="button" class="dan mini" data-a="excluir">Excluir</button>';
+      acoes += '<button type="button" class="sec mini" data-a="editar">Editar</button><button type="button" class="sec mini" data-a="duplicar">Duplicar</button><button type="button" class="sec mini" data-a="exportar">Baixar JSON</button><button type="button" class="sec mini" data-a="exportar-yaml">Baixar YAML</button><button type="button" class="sec mini" data-a="copiar">Copiar JSON</button><button type="button" class="sec mini" data-a="link">Link</button><button type="button" class="dan mini" data-a="excluir">Excluir</button>';
     }
     const meta = [];
     if (!t.embutido) meta.push('Atualizado em ' + (t._atualizado ? formatarData(t._atualizado) : '—'));
@@ -1977,14 +2155,18 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     if (txt && typeof txt === 'object') dados = txt;
     else {
       const s = String(txt == null ? '' : txt).trim();
-      if (!s) throw new Error('Cole o JSON do tema ou o link com #tema=...');
+      if (!s) throw new Error('Cole o JSON ou o YAML do tema, ou o link com #tema=...');
       const m = s.match(/#tema=([A-Za-z0-9_-]+)/);
       if (m) dados = JSON.parse(await descompactar(m[1]));
       else if (/^[zj][A-Za-z0-9_-]{20,}$/.test(s)) dados = JSON.parse(await descompactar(s));
       else if (/^https?:\/\//i.test(s)) throw new Error('O link não tem um tema no formato #tema=...');
       else {
         try { dados = JSON.parse(s); }
-        catch (e) { throw new Error('O texto não é um JSON de tema válido nem um link com #tema=...'); }
+        catch (e) {
+          try { dados = _yamlParse(s); } catch (e2) {
+            throw new Error('O texto não é um JSON ou YAML de tema válido nem um link com #tema=...');
+          }
+        }
       }
     }
     if (dados && dados.tema_dados && typeof dados.tema_dados === 'object') dados = dados.tema_dados;
@@ -2046,16 +2228,16 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     p.innerHTML = '<div class="tm-cab"><div><p class="tm-intro">Importe um tema exportado por outra pessoa ou um link com <code>#tema=…</code>. O tema entra como um novo recurso deste navegador; você revisa antes de salvar.</p>' +
       '<p class="tm-nota">Se já existir um tema com o mesmo identificador, o padrão é duplicar. Substituir exige confirmação e guarda a versão anterior no histórico.</p></div></div>' +
       '<div class="tm-sec tm-imp">' +
-      '<label class="tm-rotulo" for="tmImpTexto">JSON do tema ou link com #tema=...</label>' +
-      '<textarea id="tmImpTexto" spellcheck="false" placeholder="Cole aqui o JSON do tema ou o link completo com #tema=..."></textarea>' +
+      '<label class="tm-rotulo" for="tmImpTexto">JSON ou YAML do tema, ou link com #tema=...</label>' +
+      '<textarea id="tmImpTexto" spellcheck="false" placeholder="Cole aqui o JSON ou o YAML do tema, ou o link completo com #tema=..."></textarea>' +
       '<div class="tm-grade"><div class="tm-campo"><label for="tmImpConflito">Se o tema já existir</label><select id="tmImpConflito">' +
       '<option value="duplicar">Duplicar com um novo identificador (padrão)</option><option value="substituir">Substituir o tema existente</option></select></div></div>' +
-      '<div class="tm-acoes"><button type="button" class="sec mini" id="tmImpArquivo">Escolher arquivo JSON</button>' +
+      '<div class="tm-acoes"><button type="button" class="sec mini" id="tmImpArquivo">Escolher arquivo JSON ou YAML</button>' +
       '<button type="button" class="go mini" id="tmImpRevisar">Revisar no editor</button>' +
       '<button type="button" class="sec mini" id="tmImpSalvar">Salvar direto</button>' +
-      '<input type="file" id="tmImpFile" accept=".json,application/json" hidden></div>' +
+      '<input type="file" id="tmImpFile" accept=".json,.yaml,.yml,application/json,text/yaml" hidden></div>' +
       '<p class="tm-msg" id="tmImpMsg" role="status" aria-live="polite"></p></div>' +
-      '<details class="tm-detalhe"><summary>O que é importado</summary><p class="tm-nota">Cores, fontes, telas, imagens de fundo, Mermaid, posições e variantes do tema. DOCX e EPUB continuam com a leitura acessível; o PPTX recebe o subconjunto compatível. Imagens PNG, JPEG ou WebP são guardadas no banco do navegador e o JSON exportado leva uma cópia delas.</p></details>';
+      '<details class="tm-detalhe"><summary>O que é importado</summary><p class="tm-nota">Cores, fontes, telas, imagens de fundo, Mermaid, posições e variantes do tema. DOCX e EPUB continuam com a leitura acessível; o PPTX recebe o subconjunto compatível. Imagens PNG, JPEG ou WebP são guardadas no banco do navegador e o JSON e o YAML exportados levam uma cópia delas em base64.</p></details>';
     $('tmImpArquivo').onclick = () => { const f = $('tmImpFile'); if (f) f.click(); };
     $('tmImpFile').onchange = async e => {
       const file = e.target.files && e.target.files[0];
@@ -2064,7 +2246,7 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
       try {
         const txt = await lerArquivo(file);
         if ($('tmImpTexto')) $('tmImpTexto').value = txt;
-        msgImportar('Arquivo “' + file.name + '” carregado. Revise o JSON e escolha a ação.', 'ok');
+        msgImportar('Arquivo “' + file.name + '” carregado. Revise o conteúdo e escolha a ação.', 'ok');
         if ($('tmImpTexto')) $('tmImpTexto').focus();
       } catch (err) { msgImportar('Não foi possível ler o arquivo: ' + ((err && err.message) || err), 'erro'); }
     };
