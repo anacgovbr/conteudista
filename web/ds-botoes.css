@@ -9,13 +9,13 @@
      - variantes: primario (padrao), secundario (.sec) e perigo (.dan); estados hover e disabled
      - o foco continua no govbr.css (tracejado dourado)
    Fora do padrao (tem estilo proprio): barra do editor, cartoes de imagem, chips e abas das
-   janelas de edicao, abas da pagina e links de arquivo (.file-link).
+   janelas de edicao, abas da pagina, regua de linhas (.mde-ln) e links de arquivo (.file-link).
    ===================================================================================== */
 
 :where(button,.btn){font-family:inherit;font-weight:600;cursor:pointer}
 
 /* 1. Botao padrao (medium, 40 px) */
-body :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])){
+body :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.mde-ln *,.mde-ln-camada *,.mde-ln-visao *,.file-link,[role="tab"])){
   --btn-h:40px;
   --btn-bw:0px;
   box-sizing:border-box;
@@ -42,8 +42,8 @@ body :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .t
 }
 
 /* 2. Densidade alta (small, 32 px) */
-body :is(button,.btn):is(.mini,.mde-gb):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])),
-body :is(#gerBox td,#links td,#drafts td,.hc .b,.ah-it .b,.tr-pop,.md-hd,.md-tools) :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])){
+body :is(button,.btn):is(.mini,.mde-gb):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.mde-ln *,.mde-ln-camada *,.mde-ln-visao *,.file-link,[role="tab"])),
+body :is(#gerBox td,#links td,#drafts td,.hc .b,.ah-it .b,.tr-pop,.md-hd,.md-tools) :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.mde-ln *,.mde-ln-camada *,.mde-ln-visao *,.file-link,[role="tab"])){
   --btn-h:32px;
   padding:0 16px;
   font-size:14.4px;
@@ -52,12 +52,12 @@ body .mde-gb{margin:0}
 body #gerBox td .btn-arq{margin:2px 6px 2px 0}
 
 /* 3. Secundario e perigo */
-body :is(button,.btn):is(.sec,.sec2):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])){
+body :is(button,.btn):is(.sec,.sec2):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.mde-ln *,.mde-ln-camada *,.mde-ln-visao *,.file-link,[role="tab"])){
   --btn-bw:1px;
   background-color:#fff;
   color:var(--interactive,#1351b4);
 }
-body :is(button,.btn).dan:not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])){
+body :is(button,.btn).dan:not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.mde-ln *,.mde-ln-camada *,.mde-ln-visao *,.file-link,[role="tab"])){
   --btn-bw:1px;
   background-color:#fff;
   color:var(--red-vivid-50,#e52207);
@@ -65,16 +65,16 @@ body :is(button,.btn).dan:not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-d
 }
 
 /* 4. Estados */
-body :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])):not(:disabled):hover{
+body :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.mde-ln *,.mde-ln-camada *,.mde-ln-visao *,.file-link,[role="tab"])):not(:disabled):hover{
   background-image:linear-gradient(rgba(255,255,255,.14),rgba(255,255,255,.14));
 }
-body :is(button,.btn):is(.sec,.sec2):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])):not(:disabled):hover{
+body :is(button,.btn):is(.sec,.sec2):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.mde-ln *,.mde-ln-camada *,.mde-ln-visao *,.file-link,[role="tab"])):not(:disabled):hover{
   background-image:linear-gradient(rgba(19,81,180,.16),rgba(19,81,180,.16));
 }
-body :is(button,.btn).dan:not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])):not(:disabled):hover{
+body :is(button,.btn).dan:not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.mde-ln *,.mde-ln-camada *,.mde-ln-visao *,.file-link,[role="tab"])):not(:disabled):hover{
   background-image:linear-gradient(rgba(229,34,7,.12),rgba(229,34,7,.12));
 }
-body :is(button,.btn):disabled:not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.file-link,[role="tab"])){
+body :is(button,.btn):disabled:not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .tabs2 *,#hud *,.hb *,.tabs *,#abasApp *,.mde-ln *,.mde-ln-camada *,.mde-ln-visao *,.file-link,[role="tab"])){
   opacity:.45;
   cursor:not-allowed;
 }

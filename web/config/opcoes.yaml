@@ -21,6 +21,16 @@ editor:  # Editor
     # Reduzir imagens: recomprimir também as acima de 300 KB [ligado | desligado]
     recomprimir_grandes: ligado
 
+  # Régua de linhas ao lado do texto (números, linha atual, marcadores e recolhimento)
+  # Mostrar a régua com o número das linhas [ligado | desligado]
+  mostrar_linhas: ligado
+  # Destacar a linha em que o cursor está [ligado | desligado]
+  destacar_linha_atual: ligado
+  # Mostrar na régua os marcadores de títulos e de blocos de código [ligado | desligado]
+  mostrar_marcadores: ligado
+  # Permitir recolher títulos (H1 a H3), blocos de código e Mermaid [ligado | desligado]
+  recolhimento: ligado
+
 aplicativo:  # Aplicativo
   # Layout (tema) dos arquivos gerados [govbr | anac20_claro | anac20_escuro | classico]
   layout: govbr

@@ -117,3 +117,241 @@ def grupo9(amb, ctx, G):
         pg.close()
     finally:
         srv.shutdown()
+
+
+"""Grupo 26 - Regua de linhas do editor (1.98).
+
+Cobre numeracao, rolagem sincronizada, linha atual, marcadores, recolhimento de
+titulos e de blocos Mermaid/codigo e a garantia de que o Markdown, a selecao e a
+acessibilidade nao mudam.
+"""
+
+TEXTO_26 = "\n".join([
+    "# Título A",
+    "texto de abertura",
+    "",
+    "## Seção B",
+    "linha um",
+    "linha dois",
+    "",
+    "```mermaid",
+    "flowchart LR",
+    "A-->B",
+    "```",
+    "fim",
+])
+
+
+def _estado_26(pg):
+    return pg.evaluate(r"""() => {
+        const box = document.querySelector('#pg .mde');
+        const ln = box.querySelector('.mde-ln');
+        const ta = box.querySelector('.mde-ta');
+        const cam = box.querySelector('.mde-ln-camada');
+        const cur = box.querySelector('.mde-ln-cur');
+        const vis = box.querySelector('.mde-ln-visao');
+        return {
+            linhas: [...ln.querySelectorAll('.mde-ln-l')].map(r => ({
+                l: +r.dataset.l, h: r.getBoundingClientRect().height, top: r.offsetTop,
+                at: r.classList.contains('at'), num: (r.querySelector('.mde-ln-n') || {textContent: ''}).textContent.trim(),
+                fch: r.classList.contains('fch')
+            })),
+            veus: [...box.querySelectorAll('.mde-ln-veu')].map(b => ({
+                i: +b.dataset.e, t: b.textContent.trim(), top: parseFloat(b.style.top),
+                h: parseFloat(b.style.height), rot: b.getAttribute('aria-label')
+            })),
+            botoes: [...ln.querySelectorAll('[data-f]')].map(b => ({ i: +b.dataset.f, t: b.title, gl: b.textContent })),
+            total: ta.value.split('\n').length,
+            valor: ta.value,
+            real: document.getElementById('g').value,
+            sel: [ta.selectionStart, ta.selectionEnd],
+            foco: document.activeElement === ta,
+            largura: ln.getBoundingClientRect().width,
+            fonte: getComputedStyle(ln).fontFamily,
+            aria: ln.getAttribute('aria-hidden'),
+            camada: cam ? getComputedStyle(cam).display : null,
+            cur: cur ? { vis: getComputedStyle(cur).display !== 'none', top: parseFloat(cur.style.top), h: parseFloat(cur.style.height) } : null,
+            transform: getComputedStyle(ln.querySelector('.mde-ln-in')).transform,
+            viva: (box.querySelector('.mde-sr') || {}).textContent || '',
+            visao: vis ? { oculta: vis.hidden, display: getComputedStyle(vis).display,
+                           top: Math.round(vis.getBoundingClientRect().top),
+                           alt: Math.round(vis.getBoundingClientRect().height) } : null,
+            taVis: getComputedStyle(ta).visibility,
+            vlinhas: vis ? [...vis.querySelectorAll('.mde-ln-vl')].map(d => ({
+                l: +d.dataset.l, h: d.getBoundingClientRect().height, txt: d.textContent })) : [],
+            vveus: vis ? [...vis.querySelectorAll('.mde-ln-veu')].map(b => ({
+                i: +b.dataset.e, t: b.textContent.trim() })) : []
+        };
+    }""")
+
+
+def _texto_26(pg, texto):
+    pg.evaluate("""(txt) => {
+        const ta = document.querySelector('#pg .mde-ta');
+        ta.focus();
+        ta.value = txt;
+        ta.dispatchEvent(new Event('input', { bubbles: true }));
+    }""", texto)
+    pg.wait_for_function("document.querySelectorAll('#pg .mde-ln-l').length > 0", timeout=10000)
+    pg.wait_for_timeout(450)
+
+
+def grupo26(amb, ctx, G):
+    srv, url = _servidor(RAIZ / 'web')
+    try:
+        pg = ctx.new_page(); erros = []
+        pg.add_init_script("try { localStorage.setItem('conteudista.tour', '1'); } catch (e) {}")
+        pg.on('pageerror', lambda e: erros.append(str(e)))
+        pg.goto(url)
+        pg.wait_for_selector('#pg .mde-ln', state='attached', timeout=20000)
+
+        _texto_26(pg, TEXTO_26)
+        pg.wait_for_function("document.querySelectorAll('#pg .mde-ln-l').length === 12", timeout=15000)
+        e = _estado_26(pg)
+        numeros = {int(x['num']) for x in e['linhas']}
+        G.chk('26.1', 'Régua discreta ao lado do texto, com um número para cada linha',
+              len(e['linhas']) == e['total'] and numeros == set(range(1, e['total'] + 1))
+              and e['largura'] <= 50 and 'Consolas' in e['fonte'] and e['aria'] == 'true', e)
+
+        e = _estado_26(pg)
+        G.chk('26.2', 'Texto de teste montado com 12 linhas numeradas', e['total'] == 12 and len(e['linhas']) == 12, e['total'])
+
+        longa = "\n".join(['# Longo'] + ['linha ' + str(k) + ' do texto de rolagem' for k in range(60)])
+        _texto_26(pg, longa)
+        pg.evaluate("""() => { const ta = document.querySelector('#pg .mde-ta'); ta.scrollTop = 240; ta.dispatchEvent(new Event('scroll')); }""")
+        pg.wait_for_timeout(200)
+        rol = pg.evaluate("""() => {
+            const ta = document.querySelector('#pg .mde-ta');
+            const t = getComputedStyle(document.querySelector('#pg .mde-ln-in')).transform;
+            return { topo: ta.scrollTop, y: parseFloat((t.match(/matrix\\([^)]*\\)/) || [''])[0].split(',')[5] || '0') };
+        }""")
+        G.chk('26.3', 'A régua acompanha a rolagem do texto', abs(rol['topo'] + rol['y']) < 1 and rol['topo'] > 100, rol)
+
+        _texto_26(pg, TEXTO_26)
+        pg.evaluate(r"""() => {
+            const ta = document.querySelector('#pg .mde-ta');
+            const p = ta.value.split('\n').slice(0, 4).join('\n').length + 1;
+            ta.focus(); ta.setSelectionRange(p, p);
+            ta.dispatchEvent(new Event('keyup', { bubbles: true }));
+        }""")
+        pg.wait_for_timeout(150)
+        e = _estado_26(pg)
+        at = [x for x in e['linhas'] if x['at']]
+        G.chk('26.4', 'Linha atual destacada na régua e no texto, sem esconder o cursor',
+              len(at) == 1 and at[0]['l'] == 4 and at[0]['num'] == '5'
+              and e['cur'] and e['cur']['vis'] and abs(e['cur']['top'] + 12 - at[0]['top']) < 1, {'at': at, 'cur': e['cur']})
+
+        G.chk('26.5', 'Marcadores nos títulos e nos blocos de código, com controle de recolhimento',
+              sorted(b['i'] for b in e['botoes']) == [0, 3, 7] and all('Recolher' in b['t'] for b in e['botoes']), e['botoes'])
+
+        antes = e['valor']
+        pg.click('#pg .mde-ln [data-f="0"]')
+        pg.wait_for_timeout(250)
+        e = _estado_26(pg)
+        G.chk('26.6', 'Recolher um título condensa a régua e o texto, sem alterar o Markdown',
+              len(e['linhas']) == 1 and e['linhas'][0]['l'] == 0
+              and len(e['veus']) == 1 and '11 linhas recolhidas' in e['veus'][0]['t']
+              and e['valor'] == antes and e['real'] == antes
+              and e['visao'] and not e['visao']['oculta'] and e['taVis'] == 'hidden'
+              and len(e['vlinhas']) == 1 and 'Título A' in e['vlinhas'][0]['txt']
+              and len(e['vveus']) == 1, {'linhas': len(e['linhas']), 'veus': e['veus'],
+              'igual': e['valor'] == antes, 'visao': e['visao'], 'taVis': e['taVis'],
+              'vlinhas': len(e['vlinhas'])})
+
+        G.chk('26.7', 'O aviso de linhas recolhidas é um botão com nome acessível',
+              e['veus'] and e['veus'][0]['rot'] == 'Expandir 11 linhas recolhidas'
+              and '11 linhas recolhidas' in e['viva'], e['viva'])
+
+        pg.click('#pg .mde-ln-veu')
+        pg.wait_for_timeout(250)
+        e = _estado_26(pg)
+        G.chk('26.8', 'Clicar no aviso devolve todas as linhas, o foco no editor e o Markdown igual',
+              len(e['linhas']) == 12 and not e['veus'] and e['valor'] == antes
+              and e['visao'] and e['visao']['oculta'] and e['taVis'] == 'visible' and e['foco'],
+              {'linhas': len(e['linhas']), 'igual': e['valor'] == antes,
+               'visao': e['visao'], 'taVis': e['taVis'], 'foco': e['foco']})
+
+        pg.evaluate(r"""() => {
+            const ta = document.querySelector('#pg .mde-ta');
+            const p = ta.value.split('\n').slice(0, 4).join('\n').length + 1;
+            ta.focus(); ta.setSelectionRange(p, p);
+            ta.dispatchEvent(new KeyboardEvent('keydown', { key: '[', code: 'BracketLeft', ctrlKey: true, shiftKey: true, bubbles: true, cancelable: true }));
+        }""")
+        pg.wait_for_timeout(250)
+        e = _estado_26(pg)
+        G.chk('26.9', 'Ctrl+Shift+[ recolhe o bloco da linha do cursor',
+              len(e['linhas']) == 4 and e['veus'] and e['veus'][0]['i'] == 3
+              and '8 linhas recolhidas' in e['veus'][0]['t']
+              and e['visao'] and not e['visao']['oculta'],
+              {'linhas': len(e['linhas']), 'veus': e['veus'], 'visao': e['visao']})
+
+        pg.evaluate("""() => {
+            const ta = document.querySelector('#pg .mde-ta');
+            ta.dispatchEvent(new KeyboardEvent('keydown', { key: ']', code: 'BracketRight', ctrlKey: true, shiftKey: true, bubbles: true, cancelable: true }));
+        }""")
+        pg.wait_for_timeout(250)
+        G.chk('26.10', 'Ctrl+Shift+] expande todos os blocos', len(_estado_26(pg)['linhas']) == 12)
+
+        pg.evaluate(r"""() => {
+            const ta = document.querySelector('#pg .mde-ta');
+            const p = ta.value.split('\n').slice(0, 2).join('\n').length + 1;
+            ta.focus(); ta.setSelectionRange(p, p + 3);
+            ta.dispatchEvent(new Event('keyup', { bubbles: true }));
+        }""")
+        antes_sel = _estado_26(pg)['sel']
+        pg.click('#pg .mde-ln [data-f="7"]')
+        pg.wait_for_timeout(250)
+        e = _estado_26(pg)
+        G.chk('26.11', 'Recolher um bloco Mermaid não mexe na seleção nem no texto',
+              len(e['linhas']) == 9 and e['sel'] == antes_sel and e['valor'] == antes
+              and '3 linhas recolhidas' in (e['veus'][0]['t'] if e['veus'] else '')
+              and e['visao'] and not e['visao']['oculta'] and len(e['vlinhas']) == 9,
+              {'sel': e['sel'], 'antes': antes_sel, 'linhas': len(e['linhas']),
+               'vlinhas': len(e['vlinhas'])})
+
+        esperado = len("\n".join(TEXTO_26.split("\n")[:4])) + 1
+        pg.click('#pg .mde-ln-visao [data-l="4"]')
+        pg.wait_for_timeout(300)
+        e = _estado_26(pg)
+        G.chk('26.12', 'Clicar numa linha da visão compacta volta a editar no ponto clicado',
+              e['sel'][0] == esperado and e['foco'] and not e['veus']
+              and e['visao'] and e['visao']['oculta'] and e['taVis'] == 'visible'
+              and len(e['linhas']) == 12,
+              {'sel': e['sel'], 'esperado': esperado, 'foco': e['foco'],
+               'visao': e['visao'], 'linhas': len(e['linhas'])})
+
+        pg.click('#pg .mde-ln [data-f="0"]')
+        pg.wait_for_timeout(250)
+        pg.evaluate("""() => document.querySelector('#pg .mde-ln-visao').dispatchEvent(
+            new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))""")
+        pg.wait_for_timeout(300)
+        e = _estado_26(pg)
+        G.chk('26.13', 'Esc na visão compacta expande todos os blocos e devolve o editor',
+              len(e['linhas']) == 12 and not e['veus'] and e['visao']['oculta']
+              and e['taVis'] == 'visible', {'linhas': len(e['linhas']), 'visao': e['visao']})
+
+        _texto_26(pg, "# Título\n" + ('palavra ' * 90).strip() + "\nfinal")
+        pg.wait_for_timeout(250)
+        e = _estado_26(pg)
+        alt = {x['l']: x for x in e['linhas']}
+        G.chk('26.14', 'Linha que quebra em várias linhas visuais mantém os números alinhados',
+              alt[1]['h'] > 30 and abs(alt[2]['top'] - (alt[1]['top'] + alt[1]['h'])) < 1, {'h1': alt[1]['h'], 'top2': alt[2]['top']})
+
+        _texto_26(pg, TEXTO_26)
+        pg.click('#pg .mde-tb [data-m="p"]')
+        pg.wait_for_timeout(300)
+        oculta = pg.evaluate("""() => ({
+            regua: getComputedStyle(document.querySelector('#pg .mde-ln')).display,
+            camada: getComputedStyle(document.querySelector('#pg .mde-ln-camada')).display,
+            visao: getComputedStyle(document.querySelector('#pg .mde-ln-visao')).display })""")
+        pg.click('#pg .mde-tb [data-m="s"]')
+        pg.wait_for_timeout(400)
+        volta = pg.evaluate("() => document.querySelectorAll('#pg .mde-ln-l').length")
+        G.chk('26.15', 'No modo somente prévia a régua some e volta ao dividir a tela',
+              oculta['regua'] == 'none' and oculta['camada'] == 'none'
+              and oculta['visao'] == 'none' and volta == 12, {'oculta': oculta, 'volta': volta})
+
+        G.chk('26.16', 'Nenhum erro de JavaScript na régua de linhas', not erros, erros)
+        pg.close()
+    finally:
+        srv.shutdown()

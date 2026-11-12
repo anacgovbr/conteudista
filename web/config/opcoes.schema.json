@@ -40,6 +40,58 @@
               ]
             }
           }
+        },
+        "mostrar_linhas": {
+          "description": "Mostrar a régua com o número das linhas ao lado do texto",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "destacar_linha_atual": {
+          "description": "Destacar a linha em que o cursor está",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "mostrar_marcadores": {
+          "description": "Mostrar na régua os marcadores de títulos e de blocos de código",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "recolhimento": {
+          "description": "Permitir recolher títulos (H1 a H3), blocos de código e Mermaid",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
         }
       }
     },

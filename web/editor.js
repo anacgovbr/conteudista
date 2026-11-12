@@ -248,6 +248,18 @@
     gal.innerHTML = '<summary>Imagens do texto <span class="gc">(0)</span><span class="gtools"><select class="gord" title="Reordenar as imagens no texto"><option value="">Ordenar…</option><option value="inv">Inverter a ordem</option><option value="alt">Por legenda (A → Z)</option><option value="tam">Por tamanho do arquivo (menor → maior)</option><option value="larg">Por largura (menor → maior)</option></select><button type="button" class="mde-gb sec2 gall" title="Selecionar/limpar todas">Selecionar todas</button><button type="button" class="mde-gb gbs" disabled title="Cortar, girar, redimensionar ou converter várias imagens de uma vez">Editar selecionadas (0)</button><button type="button" class="mde-gb gb2" title="Reduzir as imagens grandes de uma vez">Reduzir todas…</button><button type="button" class="mde-gb gb">+ Adicionar imagens</button></span></summary><div class="mde-gh">Arraste os cartões (ou use ◀ ▶) para mudar a ordem das imagens no texto. “Editar” corta, gira, espelha, redimensiona e converte a imagem (muda pixels e peso, inclusive no DOCX e PPTX). Marque várias caixas para editar em lote.</div><div class="mde-gl"></div>';
     box.append(tb, body, st, gal);
     real.hidden = true; real.after(box);
+    /* ---------- régua de linhas (números, linha atual, marcadores e recolhimento) ---------- */
+    const opcaoLigada = (caminho, padrao) => { try { return global.Opcoes ? global.Opcoes.ligado(caminho) : padrao; } catch (e) { return padrao; } };
+    let linhas = null;
+    try {
+      if (global.EditorLinhas) linhas = global.EditorLinhas.criar({
+        textarea: ta, corpo: body,
+        numeros: opcaoLigada('editor.mostrar_linhas', true),
+        atual: opcaoLigada('editor.destacar_linha_atual', true),
+        marcadores: opcaoLigada('editor.mostrar_marcadores', true),
+        recolher: opcaoLigada('editor.recolhimento', true)
+      });
+    } catch (e) { if (global.console) global.console.warn('[Conteudista] régua de linhas indisponível', e); }
     const fileIn = document.createElement('input'); fileIn.type = 'file'; fileIn.accept = 'image/*'; fileIn.multiple = true; fileIn.hidden = true; box.append(fileIn);
 
     let lastReal = null, tPv = null;
@@ -278,6 +290,7 @@
       const extra = tipo === 'slides' ? 'Slides: ' + (real.value.replace(/^---\n[\s\S]*?\n---\n/, '').split(/\n---\s*\n/).filter(p => p.trim()).length) : 'Seções: ' + (v.match(/^## /gm) || []).length;
       galeria();
       st.innerHTML = '<span class="st-pal">Palavras: ' + words.toLocaleString('pt-BR') + '</span><span class="st-lin">Linhas: ' + v.split('\n').length + '</span><span class="st-img">Imagens: ' + ni + '</span><span class="st-ext">' + extra + '</span><span class="st-esp" style="flex:1"></span><span class="st-kb">' + (real.value.length / 1024).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' KB</span>';
+      if (linhas) linhas.atualizar();
     }
 
     let emCmd = false, tocado = false;
@@ -711,6 +724,8 @@
       else if (mod && e.shiftKey && !e.altKey && dg === '8') { e.preventDefault(); togglePrefix('- ', /^[-*] (?!\[)/); }
       else if (mod && e.shiftKey && !e.altKey && dg === '9') { e.preventDefault(); togglePrefix('- [ ] ', /^[-*] \[[ x]\] /); }
       else if (mod && e.shiftKey && !e.altKey && e.code === 'Period') { e.preventDefault(); togglePrefix('> ', /^> (\[!\w+\] )?/); }
+      else if (mod && e.shiftKey && !e.altKey && e.code === 'BracketLeft') { e.preventDefault(); if (linhas) linhas.recolherAtual(); }
+      else if (mod && e.shiftKey && !e.altKey && e.code === 'BracketRight') { e.preventDefault(); if (linhas) linhas.expandirTudo(); }
       else if (mod && !e.shiftKey && !e.altKey && k === 'e') { e.preventDefault(); wrap('`', '`', 'código'); }
       else if (mod && !e.shiftKey && !e.altKey && k === 'l') { e.preventDefault(); const [a, b] = lineRange(); ta.setSelectionRange(a, b); }
       else if (e.altKey && !mod && !e.shiftKey && (e.key === 'ArrowUp' || e.key === 'ArrowDown')) { e.preventDefault(); moverLinha(e.key === 'ArrowUp' ? -1 : 1); }
@@ -803,6 +818,7 @@
     ['Ctrl + B', 'Negrito'], ['Ctrl + I', 'Itálico'], ['Ctrl + E', 'Código em linha'], ['Ctrl + K', 'Inserir link'],
     ['Ctrl + Shift + 1 / 2 / 3', 'Título 1 / 2 / 3'], ['Ctrl + Shift + 7', 'Lista numerada'], ['Ctrl + Shift + 8', 'Lista com marcadores'], ['Ctrl + Shift + 9', 'Checklist'],
     ['Ctrl + Shift + .', 'Citação'], ['Ctrl + L', 'Selecionar a linha'], ['Ctrl + Shift + D', 'Duplicar linha'], ['Alt + ↑ / ↓', 'Mover linha para cima / baixo'],
+    ['Ctrl + Shift + [ / ]', 'Recolher o bloco da linha / expandir todos os blocos da régua'],
     ['Tab / Shift + Tab', 'Aumentar / diminuir recuo (listas)'], ['Enter', 'Continuar lista ou checklist (Enter em item vazio encerra)'],
     ['Ctrl + V', 'Colar texto ou imagem (imagem vira base64)'], ['Esc', 'Sair da tela cheia']
   ];

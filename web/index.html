@@ -47,11 +47,12 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
 .sec-cab{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 10px}.sec-cab h2{flex:1 1 auto;margin:0}#btnHistorico{margin:0}#btnHistorico svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:6px}.res-acoes{display:flex;justify-content:flex-end;margin:0 0 -6px}#secRes #res{margin:0}#secRes .sec-cab{margin:0}#secRes .sec-cab h2{flex:0 1 auto}
 </style>
 <link rel="stylesheet" href="govbr.css?v=1.66">
-<link rel="stylesheet" href="ds-botoes.css?v=1.66">
-<script src="opcoes.js?v=1.98"></script>
-<script src="dialogo.js?v=1.98"></script>
-<script src="editor.js?v=1.98"></script>
-<script src="ajuda.js?v=1.98" defer></script>
+<link rel="stylesheet" href="ds-botoes.css?v=1.99">
+<script src="opcoes.js?v=1.99"></script>
+<script src="dialogo.js?v=1.99"></script>
+<script src="editor-linhas.js?v=1.99"></script>
+<script src="editor.js?v=1.99"></script>
+<script src="ajuda.js?v=1.99" defer></script>
 </head>
 <body>
 <a class="br-skiplink" href="#conteudo">Ir para o conteúdo</a>
@@ -1014,31 +1015,31 @@ statusImagens();
   try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}
 })();
 </script>
-<script src="motor-python.js?v=1.98"></script>
-<script src="historico.js?v=1.98"></script>
-<script src="changelog.js?v=1.98"></script>
-<script src="gerados.js?v=1.98"></script>
+<script src="motor-python.js?v=1.99"></script>
+<script src="historico.js?v=1.99"></script>
+<script src="changelog.js?v=1.99"></script>
+<script src="gerados.js?v=1.99"></script>
 <script src="audio-codec.js?v=1.66"></script>
-<script src="locucao.js?v=1.98"></script>
-<script src="narracao.js?v=1.98"></script>
+<script src="locucao.js?v=1.99"></script>
+<script src="narracao.js?v=1.99"></script>
 <script src="ui-ajustes.js?v=1.66"></script>
 <script src="ux-feedback.js?v=1.82"></script>
 <script src="ux-expansiveis.js?v=1.66"></script>
 <script src="ux-arquivos.js?v=1.66"></script>
 <script src="metadados.js?v=1.66"></script>
 <script src="dicas.js?v=1.66"></script>
-<script src="janelas.js?v=1.98"></script>
-<script src="temas.js?v=1.98"></script>
-<script src="versoes.js?v=1.98"></script>
-<script src="colar.js?v=1.98"></script>
+<script src="janelas.js?v=1.99"></script>
+<script src="temas.js?v=1.99"></script>
+<script src="versoes.js?v=1.99"></script>
+<script src="colar.js?v=1.99"></script>
 <script src="notas-locucao.js?v=1.78"></script>
 <script src="celular.js?v=1.79"></script>
-<script src="acessibilidade.js?v=1.98"></script>
-<script src="acessibilidade-marcas.js?v=1.98"></script>
-<script src="acessibilidade-janelas.js?v=1.98"></script>
-<script src="acessibilidade-geracao.js?v=1.98"></script>
-<script src="relatorio-acessibilidade.js?v=1.98"></script>
-<script src="acessibilidade-config.js?v=1.98"></script>
-<script src="vlibras.js?v=1.98"></script>
+<script src="acessibilidade.js?v=1.99"></script>
+<script src="acessibilidade-marcas.js?v=1.99"></script>
+<script src="acessibilidade-janelas.js?v=1.99"></script>
+<script src="acessibilidade-geracao.js?v=1.99"></script>
+<script src="relatorio-acessibilidade.js?v=1.99"></script>
+<script src="acessibilidade-config.js?v=1.99"></script>
+<script src="vlibras.js?v=1.99"></script>
 </body>
 </html>

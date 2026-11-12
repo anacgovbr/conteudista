@@ -16,6 +16,14 @@ versao: 1
 editor:  # Editor
   # Modo do editor ao abrir. editar: só o texto · dividido: texto e prévia · previa: só a prévia. [editar | dividido | previa]
   modo_inicial: dividido
+  # Mostrar a régua com o número das linhas ao lado do texto [ligado | desligado]
+  mostrar_linhas: ligado
+  # Destacar a linha em que o cursor está [ligado | desligado]
+  destacar_linha_atual: ligado
+  # Mostrar na régua os marcadores de títulos e de blocos de código [ligado | desligado]
+  mostrar_marcadores: ligado
+  # Permitir recolher títulos (H1 a H3), blocos de código e Mermaid [ligado | desligado]
+  recolhimento: ligado
 
   imagens:
     # Reduzir imagens: recomprimir também as acima de 300 KB [ligado | desligado]

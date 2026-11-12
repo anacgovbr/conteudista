@@ -1,4 +1,8 @@
 # Novidades do Conteudista
+## 1.99 - 12/11/2026
+- **Régua de linhas no editor:** números alinhados ao texto, linha atual destacada e marcadores discretos de títulos e blocos de código, com a rolagem sincronizada. A régua some sozinha no modo somente prévia e acompanha o alto contraste.
+- **Recolhimento de blocos:** H1 a H3, blocos de código e Mermaid podem ser recolhidos pela régua ou por Ctrl+Shift+[; Ctrl+Shift+] e Esc expandem tudo. O conteúdo recolhido aparece numa visão compacta somente para leitura, e um clique em qualquer linha volta a editar no ponto clicado, sem alterar o Markdown guardado, a seleção ou o histórico.
+- **Opções e testes:** quatro opções em `config/opcoes.yaml` controlam números, linha atual, marcadores e recolhimento; o novo grupo 26 de navegador cobre alinhamento, rolagem, teclado, mouse, visão compacta e preservação do texto.
 ## 1.98 - 11/11/2026
 - **Temas personalizados para a apostila e a apresentação:** novo recurso de primeira classe, derivado do Design System gov.br. Cores, fontes, tamanhos, posição dos títulos, imagens de fundo, Mermaid, posições e demais parâmetros CSS ficam num editor com prévia. A capa, a finalização, a tela interna clara, a tela interna escura e o licenciamento têm ajustes próprios; a imagem de fundo pode ser removida ou ter a opacidade reduzida para isolar a leitura.
 - **Acessibilidade:** contraste WCAG conferido nos pares essenciais antes de gerar, com correção automática ou autorização explícita; variantes escura e de alto contraste; fontes de leitura Atkinson Hyperlegible Next e OpenDyslexic; o aplicativo continua no padrão gov.br.

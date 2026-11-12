@@ -11,6 +11,10 @@ Arquivo: `web/config/opcoes.yaml`. Ele define como cada opção **começa**. Se 
 | Opção | O que faz | Valores | Padrão | Lembrada no navegador |
 |---|---|---|---|---|
 | `modo_inicial` | Modo do editor ao abrir. editar: só o texto · dividido: texto e prévia · previa: só a prévia. | editar · dividido · previa | `dividido` | sim |
+| `mostrar_linhas` | Mostrar a régua com o número das linhas ao lado do texto | ligado · desligado | `ligado` | não (vale ao abrir) |
+| `destacar_linha_atual` | Destacar a linha em que o cursor está | ligado · desligado | `ligado` | não (vale ao abrir) |
+| `mostrar_marcadores` | Mostrar na régua os marcadores de títulos e de blocos de código | ligado · desligado | `ligado` | não (vale ao abrir) |
+| `recolhimento` | Permitir recolher títulos (H1 a H3), blocos de código e Mermaid | ligado · desligado | `ligado` | não (vale ao abrir) |
 
 ## Editor · imagens
 
