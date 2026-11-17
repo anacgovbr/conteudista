@@ -16,7 +16,7 @@ def grupo5(amb, ctx, G):
     ver = v_js.group(1) if v_js else '?'
     q = {s: (re.search(r'%s\?v=([\d.]+)' % re.escape(s), idx) or [None, None])[1] for s in ('ajuda.js', 'changelog.js')}
     G.chk('5.2', 'index.html carrega ajuda.js e changelog.js com ?v= da versão atual', all(v == ver for v in q.values()), f'esperado {ver}: {q}')
-    cacheados = ('opcoes.js', 'ajuda.js', 'changelog.js', 'acessibilidade.js', 'acessibilidade-marcas.js', 'acessibilidade-janelas.js',
+    cacheados = ('opcoes.js', 'ajuda.js', 'changelog.js', 'licencas-ajuda.js', 'acessibilidade.js', 'acessibilidade-marcas.js', 'acessibilidade-janelas.js',
                  'acessibilidade-geracao.js', 'relatorio-acessibilidade.js', 'acessibilidade-config.js', 'vlibras.js')
     q = {s: (re.search(r'%s\?v=([\d.]+)' % re.escape(s), idx) or [None, None])[1] for s in cacheados}
     G.chk('5.2c', 'Todos os scripts alterados usam o cache-buster da versão atual', all(v == ver for v in q.values()), f'esperado {ver}: {q}')

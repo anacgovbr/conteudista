@@ -1,4 +1,9 @@
 # Novidades do Conteudista
+## 1.101 - 17/11/2026
+- **Ajuda de licenciamento:** o botão **ⓘ** ao lado de "Licenciamento" abre uma janela no padrão gov.br com uma explicação curta sobre as licenças Creative Commons e sobre o CC0 (domínio público), uma tabela comparativa das sete opções (uso comercial, modificações e compartilhamento obrigatório) e links para o **resumo simplificado** e o **texto jurídico completo** no site oficial da Creative Commons.
+- **Destaque da licença escolhida:** a janela mostra o que a licença selecionada permite e exige, e o destaque é atualizado na hora se a licença for trocada com a janela aberta.
+- **Acessibilidade:** a janela abre pelo teclado (Tab e Enter/Espaço), prende o foco, fecha com Esc ou com o botão Fechar e devolve o foco ao ⓘ; os links indicam que abrem em nova aba.
+- **Testes:** novo grupo 27 de navegador, cobrindo botão, janela, tabela, links, teclado, foco e destaque dinâmico.
 ## 1.100 - 12/11/2026
 - **Régua de linhas corrigida:** alinhamento exato dos números e da linha atual mesmo com linhas longas que quebram em várias linhas visuais (padding do textarea descontado do espelho de medição).
 - **Temas no seletor de Layout:** o botão "Temas…" foi removido; a opção "Gerenciar temas…" agora está dentro do `<select id="tema">`. Ao escolher, abre a janela de temas sem alterar o tema atual nem o Markdown.
