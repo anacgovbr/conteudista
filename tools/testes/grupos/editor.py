@@ -109,6 +109,22 @@ def grupo9(amb, ctx, G):
         G.chk('9.17', 'Reabrir o Conteudista restaura a licença do último trabalho', restaurada == 'cc-by-4.0', restaurada)
         hashes = pg.evaluate("async () => { const base = { g: '# Teste de identidade 9.18', s: '', p: 'Teste', r: '', b: '' }; const by = await Hist.registrar('marco', 'Licença BY', { ...base, licenca: 'cc-by-4.0' }); const sa = await Hist.registrar('gerado', 'Licença BY-SA', { ...base, licenca: 'cc-by-sa-4.0' }); const repetida = await Hist.registrar('gerado', 'Licença BY-SA repetida', { ...base, licenca: 'cc-by-sa-4.0' }); return { by: !!by, sa: !!sa, distintas: !!by && !!sa && by.h !== sa.h, repetida: repetida === null }; }")
         G.chk('9.18', 'O histórico distingue mudanças somente de licença e deduplica a mesma licença', hashes == {'by': True, 'sa': True, 'distintas': True, 'repetida': True}, hashes)
+        poda = pg.evaluate("""async () => {
+          const reg = (o, r, g) => Hist.registrar(o, r, { g, s: '', p: 'T', r: '', b: '' });
+          const rotulos = async () => (await dbAll('versoes')).sort((a, b) => b.data - a.data).map(v => v.rotulo);
+          await dbClear('versoes'); Hist.atualizar();
+          await reg('marco', 'salva', '# salva');
+          for (let i = 0; i < 125; i++) await reg('arquivo', 'q' + i, '# versão ' + i);
+          const porQuantidade = await rotulos();
+          await dbClear('versoes'); Hist.atualizar();
+          await reg('marco', 'salva', '# salva');
+          for (let i = 1; i <= 3; i++) await reg('arquivo', 'grande' + i, i + 'a'.repeat(20 * 1024 * 1024));
+          const porTamanho = await rotulos();
+          await dbClear('versoes'); Hist.atualizar();
+          return { quantidade: porQuantidade.length, salvaFicou: porQuantidade.includes('salva'), maisNova: porQuantidade[0], tamanho: porTamanho };
+        }""")
+        G.chk('9.20', 'Histórico poda por quantidade (120) e por tamanho (50 MB), sem apagar salvas nem a mais nova',
+              poda == {'quantidade': 120, 'salvaFicou': True, 'maisNova': 'q124', 'tamanho': ['grande3', 'grande2', 'salva']}, poda)
         desktop = amb.novo_contexto(viewport={'width': 1280, 'height': 820})
         pgd = desktop.new_page(); pgd.goto(url); pgd.wait_for_selector('#licenca', timeout=15000)
         alinhamento = pgd.evaluate("() => { const t = document.querySelector('#tema').getBoundingClientRect(), l = document.querySelector('#licenca').getBoundingClientRect(), s = document.querySelector('#licenca'); return { mesmaLinha: Math.abs(t.top - l.top) < 3, largura: l.width, altura: l.height, semRolagem: document.documentElement.scrollWidth <= innerWidth, linha: s.closest('.row') === document.querySelector('#tema').closest('.row') }; }")

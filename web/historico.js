@@ -11,8 +11,8 @@
 (function () {
   'use strict';
   const SESS = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), INI = new Date();
-  // shortcut: guarda só as 120 versões mais recentes por navegador; aumentar ou exportar as antigas se pedirem histórico mais longo.
-  const MAX_VERSOES = 120, INTERVALO_SESSAO = 3 * 60 * 1000;
+  // shortcut: guarda só as 120 versões mais recentes e até ~50 MB de texto por navegador; exportar as antigas se pedirem histórico mais longo.
+  const MAX_VERSOES = 120, MAX_VERSOES_TAM = 50 * 1024 * 1024, INTERVALO_SESSAO = 3 * 60 * 1000;
   const ORIGENS = {
     sessao: 'Edição (automático)', marco: 'Versão salva', arquivo: 'Arquivo carregado', link: 'Link aberto',
     rascunho: 'Rascunho aberto', exemplo: 'Exemplo', antes: 'Antes de carregar', gerado: 'Arquivos gerados',
@@ -53,11 +53,13 @@
     invalidar(); await podar(); agendarUI();
     return v;
   }
-  async function podar() {
-    const l = await lista(); if (l.length <= MAX_VERSOES) return;
-    const rem = l.filter(v => v.origem !== 'marco').slice(MAX_VERSOES - l.filter(v => v.origem === 'marco').length);
+  async function podar() {  // mais novas ficam: até MAX_VERSOES e MAX_VERSOES_TAM caracteres; as salvas (marco) e a última nunca saem
+    const l = await lista(), tam = v => v.tam || (v.g || '').length + (v.s || '').length;
+    let n = 0, total = 0;
+    l.forEach(v => { if (v.origem === 'marco') { n++; total += tam(v); } });
+    const rem = l.filter((v, i) => v.origem !== 'marco' && (n++, total += tam(v), i > 0 && (n > MAX_VERSOES || total > MAX_VERSOES_TAM)));
     for (const v of rem) await dbDel('versoes', v.id);
-    invalidar();
+    if (rem.length) invalidar();
   }
   let tS = null;
   function sessao() { clearTimeout(tS); tS = setTimeout(() => { if (Date.now() - ultimaSessao >= INTERVALO_SESSAO) registrar('sessao'); }, 5000); }
@@ -316,7 +318,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     selA.value = existe(selA, va) ? va : (l[0] ? String(l[0].id) : 'atual');
     selB.value = existe(selB, vb) ? vb : 'atual';
     const nArq = l.filter(v => v.origem === 'arquivo').length, nLink = l.filter(v => v.origem === 'link').length;
-    $('hInfo').textContent = l.length + ' versão(ões) guardada(s) neste navegador · ' + nArq + ' de arquivos · ' + nLink + ' de links · limite ' + MAX_VERSOES + ' (as salvas não são apagadas automaticamente).';
+    $('hInfo').textContent = l.length + ' versão(ões) guardada(s) neste navegador · ' + nArq + ' de arquivos · ' + nLink + ' de links · limite ' + MAX_VERSOES + ' versões ou ' + fmtTam(MAX_VERSOES_TAM) + ' (as salvas não são apagadas automaticamente).';
   }
   async function obter(id) {
     if (id === 'atual') { const d = pacote(); return { rotulo: 'Atual (editores)', data: Date.now(), g: d.g, s: d.s, p: d.p, r: d.r, b: d.b, licenca: d.licenca, atual: true }; }
