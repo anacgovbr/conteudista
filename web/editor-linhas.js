@@ -130,7 +130,6 @@ html.contraste .mde-ln-veu:hover{background:#333333}
     /* ---------------------------- Estrutura do Markdown ---------------------------- */
     // Títulos H1–H3 e blocos de código/Mermaid. O bloco vai até o próximo título de
     // nível igual ou superior (ou o fechamento da cerca), sem engolir linhas vazias finais.
-    // shortcut: busca o fim de cada título olhando para a frente, O(títulos × linhas); trocar por uma passada com pilha se documentos acima de ~3 000 linhas pesarem ao digitar.
     function analisar(ls) {
       const n = ls.length, emCodigo = new Array(n).fill(false), saida = [];
       let cerca = null;

@@ -104,6 +104,18 @@ def grupo24(amb, ctx, G):
         pg.click('dialog.dlg-gov [data-d="nao"]')
         pg.wait_for_function(SEM_DIALOGO, timeout=10000)
         G.chk('24.4', 'Apagar pacotes gerados: janela propria, Cancelar fecha', not nativos, nativos)
+        # Poda por tamanho: tres pacotes de 60 MB (declarados) passam de 100 MB; fica so o mais novo.
+        restam = pg.evaluate("""async () => {
+          const db = await new Promise(ok => { const r = indexedDB.open('conteudista_arquivos', 1); r.onsuccess = () => ok(r.result); });
+          const op = (modo, fn) => new Promise(ok => { const t = db.transaction('pacotes', modo), r = fn(t.objectStore('pacotes')); t.oncomplete = () => ok(r.result); });
+          await op('readwrite', s => s.clear());
+          for (let i = 0; i < 3; i++) await op('readwrite', s => s.add({ data: i, prefixo: 'P' + i, tam: 60 * 1024 * 1024, arquivos: [] }));
+          const sel = document.getElementById('gerLim'); sel.value = '10'; sel.dispatchEvent(new Event('change'));
+          await new Promise(r => setTimeout(r, 800));
+          const l = await op('readonly', s => s.getAll()); await op('readwrite', s => s.clear()); db.close();
+          return l.map(p => p.prefixo);
+        }""")
+        G.chk('24.13', 'Arquivos gerados: poda tambem por tamanho (ate 100 MB), mantendo o mais novo', restam == ['P2'], restam)
 
         pg.evaluate("() => { window.__p = Dialogo.senha({ titulo: 'Teste', rotulo: 'Abrir' }); return true; }")
         pg.wait_for_selector('dialog.dlg-gov[open] input[type=password]', timeout=5000)

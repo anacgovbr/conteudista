@@ -11,8 +11,7 @@
   'use strict';
   const res = $('res'); if (!res) return;
   const logApp = (m, c) => { try { if (typeof log === 'function') log(m, c); } catch { /* */ } };
-  // shortcut: guarda os últimos N pacotes sem olhar o tamanho; podar também por bytes (~100 MB) se falhas de cota do navegador aparecerem com conteúdos grandes.
-  const LIM = 'conteudista.gerados.limite', ATIVO = 'conteudista.gerados.ativo';
+  const LIM = 'conteudista.gerados.limite', LIMITE_BYTES = 100 * 1024 * 1024, ATIVO = 'conteudista.gerados.ativo';
   /* Metadados minimos de cada pacote: nome do conteudo, data e hora, tamanho e layout (tema) */
   const TEMAS_ROTULO = { govbr: 'Padr\u00e3o gov.br', 'anac20-claro': 'ANAC 20 anos \u2014 claro', 'anac20-escuro': 'ANAC 20 anos \u2014 escuro', classico: 'Cl\u00e1ssico' };
   function temaRotulo(v) {
@@ -80,7 +79,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
   const box = document.createElement('div'); box.id = 'gerBox';
   box.innerHTML = '' +
     '<div class="gtop"><label class="inl"><input type="checkbox" id="gerAtivo"> Guardar automaticamente cada geração</label>' +
-    '<label class="inl">Manter os últimos <select id="gerLim"><option>5</option><option selected>10</option><option>20</option><option>50</option></select> pacotes</label>' +
+    '<label class="inl">Manter os últimos <select id="gerLim"><option>5</option><option selected>10</option><option>20</option><option>50</option></select> pacotes (até 100 MB no total)</label>' +
     '<button type="button" class="dan mini" id="gerLimpar">Apagar todos</button></div>' +
     '<div id="gerLista" class="note">Nenhum pacote guardado.</div><p class="uso" id="gerUso"></p>';
   const prev = $('prev');
@@ -206,10 +205,12 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
     } catch (e) { logApp('Não foi possível guardar os arquivos gerados no navegador (' + e.message + ').', 'wa'); }
   }
   new MutationObserver(() => { if (res.querySelector('a[download]')) { clearTimeout(tCap); tCap = setTimeout(capturar, 400); } }).observe(res, { childList: true, subtree: true });
-  async function podar() {
-    const lim = +$('gerLim').value || 10, l = (await tx('readonly', s => s.getAllKeys())) || [];
-    l.sort((a, b) => a - b);
-    for (const id of l.slice(0, Math.max(0, l.length - lim))) await tx('readwrite', s => s.delete(id));
+  async function podar() {  // os mais novos ficam: até N pacotes e até LIMITE_BYTES no total (o último gerado sempre fica)
+    const lim = +$('gerLim').value || 10, l = (await tx('readonly', s => s.getAll())) || [];
+    l.sort((a, b) => b.id - a.id);
+    let total = 0;
+    const sai = l.filter((p, i) => (total += p.tam || 0, i > 0 && (i >= lim || total > LIMITE_BYTES)));
+    for (const p of sai) await tx('readwrite', s => s.delete(p.id));
   }
   /* ---------------------------- Lista ---------------------------- */
   const urls = new Map();
