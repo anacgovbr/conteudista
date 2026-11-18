@@ -26,6 +26,7 @@ etapa "Contratos dos módulos e carregamento do motor Python"
 "$PY" -m compileall -q tools/conteudo tools/testes
 "$PY" tools/testes/testar_modulos.py
 node tools/testes/testar_motor_python.mjs
+node tools/testes/testar_links.mjs
 
 etapa "Gerador com o curso de exemplo (temas govbr e clássico, narração)"
 "$PY" -m py_compile tools/gerador.py

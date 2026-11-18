@@ -31,6 +31,12 @@ class ModulosTest(unittest.TestCase):
                 self.assertIs(getattr(gerador, nome), getattr(importlib.import_module('conteudo.' + modulo), nome))
             self.assertIs(gerador.licencas, licencas)
 
+    def test_tabela_sem_separador(self):
+        com = markdown.blocks('| A | B |\n|---|:-:|\n| 1 | 2 |')
+        sem = markdown.blocks('| A | B |\n| 1 | 2 |\n| 3 | 4 |')
+        self.assertEqual(com, [('table', [['A', 'B'], ['1', '2']])])
+        self.assertEqual(sem, [('table', [['A', 'B'], ['1', '2'], ['3', '4']])])
+
     def test_catalogo_licencas(self):
         self.assertEqual(licencas.validar(), '')
         self.assertEqual(licencas.aviso_html(), '')

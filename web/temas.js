@@ -15,8 +15,6 @@
 (function () {
   'use strict';
 
-  const $ = id => document.getElementById(id);
-  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const clone = v => JSON.parse(JSON.stringify(v == null ? null : v));
   const agora = () => Date.now();
   const num = (v, padrao, faixa, inteiro) => {

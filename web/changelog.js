@@ -5,10 +5,8 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const VERSAO = '1.101';
+  const VERSAO = '1.102';
   const CHAVE = 'conteudista.versaoVista';
-  const $ = id => document.getElementById(id);
-  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const st = document.createElement('style');
   st.textContent = `#btnNews{position:relative}#btnNews .pt{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#168821;border:2px solid #fff}
 .cl-v{border-left:4px solid #1351b4;padding:2px 0 2px 12px;margin:0 0 14px}.cl-v h4{margin:0 0 4px!important;color:#0c326f;font-size:15px}.cl-v h4 small{color:#636363;font-weight:400}

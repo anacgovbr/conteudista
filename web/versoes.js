@@ -21,13 +21,10 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
   const drafts = $('drafts');
   if (!drafts || typeof dbAll !== 'function' || typeof dbPut !== 'function' || typeof dbDel !== 'function' || !window.Hist || !Hist.registrar) return;
 
   const FLAG = 'conteudista.migr.versoes';
-  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const fmtTam = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
   const logApp = (m, c) => { try { if (typeof log === 'function') log(m, c); } catch (e) { /* sem log */ } };
   const anunciar = m => { try { if (window.UXFeedback && UXFeedback.anunciar) UXFeedback.anunciar(m); } catch (e) { /* sem anuncio */ } };
   const nomeDe = rot => String(rot || '').replace(/^\u2605\s*/, '');

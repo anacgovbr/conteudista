@@ -6,7 +6,6 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
   const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
   const MOD = isMac ? '⌥ Option + ⇧ Shift' : 'Alt + Shift';
 

@@ -8,7 +8,6 @@
    ===================================================================================== */
 (function (global) {
   'use strict';
-  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const EXT_IMG = /\.(png|jpe?g|gif|webp|bmp|svg|ico|avif)$/i;
   const MIME_EXT = { png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', gif: 'image/gif', webp: 'image/webp', bmp: 'image/bmp', svg: 'image/svg+xml', ico: 'image/x-icon', avif: 'image/avif' };
   const ehImagem = f => !!f && ((f.type || '').startsWith('image/') || EXT_IMG.test(f.name || ''));
@@ -20,7 +19,6 @@
     });
   }
   const tamanhoB64 = d => Math.round((d.length - d.indexOf(',') - 1) * 3 / 4);
-  const fmtTam = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
   const DATA_IMG = /\(data:image\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=\s]+\)/gi;
 
   /* ---------------------------- Renderizador ---------------------------- */
@@ -64,7 +62,7 @@
         const r = []; while (i < L.length && L[i].startsWith('|')) r.push(L[i++]);
         const cells = x => x.trim().replace(/^\||\|$/g, '').split(/(?<!\\)\|/).map(c => c.trim().replace(/\\\|/g, '|'));
         let h = '<div class="tbl"><table><thead><tr>' + cells(r[0]).map(c => '<th>' + inline(c) + '</th>').join('') + '</tr></thead><tbody>';
-        r.slice(2).forEach(x => { h += '<tr>' + cells(x).map(c => '<td>' + inline(c) + '</td>').join('') + '</tr>'; });
+        r.slice(/^\s*\|[\s:|-]*-[\s:|-]*$/.test(r[1] || '') ? 2 : 1).forEach(x => { h += '<tr>' + cells(x).map(c => '<td>' + inline(c) + '</td>').join('') + '</tr>'; });
         o.push(h + '</tbody></table></div>'); continue;
       }
       if (l.startsWith('>')) {
@@ -270,7 +268,12 @@
       if (cur && cur.v === v) { cur.s = ta.selectionStart; cur.e = ta.selectionEnd; return; }
       const agora = Date.now(), agrupa = tipo === 'dig' && hTipo === 'dig' && agora - hT < 900 && hpos === hist.length - 1 && hpos > 0;
       if (agrupa) hist[hpos] = { v, s: ta.selectionStart, e: ta.selectionEnd };
-      else { hist.splice(hpos + 1); hist.push({ v, s: ta.selectionStart, e: ta.selectionEnd }); if (hist.length > HMAX) hist.shift(); hpos = hist.length - 1; }
+      else {
+        hist.splice(hpos + 1); hist.push({ v, s: ta.selectionStart, e: ta.selectionEnd });
+        // limite também em memória: ~16 MB de texto (UTF-16) por editor, sempre mantendo ao menos 2 passos
+        while (hist.length > 2 && (hist.length > HMAX || hist.reduce((t, h) => t + h.v.length, 0) > 8 * 1024 * 1024)) hist.shift();
+        hpos = hist.length - 1;
+      }
       hT = agora; hTipo = tipo; atualizaUR();
     }
     function restaura(d) {
@@ -423,7 +426,7 @@
       if (/svg/.test(om)) { alert('Imagens SVG são vetoriais: não é possível cortar ou girar aqui.'); return; }
       const img = await carregar(dados), orig = tamanhoB64(dados);
       const op = { r: 0, a: 0, fh: false, fv: false, crop: null, w: 0, mime: saidaMime(om, 'manter'), q: .85, fundo: '' };
-      let base = null, BW = 0, BH = 0, esc = 1, prop = null, resultado = null;
+      let base = null, BW = 0, BH = 0, escala = 1, prop = null, resultado = null;
       dialogo('Editar imagem (img:' + n + ')',
         '<div class="bd ed"><div><div class="cz"><canvas></canvas><div class="crop" hidden><i data-h="nw"></i><i data-h="ne"></i><i data-h="sw"></i><i data-h="se"></i><i data-h="n"></i><i data-h="s"></i><i data-h="w"></i><i data-h="e"></i></div></div>' +
         '<div class="res">Original: <b>' + img.naturalWidth + '×' + img.naturalHeight + '</b> · ' + fmtTam(orig) + ' · ' + om.replace('image/', '').toUpperCase() + '</div>' +
@@ -449,12 +452,12 @@
           function desenharBase() {
             base = girar(img, Object.assign({}, op, { fundo: op.fundo || (op.mime === 'image/jpeg' ? '#fff' : '') }));
             BW = base.width; BH = base.height;
-            const maxW = Math.min(440, cz.clientWidth || 440), maxH = 320; esc = Math.min(1, maxW / BW, maxH / BH);
-            cv.width = Math.round(BW * esc); cv.height = Math.round(BH * esc); cv.getContext('2d').drawImage(base, 0, 0, cv.width, cv.height);
+            const maxW = Math.min(440, cz.clientWidth || 440), maxH = 320; escala = Math.min(1, maxW / BW, maxH / BH);
+            cv.width = Math.round(BW * escala); cv.height = Math.round(BH * escala); cv.getContext('2d').drawImage(base, 0, 0, cv.width, cv.height);
           }
           function mostrarCorte() {
             const c = op.crop; cr.hidden = !c;
-            if (c) Object.assign(cr.style, { left: c.x * esc + 'px', top: c.y * esc + 'px', width: c.w * esc + 'px', height: c.h * esc + 'px' });
+            if (c) Object.assign(cr.style, { left: c.x * escala + 'px', top: c.y * escala + 'px', width: c.w * escala + 'px', height: c.h * escala + 'px' });
             const v = c || { x: 0, y: 0, w: BW, h: BH }; ix.value = Math.round(v.x); iy.value = Math.round(v.y); iw.value = Math.round(v.w); ih.value = Math.round(v.h);
             const lw = c ? c.w : BW, lh = c ? c.h : BH; fw.max = Math.round(lw); if (!op.w || op.w > lw) op.w = Math.round(lw); fw.value = op.w; fh.value = Math.round(op.w * lh / lw);
           }
@@ -473,7 +476,7 @@
           function reGirar() { op.crop = null; op.w = 0; desenharBase(); if (prop) op.crop = limitar(cortePorProporcao(BW, BH, prop)); atualizar(); }
           // interação de corte (mouse/toque)
           let arr = null;
-          const pos = e => { const r = cv.getBoundingClientRect(), p = e.touches ? e.touches[0] : e; return { x: Math.max(0, Math.min(BW, (p.clientX - r.left) / esc)), y: Math.max(0, Math.min(BH, (p.clientY - r.top) / esc)) }; };
+          const pos = e => { const r = cv.getBoundingClientRect(), p = e.touches ? e.touches[0] : e; return { x: Math.max(0, Math.min(BW, (p.clientX - r.left) / escala)), y: Math.max(0, Math.min(BH, (p.clientY - r.top) / escala)) }; };
           const ini = e => { e.preventDefault(); const p = pos(e), h = e.target.dataset.h; arr = { p, h: h || (e.target === cr ? 'mv' : 'novo'), c0: Object.assign({}, op.crop || { x: p.x, y: p.y, w: 0, h: 0 }) }; if (arr.h === 'novo') arr.c0 = { x: p.x, y: p.y, w: 0, h: 0 }; };
           const mov = e => {
             if (!arr) return; e.preventDefault(); const p = pos(e), dx = p.x - arr.p.x, dy = p.y - arr.p.y, c = Object.assign({}, arr.c0), h = arr.h;

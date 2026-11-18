@@ -7,7 +7,6 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
 
   /* ---------------------------- Estilos ---------------------------- */
   const st = document.createElement('style');

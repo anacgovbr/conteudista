@@ -18,7 +18,6 @@
 (function () {
   'use strict';
   const A = () => window.AcessibilidadeTexto;
-  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const CH = { marcas: 'conteudista.acessibilidade.marcas', sug: 'conteudista.acessibilidade.marcasSug' };
   const ler = (ch, padrao) => { try { const v = window.Opcoes ? Opcoes.ler(ch, padrao) : localStorage.getItem(ch); return (v === null ? padrao : v) === '1'; } catch (e) { return padrao === '1'; } };
   const gravar = (ch, on) => { try { localStorage.setItem(ch, on ? '1' : '0'); } catch (e) { /* sem armazenamento */ } };

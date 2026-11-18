@@ -1,7 +1,6 @@
 (function (global) {
   'use strict';
 
-  const $ = id => document.getElementById(id);
   let dialog;
   let biblioteca;
 

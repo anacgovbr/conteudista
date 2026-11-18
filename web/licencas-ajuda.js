@@ -20,12 +20,6 @@
     { valor: 'cc0-1.0',          sigla: 'CC0 1.0',          uso: true,  mod: true,  comp: false }
   ];
 
-  function esc(s) {
-    return String(s).replace(/[&<>"']/g, function (c) {
-      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
-    });
-  }
-
   function urlResumo(l) {
     if (l.valor === 'cc0-1.0') return 'https://creativecommons.org/publicdomain/zero/1.0/deed.pt-br';
     return 'https://creativecommons.org/licenses/' + l.valor.replace(/^cc-/, '').replace(/-4\.0$/, '') + '/4.0/deed.pt-br';

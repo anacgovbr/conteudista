@@ -9,11 +9,9 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
   const res = $('res'); if (!res) return;
-  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const fmt = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
   const logApp = (m, c) => { try { if (typeof log === 'function') log(m, c); } catch { /* */ } };
+  // shortcut: guarda os últimos N pacotes sem olhar o tamanho; podar também por bytes (~100 MB) se falhas de cota do navegador aparecerem com conteúdos grandes.
   const LIM = 'conteudista.gerados.limite', ATIVO = 'conteudista.gerados.ativo';
   /* Metadados minimos de cada pacote: nome do conteudo, data e hora, tamanho e layout (tema) */
   const TEMAS_ROTULO = { govbr: 'Padr\u00e3o gov.br', 'anac20-claro': 'ANAC 20 anos \u2014 claro', 'anac20-escuro': 'ANAC 20 anos \u2014 escuro', classico: 'Cl\u00e1ssico' };
@@ -26,18 +24,18 @@
   /* Texto que a busca do Historico consulta (nome, data, tamanho, layout, rodape, narracao e tipos de arquivo) */
   function buscaDe(p) {
     const bm = window.BuscaMeta, t = [];
-    t.push(p.prefixo, bm ? bm.data(p.data) : new Date(p.data).toLocaleString('pt-BR'), bm ? bm.tam(p.tam) : fmt(p.tam), bm ? bm.tema(p.tema) : temaRotulo(p.tema), p.rodape);
+    t.push(p.prefixo, bm ? bm.data(p.data) : new Date(p.data).toLocaleString('pt-BR'), bm ? bm.tam(p.tam) : fmtTam(p.tam), bm ? bm.tema(p.tema) : temaRotulo(p.tema), p.rodape);
     if (p.narracao) t.push('narração narracao com narração', p.narracao.voz, p.narracao.formato, p.narracao.avanco ? 'avanço automático' : '');
     (p.arquivos || []).forEach(f => {
       const n = f.nome, e = (n.split('.').pop() || '').toLowerCase();
-      t.push(n, '.' + e, e, e === 'md' ? 'markdown' : '', e === 'epub' ? 'epub ebook livro digital acessível acessivel' + (/_OpenDyslexic\.epub$/i.test(n) ? ' opendyslexic dislexia' : ' atkinson') : '', /^(Apostila|Treinamento)_/.test(n) ? 'apostila treinamento' : /^Apresentacao_/.test(n) ? 'apresentação apresentacao slides' : 'todos', f.blob ? fmt(f.blob.size) : '');
+      t.push(n, '.' + e, e, e === 'md' ? 'markdown' : '', e === 'epub' ? 'epub ebook livro digital acessível acessivel' + (/_OpenDyslexic\.epub$/i.test(n) ? ' opendyslexic dislexia' : ' atkinson') : '', /^(Apostila|Treinamento)_/.test(n) ? 'apostila treinamento' : /^Apresentacao_/.test(n) ? 'apresentação apresentacao slides' : 'todos', f.blob ? fmtTam(f.blob.size) : '');
     });
     return t.filter(Boolean).join(' ');
   }
   function metaHtml(p) {
     const q = new Date(p.data), itens = [], t = temaRotulo(p.tema);
     if (!isNaN(q.getTime())) itens.push('<time class="m" datetime="' + q.toISOString() + '">' + q.toLocaleString('pt-BR') + '</time>');
-    if (p.tam > 0) itens.push('<span class="m">' + fmt(p.tam) + '</span>');
+    if (p.tam > 0) itens.push('<span class="m">' + fmtTam(p.tam) + '</span>');
     if (t) itens.push('<span class="m">' + esc(t) + '</span>');
     return '<div class="ger-info"><p class="ger-nome">' + esc(p.prefixo || 'Conteudo') + '</p>' + (itens.length ? '<p class="ger-meta">' + itens.join(' \u00b7 ') + '</p>' : '') + '</div>';
   }
@@ -204,7 +202,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
       const gm = window.GeracaoMeta || {};
       await tx('readwrite', s => s.add({ data: gm.data || Date.now(), prefixo: gm.prefixo || pref, tema: gm.tema || ($('tema') ? $('tema').value : ''), rodape: gm.rodape || ($('rod') ? $('rod').value.trim() : ''), narracao: gm.narracao || null, resumo: resumoDoLog(), tam, arquivos: arqs }));
       await podar(); listar();
-      logApp('Arquivos gerados guardados neste navegador (' + fmt(tam) + ').', 'ok');
+      logApp('Arquivos gerados guardados neste navegador (' + fmtTam(tam) + ').', 'ok');
     } catch (e) { logApp('Não foi possível guardar os arquivos gerados no navegador (' + e.message + ').', 'wa'); }
   }
   new MutationObserver(() => { if (res.querySelector('a[download]')) { clearTimeout(tCap); tCap = setTimeout(capturar, 400); } }).observe(res, { childList: true, subtree: true });
@@ -227,15 +225,15 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
       const zip = p.arquivos.find(f => /\.zip$/i.test(f.nome)), outros = p.arquivos.filter(f => f !== zip);
       return '<tr data-busca="' + esc(buscaDe(p)) + '"><td>' + metaHtml(p) + '</td><td>' +
         (zip ? '<a class="btn btn-arq download" href="' + urlDe(p.id + '/' + zip.nome, zip.blob) + '" download="' + esc(zip.nome) + '">.ZIP</a>' : '') +
-        outros.map(f => '<a class="file-link download" href="' + urlDe(p.id + '/' + f.nome, f.blob) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + (/_OpenDyslexic\.epub$/i.test(f.nome) ? ' OpenDyslexic' : '') + '</a>').join('') +
+        outros.map(f => '<a class="file-link download" href="' + urlDe(p.id + '/' + f.nome, f.blob) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmtTam(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + (/_OpenDyslexic\.epub$/i.test(f.nome) ? ' OpenDyslexic' : '') + '</a>').join('') +
         outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="btn btn-arq btn-exibir" data-ver="' + p.id + '/' + esc(f.nome) + '">Exibir ' + (/^Apresentacao_/.test(f.nome) ? 'apresentação' : 'apostila') + '</button>').join('') +
         '</td><td><button type="button" class="dan" data-del="' + p.id + '">Excluir</button></td></tr>';
     }).join('') + '</table>';
     uso(l.reduce((a, p) => a + p.tam, 0));
   }
   async function uso(total) {
-    let t = total ? 'Pacotes guardados: ' + fmt(total) + '.' : '';
-    try { if (navigator.storage && navigator.storage.estimate) { const e = await navigator.storage.estimate(); t += ' Uso total deste site no navegador: ' + fmt(e.usage || 0) + ' de ' + fmt(e.quota || 0) + '.'; } } catch { /* */ }
+    let t = total ? 'Pacotes guardados: ' + fmtTam(total) + '.' : '';
+    try { if (navigator.storage && navigator.storage.estimate) { const e = await navigator.storage.estimate(); t += ' Uso total deste site no navegador: ' + fmtTam(e.usage || 0) + ' de ' + fmtTam(e.quota || 0) + '.'; } } catch { /* */ }
     $('gerUso').textContent = t.trim();
   }
   /* ---------------------------- Pacote em exibicao: arquivos e ZIP acima da previa ---------------------------- */
@@ -267,7 +265,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
     const url = f => { if (!pkgUrls.has(f.nome)) pkgUrls.set(f.nome, URL.createObjectURL(f.blob)); return pkgUrls.get(f.nome); };
     pkg.innerHTML = '<p class="ger-pkg-rot">Em exibição</p>' + metaHtml(p) + '<div class="file-links">' +
       (zip ? '<a class="btn btn-arq download" href="' + url(zip) + '" download="' + esc(zip.nome) + '">.ZIP</a>' : '') +
-      outros.map(f => '<a class="file-link download" href="' + url(f) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmt(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + (/_OpenDyslexic\.epub$/i.test(f.nome) ? ' OpenDyslexic' : '') + '</a>').join('') +
+      outros.map(f => '<a class="file-link download" href="' + url(f) + '" download="' + esc(f.nome) + '" title="' + esc(f.nome) + ' · ' + fmtTam(f.blob.size) + '">.' + f.nome.split('.').pop().toUpperCase() + (/_OpenDyslexic\.epub$/i.test(f.nome) ? ' OpenDyslexic' : '') + '</a>').join('') +
       outros.filter(f => /\.html$/i.test(f.nome)).map(f => '<button type="button" class="btn btn-arq btn-exibir" data-pv="' + esc(f.nome) + '" aria-pressed="false">Exibir ' + tipoDe(f.nome) + '</button>').join('') + '</div>';
     pkgId = id; pkg.hidden = false; if (dxRes) dxRes.classList.add('tem-pkg');
     marcarPkg(nome);

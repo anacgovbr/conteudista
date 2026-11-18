@@ -28,6 +28,7 @@ Página única que converte os arquivos Markdown de um conteúdo em:
 
 ```
 web/index.html           ← a página
+web/comum.js             ← $, esc e fmtTam usados por todos os scripts (carregado primeiro)
 web/motor-python.js      ← inicialização do Pyodide e carregamento do pacote Python
 tools/gerador.py         ← API gerar e comando de geração; reexporta as funções existentes
 tools/conteudo/          ← Markdown, imagens, estado, fontes, áudio e exportadores por formato

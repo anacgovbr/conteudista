@@ -24,12 +24,10 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
   const sec = $('secLoc'), sTa = $('s'), L = window.Locucao;
   if (!sec || !sTa || !L) return;
 
   const CHAVE = 'conteudista.locucao.notas', CHAVE_MODO = 'conteudista.locucao.modo';
-  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const anunciar = m => { try { if (window.UXFeedback && UXFeedback.anunciar) UXFeedback.anunciar(m); } catch (e) { /* sem anúncio */ } };
   const confirmar = (b, m) => { try { if (window.UXFeedback && UXFeedback.confirmar) UXFeedback.confirmar(b, m); } catch (e) { /* sem feedback */ } };
   const logApp = (m, c) => { try { if (typeof log === 'function') log(m, c); } catch (e) { /* sem log */ } };

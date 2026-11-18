@@ -10,8 +10,8 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
   const SESS = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), INI = new Date();
+  // shortcut: guarda só as 120 versões mais recentes por navegador; aumentar ou exportar as antigas se pedirem histórico mais longo.
   const MAX_VERSOES = 120, INTERVALO_SESSAO = 3 * 60 * 1000;
   const ORIGENS = {
     sessao: 'Edição (automático)', marco: 'Versão salva', arquivo: 'Arquivo carregado', link: 'Link aberto',
@@ -71,10 +71,11 @@
     if (N + M > 0) {
       const MAX = N + M, off = MAX + 1, v = new Int32Array(2 * MAX + 3), trace = [];
       let achou = false;
-      if (MAX > 30000) {  // proteção para textos enormes: substituição em bloco
-        for (let i = 0; i < N; i++) ops.push(['-', ini + i, -1]); for (let j = 0; j < M; j++) ops.push(['+', -1, ini + j]);
-      } else {
-        for (let d = 0; d <= MAX && !achou; d++) {
+      const bloco = () => { for (let i = 0; i < N; i++) ops.push(['-', ini + i, -1]); for (let j = 0; j < M; j++) ops.push(['+', -1, ini + j]); };
+      // shortcut: o trace guarda no máximo 32 MB; passando disso mostra troca em bloco. Trocar por Myers linear (divide e conquista) se pedirem diff fino entre textos enormes e muito diferentes.
+      const LIMITE_TRACE = Math.max(1, (32 * 1024 * 1024 / 4 / v.length) | 0);
+      if (MAX <= 30000) {  // acima disso, substituição em bloco sem nem tentar
+        for (let d = 0; d <= MAX && !achou && trace.length < LIMITE_TRACE; d++) {
           trace.push(v.slice());
           for (let k = -d; k <= d; k += 2) {
             let x = (k === -d || (k !== d && v[off + k - 1] < v[off + k + 1])) ? v[off + k + 1] : v[off + k - 1] + 1, y = x - k;
@@ -82,6 +83,9 @@
             v[off + k] = x; if (x >= N && y >= M) { achou = true; break; }
           }
         }
+      }
+      if (!achou) bloco();
+      else {
         const res = []; let x = N, y = M;
         for (let d = trace.length - 1; d >= 0; d--) {
           const t = trace[d], k = x - y, pk = (k === -d || (k !== d && t[off + k - 1] < t[off + k + 1])) ? k + 1 : k - 1, px = t[off + pk], py = px - pk;
@@ -103,9 +107,8 @@
   }
   const linhas = t => tokenizarImagens(t).replace(/\r\n?/g, '\n').split('\n');
   const tamImg = d => Math.round((d.length - d.indexOf(',') - 1) * 3 / 4);
-  const fmt = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
   function html(t) {
-    return esc(t).replace(/⟦img:([0-9a-z]+)⟧/g, (m, h) => { const d = imgs.get(h); return d ? '<img class="dfi" src="' + d + '" title="Imagem ' + fmt(tamImg(d)) + '" alt="imagem">' : m; });
+    return esc(t).replace(/⟦img:([0-9a-z]+)⟧/g, (m, h) => { const d = imgs.get(h); return d ? '<img class="dfi" src="' + d + '" title="Imagem ' + fmtTam(tamImg(d)) + '" alt="imagem">' : m; });
   }
   const TOK = /⟦img:[0-9a-z]+⟧|\s+|[\wÀ-ÿ]+|[^\s\wÀ-ÿ]/g;
   function palavras(a, b) {  // destaca palavras alteradas entre duas linhas
@@ -156,7 +159,7 @@
     const rem = [...ia].filter(x => !ib.has(x)), nov = [...ib].filter(x => !ia.has(x));
     let hi = '';
     if (rem.length || nov.length) {
-      const g = (l, cls) => l.map(x => '<figure class="' + cls + '"><img src="' + imgs.get(x) + '" alt=""><figcaption>' + fmt(tamImg(imgs.get(x))) + '</figcaption></figure>').join('');
+      const g = (l, cls) => l.map(x => '<figure class="' + cls + '"><img src="' + imgs.get(x) + '" alt=""><figcaption>' + fmtTam(tamImg(imgs.get(x))) + '</figcaption></figure>').join('');
       hi = '<div class="dimg"><div><b>Antes (só em A): ' + rem.length + '</b><div class="dg">' + (g(rem, 'rm') || '<span class="nd">—</span>') + '</div></div>' +
         '<div><b>Depois (só em B): ' + nov.length + '</b><div class="dg">' + (g(nov, 'nv') || '<span class="nd">—</span>') + '</div></div></div>';
     }
@@ -304,7 +307,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   let tUI = null; function agendarUI() { clearTimeout(tUI); tUI = setTimeout(montarSelects, 250); }
   async function montarSelects() {
     const l = await lista(), selA = $('hA'), selB = $('hB'), va = selA.value, vb = selB.value;
-    const opt = v => '<option value="' + v.id + '">' + dataCurta(v.data) + ' — ' + esc(v.rotulo) + (v.p ? ' · ' + esc(v.p) : '') + ' · ' + fmt(v.tam) + (v.origem === 'link' ? ' · via link' : '') + '</option>';
+    const opt = v => '<option value="' + v.id + '">' + dataCurta(v.data) + ' — ' + esc(v.rotulo) + (v.p ? ' · ' + esc(v.p) : '') + ' · ' + fmtTam(v.tam) + (v.origem === 'link' ? ' · via link' : '') + '</option>';
     let h = '<option value="atual">★ Atual (conteúdo dos editores)</option>';
     try { if (window.NotasSlides && NotasSlides.temRascunho()) h += '<option value="rasc">✎ Rascunho da Locução (notas não aplicadas)</option>'; } catch (e) { /* sem rascunho */ }
     for (const [g, nome] of GRUPOS) { const it = l.filter(v => grupoDe(v) === g); if (it.length) h += '<optgroup label="' + esc(nome) + ' (' + it.length + ')">' + it.map(opt).join('') + '</optgroup>'; }

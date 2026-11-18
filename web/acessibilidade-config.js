@@ -1,10 +1,8 @@
 (function (global) {
   'use strict';
 
-  const $ = id => document.getElementById(id);
   const prefixo = 'acessibilidade_texto.';
   const regrasPrefixo = prefixo + 'regras.';
-  const esc = valor => String(valor == null ? '' : valor).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   let dialog;
   let regras = [];
 

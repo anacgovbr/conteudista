@@ -15,8 +15,6 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
-  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const A = () => window.AcessibilidadeTexto;
   const IA = () => window.Opcoes ? Opcoes.ligado('acessibilidade_texto.ajuda_ia') : true;
   const LIMITE_CURTA = 150;

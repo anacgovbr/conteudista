@@ -1,4 +1,13 @@
 # Novidades do Conteudista
+## 1.102 - 18/11/2026
+- **Tabelas sem a linha `|---|`:** a segunda linha da tabela não some mais. Antes, sem a linha separadora, ela era descartada sem aviso no HTML, DOCX, PPTX, EPUB e na prévia.
+- **Links compartilhados mais seguros:** o anexo ZIP de um link PrivateBin é conferido antes de abrir. Arquivo corrompido ou que cresce demais ao descompactar (mais de 64 MB) agora mostra "Anexo ZIP inválido" em vez de travar a página.
+- **Link recebido não se perde:** ao abrir um link com senha, cancelar ou errar a senha mantém o link na barra de endereço; antes, ele era apagado e não dava para tentar de novo.
+- **Links PrivateBin com outros parâmetros:** endereços como `?lang=pt&pasteid=...` agora abrem normalmente.
+- **Histórico estável com textos grandes:** comparar versões muito diferentes de um documento grande não trava mais a aba; nesses casos a comparação mostra a troca do trecho inteiro.
+- **Desfazer com limite de memória:** além dos 300 passos, o desfazer guarda no máximo cerca de 16 MB de texto por editor, para documentos grandes não deixarem o navegador lento.
+- **API local do lac:** o cabeçalho `X-Linguagem-Acessivel-Tipo` com valor desconhecido agora retorna erro 422, igual ao envio em JSON.
+- **Manutenção:** `$`, `esc` e `fmtTam`, antes copiados em 20 scripts, ficam num só arquivo (`web/comum.js`). Novos testes cobrem links (com e sem senha, PrivateBin, base58), anexo ZIP, comparação de versões e tabelas.
 ## 1.101 - 17/11/2026
 - **Ajuda de licenciamento:** o botão **ⓘ** ao lado de "Licenciamento" abre uma janela no padrão gov.br com uma explicação curta sobre as licenças Creative Commons e sobre o CC0 (domínio público), uma tabela comparativa das sete opções (uso comercial, modificações e compartilhamento obrigatório) e links para o **resumo simplificado** e o **texto jurídico completo** no site oficial da Creative Commons.
 - **Destaque da licença escolhida:** a janela mostra o que a licença selecionada permite e exige, e o destaque é atualizado na hora se a licença for trocada com a janela aberta.

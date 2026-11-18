@@ -20,12 +20,9 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
   const ex = $('ex');
   if (!ex || !ex.parentNode) return;
 
-  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const fmtTam = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
   const ICON = {
     arq: '<path d="M4 4h10l6 6v10H4z"/><path d="M14 4v6h6"/>',
     sav: '<path d="M4 6h16M4 12h16M4 18h10"/>',

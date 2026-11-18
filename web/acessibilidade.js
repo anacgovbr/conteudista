@@ -17,8 +17,6 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
-  const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const op = (c, padrao) => (window.Opcoes ? Opcoes.ligado(c) : padrao);
   const CH_LIMITE = 'conteudista.acessibilidade.limite';
   const MOSTRAR_SUG = () => op('acessibilidade_texto.mostrar_sugestoes', true);

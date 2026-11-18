@@ -84,6 +84,10 @@ try {
   erro = await resposta.json();
   afirmar(resposta.status === 422 && erro.status === 422, 'configuração inválida retorna 422');
 
+  resposta = await requisitar('/v1/conferir', { method: 'POST', headers: { 'Content-Type': 'text/markdown', 'X-Linguagem-Acessivel-Tipo': 'slides' }, body: '# Título' });
+  erro = await resposta.json();
+  afirmar(resposta.status === 422 && erro.status === 422, 'tipo inválido no cabeçalho retorna 422 (igual ao JSON)');
+
   resposta = await requisitar('/v1/conferir', { method: 'POST', headers: { 'Content-Type': 'text/markdown' }, body: 'x'.repeat(1024 * 1024 + 1) });
   erro = await resposta.json();
   afirmar(resposta.status === 413 && erro.status === 413, 'corpo maior que 1 MiB retorna 413');

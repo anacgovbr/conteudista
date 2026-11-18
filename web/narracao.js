@@ -15,11 +15,8 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
   const L = () => window.Locucao;
-  const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const logApp = (m, c) => { try { if (typeof log === 'function') log(m, c); } catch { /* */ } };
-  const fmtTam = n => n > 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB';
   const fmtDur = s => { s = Math.round(s); const m = Math.floor(s / 60); return m ? m + ' min ' + String(s % 60).padStart(2, '0') + ' s' : s + ' s'; };
   const go = $('go'); if (!go || !L()) return;
   const PREF = { on: 'narr.on', voz: 'narr.voz', vel: 'narr.vel', fmt: 'narr.fmt', auto: 'narr.auto' };

@@ -13,7 +13,6 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
   const pref = $('pref'), rod = $('rod'), bar = $('bar'), row = pref && pref.closest ? pref.closest('.row') : null;
   if (!pref || !rod || !row) return;
 

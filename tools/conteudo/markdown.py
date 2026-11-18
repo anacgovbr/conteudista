@@ -37,7 +37,8 @@ def blocks(md):
             r=[]
             while i<n and L[i].startswith('|'):r.append(L[i]);i+=1
             cs=lambda x:[y.strip().replace('\\|','|') for y in re.split(r'(?<!\\)\|',x.strip().strip('|'))]
-            rows=[cs(r[0])]+[cs(x) for x in r[2:]];o.append(('table',rows));continue
+            sep=len(r)>1 and re.match(r'^\s*\|[\s:|-]*-[\s:|-]*$',r[1])
+            rows=[cs(r[0])]+[cs(x) for x in r[2 if sep else 1:]];o.append(('table',rows));continue
         if l.startswith('>'):
             b=[]
             while i<n and L[i].startswith('>'):b.append(L[i][1:].lstrip());i+=1

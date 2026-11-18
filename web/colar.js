@@ -14,7 +14,6 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const $ = id => document.getElementById(id);
   const pane = $('jnImpPane-cl'), pLk = $('jnImpPane-lk'), API = window.Importar;
   if (!pane || !pLk || !API || typeof API.msg !== 'function' || typeof API.ativar !== 'function') return;
 

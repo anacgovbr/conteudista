@@ -10,6 +10,8 @@ const LIMITE_JANELA = 60;
 const DURACAO_JANELA = 60_000;
 const tentativas = new Map();
 const FORMATOS_CONFERIR = ['application/json', 'application/x-ndjson', 'application/sarif+json', 'text/plain', 'text/html'];
+const TIPOS = ['auto', 'apostila', 'apresentacao'];
+const tipoValido = tipo => { if (tipo !== undefined && !TIPOS.includes(tipo)) throw new ErroHttp(422, 'Tipo inválido', 'Use auto, apostila ou apresentacao.'); };
 
 class ErroHttp extends Error {
   constructor(status, title, detail, headers = {}) {
@@ -68,13 +70,13 @@ async function corpo(req) {
 async function entrada(req, precisaConteudo = true) {
   const tipo = String(req.headers['content-type'] || '').split(';')[0].trim().toLowerCase();
   const texto = await corpo(req);
-  if (tipo === 'text/markdown') return { conteudo: texto, tipo: req.headers['x-linguagem-acessivel-tipo'] || 'auto', config: {} };
+  if (tipo === 'text/markdown') { const t = req.headers['x-linguagem-acessivel-tipo']; tipoValido(t); return { conteudo: texto, tipo: t || 'auto', config: {} }; }
   if (tipo !== 'application/json' && !tipo.endsWith('+json')) throw new ErroHttp(415, 'Tipo de conteúdo não aceito', 'Use text/markdown ou application/json.');
   let dados;
   try { dados = JSON.parse(texto); } catch { throw new ErroHttp(400, 'JSON inválido', 'Confira se o corpo contém JSON válido.'); }
   if (!dados || typeof dados !== 'object' || Array.isArray(dados)) throw new ErroHttp(422, 'Entrada inválida', 'Envie um objeto JSON.');
   if (precisaConteudo && typeof dados.conteudo !== 'string') throw new ErroHttp(422, 'Entrada inválida', 'O campo "conteudo" precisa ser um texto.');
-  if (dados.tipo !== undefined && !['auto', 'apostila', 'apresentacao'].includes(dados.tipo)) throw new ErroHttp(422, 'Tipo inválido', 'Use auto, apostila ou apresentacao.');
+  tipoValido(dados.tipo);
   if (dados.config !== undefined && (!dados.config || typeof dados.config !== 'object' || Array.isArray(dados.config))) throw new ErroHttp(422, 'Configuração inválida', 'O campo "config" precisa ser um objeto.');
   return Object.assign({ tipo: 'auto', config: {} }, dados);
 }
