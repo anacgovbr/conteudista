@@ -1,6 +1,10 @@
 # Novidades do Conteudista
+## 1.105 - 19/11/2026
+- **Histórico ampliado:** o histórico agora guarda até 240 versões e cerca de 200 MB de texto neste navegador (antes, 120 versões e 50 MB). Quando esses limites são atingidos, as versões automáticas mais antigas saem primeiro. As versões salvas por você e a versão mais recente nunca são apagadas automaticamente. A janela do Histórico mostra os limites em vigor.
+- **Arquivos gerados com limite ampliado:** o navegador agora guarda até 300 MB de pacotes gerados (antes, 100 MB). Os pacotes mais antigos continuam saindo primeiro quando o limite é atingido, e o último gerado sempre fica. A tela mostra o novo limite.
+- **Testes:** os testes 9.20 e 24.13 conferem os novos limites, e o novo teste 24.14 confirma que exatamente 300 MB não apaga nenhum pacote.
 ## 1.104 - 18/11/2026
-- **Histórico ampliado:** o histórico agora guarda até 240 versões e cerca de 200 MB de texto neste navegador. Quando esses limites são atingidos, as versões automáticas mais antigas saem primeiro. As versões salvas por você e a versão mais recente nunca são apagadas automaticamente. A janela do Histórico mostra os limites em vigor.
+- **Histórico com limite de tamanho:** além das 120 versões, o histórico guarda no máximo cerca de 50 MB de texto neste navegador. Quando passa disso, as versões automáticas mais antigas saem primeiro. As versões salvas por você e a versão mais recente nunca são apagadas automaticamente. A janela do Histórico mostra os dois limites.
 - **Testes:** novo teste de navegador (9.20) para a limpeza por quantidade e por tamanho.
 ## 1.103 - 18/11/2026
 - **Arquivos gerados guardados por tamanho:** além de manter os últimos N pacotes, o navegador guarda no máximo 100 MB no total; os pacotes mais antigos saem primeiro e o último gerado sempre fica. Assim, conteúdos grandes com imagens não esgotam o espaço do navegador sem aviso. A tela mostra o limite ao lado da escolha de quantos pacotes manter.

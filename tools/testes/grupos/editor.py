@@ -114,17 +114,21 @@ def grupo9(amb, ctx, G):
           const rotulos = async () => (await dbAll('versoes')).sort((a, b) => b.data - a.data).map(v => v.rotulo);
           await dbClear('versoes'); Hist.atualizar();
           await reg('marco', 'salva', '# salva');
-          for (let i = 0; i < 125; i++) await reg('arquivo', 'q' + i, '# versão ' + i);
+          for (let i = 0; i < 245; i++) await reg('arquivo', 'q' + i, '# versão ' + i);
           const porQuantidade = await rotulos();
           await dbClear('versoes'); Hist.atualizar();
           await reg('marco', 'salva', '# salva');
-          for (let i = 1; i <= 3; i++) await reg('arquivo', 'grande' + i, i + 'a'.repeat(20 * 1024 * 1024));
-          const porTamanho = await rotulos();
+          // Três versões de 80 MB declarados (texto curto, campo tam grande) passam de 200 MB quando chega uma nova.
+          const t0 = Date.now() - 1000;
+          for (let i = 1; i <= 3; i++) await dbPut('versoes', { data: t0 + i, origem: 'arquivo', rotulo: 'grande' + i, sess: '', h: 'g' + i, g: '# grande ' + i, s: '', p: 'T', r: '', b: '', licenca: '', tam: 80 * 1024 * 1024 });
+          Hist.atualizar();
+          await reg('arquivo', 'nova', '# nova');
+          const porTamanho = (await rotulos()).sort();
           await dbClear('versoes'); Hist.atualizar();
           return { quantidade: porQuantidade.length, salvaFicou: porQuantidade.includes('salva'), maisNova: porQuantidade[0], tamanho: porTamanho };
         }""")
-        G.chk('9.20', 'Histórico poda por quantidade (120) e por tamanho (50 MB), sem apagar salvas nem a mais nova',
-              poda == {'quantidade': 120, 'salvaFicou': True, 'maisNova': 'q124', 'tamanho': ['grande3', 'grande2', 'salva']}, poda)
+        G.chk('9.20', 'Histórico poda por quantidade (240) e por tamanho (200 MB), sem apagar salvas nem a mais nova',
+              poda == {'quantidade': 240, 'salvaFicou': True, 'maisNova': 'q244', 'tamanho': ['grande2', 'grande3', 'nova', 'salva']}, poda)
         desktop = amb.novo_contexto(viewport={'width': 1280, 'height': 820})
         pgd = desktop.new_page(); pgd.goto(url); pgd.wait_for_selector('#licenca', timeout=15000)
         alinhamento = pgd.evaluate("() => { const t = document.querySelector('#tema').getBoundingClientRect(), l = document.querySelector('#licenca').getBoundingClientRect(), s = document.querySelector('#licenca'); return { mesmaLinha: Math.abs(t.top - l.top) < 3, largura: l.width, altura: l.height, semRolagem: document.documentElement.scrollWidth <= innerWidth, linha: s.closest('.row') === document.querySelector('#tema').closest('.row') }; }")

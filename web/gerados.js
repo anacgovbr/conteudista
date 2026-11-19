@@ -11,7 +11,7 @@
   'use strict';
   const res = $('res'); if (!res) return;
   const logApp = (m, c) => { try { if (typeof log === 'function') log(m, c); } catch { /* */ } };
-  const LIM = 'conteudista.gerados.limite', LIMITE_BYTES = 100 * 1024 * 1024, ATIVO = 'conteudista.gerados.ativo';
+  const LIM = 'conteudista.gerados.limite', LIMITE_BYTES = 300 * 1024 * 1024, ATIVO = 'conteudista.gerados.ativo';
   /* Metadados minimos de cada pacote: nome do conteudo, data e hora, tamanho e layout (tema) */
   const TEMAS_ROTULO = { govbr: 'Padr\u00e3o gov.br', 'anac20-claro': 'ANAC 20 anos \u2014 claro', 'anac20-escuro': 'ANAC 20 anos \u2014 escuro', classico: 'Cl\u00e1ssico' };
   function temaRotulo(v) {
@@ -79,7 +79,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
   const box = document.createElement('div'); box.id = 'gerBox';
   box.innerHTML = '' +
     '<div class="gtop"><label class="inl"><input type="checkbox" id="gerAtivo"> Guardar automaticamente cada geração</label>' +
-    '<label class="inl">Manter os últimos <select id="gerLim"><option>5</option><option selected>10</option><option>20</option><option>50</option></select> pacotes (até 100 MB no total)</label>' +
+    '<label class="inl">Manter os últimos <select id="gerLim"><option>5</option><option selected>10</option><option>20</option><option>50</option></select> pacotes (até 300 MB no total)</label>' +
     '<button type="button" class="dan mini" id="gerLimpar">Apagar todos</button></div>' +
     '<div id="gerLista" class="note">Nenhum pacote guardado.</div><p class="uso" id="gerUso"></p>';
   const prev = $('prev');
