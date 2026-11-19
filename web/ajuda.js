@@ -132,6 +132,7 @@
 <ol>
 <li>Na aba <b>Apostila</b>, cole ou arraste o texto da apostila (<code>.md</code>); na aba <b>Apresentação</b>, o dos slides.</li>
 <li>Informe o <b>Nome do conteúdo</b> (usado nos nomes dos arquivos, como <code>Apostila_Nome.docx</code>), escolha o <b>Layout (tema)</b> e, se aplicável, o <b>Licenciamento</b>. Os temas ANAC 20 anos mudam só a apresentação; a apostila segue o padrão gov.br. O <b>rodapé</b> (opcional) aparece nos slides e no DOCX.</li>
+<li>Para um visual próprio, escolha <b>Gerenciar temas</b> no Layout: crie um tema a partir de outro, troque cores e fontes e confira na prévia o <b>contraste WCAG</b> e o <b>daltonismo</b> (simulação da visão, aviso de cores que se confundem e relatório para baixar).</li>
 <li>Clique em <b>Gerar arquivos</b> e baixe cada arquivo ou o <b>ZIP</b>. Os pacotes anteriores ficam no botão <b>Histórico</b>, no cabeçalho da seção <b>Arquivos gerados</b>, onde é possível <b>buscar</b>. Ao usar <b>Exibir</b> no Histórico, o pacote escolhido aparece na seção com os seus arquivos e o ZIP <b>acima da exibição</b>, para você baixar a versão que está vendo. A seção <b>Arquivos gerados</b> abre sozinha ao gerar e pode ser recolhida, como as demais, pelo controle <b>recolher</b> à direita do título; o botão <b>Histórico</b> continua à mão com ela recolhida. Se só um dos dois textos estiver preenchido, são gerados apenas os arquivos dele. A apostila tem dois EPUB: <b>.EPUB</b> (Atkinson Hyperlegible Next) e <b>.EPUB OpenDyslexic</b>.</li>
 </ol>
 <h4>Licenciamento</h4>

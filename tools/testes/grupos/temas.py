@@ -225,6 +225,34 @@ def grupo25(amb, ctx, G):
         G.chk('25.17', 'YAML exportado volta pelo importador com as mesmas cores',
               bool(volta['igual']) and volta['id'] != 'teste-25', volta)
 
+        # Daltonismo (1.106): tema com verde e vermelho de mesmo brilho, aberto no editor pela lista.
+        pg.evaluate("""async () => {
+            const T = Temas.normalizar({ base: 'govbr', nome: 'Daltonismo 25', paleta: { apoio: '#00a000', erro: '#d00000' } });
+            await Temas.salvar(T, { idForcado: 'teste-cvd', variantes: false, versao: false, corrigir: false });
+            await Temas.abrir('meus'); return true;
+        }""")
+        alvo_ed = '#tmLista .tm-item[data-valor="custom:teste-cvd"] button[data-a="editar"]'
+        pg.wait_for_selector(alvo_ed, timeout=10000); pg.click(alvo_ed)
+        pg.wait_for_selector('#tmSimVisao', timeout=10000)
+        aviso = pg.evaluate("document.getElementById('tmDalton').textContent")
+        pg.select_option('#tmSimVisao', 'deuteranopia')
+        sim = pg.evaluate("""() => ({ filtro: document.getElementById('tmPrevArea').style.filter,
+            existe: !!document.getElementById('tmCvd-deuteranopia'), opcoes: document.querySelectorAll('#tmSimVisao option').length,
+            rotulo: document.querySelector('label[for=tmSimVisao]').textContent })""")
+        G.chk('25.19', 'Daltonismo: aviso de cores que se confundem e simulacao aplicada so na previa',
+              'Apoio × Erro' in aviso and 'Deuteranopia' in aviso and 'tmCvd-deuteranopia' in sim['filtro'] and sim['existe']
+              and sim['opcoes'] == 5 and sim['rotulo'] == 'Simular visão', {'aviso': aviso[:160], 'sim': sim})
+        with pg.expect_download() as info3:
+            pg.click('#tmPrevContraste button[data-a="relatorio"]')
+        arq3 = amb.tmp / 'relatorio-tema.md'
+        info3.value.save_as(arq3)
+        rel = arq3.read_text(encoding='utf-8')
+        G.chk('25.20', 'Relatorio de acessibilidade do tema: contraste WCAG e daltonismo em Markdown',
+              info3.value.suggested_filename.startswith('Relatorio_Acessibilidade_Tema_') and rel.startswith('# Relatório de acessibilidade do tema "Daltonismo 25"')
+              and 'WCAG AA' in rel and '## Daltonismo' in rel and '**Pode confundir**' in rel,
+              {'nome': info3.value.suggested_filename, 'ini': rel[:120]})
+        pg.evaluate("Temas.remover('custom:teste-cvd', { semConfirmar: true })")
+
         G.chk('25.18', 'Nenhum erro de JavaScript durante o fluxo de temas', not erros, erros)
         pg.close()
     finally:

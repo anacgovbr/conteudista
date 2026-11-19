@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.106 - 19/11/2026
+- **Daltonismo no editor de temas:** a prévia do tema ganhou o seletor **Simular visão**, que mostra a apostila e os slides como pessoas com protanopia, deuteranopia, tritanopia ou acromatopsia os veem. A simulação não altera o tema. Uma faixa mostra as cores de significado (primária, destaque, apoio, alerta e erro) para conferir de perto.
+- **Aviso de cores que se confundem:** o painel da prévia aponta as combinações de cores de significado que ficam parecidas demais em cada tipo de daltonismo (por exemplo, verde e vermelho com o mesmo brilho) e sugere usar também texto ou ícone.
+- **Selo e relatório de acessibilidade do tema:** o painel mostra se o tema atende WCAG AA ou AAA, e o botão **Baixar relatório de acessibilidade** gera um arquivo Markdown com o contraste de cada par de cores, o resultado de daltonismo e os avisos sobre imagens de fundo.
+- **Prévia sempre alcançável:** em telas mais baixas, a prévia do editor de temas passa a rolar por dentro. Antes, o fim dela (com a lista de contraste e o botão de correção) ficava fora da tela.
+- **Testes:** novos testes de navegador 25.19 e 25.20.
 ## 1.105 - 19/11/2026
 - **Histórico ampliado:** o histórico agora guarda até 240 versões e cerca de 200 MB de texto neste navegador (antes, 120 versões e 50 MB). Quando esses limites são atingidos, as versões automáticas mais antigas saem primeiro. As versões salvas por você e a versão mais recente nunca são apagadas automaticamente. A janela do Histórico mostra os limites em vigor.
 - **Arquivos gerados com limite ampliado:** o navegador agora guarda até 300 MB de pacotes gerados (antes, 100 MB). Os pacotes mais antigos continuam saindo primeiro quando o limite é atingido, e o último gerado sempre fica. A tela mostra o novo limite.

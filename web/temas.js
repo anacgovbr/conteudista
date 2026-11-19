@@ -104,7 +104,7 @@
 
   let catalogo = null;
   let temaAvulso = null;             // tema recebido por link, ainda não salvo neste navegador
-  let janela = null, editor = null, previaTela = 'capa', pastaUI = null;
+  let janela = null, editor = null, previaTela = 'capa', pastaUI = null, simVisao = '';
   let cacheNomes = {};               // id personalizado -> nome (para chaveMarkdown síncrona)
   let cacheTemas = [];               // lista usada pelo seletor e pela janela
   let tRascunho = null, rascunhoPendente = false;
@@ -233,6 +233,37 @@
     let la = luminancia(a), lb = luminancia(b);
     if (la < lb) { const t = la; la = lb; lb = t; }
     return (la + 0.05) / (lb + 0.05);
+  }
+
+  /* ---------------------------- Daltonismo (Machado et al. 2009, severidade total) ---------------------------- */
+  // shortcut: simula e avisa só sobre as cores do tema; imagens, gráficos e fotos não são analisados nem recoloridos. Criar um módulo próprio de recoloração (canvas) se pedirem imagens adaptadas para daltonismo.
+  const DALTONISMO = {
+    protanopia: { rotulo: 'Protanopia (sem vermelho)', m: [0.152286, 1.052583, -0.204868, 0.114503, 0.786281, 0.099216, -0.003882, -0.048116, 1.051998] },
+    deuteranopia: { rotulo: 'Deuteranopia (sem verde)', m: [0.367322, 0.860646, -0.227968, 0.280085, 0.672501, 0.047413, -0.01182, 0.04294, 0.968881] },
+    tritanopia: { rotulo: 'Tritanopia (sem azul)', m: [1.255528, -0.076749, -0.178779, -0.078411, 0.930809, 0.147602, 0.004733, 0.691367, 0.3039] },
+    acromatopsia: { rotulo: 'Acromatopsia (sem cores)', m: [0.2126, 0.7152, 0.0722, 0.2126, 0.7152, 0.0722, 0.2126, 0.7152, 0.0722] }
+  };
+  // Pares em que a cor carrega significado (ex.: certo × errado) e precisa continuar distinguível.
+  const PARES_COR = [['apoio', 'erro'], ['alerta', 'erro'], ['apoio', 'alerta'], ['primaria', 'destaque']];
+  const DIFERENCA_MINIMA = 12;  // ΔE (CIE76): abaixo disso as duas cores parecem quase iguais
+  const linear = hexcor => { const h = corValida(hexcor, '#000000').slice(1); return [0, 2, 4].map(i => canal(parseInt(h.slice(i, i + 2), 16))); };
+  function simularCor(hexcor, tipo) {
+    const c = linear(hexcor), m = DALTONISMO[tipo].m;
+    return [0, 3, 6].map(i => Math.min(1, Math.max(0, m[i] * c[0] + m[i + 1] * c[1] + m[i + 2] * c[2])));
+  }
+  function lab(rgb) {  // RGB linear -> CIE Lab (D65)
+    const f = t => t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116;
+    const x = f((0.4124 * rgb[0] + 0.3576 * rgb[1] + 0.1805 * rgb[2]) / 0.95047), y = f(0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]), z = f((0.0193 * rgb[0] + 0.1192 * rgb[1] + 0.9505 * rgb[2]) / 1.08883);
+    return [116 * y - 16, 500 * (x - y), 200 * (y - z)];
+  }
+  const diferenca = (a, b) => { const p = lab(a), q = lab(b); return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]); };
+  function paresDaltonismo(T) {  // um item por par e por tipo de daltonismo
+    const p = T.paleta || PALETA_PADRAO, saida = [];
+    PARES_COR.forEach(([a, b]) => Object.keys(DALTONISMO).forEach(tipo => {
+      const d = diferenca(simularCor(p[a], tipo), simularCor(p[b], tipo)), normal = diferenca(linear(p[a]), linear(p[b]));
+      saida.push({ a, b, tipo, diferenca: Math.round(d * 10) / 10, ok: d >= DIFERENCA_MINIMA || normal < DIFERENCA_MINIMA });
+    }));
+    return saida;
   }
   function nivelContraste() {
     return window.Opcoes ? String(Opcoes.ler('conteudista.temas.contraste', 'aa') || 'aa').toLowerCase() : 'aa';
@@ -888,7 +919,7 @@
 .tm-msg{margin:8px 0 0;font-size:13px;line-height:1.4;color:#0c326f}
 .tm-msg.erro{color:#b00020;font-weight:600}
 .tm-msg.ok{color:#0b5c1b;font-weight:600}
-.tm-prev{position:sticky;top:0;border:1px solid #cccccc;border-radius:8px;padding:10px;background:#f8f8f8}
+.tm-prev{position:sticky;top:0;border:1px solid #cccccc;border-radius:8px;padding:10px;background:#f8f8f8;max-height:calc(100vh - 140px);overflow-y:auto}
 .tm-prev h3{margin:0 0 8px;color:#0c326f;font-size:16px}
 .tm-prev-slides{display:flex;flex-direction:column;gap:8px}
 .tm-prev-card{border:1px solid rgba(0,0,0,.22);border-radius:6px;padding:8px 10px;min-height:86px;overflow:hidden;background-size:cover;background-position:center;display:flex;flex-direction:column;justify-content:center}
@@ -904,6 +935,11 @@
 .tm-prev-apostila blockquote{margin:4px 0;padding:4px 7px;font-size:10px;border-left:3px solid #168821;background:#edf5ff}
 .tm-prev-mermaid{margin-top:8px;border:1px solid #cccccc;border-radius:6px;padding:6px 8px;font-size:11px;line-height:1.35;background:#fff;color:#333}
 .tm-contraste{margin-top:10px;border-top:1px solid #cccccc;padding-top:8px}
+.tm-sim{display:block;margin:0 0 3px;font-size:13px;font-weight:600}
+#tmSimVisao{width:100%;margin:0 0 2px}
+.tm-prev-cores{list-style:none;margin:8px 0 0;padding:0;display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11px}
+.tm-prev-cores li{display:flex;align-items:center;gap:4px}
+.tm-prev-cores i{display:inline-block;width:22px;height:14px;border-radius:3px;border:1px solid rgba(0,0,0,.25)}
 .tm-contraste h4{margin:0 0 5px;color:#0c326f;font-size:14px}
 .tm-contraste ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:3px;font-size:11px}
 .tm-contraste li{display:flex;gap:6px;justify-content:space-between;align-items:baseline}
@@ -945,13 +981,18 @@ html.contraste #jnTemasWin .tm-json pre,html.contraste #jnTemasWin .tm-json-diff
 html.contraste #jnTemasWin .tm-json-diff .add{background:#000;color:#00ff66}
 html.contraste #jnTemasWin .tm-json-diff .del{background:#000;color:#ff7a7a}
 html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
-@media(max-width:820px){.tm-ed{grid-template-columns:1fr}.tm-prev{position:static}.tm-img{grid-template-columns:1fr}.tm-imgprev{width:100%;max-width:240px}}
+@media(max-width:820px){.tm-ed{grid-template-columns:1fr}.tm-prev{position:static;max-height:none;overflow:visible}.tm-img{grid-template-columns:1fr}.tm-imgprev{width:100%;max-width:240px}}
 @media(max-width:520px){.tm-item{grid-template-columns:1fr}.tm-swatches{max-width:none}.tm-acoes button{flex:1 1 auto}}
 `;
   function montarCSS() {
     if ($('tmCss')) return;
     const st = document.createElement('style'); st.id = 'tmCss'; st.textContent = CSS;
     document.head.appendChild(st);
+    // Filtros da simulação de daltonismo (as mesmas matrizes do cálculo, em RGB linear)
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.setAttribute('aria-hidden', 'true'); svg.setAttribute('focusable', 'false'); svg.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+    svg.innerHTML = Object.keys(DALTONISMO).map(k => { const m = DALTONISMO[k].m; return '<filter id="tmCvd-' + k + '" color-interpolation-filters="linearRGB"><feColorMatrix type="matrix" values="' + [m.slice(0, 3), m.slice(3, 6), m.slice(6, 9)].map(l => l.join(' ') + ' 0 0').join(' ') + ' 0 0 0 1 0"/></filter>'; }).join('');
+    document.body.appendChild(svg);
   }
 
   /* ---------------------------- Interface: janela ---------------------------- */
@@ -1427,7 +1468,11 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
       campoRange('mermaid.escala', 'Escala do Mermaid', T.mermaid.escala, 50, 200, 1, '%') + campoCor('mermaid.fundo', 'Fundo do Mermaid', T.mermaid.fundo) + '</div></section>');
     partes.push('<section class="tm-sec"><h3>Posições</h3><div class="tm-grade">' + Object.keys(POSICOES_PADRAO).map(k => campoNum('posicoes.' + k, ROTULO_POSICAO[k], T.posicoes[k], LIMITES['posicoes.' + k][0], LIMITES['posicoes.' + k][1], 1)).join('') + '</div></section>');
     partes.push('<section class="tm-sec"><h3>Variantes</h3><p class="tm-nota">As variantes são temas novos, editáveis. A variante escura escurece as telas e mantém a apostila legível; a de alto contraste usa fundo branco, texto preto e remove imagens de fundo.</p><div class="tm-acoes"><button type="button" class="sec mini" data-a="variante-escura">Criar variante escura</button><button type="button" class="sec mini" data-a="variante-contraste">Criar variante de alto contraste</button><button type="button" class="sec mini" data-a="corrigir">Corrigir contrastes agora</button></div></section>');
-    partes.push('</div><aside class="tm-prev" aria-label="Prévia do tema"><h3>Prévia</h3><div class="tm-prev-slides" id="tmPrevSlides"></div><div id="tmPrevApostila"></div><div id="tmPrevMermaid"></div><div class="tm-contraste" id="tmPrevContraste"></div><p class="tm-nota">A prévia é uma aproximação. Gere os arquivos para conferir o layout final.</p></aside></div>');
+    partes.push('</div><aside class="tm-prev" aria-label="Prévia do tema"><h3>Prévia</h3>' +
+      '<label class="tm-sim" for="tmSimVisao">Simular visão</label><select id="tmSimVisao" aria-describedby="tmSimNota"><option value="">Visão típica</option>' +
+      Object.keys(DALTONISMO).map(k => '<option value="' + k + '"' + (k === simVisao ? ' selected' : '') + '>' + esc(DALTONISMO[k].rotulo) + '</option>').join('') + '</select>' +
+      '<p class="tm-nota" id="tmSimNota">Mostra a prévia como pessoas com daltonismo a veem. Não altera o tema.</p>' +
+      '<div id="tmPrevArea"><div class="tm-prev-slides" id="tmPrevSlides"></div><div id="tmPrevApostila"></div><div id="tmPrevMermaid"></div></div><div class="tm-contraste" id="tmPrevContraste"></div><p class="tm-nota">A prévia é uma aproximação. Gere os arquivos para conferir o layout final.</p></aside></div>');
     b.innerHTML = partes.join('');
     atualizarPreview();
   }
@@ -1576,7 +1621,9 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     const ap = $('tmPrevApostila');
     if (ap) ap.innerHTML = '<div class="tm-prev-apostila"><header style="background:' + esc(p.primaria) + ';color:#fff;font-family:' + esc(T.fontes.titulo) + '">Apostila · ' + esc(T.nome) + '</header><article style="background:' + esc(p.superficie) + ';color:' + esc(p.texto) + ';border-color:' + esc(p.linha) + '"><h4 style="font-family:' + esc(T.fontes.titulo) + ';color:' + esc(p.primaria) + ';font-size:' + Math.max(11, Math.round(T.fontes.tamanho_h2 * 0.42)) + 'px">Título de exemplo</h4><p style="font-family:' + esc(T.fontes.texto) + ';font-size:' + Math.max(9, Math.round(T.fontes.tamanho_base * 0.44)) + 'px;line-height:' + T.fontes.entrelinha + ';letter-spacing:' + T.fontes.espacamento + 'em">Texto da apostila com a fonte, o tamanho e a entrelinha escolhidos. O contraste do corpo é conferido antes de gerar.</p><div class="fake-img" style="width:' + img.tamanho_base + '%;border-radius:' + img.arredondamento + 'px;box-shadow:' + (img.sombra ? '0 2px 10px rgba(0,0,0,.18)' : 'none') + '"></div><blockquote style="background:' + esc(p.suave) + ';border-left-color:' + esc(p.destaque) + ';color:' + esc(p.texto) + '">Exemplo de citação com a cor de apoio.</blockquote></article></div>';
     const mm = $('tmPrevMermaid');
-    if (mm) mm.innerHTML = '<div class="tm-prev-mermaid" style="background:' + esc(T.mermaid.fundo) + ';color:' + esc(p.texto) + ';border-color:' + esc(p.linha) + '">Mermaid: tema <strong>' + esc(T.mermaid.tema) + '</strong> · escala ' + esc(T.mermaid.escala) + '% · fundo ' + esc(T.mermaid.fundo) + '</div>';
+    if (mm) mm.innerHTML = '<div class="tm-prev-mermaid" style="background:' + esc(T.mermaid.fundo) + ';color:' + esc(p.texto) + ';border-color:' + esc(p.linha) + '">Mermaid: tema <strong>' + esc(T.mermaid.tema) + '</strong> · escala ' + esc(T.mermaid.escala) + '% · fundo ' + esc(T.mermaid.fundo) + '</div>' +
+      '<ul class="tm-prev-cores" aria-label="Cores de significado">' + ['primaria', 'destaque', 'apoio', 'alerta', 'erro'].map(k => '<li><i style="background:' + esc(p[k]) + '"></i>' + esc(ROTULO_COR[k]) + '</li>').join('') + '</ul>';
+    const area = $('tmPrevArea'); if (area) area.style.filter = simVisao ? 'url(#tmCvd-' + simVisao + ')' : '';
     atualizarContraste();
   }
 
@@ -1590,7 +1637,8 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
       const x = T.telas[tela];
       if (x.imagem && x.imagem_opacidade > 40) avisos.push('A imagem de fundo em “' + ROTULO_TELA[tela] + '” está a ' + x.imagem_opacidade + '%: o contraste real depende da imagem. Reduza a opacidade ou deixe sem imagem para proteger a leitura.');
     });
-    let h = '<h4>Contraste ' + esc(nivelContraste().toUpperCase()) + '</h4>';
+    const selo = falhasContraste(T, 'aaa').length ? (falhasContraste(T, 'aa').length ? '' : 'AA') : 'AAA';
+    let h = '<h4>Contraste ' + esc(nivelContraste().toUpperCase()) + (selo ? ' <span class="tm-selo atual" id="tmSeloWcag">Atende WCAG ' + selo + '</span>' : '') + '</h4>';
     if (!f.length) h += '<p class="tm-ok">Todos os pares essenciais atendem ao mínimo.</p>';
     else {
       h += '<p class="tm-falha">' + f.length + (f.length === 1 ? ' par abaixo do mínimo:' : ' pares abaixo do mínimo:') + '</p><ul>' +
@@ -1598,8 +1646,32 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     }
     if (extras.length) h += '<p class="tm-aviso">Atenção fora dos pares essenciais:</p><ul>' + extras.map(x => '<li><span>' + esc(x.rotulo) + '</span><strong class="tm-aviso">' + x.razao.toFixed(2) + ':1</strong></li>').join('') + '</ul>';
     if (avisos.length) h += '<ul>' + avisos.map(a => '<li><span class="tm-aviso">' + esc(a) + '</span></li>').join('') + '</ul>';
-    h += '<button type="button" class="sec mini" data-a="corrigir" style="margin-top:6px">Corrigir contrastes</button>';
+    const cvd = paresDaltonismo(T).filter(x => !x.ok);
+    h += '<h4 style="margin-top:8px">Daltonismo</h4><div id="tmDalton">';
+    if (!cvd.length) h += '<p class="tm-ok">As cores de significado (apoio, alerta, erro, primária e destaque) continuam distinguíveis nos quatro tipos.</p>';
+    else h += '<p class="tm-aviso">Cores que podem se confundir. Use também texto ou ícone, ou afaste as cores:</p><ul>' +
+      cvd.map(x => '<li><span>' + esc(ROTULO_COR[x.a] + ' × ' + ROTULO_COR[x.b]) + ' — ' + esc(DALTONISMO[x.tipo].rotulo) + '</span><strong class="tm-aviso">ΔE ' + x.diferenca.toFixed(1) + '</strong></li>').join('') + '</ul>';
+    h += '</div><button type="button" class="sec mini" data-a="corrigir" style="margin-top:6px">Corrigir contrastes</button> <button type="button" class="sec mini" data-a="relatorio" style="margin-top:6px">Baixar relatório de acessibilidade</button>';
     box.innerHTML = h;
+  }
+
+  function relatorioTema(T) {  // Markdown legível por pessoas, sem dependências
+    const sim = ok => ok ? 'Atende' : '**Não atende**', linhas = [];
+    const aa = !falhasContraste(T, 'aa').length, aaa = !falhasContraste(T, 'aaa').length;
+    linhas.push('# Relatório de acessibilidade do tema "' + (T.nome || 'sem nome') + '"', '',
+      'Gerado pelo Conteudista em ' + new Date().toLocaleString('pt-BR') + '. Base: ' + rotuloBase(T.base) + '.', '',
+      '## Resumo', '', '- WCAG AA (contraste 4,5:1): ' + sim(aa), '- WCAG AAA (contraste 6:1 ou mais): ' + sim(aaa));
+    const cvd = paresDaltonismo(T);
+    linhas.push('- Daltonismo: ' + (cvd.every(x => x.ok) ? 'cores de significado distinguíveis nos quatro tipos' : '**' + cvd.filter(x => !x.ok).length + ' combinação(ões) podem se confundir**'), '',
+      '## Contraste dos pares essenciais', '', '| Par | Cores | Razão | Mínimo | Resultado |', '|---|---|---|---|---|');
+    paresContraste(T).concat(paresExtras(T)).forEach(x => linhas.push('| ' + x.rotulo + ' | ' + x.a + ' sobre ' + x.b + ' | ' + x.razao.toFixed(2) + ':1 | ' + x.minimo + ':1 | ' + sim(x.ok) + ' |'));
+    linhas.push('', '## Daltonismo', '', 'Diferença entre as cores (ΔE) simulada para cada tipo. Abaixo de ' + DIFERENCA_MINIMA + ', as cores parecem quase iguais.', '',
+      '| Cores | Tipo | ΔE | Resultado |', '|---|---|---|---|');
+    cvd.forEach(x => linhas.push('| ' + ROTULO_COR[x.a] + ' (' + T.paleta[x.a] + ') × ' + ROTULO_COR[x.b] + ' (' + T.paleta[x.b] + ') | ' + DALTONISMO[x.tipo].rotulo + ' | ' + x.diferenca.toFixed(1) + ' | ' + (x.ok ? 'Distinguível' : '**Pode confundir**') + ' |'));
+    const imgs = TELAS.filter(t => T.telas[t].imagem && T.telas[t].imagem_opacidade > 40);
+    if (imgs.length) linhas.push('', '## Imagens de fundo', '', ...imgs.map(t => '- ' + ROTULO_TELA[t] + ': imagem a ' + T.telas[t].imagem_opacidade + '%. O contraste real depende da imagem; confira no arquivo gerado.'));
+    linhas.push('', 'Este relatório confere cores e contraste do tema. Não substitui a revisão do conteúdo (textos, imagens e descrições).', '');
+    return linhas.join('\n');
   }
 
   function atualizarBlocoImagem(tela) {
@@ -1654,6 +1726,7 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
   function aoMudar(e) {
     if (!editor) return;
     const el = e.target;
+    if (el.id === 'tmSimVisao') { simVisao = DALTONISMO[el.value] ? el.value : ''; atualizarPreview(); return; }
     if (el.matches && el.matches('input[type=file][data-papel]')) {
       const f = el.files && el.files[0];
       const papel = el.dataset.papel;
@@ -1682,6 +1755,13 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     const b = e.target.closest && e.target.closest('button[data-a]');
     if (!b) return;
     const a = b.dataset.a;
+    if (a === 'relatorio') {
+      const T = editor.tema, nome = 'Relatorio_Acessibilidade_Tema_' + (slug(T.nome) || 'personalizado') + '.md', blob = new Blob([relatorioTema(T)], { type: 'text/markdown;charset=utf-8' });
+      if (typeof baixar === 'function') baixar(nome, blob);
+      else { const u = URL.createObjectURL(blob), l = document.createElement('a'); l.href = u; l.download = nome; l.click(); setTimeout(() => URL.revokeObjectURL(u), 4000); }
+      edMsg('Relatório de acessibilidade baixado.', 'ok');
+      return;
+    }
     if (a === 'corrigir') {
       editor.tema = corrigirContraste(editor.tema);
       renderEditor(); marcarSujo();
