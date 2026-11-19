@@ -87,13 +87,11 @@ jobs:
       - name: Montar a página (sem nenhum curso salvo)
         run: |
           mkdir -p site/wheels
-          cp web/index.html web/*.js web/*.css tools/gerador.py site/
+          cp -r web site/
+          cp tools/gerador.py site/
           python -c "import shutil;shutil.copytree('tools/conteudo','site/conteudo',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))"
-          cp -r web/config site/config
-          cp -r web/lib site/lib
           cp -r tools/temas site/temas
           cp -r tools/fontes site/fontes
-          cp -r web/exemplo site/exemplo
           cp CHANGELOG.md site/
           pip download --no-deps --only-binary=:all: --dest site/wheels python-docx python-pptx XlsxWriter typing_extensions
           python -c "import os,json;json.dump(sorted(f for f in os.listdir('site/wheels') if f.endswith('.whl')),open('site/wheels/wheels.json','w'))"
