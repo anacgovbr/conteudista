@@ -88,6 +88,7 @@ jobs:
         run: |
           mkdir -p site/wheels
           cp -r web site/
+          cp web/index.html site/index.html
           cp tools/gerador.py site/
           python -c "import shutil;shutil.copytree('tools/conteudo','site/conteudo',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))"
           cp -r tools/temas site/temas
