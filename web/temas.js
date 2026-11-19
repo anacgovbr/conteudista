@@ -224,6 +224,10 @@
     v = v / 255;
     return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
   }
+  function descanal(v) {
+    v = Math.min(1, Math.max(0, v));
+    return Math.round(255 * (v <= 0.0031308 ? v * 12.92 : 1.055 * Math.pow(v, 1 / 2.4) - 0.055));
+  }
   function luminancia(hexcor) {
     const h = corValida(hexcor, '#000000').slice(1);
     const r = parseInt(h.slice(0, 2), 16), g = parseInt(h.slice(2, 4), 16), b = parseInt(h.slice(4, 6), 16);
@@ -1417,7 +1421,7 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     const url = rec && rec.data ? rec.data : (/^data:image\//i.test(v) || /^temas\//i.test(v) ? v : '');
     const nome = rec ? (rec.nome + ' · ' + Math.ceil((rec.bytes || 0) / 1024) + ' KB') : (v ? 'Imagem do tema' : 'Sem imagem de fundo');
     const idf = 'tmFile_' + tela;
-    return '<div class="tm-img" id="tmImg_' + tela + '"><div class="tm-imgprev" style="' + (url ? 'background-image:url(&quot;' + esc(url).replace(/&quot;/g, '%22') + '&quot;);' : '') + '" role="img" aria-label="' + esc('Prévia do fundo da tela ' + ROTULO_TELA[tela]) + '"></div><div><p class="tm-nota" data-nome-imagem>' + esc(nome) + '</p><div class="tm-imgacoes"><button type="button" class="sec mini" data-a="img-escolher" data-papel="' + tela + '">Escolher imagem</button><button type="button" class="sec mini" data-a="img-remover" data-papel="' + tela + '"' + (v ? '' : ' disabled') + '>Remover imagem</button><input type="file" id="' + idf + '" data-papel="' + tela + '" accept="image/png,image/jpeg,image/webp" hidden><small class="tm-nota">PNG, JPEG ou WebP; a imagem é reduzida e convertida para WebP. Limite por imagem e total definido em Opções.</small></div></div></div>';
+    return '<div class="tm-img" id="tmImg_' + tela + '"><div class="tm-imgprev" style="' + (url ? 'background-image:url(&quot;' + esc(url).replace(/&quot;/g, '%22') + '&quot;);' : '') + '" role="img" aria-label="' + esc('Prévia do fundo da tela ' + ROTULO_TELA[tela]) + '"></div><div><p class="tm-nota" data-nome-imagem>' + esc(nome) + '</p><div class="tm-imgacoes"><button type="button" class="sec mini" data-a="img-escolher" data-papel="' + tela + '">Escolher imagem</button><button type="button" class="sec mini" data-a="img-variantes" data-papel="' + tela + '"' + (url ? '' : ' disabled') + '>Baixar versões para revisão</button><button type="button" class="sec mini" data-a="img-remover" data-papel="' + tela + '"' + (v ? '' : ' disabled') + '>Remover imagem</button><input type="file" id="' + idf + '" data-papel="' + tela + '" accept="image/png,image/jpeg,image/webp" hidden><small class="tm-nota">PNG, JPEG ou WebP; a imagem é reduzida e convertida para WebP. Limite por imagem e total definido em Opções.</small></div></div></div>';
   }
   function blocoTela(tela) {
     const x = editor.tema.telas[tela];
@@ -1685,6 +1689,7 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     const nome = wrap.querySelector('[data-nome-imagem]');
     if (nome) nome.textContent = rec ? (rec.nome + ' · ' + Math.ceil((rec.bytes || 0) / 1024) + ' KB') : (v ? 'Imagem do tema' : 'Sem imagem de fundo');
     const rem = wrap.querySelector('[data-a="img-remover"]'); if (rem) rem.disabled = !v;
+    const varB = wrap.querySelector('[data-a="img-variantes"]'); if (varB) varB.disabled = !url;
   }
 
   function aoEditar(e) {
@@ -1775,8 +1780,44 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
       edMsg('Variante “' + V.nome + '” criada como novo tema. Ajuste e clique em Salvar tema.', 'ok');
     } else if (a === 'img-escolher') {
       const f = $('tmFile_' + b.dataset.papel); if (f) f.click();
+    } else if (a === 'img-variantes') {
+      baixarVariantes(b.dataset.papel);
     } else if (a === 'img-remover') {
       removerImagem(b.dataset.papel);
+    }
+  }
+
+  async function baixarVariantes(papel) {
+    if (!editor) return;
+    const v = editor.tema.telas[papel].imagem;
+    const rec = /^img:/i.test(v) ? editor.imagens.get(v.slice(4)) : null;
+    const url = rec && rec.data ? rec.data : (/^data:image\//i.test(v) ? v : '');
+    if (!url) { edMsg('Escolha uma imagem antes de baixar as versões.', 'erro'); return; }
+    try {
+      const img = await new Promise((ok, falha) => { const i = new Image(); i.onload = () => ok(i); i.onerror = falha; i.src = url; });
+      const c = document.createElement('canvas');
+      const escala = Math.min(1, 1200 / Math.max(img.naturalWidth, img.naturalHeight));
+      c.width = Math.max(1, Math.round(img.naturalWidth * escala)); c.height = Math.max(1, Math.round(img.naturalHeight * escala));
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(img, 0, 0, c.width, c.height);
+      const base = ctx.getImageData(0, 0, c.width, c.height);
+      const nome = 'Tema_' + (slug(editor.tema.nome) || 'personalizado') + '_' + papel;
+      for (const tipo of Object.keys(DALTONISMO)) {
+        const d = ctx.createImageData(c.width, c.height), m = DALTONISMO[tipo].m;
+        for (let i = 0; i < base.data.length; i += 4) {
+          const r = canal(base.data[i]), g = canal(base.data[i + 1]), b = canal(base.data[i + 2]);
+          d.data[i] = descanal(m[0] * r + m[1] * g + m[2] * b);
+          d.data[i + 1] = descanal(m[3] * r + m[4] * g + m[5] * b);
+          d.data[i + 2] = descanal(m[6] * r + m[7] * g + m[8] * b);
+          d.data[i + 3] = base.data[i + 3];
+        }
+        ctx.putImageData(d, 0, 0);
+        const blob = await new Promise(ok => c.toBlob(ok, 'image/png'));
+        if (blob) baixar(nome + '_' + tipo + '.png', blob);
+      }
+      edMsg('Quatro versões baixadas: original simulada em cada tipo de daltonismo.', 'ok');
+    } catch (e) {
+      edMsg('Não foi possível gerar as versões: ' + ((e && e.message) || e), 'erro');
     }
   }
 

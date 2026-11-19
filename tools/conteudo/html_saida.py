@@ -6,8 +6,9 @@ from .contexto import aviso, decorativa
 from . import licencas
 from .fontes import fontes_css
 from .markdown import blocks, mermaid_edges, plain, runs, slug, title_of, ICONE_DESTAQUE, ROTULO_DESTAQUE
+from .mermaid import corrigir as corrigir_mermaid
 from .recursos import ler_recurso
-from .temas import TEMA_PADRAO, tcss, tema_de, css_apostila, css_apresentacao, papeis_slides, mermaid_config, eh_personalizado, chave_markdown
+from .temas import TEMA_PADRAO, tcss, tema_de, css_apostila, css_apresentacao, papeis_slides, mermaid_config, eh_personalizado, chave_markdown, paleta
 
 LEITURA_HEAD=ler_recurso('acessibilidade/preferencias.js')
 
@@ -41,6 +42,7 @@ def lst_html(it):
     return rec(0,it[0][0])[0]
 
 _TB=[0]
+_TEMA_MM=None  # tema da página em construção: usado para corrigir as cores dos fluxos Mermaid
 def _tabela_html(r,nome,cap=''):
     "1.93 (WCAG 1.3.1/2.4.6): cada tabela com nome proprio; 'Tabela: texto' antes da tabela vira legenda (caption)."
     _TB[0]+=1;n=_TB[0]
@@ -92,6 +94,7 @@ def _tabela_fluxo(code,foco=True):
 
 def _mermaid_html(code):
     # Desenho (Mermaid) + tabela do fluxo em <details> na tela + cópia só para impressão (não depende de JavaScript).
+    if _TEMA_MM is not None:code,_=corrigir_mermaid(code,paleta(_TEMA_MM))
     return ('<div class="mw" role="img" aria-label="%s"><pre class="mermaid">%s</pre></div>'
             '<details class="fluxo-tabela"><summary>Tabela do fluxo</summary>%s</details>'
             '<div class="fluxo-print" aria-hidden="true">%s</div>')%(E(_fluxo_alt(code)),E(code),_tabela_fluxo(code),_tabela_fluxo(code,False))
@@ -143,7 +146,8 @@ A11Y_JS=ler_recurso('acessibilidade/painel.html')
 
 def treinamento_html(md,bar,tema=None,vlibras=True,licenca=''):
     # Os temas ANAC 20 anos alteram somente a apresentação; a apostila permanece no padrão gov.br.
-    T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema)
+    global _TEMA_MM
+    T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema);_TEMA_MM=T
     _TB[0]=0;toc=[];b=html_of(blocks(md),toc)
     hs=list(re.finditer(r'<h2 id="[^"]+">(.*?)</h2>',b))
     for k,m in enumerate(hs):
@@ -242,7 +246,8 @@ def _ic(k,cls=''):
 
 def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True,licenca=''):
     """Monta o HTML da apresentação (com ou sem narração): ARIA, leitura, modo leitura, auto-ajuste e impressão A4."""
-    _TB[0]=0;T=tema_de(tema);n_original=len(sl);n=n_original+bool(licenca);secs=[]
+    global _TEMA_MM
+    _TB[0]=0;T=tema_de(tema);_TEMA_MM=T;n_original=len(sl);n=n_original+bool(licenca);secs=[]
     papeis=papeis_slides(sl,bool(licenca))
     for k,(c,b,nt) in enumerate(sl):
         rot='Slide %d de %d'%(k+1,n)

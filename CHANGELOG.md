@@ -1,4 +1,9 @@
 # Novidades do Conteudista
+## 1.107 - 19/11/2026
+- **Auditoria de imagens no relatório:** o relatório de acessibilidade ganhou a seção **Imagens**, com descrição ausente, tamanho, uso de vermelho e verde como cores principais, contraste estimado entre as duas cores dominantes e indício de texto embutido. A imagem original não é alterada.
+- **Fluxos Mermaid corrigidos:** quando um fluxo usa vermelho e verde nas cores dos nós, o HTML gerado aproxima essas cores do erro e do apoio do tema e garante texto com 4,5:1 sobre o preenchimento. A tabela do fluxo e o texto alternativo continuam iguais.
+- **Versões para revisão:** a imagem de fundo do tema pode ser baixada nos quatro tipos de daltonismo (protanopia, deuteranopia, tritanopia e acromatopsia) para conferência antes de publicar.
+- **Testes:** novos testes 6.8 (cores do Mermaid) e 17.7 (auditoria de imagens no relatório).
 ## 1.106 - 19/11/2026
 - **Daltonismo no editor de temas:** a prévia do tema ganhou o seletor **Simular visão**, que mostra a apostila e os slides como pessoas com protanopia, deuteranopia, tritanopia ou acromatopsia os veem. A simulação não altera o tema. Uma faixa mostra as cores de significado (primária, destaque, apoio, alerta e erro) para conferir de perto.
 - **Aviso de cores que se confundem:** o painel da prévia aponta as combinações de cores de significado que ficam parecidas demais em cada tipo de daltonismo (por exemplo, verde e vermelho com o mesmo brilho) e sugere usar também texto ou ícone.

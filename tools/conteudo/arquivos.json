@@ -9,6 +9,7 @@
   "conteudo/imagens.py",
   "conteudo/licencas.py",
   "conteudo/markdown.py",
+  "conteudo/mermaid.py",
   "conteudo/pptx.py",
   "conteudo/recursos/__init__.py",
   "conteudo/recursos/acessibilidade/fonte.html",

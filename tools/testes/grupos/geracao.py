@@ -17,7 +17,7 @@ def grupo5(amb, ctx, G):
     q = {s: (re.search(r'%s\?v=([\d.]+)' % re.escape(s), idx) or [None, None])[1] for s in ('ajuda.js', 'changelog.js')}
     G.chk('5.2', 'index.html carrega ajuda.js e changelog.js com ?v= da versão atual', all(v == ver for v in q.values()), f'esperado {ver}: {q}')
     cacheados = ('opcoes.js', 'ajuda.js', 'changelog.js', 'licencas-ajuda.js', 'acessibilidade.js', 'acessibilidade-marcas.js', 'acessibilidade-janelas.js',
-                 'acessibilidade-geracao.js', 'relatorio-acessibilidade.js', 'acessibilidade-config.js', 'vlibras.js')
+                 'acessibilidade-geracao.js', 'relatorio-acessibilidade.js', 'imagens-a11y.js', 'acessibilidade-config.js', 'vlibras.js')
     q = {s: (re.search(r'%s\?v=([\d.]+)' % re.escape(s), idx) or [None, None])[1] for s in cacheados}
     G.chk('5.2c', 'Todos os scripts alterados usam o cache-buster da versão atual', all(v == ver for v in q.values()), f'esperado {ver}: {q}')
     # cada versão tem pelo menos um item e não há versão duplicada
@@ -86,6 +86,26 @@ def grupo6(amb, ctx, G):
                'docx': '+ Dica de teste.' in dx and '! Atenção de teste.' in dx,
                'pptx': '+ Dica no slide.' in px and '! Atenção no slide.' in px}
     G.chk('6.7', 'Destaques: ícone de um caractere em HTML, EPUB, DOCX e PPTX, com rótulo para leitor de tela',
+          bool(det) and all(det.values()), det or (r.stderr or r.stdout)[-300:])
+    # Fluxos Mermaid: vermelho e verde nas cores dos nós viram erro e apoio do tema, com texto legível.
+    mm = amb.tmp / 'fluxo-cores.md'
+    mm.write_text('# Fluxo\n\n```mermaid\nflowchart LR\nA[Concluído] --> B[Falhou]\nstyle A fill:#00aa00,color:#ffffff\nstyle B fill:#ff0000\n```\n', encoding='utf-8')
+    dm = amb.tmp / 'saida_mermaid'
+    r = rodar([sys.executable, str(suporte.GERADOR), str(mm), str(mm), '--prefixo', 'Fluxo', '--saida', str(dm), '--tema', 'govbr'], cwd=RAIZ)
+    pagina = next(dm.glob('Apostila_Fluxo.html'), None)
+    bloco, det = '', {}
+    if r.returncode == 0 and pagina is not None:
+        import html as _html
+        achado = re.search(r'<pre class="mermaid">(.*?)</pre>', pagina.read_text(encoding='utf-8'), re.S)
+        bloco = _html.unescape(achado.group(1)) if achado else ''
+        sys.path.insert(0, str(RAIZ))
+        from tools.conteudo.mermaid import pior_diferenca
+        fills = re.findall(r'fill:(#[0-9a-fA-F]{6})', bloco)
+        det = {'dois_preenchimentos': len(fills) == 2,
+               'sem_cores_originais': '#00aa00' not in bloco.lower() and '#ff0000' not in bloco.lower(),
+               'texto_legivel': 'color:' in bloco,
+               'distintos_no_daltonismo': len(fills) == 2 and pior_diferenca(fills[0], fills[1]) >= 12}
+    G.chk('6.8', 'Fluxos Mermaid: vermelho e verde viram erro e apoio do tema, distintos no daltonismo',
           bool(det) and all(det.values()), det or (r.stderr or r.stdout)[-300:])
     lic = amb.tmp / 'saida_licenciada'
     r = rodar([sys.executable, str(suporte.GERADOR), str(EXEMPLO_TREINO), str(EXEMPLO_APRES), '--prefixo', 'Licenca', '--saida', str(lic), '--tema', 'govbr', '--licenca', 'cc-by-4.0'], cwd=RAIZ)

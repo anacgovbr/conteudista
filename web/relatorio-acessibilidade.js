@@ -35,12 +35,33 @@
     });
   }
 
+  async function completo() {
+    const relatorio = await preparar();
+    if (!global.ImagensA11y) return relatorio;
+    const imagens = [], mermaid = [];
+    let restantes = 0;
+    for (const k of ['g', 's']) {
+      const campo = $(k), texto = campo && campo.value;
+      if (!texto || !texto.trim()) continue;
+      const r = await global.ImagensA11y.analisar(texto);
+      imagens.push(...r.imagens); mermaid.push(...r.mermaid);
+      restantes += r.restantes || 0;
+    }
+    return Object.assign(relatorio, { imagens, mermaid, imagensRestantes: restantes });
+  }
+
+  function conteudo(relatorio, formato) {
+    if (formato === 'json') return JSON.stringify(relatorio, null, 2) + '\n';
+    const I = global.ImagensA11y;
+    const md = I ? I.markdown(relatorio.imagens, relatorio.mermaid, relatorio.imagensRestantes) : '';
+    const secao = I ? I.html(relatorio.imagens, relatorio.mermaid, relatorio.imagensRestantes) : '';
+    if (formato === 'markdown') return biblioteca.relatorioMarkdown(relatorio) + md;
+    return biblioteca.relatorioHtml(relatorio).replace('</main>', secao + '</main>');
+  }
+
   function baixar(relatorio, formato) {
-    const conteudo = formato === 'json' ? JSON.stringify(relatorio, null, 2) + '\n'
-      : formato === 'markdown' ? biblioteca.relatorioMarkdown(relatorio)
-        : biblioteca.relatorioHtml(relatorio);
     const tipo = formato === 'json' ? 'application/json' : formato === 'markdown' ? 'text/markdown' : 'text/html';
-    const url = URL.createObjectURL(new Blob([conteudo], { type: tipo + ';charset=utf-8' }));
+    const url = URL.createObjectURL(new Blob([conteudo(relatorio, formato)], { type: tipo + ';charset=utf-8' }));
     const a = document.createElement('a');
     a.href = url;
     a.download = slug(relatorio.nome) + '_relatorio_acessibilidade.' + (formato === 'markdown' ? 'md' : formato);
@@ -65,7 +86,7 @@
       if (botao.hasAttribute('data-fechar')) { dialog.close(); return; }
       const formato = botao.dataset.formato;
       botao.disabled = true;
-      try { baixar(await preparar(), formato); dialog.close(); }
+      try { baixar(await completo(), formato); dialog.close(); }
       catch (erro) {
         const status = dialog.querySelector('[role="status"]');
         if (status) status.textContent = 'Não foi possível gerar o relatório. ' + (erro.message || '');
@@ -96,7 +117,10 @@ html.contraste .la-relatorio-dialog{background:#000;color:#fff;border-color:#fff
 
   async function html() {
     const L = biblioteca || (biblioteca = await import('./lib/linguagem-acessivel/index.js'));
-    return L.relatorioHtml(await preparar());
+    const relatorio = await completo();
+    const I = global.ImagensA11y;
+    const secao = I ? I.html(relatorio.imagens, relatorio.mermaid, relatorio.imagensRestantes) : '';
+    return L.relatorioHtml(relatorio).replace('</main>', secao + '</main>');
   }
 
   document.addEventListener('click', event => {

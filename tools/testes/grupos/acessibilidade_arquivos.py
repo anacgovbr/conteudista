@@ -101,6 +101,32 @@ def grupo17(amb, ctx, G):
         axe = audit.evaluate("async () => { const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa'] } }); return r.violations.map(v => ({ id: v.id, help: v.help, nodes: v.nodes.map(n => n.target) })); }")
         G.chk('17.5', 'HTML do relatório passa no axe-core (WCAG 2.2 A/AA)', not axe, axe[:3])
         G.chk('17.6', 'Nenhum erro de JavaScript ao exportar o relatório', not erros and not erros_audit, erros + erros_audit)
+        imagens = pg.evaluate("""async () => {
+          const criar = (w, h, pintar) => {
+            const c = document.createElement('canvas'); c.width = w; c.height = h;
+            pintar(c.getContext('2d'), w, h); return c.toDataURL('image/png');
+          };
+          const cores = criar(200, 120, (x, w, h) => {
+            x.fillStyle = '#ffffff'; x.fillRect(0, 0, w, h);
+            x.fillStyle = '#e52207'; x.fillRect(0, 0, w / 2, h);
+            x.fillStyle = '#168821'; x.fillRect(w / 2, 0, w / 2, h);
+          });
+          const texto = criar(320, 160, (x, w, h) => {
+            x.fillStyle = '#ffffff'; x.fillRect(0, 0, w, h);
+            x.fillStyle = '#222222'; x.font = '16px Arial';
+            ['Aprovação do relatório', 'Prazo: 30 dias', 'Responsável: equipe', 'Revisão em janeiro']
+              .forEach((t, i) => x.fillText(t, 12, 30 + i * 28));
+          });
+          const md = ['# T', '', '![Cores](' + cores + ')', '', '![Prazos](' + texto + ')', '',
+                      '![Externa](https://example.com/figura.png)'].join(String.fromCharCode(10));
+          const r = await ImagensA11y.analisar(md);
+          return r.imagens.map(i => ({ alt: i.alt, rv: i.redVerde, vermelho: i.vermelho, verde: i.verde, texto: i.texto, erro: i.erro }));
+        }""")
+        ok_rv = len(imagens) == 3 and imagens[0]['rv'] and imagens[0]['vermelho'] >= 40 and imagens[0]['verde'] >= 40
+        ok_texto = len(imagens) == 3 and imagens[1]['texto'] and not imagens[1]['rv']
+        ok_externa = len(imagens) == 3 and bool(imagens[2]['erro'])
+        G.chk('17.7', 'Auditoria de imagens: vermelho×verde, texto embutido e imagem externa não verificada',
+              ok_rv and ok_texto and ok_externa, imagens)
         audit.close()
         pg.close()
     finally:
