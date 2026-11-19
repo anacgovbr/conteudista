@@ -42,7 +42,6 @@ def lst_html(it):
     return rec(0,it[0][0])[0]
 
 _TB=[0]
-_TEMA_MM=None  # tema da página em construção: usado para corrigir as cores dos fluxos Mermaid
 def _tabela_html(r,nome,cap=''):
     "1.93 (WCAG 1.3.1/2.4.6): cada tabela com nome proprio; 'Tabela: texto' antes da tabela vira legenda (caption)."
     _TB[0]+=1;n=_TB[0]
@@ -54,7 +53,7 @@ def _tabela_html(r,nome,cap=''):
     t+='<thead><tr>'+''.join('<th scope="col">%s</th>'%inl(x) for x in r[0])+'</tr></thead><tbody>'
     t+=''.join('<tr>'+''.join('<td>%s</td>'%inl(x) for x in y)+'</tr>' for y in r[1:])
     return t+'</tbody></table></div>'
-def html_of(bl,toc=None,_ctx=None):
+def html_of(bl,toc=None,_ctx=None,pal=None):
     o=[];ctx=_ctx if _ctx is not None else {'tit':''};cap=None
     for b in bl:
         k=b[0]
@@ -75,12 +74,12 @@ def html_of(bl,toc=None,_ctx=None):
         elif k=='table':o.append(_tabela_html(b[1],ctx['tit'],cap or ''));cap=None
         elif k=='list':o.append(lst_html(b[1]))
         elif k=='quote':
-            inner=html_of(b[2],None,ctx);ico=ICONE_DESTAQUE.get(b[1])
+            inner=html_of(b[2],None,ctx,pal);ico=ICONE_DESTAQUE.get(b[1])
             if ico:
                 marca='<span class="q-ico" aria-hidden="true">%s</span><span class="sr-only">%s: </span>'%(ico,ROTULO_DESTAQUE[b[1]])
                 inner=('<p>'+marca+inner[3:]) if inner.startswith('<p>') else ('<p>'+marca+'</p>'+inner)
             o.append('<blockquote class="%s">%s</blockquote>'%(b[1],inner))
-        elif k=='code':o.append(_mermaid_html(b[2]) if b[1]=='mermaid' else '<pre class="code" tabindex="0"><code>%s</code></pre>'%E(b[2]))
+        elif k=='code':o.append(_mermaid_html(b[2],pal) if b[1]=='mermaid' else '<pre class="code" tabindex="0"><code>%s</code></pre>'%E(b[2]))
     if cap is not None:o.append('<p>'+inl('Tabela: '+cap)+'</p>')
     return '\n'.join(o)
 def _tabela_fluxo(code,foco=True):
@@ -92,9 +91,9 @@ def _tabela_fluxo(code,foco=True):
     t+=''.join('<tr>'+''.join('<td>%s</td>'%E(c) for c in x)+'</tr>' for x in rows[1:])+'</tbody></table>'
     return '<div class="tbl" role="region" aria-label="Tabela do fluxo" tabindex="0">%s</div>'%t if foco else '<div class="tbl">%s</div>'%t
 
-def _mermaid_html(code):
+def _mermaid_html(code,pal=None):
     # Desenho (Mermaid) + tabela do fluxo em <details> na tela + cópia só para impressão (não depende de JavaScript).
-    if _TEMA_MM is not None:code,_=corrigir_mermaid(code,paleta(_TEMA_MM))
+    if pal:code,_=corrigir_mermaid(code,pal)
     return ('<div class="mw" role="img" aria-label="%s"><pre class="mermaid">%s</pre></div>'
             '<details class="fluxo-tabela"><summary>Tabela do fluxo</summary>%s</details>'
             '<div class="fluxo-print" aria-hidden="true">%s</div>')%(E(_fluxo_alt(code)),E(code),_tabela_fluxo(code),_tabela_fluxo(code,False))
@@ -146,9 +145,8 @@ A11Y_JS=ler_recurso('acessibilidade/painel.html')
 
 def treinamento_html(md,bar,tema=None,vlibras=True,licenca=''):
     # Os temas ANAC 20 anos alteram somente a apresentação; a apostila permanece no padrão gov.br.
-    global _TEMA_MM
-    T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema);_TEMA_MM=T
-    _TB[0]=0;toc=[];b=html_of(blocks(md),toc)
+    T=tema_de('govbr' if str(tema or '').startswith('anac20-') else tema)
+    _TB[0]=0;toc=[];b=html_of(blocks(md),toc,None,paleta(T))
     hs=list(re.finditer(r'<h2 id="[^"]+">(.*?)</h2>',b))
     for k,m in enumerate(hs):
         if 'gabarito' in m.group(1).lower():
@@ -246,14 +244,13 @@ def _ic(k,cls=''):
 
 def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True,licenca=''):
     """Monta o HTML da apresentação (com ou sem narração): ARIA, leitura, modo leitura, auto-ajuste e impressão A4."""
-    global _TEMA_MM
-    _TB[0]=0;T=tema_de(tema);_TEMA_MM=T;n_original=len(sl);n=n_original+bool(licenca);secs=[]
+    _TB[0]=0;T=tema_de(tema);n_original=len(sl);n=n_original+bool(licenca);secs=[]
     papeis=papeis_slides(sl,bool(licenca))
     for k,(c,b,nt) in enumerate(sl):
         rot='Slide %d de %d'%(k+1,n)
         nota='<aside class="nt" role="note" aria-label="Notas do apresentador"><p class="nt-t">Notas do apresentador</p><p class="nt-x">%s</p></aside>'%E(nt) if (nt or '').strip() else ''
         legenda='<p class="a11y-caption">%s</p>'%E(nt) if audios and k in audios and (nt or '').strip() else ''
-        secs.append('<section class="s %s papel-%s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,papeis[k].replace('_','-'),rot,rot,html_of(b),nota,legenda))
+        secs.append('<section class="s %s papel-%s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,papeis[k].replace('_','-'),rot,rot,html_of(b,None,None,paleta(T)),nota,legenda))
     if licenca:
         rot='Slide %d de %d'%(n,n)
         secs.append('<section class="s licenciamento papel-licenciamento" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div></section>'%(rot,rot,licencas.aviso_slide_html(licenca)))

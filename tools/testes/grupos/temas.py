@@ -125,6 +125,17 @@ def grupo25(amb, ctx, G):
         G.chk('25.10', 'Imagem de fundo e extraida para o banco e resolvida antes de gerar',
               img['id'] == 'teste-img' and img['ref'].startswith('img:') and img['data'], img)
 
+        pg.evaluate("Temas.abrir('meus')")
+        pg.wait_for_selector('#tmLista .tm-item[data-valor="custom:teste-img"] button[data-a="editar"]', timeout=10000)
+        pg.click('#tmLista .tm-item[data-valor="custom:teste-img"] button[data-a="editar"]')
+        botao = '#tmImg_capa [data-a="img-variantes"]'
+        pg.wait_for_selector(botao + ':not([disabled])', timeout=10000)
+        with pg.expect_download() as primeiro:
+            pg.click(botao)
+        pg.wait_for_function("document.querySelector('#tmMsg, .tm-msg') && /Quatro vers/.test(document.body.innerText)", timeout=10000)
+        G.chk('25.10b', 'Baixar versões para revisão: o botão gera download (protanopia primeiro) e conclui sem erro',
+              'protanopia' in primeiro.value.suggested_filename and not erros, primeiro.value.suggested_filename)
+
         contraste = pg.evaluate("""async () => {
             const T = Temas.normalizar({ base: 'govbr', nome: 'Contraste 25',
                 telas: { interna_clara: { fundo: '#ffffff', texto: '#eeeeee' } } });
