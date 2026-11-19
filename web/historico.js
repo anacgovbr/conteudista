@@ -11,8 +11,8 @@
 (function () {
   'use strict';
   const SESS = Date.now().toString(36) + Math.random().toString(36).slice(2, 6), INI = new Date();
-  // shortcut: guarda só as 120 versões mais recentes e até ~50 MB de texto por navegador; exportar as antigas se pedirem histórico mais longo.
-  const MAX_VERSOES = 120, MAX_VERSOES_TAM = 50 * 1024 * 1024, INTERVALO_SESSAO = 3 * 60 * 1000;
+  // shortcut: guarda só as 240 versões mais recentes e até ~200 MB de texto por navegador; exportar as antigas se pedirem histórico mais longo.
+  const MAX_VERSOES = 240, MAX_VERSOES_TAM = 200 * 1024 * 1024, INTERVALO_SESSAO = 3 * 60 * 1000;
   const ORIGENS = {
     sessao: 'Edição (automático)', marco: 'Versão salva', arquivo: 'Arquivo carregado', link: 'Link aberto',
     rascunho: 'Rascunho aberto', exemplo: 'Exemplo', antes: 'Antes de carregar', gerado: 'Arquivos gerados',
