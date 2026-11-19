@@ -1,10 +1,7 @@
 /* Auditoria de acessibilidade das imagens e dos fluxos do texto.
    Não altera nada: lê o Markdown, amostra as imagens num canvas e devolve o que
-   precisa de revisão humana. Roda no relatório de acessibilidade.
-
-   shortcut: sem OCR e sem IA. "Texto embutido" é um indício por componentes
-   pequenos de altura parecida; se um dia for preciso ler o texto da imagem,
-   entra um OCR local no lugar de `textoProvavel`. */
+   precisa de revisão humana. Roda no relatório de acessibilidade. */
+// shortcut: sem OCR e sem IA; "texto embutido" é só um indício por componentes de altura parecida. Trocar `textoProvavel` por OCR local se usuários reportarem 2+ falsos positivos/negativos.
 (function (global) {
   'use strict';
 

@@ -4,11 +4,8 @@ O texto do nó já diz o que ele é; o que pode falhar é o desenho: texto claro
 sobre preenchimento claro e pares vermelho/verde que se confundem no
 daltonismo. Aqui só se mexe em `style` e `classDef`, que é o que o autor
 escreve no Markdown.
-
-shortcut: entende apenas `fill`, `color` e `stroke` em `style`/`classDef`.
-Diretivas de tema do próprio Mermaid continuam no tema do Mermaid; ampliar
-quando o editor passar a oferecer mais campos de estilo.
 """
+# shortcut: entende só `fill`, `color` e `stroke` em `style`/`classDef`; diretivas de tema do Mermaid ficam de fora. Ampliar quando o editor oferecer mais campos de estilo.
 import colorsys, re
 
 # Matrizes de simulação de daltonismo (Machado et al. 2009), as mesmas do editor web.
