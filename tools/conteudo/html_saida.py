@@ -5,7 +5,7 @@ from .audio import MIME_AUDIO
 from .contexto import aviso, decorativa
 from . import licencas
 from .fontes import fontes_css
-from .markdown import blocks, mermaid_edges, plain, runs, slug, title_of, ICONE_DESTAQUE, ROTULO_DESTAQUE
+from .markdown import blocks, mermaid_edges, plain, runs, slug, title_of, url_ok, ICONE_DESTAQUE, ROTULO_DESTAQUE
 from .mermaid import corrigir as corrigir_mermaid
 from .recursos import ler_recurso
 from .temas import TEMA_PADRAO, tcss, tema_de, css_apostila, css_apresentacao, papeis_slides, mermaid_config, eh_personalizado, chave_markdown, paleta
@@ -25,7 +25,7 @@ def inl(t):
         if c:h='<code>'+h+'</code>'
         if i:h='<em>'+h+'</em>'
         if b:h='<strong>'+h+'</strong>'
-        if u:
+        if u and url_ok(u):
             if re.match(r'(?i)https?://',u):h='<a href="%s" target="_blank" rel="noopener noreferrer">%s<span class="vh"> (abre em nova aba)</span></a>'%(E(u),h)
             else:h='<a href="%s">%s</a>'%(E(u),h)
         s+=h

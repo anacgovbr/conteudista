@@ -171,9 +171,9 @@
     return { linha: item.linha, cores: fills.length, redVerde: fam.has('vermelho') && fam.has('verde') };
   }
 
-  async function analisar(texto) {
+  async function analisar(texto, total = LIMITE_TOTAL) {
     const md = String(texto || '');
-    const imagens = [], lista = imagensDe(md), limite = Date.now() + LIMITE_TOTAL;
+    const imagens = [], lista = imagensDe(md), limite = Date.now() + total;
     let parou = 0;
     for (const item of lista.slice(0, MAX_IMAGENS)) {
       if (Date.now() > limite) { parou++; continue; }

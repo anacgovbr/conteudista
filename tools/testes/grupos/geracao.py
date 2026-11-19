@@ -16,10 +16,8 @@ def grupo5(amb, ctx, G):
     ver = v_js.group(1) if v_js else '?'
     q = {s: (re.search(r'%s\?v=([\d.]+)' % re.escape(s), idx) or [None, None])[1] for s in ('ajuda.js', 'changelog.js')}
     G.chk('5.2', 'index.html carrega ajuda.js e changelog.js com ?v= da versão atual', all(v == ver for v in q.values()), f'esperado {ver}: {q}')
-    cacheados = ('opcoes.js', 'ajuda.js', 'changelog.js', 'licencas-ajuda.js', 'acessibilidade.js', 'acessibilidade-marcas.js', 'acessibilidade-janelas.js',
-                 'acessibilidade-geracao.js', 'relatorio-acessibilidade.js', 'imagens-a11y.js', 'acessibilidade-config.js', 'vlibras.js')
-    q = {s: (re.search(r'%s\?v=([\d.]+)' % re.escape(s), idx) or [None, None])[1] for s in cacheados}
-    G.chk('5.2c', 'Todos os scripts alterados usam o cache-buster da versão atual', all(v == ver for v in q.values()), f'esperado {ver}: {q}')
+    q = dict(re.findall(r'([\w.-]+\.js)\?v=([\d.]+)', idx))
+    G.chk('5.2c', 'Todos os scripts com ?v= em index.html usam o cache-buster da versão atual', bool(q) and all(v == ver for v in q.values()), f'esperado {ver}: { {k: v for k, v in q.items() if v != ver} }')
     # cada versão tem pelo menos um item e não há versão duplicada
     vs = re.findall(r'(?m)^##\s+([\d.]+)', cl)
     G.chk('5.3', 'CHANGELOG sem versões duplicadas e em ordem decrescente',
@@ -114,6 +112,14 @@ def grupo6(amb, ctx, G):
     cores_mm = re.findall(r'fill:\s*(#[0-9a-f]{6})(?:,color:(#[0-9a-f]{6}))?', saida_mm)
     G.chk('6.9', 'Fluxos Mermaid: texto com 4,5:1 mesmo com cor de 3 dígitos ou espaço após fill:',
           len(cores_mm) == 2 and all(t and contraste(f, t) >= 4.5 for f, t in cores_mm), saida_mm)
+    # Links: só relativo, #, http(s) e mailto; javascript: vira texto sem link (apostila HTML e EPUB).
+    from tools.conteudo.html_saida import treinamento_html
+    from tools.conteudo.epub import _ep_inl, _EpubCtx
+    md_lk = '# T\n\n[ruim](javascript:alert(1)) [mau](JaVa\x01Script:x) [dado](data:text/html,x) [bom](https://a.b/) [ancora](#t)\n'
+    h_lk = treinamento_html(md_lk, '')
+    e_lk = _ep_inl('[ruim](javascript:alert(1)) [bom](https://a.b/)', _EpubCtx())
+    G.chk('6.10', 'Links perigosos (javascript:, data:) não viram href no HTML nem no EPUB; http(s) e # continuam',
+          not re.search(r'(?i)href="(javascript|data|java)', h_lk + e_lk) and 'href="https://a.b/"' in h_lk and 'href="#t"' in h_lk and 'href="https://a.b/"' in e_lk, h_lk[h_lk.find('<article'):][:300])
     lic = amb.tmp / 'saida_licenciada'
     r = rodar([sys.executable, str(suporte.GERADOR), str(EXEMPLO_TREINO), str(EXEMPLO_APRES), '--prefixo', 'Licenca', '--saida', str(lic), '--tema', 'govbr', '--licenca', 'cc-by-4.0'], cwd=RAIZ)
     md_g = lic / 'Apostila_Licenca.md'; md_s = lic / 'Apresentacao_Licenca.md'

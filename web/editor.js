@@ -22,12 +22,16 @@
   const DATA_IMG = /\(data:image\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=\s]+\)/gi;
 
   /* ---------------------------- Renderizador ---------------------------- */
+  function urlOk(s) {  // só relativo, #, http, https e mailto; bloqueia javascript:, data: e afins
+    s = s.replace(/[\x00-\x20]/g, '');
+    return !/^[a-z][a-z0-9+.-]*:/i.test(s) || /^(https?|mailto):/i.test(s);
+  }
   function inline(t) {
     const tok = [];
     const keep = h => '\u0000' + (tok.push(h) - 1) + '\u0000';
     t = t.replace(/`([^`]+)`/g, (m, c) => keep('<code>' + esc(c) + '</code>'));
     t = t.replace(/!\[([^\]]*)\]\(([^)\s]+)\)/g, (m, a, s) => keep('<img class="il" src="' + esc(s) + '" alt="' + esc(a) + '">'));
-    t = t.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, a, s) => keep('<a href="' + esc(s) + '" target="_blank" rel="noopener">' + inline(a) + '</a>'));
+    t = t.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (m, a, s) => urlOk(s) ? keep('<a href="' + esc(s) + '" target="_blank" rel="noopener">' + inline(a) + '</a>') : inline(a));
     t = esc(t);
     t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     t = t.replace(/(^|[^\w*])\*(?!\s)(.+?)(?<!\s)\*(?![\w*])/g, '$1<em>$2</em>');

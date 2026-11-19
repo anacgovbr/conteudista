@@ -11,6 +11,11 @@ LI=re.compile(r'^(\s*)([-*]|\d+\.)\s+(.*)$')
 
 CODIGO_RX=re.compile(r'(?ms)(^```[^\n]*\n.*?^```[ \t]*$|`[^`\n]+`)')
 
+def url_ok(u):
+    "Link seguro: sem esquema (relativo ou #) ou só http, https e mailto. Bloqueia javascript:, data: e afins."
+    u=re.sub(r'[\x00-\x20]','',u)
+    return not re.match(r'(?i)[a-z][a-z0-9+.-]*:',u) or bool(re.match(r'(?i)(https?|mailto):',u))
+
 def sem_comentarios(md):
     """Remove comentarios HTML (<!-- -->) do texto, preservando os que aparecem em blocos de codigo e em codigo em linha."""
     out=[];p=0

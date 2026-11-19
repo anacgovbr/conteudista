@@ -5,7 +5,7 @@ from .contexto import aviso, decorativa
 from . import licencas
 from .fontes import FONTES_DIR, LEITURAS, fontes_faces_unicas
 from .imagens import _ep_img_raw
-from .markdown import blocks, mermaid_edges, plain, runs, sem_comentarios, slug, title_of, ICONE_DESTAQUE, ROTULO_DESTAQUE
+from .markdown import blocks, mermaid_edges, plain, runs, sem_comentarios, slug, title_of, url_ok, ICONE_DESTAQUE, ROTULO_DESTAQUE
 from .recursos import ler_recurso
 
 EPUB_CSS=ler_recurso('epub/layout.css')
@@ -38,7 +38,7 @@ def _ep_inl(t,cx):
         if c:h='<code>'+h+'</code>'
         if i:h='<em>'+h+'</em>'
         if b:h='<strong>'+h+'</strong>'
-        if u:h='<a href="%s">%s</a>'%(E(u),h)
+        if u and url_ok(u):h='<a href="%s">%s</a>'%(E(u),h)
         s+=h
     return s
 

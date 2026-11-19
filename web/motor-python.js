@@ -1,4 +1,4 @@
-function loadScript(src) { return new Promise((ok, err) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => err(new Error('Falha ao carregar ' + src)); document.head.appendChild(s); }); }
+function loadScript(src, integrity) { return new Promise((ok, err) => { const s = document.createElement('script'); s.src = src; if (integrity) { s.integrity = integrity; s.crossOrigin = 'anonymous'; } s.onload = ok; s.onerror = () => err(new Error('Falha ao carregar ' + src)); document.head.appendChild(s); }); }
 let inicializacaoPython = null;
 async function prepararPython() {
   if (py) return py;
@@ -18,7 +18,7 @@ async function inicializarPython() {
     return [nome, new Uint8Array(await resposta.arrayBuffer())];
   }));
   log('Carregando motor Python (Pyodide)…');
-  await loadScript(PYODIDE_URL + 'pyodide.js');
+  await loadScript(PYODIDE_URL + 'pyodide.js', 'sha384-i3R37b3tF+HWudsUf1VSEOY2YxwSNMqY8DQa9Z0O3xh+NkJ9o+yjcGyIi5huj+nB');  // shortcut: hash fixo de pyodide.js 0.26.4; recalcular ao trocar PYODIDE_URL.
   const motor = await loadPyodide({ indexURL: PYODIDE_URL });
   log('Carregando bibliotecas (lxml, Pillow)…');
   await motor.loadPackage(['micropip', 'lxml', 'pillow']);

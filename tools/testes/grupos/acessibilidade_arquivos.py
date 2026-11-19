@@ -133,6 +133,16 @@ def grupo17(amb, ctx, G):
         G.chk('17.7', 'Auditoria de imagens: vermelho×verde, texto embutido e imagem externa não verificada',
               ok_rv and ok_texto and ok_externa, imagens)
         audit.close()
+        prev = pg.evaluate("MDEditor.render('[ruim](javascript:alert(1)) [mau](JaVa\\u0001Script:x) [bom](https://a.b/) [a](#t)')")
+        G.chk('17.8', 'Prévia do editor: javascript: não vira link; http(s) e # continuam',
+              not re.search(r'(?i)href="(javascript|java)', prev) and 'href="https://a.b/"' in prev and 'href="#t"' in prev, prev)
+        corte = pg.evaluate("""async (png) => {
+          const md = ['![a](' + png + ')', '![b](' + png + ')', '![c](' + png + ')'].join(String.fromCharCode(10, 10));
+          const r = await ImagensA11y.analisar(md, -1);
+          return { feitas: r.imagens.length, restantes: r.restantes };
+        }""", PNG_1PX)
+        G.chk('17.9', 'Auditoria de imagens: ao passar do limite de tempo, as imagens restantes são contadas, não somem',
+              corte == {'feitas': 0, 'restantes': 3}, corte)
         pg.close()
     finally:
         srv.shutdown()

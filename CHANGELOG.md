@@ -1,4 +1,8 @@
 # Novidades do Conteudista
+## 1.108 - 19/11/2026
+- **Links mais seguros:** links como `javascript:` ou `data:` no Markdown deixam de virar link na prévia, no HTML e no EPUB. Só ficam links relativos, `#`, `http`, `https` e `mailto`.
+- **Bibliotecas externas fixadas:** o Mermaid passa a usar a versão exata 10.9.8, e o Pyodide e o gerador de QR code são conferidos por hash (SRI).
+- **Testes:** novos testes 6.10 (links), 17.8 (prévia), 17.9 (limite de tempo da auditoria de imagens) e 25.10b; o teste 5.2c agora confere todos os scripts do `index.html`.
 ## 1.107 - 19/11/2026
 - **Auditoria de imagens no relatório:** o relatório de acessibilidade ganhou a seção **Imagens**, com descrição ausente, tamanho, uso de vermelho e verde como cores principais, contraste estimado entre as duas cores dominantes e indício de texto embutido. A imagem original não é alterada.
 - **Fluxos Mermaid corrigidos:** quando um fluxo usa vermelho e verde nas cores dos nós, o HTML gerado aproxima essas cores do erro e do apoio do tema e garante texto com 4,5:1 sobre o preenchimento. A tabela do fluxo e o texto alternativo continuam iguais.
