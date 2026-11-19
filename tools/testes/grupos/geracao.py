@@ -44,6 +44,8 @@ def grupo5(amb, ctx, G):
     G.chk('5.6', 'Sintaxe de todos os .js de web/ (node --check)', not erros, erros)
     ci = ler('.github/workflows/publicar-pagina.yml')
     G.chk('5.7', 'Os testes de navegador são pré-requisito da publicação', 'testes' in ci and re.search(r'needs:\s*\[[^\]]*testes', ci) is not None)
+    G.chk('5.8', 'Catálogo dos temas embutidos igual no gerador e no editor',
+          json.loads(ler('tools/conteudo/recursos/temas/padroes.json')) == json.loads(ler('web/config/temas.json')))
 
 def grupo6(amb, ctx, G):
     for tema in ('govbr', 'classico'):
@@ -64,6 +66,27 @@ def grupo6(amb, ctx, G):
         # sem linhas FAIL, o erro está no stderr (ex.: exceção do script): mostra o fim dele em vez de deixar o detalhe vazio
         detalhe = ' | '.join(falhas)[:400] or f'código {r.returncode}: ' + ' '.join((r.stderr or r.stdout).strip().splitlines()[-2:])[:350]
         G.chk(f'6.2-{tema}', f'Teste de acessibilidade das saídas (tema {tema})', r.returncode == 0, detalhe)
+    # Destaques com ícone: o caractere aparece em HTML, EPUB, DOCX e PPTX, para a cor não ser o único sinal.
+    dm = amb.tmp / 'destaques.md'; ds = amb.tmp / 'destaques-slides.md'
+    dm.write_text('# Destaques\n\n> [!TIP]\n> Dica de teste.\n\n> [!WARNING]\n> Atenção de teste.\n', encoding='utf-8')
+    ds.write_text('# Slide\n\n> [!TIP]\n> Dica no slide.\n\n> [!WARNING]\n> Atenção no slide.\n', encoding='utf-8')
+    dd = amb.tmp / 'saida_destaques'
+    r = rodar([sys.executable, str(suporte.GERADOR), str(dm), str(ds), '--prefixo', 'Destaques', '--saida', str(dd), '--tema', 'govbr'], cwd=RAIZ)
+    def _texto_zip(p, nome):
+        with zipfile.ZipFile(p) as z: return z.read(nome).decode('utf-8')
+    html_g = next(dd.glob('Apostila_*.html'), None); html_s = next(dd.glob('Apresentacao_*.html'), None)
+    epub = next(dd.glob('Apostila_*.epub'), None); docx = next(dd.glob('Apostila_*.docx'), None); pptx = next(dd.glob('Apresentacao_*.pptx'), None)
+    det = {}
+    if r.returncode == 0 and all(x is not None for x in (html_g, html_s, epub, docx, pptx)):
+        with zipfile.ZipFile(epub) as z: ep = ''.join(z.read(n).decode('utf-8') for n in z.namelist() if n.endswith('.xhtml'))
+        hg = html_g.read_text(encoding='utf-8'); hs = html_s.read_text(encoding='utf-8')
+        dx = _texto_zip(docx, 'word/document.xml'); px = _texto_zip(pptx, 'ppt/slides/slide1.xml')
+        det = {'html': 'q-ico' in hg and 'Dica: ' in hg and 'Atenção: ' in hg,
+               'slides': 'q-ico' in hs, 'epub': 'q-ico' in ep,
+               'docx': '+ Dica de teste.' in dx and '! Atenção de teste.' in dx,
+               'pptx': '+ Dica no slide.' in px and '! Atenção no slide.' in px}
+    G.chk('6.7', 'Destaques: ícone de um caractere em HTML, EPUB, DOCX e PPTX, com rótulo para leitor de tela',
+          bool(det) and all(det.values()), det or (r.stderr or r.stdout)[-300:])
     lic = amb.tmp / 'saida_licenciada'
     r = rodar([sys.executable, str(suporte.GERADOR), str(EXEMPLO_TREINO), str(EXEMPLO_APRES), '--prefixo', 'Licenca', '--saida', str(lic), '--tema', 'govbr', '--licenca', 'cc-by-4.0'], cwd=RAIZ)
     md_g = lic / 'Apostila_Licenca.md'; md_s = lic / 'Apresentacao_Licenca.md'

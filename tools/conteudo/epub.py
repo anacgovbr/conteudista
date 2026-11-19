@@ -5,7 +5,7 @@ from .contexto import aviso, decorativa
 from . import licencas
 from .fontes import FONTES_DIR, LEITURAS, fontes_faces_unicas
 from .imagens import _ep_img_raw
-from .markdown import blocks, mermaid_edges, plain, runs, sem_comentarios, slug, title_of
+from .markdown import blocks, mermaid_edges, plain, runs, sem_comentarios, slug, title_of, ICONE_DESTAQUE, ROTULO_DESTAQUE
 from .recursos import ler_recurso
 
 EPUB_CSS=ler_recurso('epub/layout.css')
@@ -82,7 +82,12 @@ def _ep_blocks(bl,cx,toc=None):
             else:o.append('<p>%s</p>'%E('[Imagem não incluída%s]'%(': '+b[1] if b[1] else ''),quote=False));aviso('Imagem remota ou ilegível não incluída no EPUB: %s'%b[2][:60])
         elif k=='table':o.append(_ep_tabela(b[1],cx,cap or ''));cap=None
         elif k=='list':o.append(_ep_list(b[1],cx))
-        elif k=='quote':o.append('<blockquote class="%s">%s</blockquote>'%(E(b[1] or ''),_ep_blocks(b[2],cx,toc)))
+        elif k=='quote':
+            inner=_ep_blocks(b[2],cx,toc);ico=ICONE_DESTAQUE.get(b[1])
+            if ico:
+                marca='<span class="q-ico" aria-hidden="true">%s</span><span class="sr-only">%s: </span>'%(ico,ROTULO_DESTAQUE[b[1]])
+                inner=('<p>'+marca+inner[3:]) if inner.startswith('<p>') else ('<p>'+marca+'</p>'+inner)
+            o.append('<blockquote class="%s">%s</blockquote>'%(E(b[1] or ''),inner))
         elif k=='code':
             if b[1]=='mermaid':
                 try:rows=mermaid_edges(b[2])

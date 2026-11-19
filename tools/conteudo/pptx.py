@@ -5,7 +5,7 @@ from .audio import MIME_AUDIO, _icone_som, _mp3_dur, _wav_dur
 from .contexto import aviso, decorativa
 from . import licencas
 from .imagens import img_bytes, img_size
-from .markdown import mermaid_edges, plain, runs
+from .markdown import mermaid_edges, plain, runs, com_icone
 from .temas import tema_de, thex, paleta, eh_personalizado, papeis_slides, contraste, hex_legado
 
 def _imagem_bytes(src):
@@ -113,7 +113,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
         if k=='table':
             nc=len(b[1][0]);cw=CW/nc;ts=size-3
             return sum(max(lines(c,ts,cw-0.2) for c in r)*ts*1.4/72+0.16 for r in b[1])+0.18
-        if k=='quote':return sum(est(x,size-1) for x in b[2])+0.32
+        if k=='quote':return sum(est(x,size-1) for x in com_icone(b[2],b[1]))+0.32
         if k=='code':return est(('table',mermaid_edges(b[2])),size) if b[1]=='mermaid' else len(b[2].split('\n'))*0.22+0.2
         if k=='h':return 0.5
         if k=='img':
@@ -153,7 +153,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                 bg,bd={'info':(C('EAF1F8'),C('0A7CC1')),'tip':(C('E9F6F0'),C('1E7B4F')),'warning':(C('FFF4E0'),C('9A5B00'))}.get(b[1],(C('E9F6F0'),AC2))
             rect(s,x,y,w,h-0.05,bg);rect(s,x,y,0.08,h-0.05,bd)
             yy=y+0.1
-            for q in b[2]:draw(s,q,yy,max(MIN_CORPO,size-1),col,x+0.2,w-0.3);yy+=est(q,max(MIN_CORPO,size-1))
+            for q in com_icone(b[2],b[1]):draw(s,q,yy,max(MIN_CORPO,size-1),col,x+0.2,w-0.3);yy+=est(q,max(MIN_CORPO,size-1))
         elif k=='img':
             raw=img_bytes(b[2])
             if raw is None:

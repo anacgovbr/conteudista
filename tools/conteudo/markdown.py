@@ -63,6 +63,20 @@ def blocks(md):
         o.append(('p',' '.join(b)))
     return o
 
+# Marca visual dos destaques: a cor deixa de ser o único sinal. ASCII para valer em qualquer fonte.
+ICONE_DESTAQUE={'tip':'+','warning':'!','info':'i'}
+ROTULO_DESTAQUE={'tip':'Dica','warning':'Atenção','info':'Nota'}
+
+def com_icone(bl,k):
+    "Prefixa o primeiro paragrafo do destaque com o caractere do tipo; sem paragrafo, cria um."
+    ico=ICONE_DESTAQUE.get(k)
+    if not ico:return bl
+    bl=list(bl)
+    for i,b in enumerate(bl):
+        if b[0]=='p':
+            bl[i]=('p',ico+' '+b[1]);return bl
+    return [('p',ico)]+bl
+
 def runs(t):
     """Inline -> lista de (texto, negrito, itálico, tipo[0 texto|1 código|2 imagem], url)."""
     out=[];pat=re.compile(r'`([^`]+)`|!\[([^\]]*)\]\(([^)\s]+)\)|\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)|(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?![\w*])')

@@ -53,7 +53,7 @@
     finalizacao: 'Finalização', licenciamento: 'Licenciamento'
   };
   const PALETA_PADRAO = {
-    primaria: '#0c326f', destaque: '#1351b4', apoio: '#168821', alerta: '#8a5c00', erro: '#e52207',
+    primaria: '#0c326f', destaque: '#1351b4', apoio: '#1cb02b', alerta: '#614100', erro: '#e52207',
     fundo: '#f8f8f8', superficie: '#ffffff', texto: '#333333', texto_suave: '#636363',
     linha: '#cccccc', suave: '#edf5ff'
   };
@@ -113,9 +113,9 @@
     versao: 1, padrao: 'govbr', telas: TELAS.slice(),
     temas: {
       govbr: { id: 'govbr', nome: 'Padrão gov.br', descricao: 'Design System do Governo Federal.', embutido: true, base: 'govbr', paleta: clone(PALETA_PADRAO), fontes: clone(FONTES_PADRAO), imagens: clone(IMAGENS_PADRAO), mermaid: clone(MERMAID_PADRAO), posicoes: clone(POSICOES_PADRAO), telas: {} },
-      classico: { id: 'classico', nome: 'Clássico', descricao: 'Layout original do Conteudista.', embutido: true, base: 'classico', paleta: { primaria: '#0b3d6e', destaque: '#0a7cc1', apoio: '#19a974', alerta: '#9a5b00', erro: '#e52207', fundo: '#f6f8fb', superficie: '#ffffff', texto: '#1b2430', texto_suave: '#5a6676', linha: '#dfe5ee', suave: '#eef4fa' }, fontes: { titulo: 'Segoe UI, Roboto, Arial, sans-serif', texto: 'Segoe UI, Roboto, Arial, sans-serif', tamanho_base: 23, tamanho_titulo: 40, tamanho_h2: 26, entrelinha: 1.45, espacamento: 0 }, imagens: clone(IMAGENS_PADRAO), mermaid: clone(MERMAID_PADRAO), posicoes: clone(POSICOES_PADRAO), telas: {} },
+      classico: { id: 'classico', nome: 'Clássico', descricao: 'Layout original do Conteudista.', embutido: true, base: 'classico', paleta: { primaria: '#0b3d6e', destaque: '#0a7cc1', apoio: '#19a974', alerta: '#673d00', erro: '#e52207', fundo: '#f6f8fb', superficie: '#ffffff', texto: '#1b2430', texto_suave: '#5a6676', linha: '#dfe5ee', suave: '#eef4fa' }, fontes: { titulo: 'Segoe UI, Roboto, Arial, sans-serif', texto: 'Segoe UI, Roboto, Arial, sans-serif', tamanho_base: 23, tamanho_titulo: 40, tamanho_h2: 26, entrelinha: 1.45, espacamento: 0 }, imagens: clone(IMAGENS_PADRAO), mermaid: clone(MERMAID_PADRAO), posicoes: clone(POSICOES_PADRAO), telas: {} },
       'anac20-claro': { id: 'anac20-claro', nome: 'ANAC 20 anos — claro', descricao: 'Muda a apresentação; a apostila segue o padrão gov.br.', embutido: true, base: 'anac20-claro', paleta: clone(PALETA_PADRAO), fontes: clone(FONTES_PADRAO), imagens: clone(IMAGENS_PADRAO), mermaid: clone(MERMAID_PADRAO), posicoes: clone(POSICOES_PADRAO), telas: {} },
-      'anac20-escuro': { id: 'anac20-escuro', nome: 'ANAC 20 anos — escuro', descricao: 'Muda a apresentação; a apostila segue o padrão gov.br.', embutido: true, base: 'anac20-escuro', paleta: { primaria: '#ffffff', destaque: '#d5a900', apoio: '#16b8c4', alerta: '#ffc266', erro: '#ff8a80', fundo: '#071d41', superficie: '#0d2a4f', texto: '#ffffff', texto_suave: '#dce8ee', linha: '#2f4d6e', suave: '#14334a' }, fontes: clone(FONTES_PADRAO), imagens: clone(IMAGENS_PADRAO), mermaid: { tema: 'dark', escala: 100, fundo: '#071d41' }, posicoes: clone(POSICOES_PADRAO), telas: {} }
+      'anac20-escuro': { id: 'anac20-escuro', nome: 'ANAC 20 anos — escuro', descricao: 'Muda a apresentação; a apostila segue o padrão gov.br.', embutido: true, base: 'anac20-escuro', paleta: { primaria: '#ffffff', destaque: '#d5a900', apoio: '#12969f', alerta: '#ffc266', erro: '#ff8a80', fundo: '#071d41', superficie: '#0d2a4f', texto: '#ffffff', texto_suave: '#dce8ee', linha: '#2f4d6e', suave: '#14334a' }, fontes: clone(FONTES_PADRAO), imagens: clone(IMAGENS_PADRAO), mermaid: { tema: 'dark', escala: 100, fundo: '#071d41' }, posicoes: clone(POSICOES_PADRAO), telas: {} }
     }
   });
 
@@ -932,7 +932,7 @@
 .tm-prev-apostila h4{margin:0 0 4px;font-size:14px;line-height:1.15}
 .tm-prev-apostila p{margin:0 0 6px;font-size:11px;line-height:1.35}
 .tm-prev-apostila .fake-img{height:38px;border-radius:4px;background:linear-gradient(135deg,#dbe8fb,#c5d4eb);border:1px solid #cccccc;margin:4px 0}
-.tm-prev-apostila blockquote{margin:4px 0;padding:4px 7px;font-size:10px;border-left:3px solid #168821;background:#edf5ff}
+.tm-prev-apostila blockquote{margin:4px 0;padding:4px 7px;font-size:10px;border-left:3px solid #1cb02b;background:#edf5ff}
 .tm-prev-mermaid{margin-top:8px;border:1px solid #cccccc;border-radius:6px;padding:6px 8px;font-size:11px;line-height:1.35;background:#fff;color:#333}
 .tm-contraste{margin-top:10px;border-top:1px solid #cccccc;padding-top:8px}
 .tm-sim{display:block;margin:0 0 3px;font-size:13px;font-weight:600}
@@ -946,7 +946,7 @@
 .tm-contraste li span:first-child{flex:1;min-width:0;overflow-wrap:anywhere}
 .tm-falha{color:#b00020;font-weight:700}
 .tm-ok{color:#0b5c1b;font-weight:700}
-.tm-aviso{color:#8a5c00;font-weight:700}
+.tm-aviso{color:#614100;font-weight:700}
 .tm-linkbox{border:1px solid #cccccc;border-radius:8px;padding:10px;margin:10px 0;background:#f8f8f8}
 .tm-linkbox label{display:block;font-weight:700;color:#0c326f;margin-bottom:4px;font-size:13px}
 .tm-linha{display:flex;gap:6px;align-items:stretch}
@@ -1619,7 +1619,7 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     }
     const p = T.paleta, img = T.imagens;
     const ap = $('tmPrevApostila');
-    if (ap) ap.innerHTML = '<div class="tm-prev-apostila"><header style="background:' + esc(p.primaria) + ';color:#fff;font-family:' + esc(T.fontes.titulo) + '">Apostila · ' + esc(T.nome) + '</header><article style="background:' + esc(p.superficie) + ';color:' + esc(p.texto) + ';border-color:' + esc(p.linha) + '"><h4 style="font-family:' + esc(T.fontes.titulo) + ';color:' + esc(p.primaria) + ';font-size:' + Math.max(11, Math.round(T.fontes.tamanho_h2 * 0.42)) + 'px">Título de exemplo</h4><p style="font-family:' + esc(T.fontes.texto) + ';font-size:' + Math.max(9, Math.round(T.fontes.tamanho_base * 0.44)) + 'px;line-height:' + T.fontes.entrelinha + ';letter-spacing:' + T.fontes.espacamento + 'em">Texto da apostila com a fonte, o tamanho e a entrelinha escolhidos. O contraste do corpo é conferido antes de gerar.</p><div class="fake-img" style="width:' + img.tamanho_base + '%;border-radius:' + img.arredondamento + 'px;box-shadow:' + (img.sombra ? '0 2px 10px rgba(0,0,0,.18)' : 'none') + '"></div><blockquote style="background:' + esc(p.suave) + ';border-left-color:' + esc(p.destaque) + ';color:' + esc(p.texto) + '">Exemplo de citação com a cor de apoio.</blockquote></article></div>';
+    if (ap) ap.innerHTML = '<div class="tm-prev-apostila"><header style="background:' + esc(p.primaria) + ';color:#fff;font-family:' + esc(T.fontes.titulo) + '">Apostila · ' + esc(T.nome) + '</header><article style="background:' + esc(p.superficie) + ';color:' + esc(p.texto) + ';border-color:' + esc(p.linha) + '"><h4 style="font-family:' + esc(T.fontes.titulo) + ';color:' + esc(p.primaria) + ';font-size:' + Math.max(11, Math.round(T.fontes.tamanho_h2 * 0.42)) + 'px">Título de exemplo</h4><p style="font-family:' + esc(T.fontes.texto) + ';font-size:' + Math.max(9, Math.round(T.fontes.tamanho_base * 0.44)) + 'px;line-height:' + T.fontes.entrelinha + ';letter-spacing:' + T.fontes.espacamento + 'em">Texto da apostila com a fonte, o tamanho e a entrelinha escolhidos. O contraste do corpo é conferido antes de gerar.</p><div class="fake-img" style="width:' + img.tamanho_base + '%;border-radius:' + img.arredondamento + 'px;box-shadow:' + (img.sombra ? '0 2px 10px rgba(0,0,0,.18)' : 'none') + '"></div><blockquote style="background:' + esc(p.suave) + ';border-left-color:' + esc(p.apoio) + ';color:' + esc(p.texto) + '"><strong aria-hidden="true">+</strong> Exemplo de dica.</blockquote><blockquote style="background:' + esc(p.suave) + ';border-left-color:' + esc(p.alerta) + ';color:' + esc(p.texto) + '"><strong aria-hidden="true">!</strong> Exemplo de atenção.</blockquote></article></div>';
     const mm = $('tmPrevMermaid');
     if (mm) mm.innerHTML = '<div class="tm-prev-mermaid" style="background:' + esc(T.mermaid.fundo) + ';color:' + esc(p.texto) + ';border-color:' + esc(p.linha) + '">Mermaid: tema <strong>' + esc(T.mermaid.tema) + '</strong> · escala ' + esc(T.mermaid.escala) + '% · fundo ' + esc(T.mermaid.fundo) + '</div>' +
       '<ul class="tm-prev-cores" aria-label="Cores de significado">' + ['primaria', 'destaque', 'apoio', 'alerta', 'erro'].map(k => '<li><i style="background:' + esc(p[k]) + '"></i>' + esc(ROTULO_COR[k]) + '</li>').join('') + '</ul>';
@@ -2379,7 +2379,7 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     salvar, remover: removerTema, removerTema,
     importarTexto, garantirContraste, snapshotPacote, jsonParaGeracao, dadosAtuais,
     aplicarSnapshot, chaveMarkdown, link: linkDoTema, linkDoTema,
-    normalizar, corrigir: corrigirContraste, variante, contraste, falhas: falhasContraste,
+    normalizar, corrigir: corrigirContraste, variante, contraste, falhas: falhasContraste, daltonismo: paresDaltonismo,
     catalogo: carregarCatalogo, listar: temasPersonalizados, doHash: temaDoHash,
     _db: { all: dbAll, get: dbGet, put: dbPut, del: dbDel, clear: dbClear }
   };

@@ -253,6 +253,13 @@ def grupo25(amb, ctx, G):
               {'nome': info3.value.suggested_filename, 'ini': rel[:120]})
         pg.evaluate("Temas.remover('custom:teste-cvd', { semConfirmar: true })")
 
+        cvd = pg.evaluate("""async () => {
+            const c = await Temas.catalogo();
+            return Object.keys(c.temas).map(id => ({ id, falhas: Temas.daltonismo(Temas.normalizar(c.temas[id])).filter(x => !x.ok).length }));
+        }""")
+        G.chk('25.21', 'Temas embutidos sem cores de significado que se confundem no daltonismo',
+              bool(cvd) and all(x['falhas'] == 0 for x in cvd), cvd)
+
         G.chk('25.18', 'Nenhum erro de JavaScript durante o fluxo de temas', not erros, erros)
         pg.close()
     finally:

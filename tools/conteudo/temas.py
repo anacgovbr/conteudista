@@ -6,9 +6,9 @@ import re, json, copy
 #   normalizado aqui: cores, fontes, papeis de tela, imagens, Mermaid e posicoes.
 # - O mesmo catalogo (recursos/temas/padroes.json) alimenta o editor web (config/temas.json).
 
-_GOV_MAP={'#0b3d6e':'#0c326f','#0a7cc1':'#1351b4','#19a974':'#168821','#0a5c9a':'#155bcb','#eaf1f8':'#dbe8fb','#dfe5ee':'#cccccc','#d9e2ee':'#cccccc',
- '#1b2430':'#333333','#5a6676':'#636363','#f6f8fb':'#f8f8f8','#eef4fa':'#edf5ff','#0d1b2a':'#071d41','#1e7b4f':'#168821','#e9f6f0':'#e3f5e1',
- '#fff4e0':'#fff5c2','#9a5b00':'#8a5c00','#f1f4f8':'#f8f8f8','#f2f7fc':'#edf5ff','#d6ecff':'#dbe8fb','#e8f2fb':'#edf5ff','#cfe3f5':'#c5d4eb'}
+_GOV_MAP={'#0b3d6e':'#0c326f','#0a7cc1':'#1351b4','#19a974':'#1cb02b','#0a5c9a':'#155bcb','#eaf1f8':'#dbe8fb','#dfe5ee':'#cccccc','#d9e2ee':'#cccccc',
+ '#1b2430':'#333333','#5a6676':'#636363','#f6f8fb':'#f8f8f8','#eef4fa':'#edf5ff','#0d1b2a':'#071d41','#1e7b4f':'#1cb02b','#e9f6f0':'#e3f5e1',
+ '#fff4e0':'#fff5c2','#9a5b00':'#614100','#673d00':'#614100','#f1f4f8':'#f8f8f8','#f2f7fc':'#edf5ff','#d6ecff':'#dbe8fb','#e8f2fb':'#edf5ff','#cfe3f5':'#c5d4eb'}
 
 TEMAS={
  'govbr':{'nome':'Padrão gov.br (Design System do Governo Federal)','map':_GOV_MAP,
@@ -26,7 +26,7 @@ nav a.on{font-weight:600}""",
    'extra_s':""".s h1{font-weight:700}.s.title h1{border-bottom-color:#ffcd07}.s.title:before{background:#ffcd07}
 #hud button{border-radius:100em}""",
    'docx_font':'Arial','pptx_font':'Arial','pptx_destaque':'FFCD07'},
- 'classico':{'nome':'Clássico (layout original do Conteudista)','map':{},'fonte':None,'import':'','extra_g':'','extra_s':'',
+ 'classico':{'nome':'Clássico (layout original do Conteudista)','map':{'#1e7b4f':'#19a974','#9a5b00':'#673d00'},'fonte':None,'import':'','extra_g':'','extra_s':'',
    'docx_font':'Calibri','pptx_font':'Segoe UI','pptx_destaque':None},
  'anac20-claro':{'nome':'ANAC 20 anos — claro','map':_GOV_MAP,'fonte':"'Rawline','Raleway',\"Segoe UI\",Arial,sans-serif",'import':'','extra_g':'','extra_s':'',
    'docx_font':'Arial','pptx_font':'Arial','pptx_destaque':'D5A900','pptx_modelo':'anac20-claro','pptx_escuro':False},
@@ -94,7 +94,7 @@ def _modelo_padrao(base='govbr'):
             'posicoes':_copia(cat.get('posicoes') or {})}
     return modelo
 
-PALETA_PADRAO={'primaria':'#0c326f','destaque':'#1351b4','apoio':'#168821','alerta':'#8a5c00','erro':'#e52207',
+PALETA_PADRAO={'primaria':'#0c326f','destaque':'#1351b4','apoio':'#1cb02b','alerta':'#614100','erro':'#e52207',
                'fundo':'#f8f8f8','superficie':'#ffffff','texto':'#333333','texto_suave':'#636363','linha':'#cccccc','suave':'#edf5ff'}
 FONTES_PADRAO={'titulo':'Rawline, Raleway, Segoe UI, Arial, sans-serif','texto':'Rawline, Raleway, Segoe UI, Arial, sans-serif',
                'tamanho_base':23,'tamanho_titulo':40,'tamanho_h2':26,'entrelinha':1.45,'espacamento':0}
@@ -198,7 +198,7 @@ def hex_legado(h,T):
 def paleta(T):
     if eh_personalizado(T):return T['paleta']
     return {'primaria':_cor('#0b3d6e',T),'destaque':_cor('#0a7cc1',T),'apoio':_cor('#19a974',T),
-            'alerta':_cor('#9a5b00',T),'erro':'#e52207','fundo':_cor('#f6f8fb',T),'superficie':'#ffffff',
+            'alerta':_cor('#673d00',T),'erro':'#e52207','fundo':_cor('#f6f8fb',T),'superficie':'#ffffff',
             'texto':_cor('#1b2430',T),'texto_suave':_cor('#5a6676',T),'linha':_cor('#dfe5ee',T),'suave':_cor('#eef4fa',T)}
 
 # ---------------------------- Contraste (WCAG 2.x) ----------------------------

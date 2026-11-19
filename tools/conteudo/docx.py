@@ -4,7 +4,7 @@ E=html.escape
 from .contexto import aviso, decorativa
 from . import licencas
 from .imagens import img_bytes, img_size
-from .markdown import blocks, mermaid_edges, runs, sem_comentarios
+from .markdown import blocks, mermaid_edges, runs, sem_comentarios, com_icone
 from .temas import tema_de, thex, trgb, eh_personalizado, hex_legado
 
 def treinamento_docx(md,path,foot,tema=None,licenca=''):
@@ -126,7 +126,7 @@ def treinamento_docx(md,path,foot,tema=None,licenca=''):
                     if inq:shade(p._p,inq[0]);lborder(p,inq[1])
             elif k=='quote':
                 col={'tip':(H('E9F6F0'),H('1E7B4F')),'warning':(H('FFF4E0'),H('9A5B00'))}.get(b[1],(H('EAF1F8'),H('0A7CC1')))
-                render(b[2],col)
+                render(com_icone(b[2],b[1]),col)
             elif k=='code':
                 if b[1]=='mermaid':
                     p=d.add_paragraph();r=p.add_run('Fluxo (representação em tabela):');r.bold=True;r.font.color.rgb=ACC
