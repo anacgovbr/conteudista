@@ -8,6 +8,7 @@
   const LADO = 96;          // amostragem: no máximo 96×96 pixels
   const MAX_IMAGENS = 30;   // acima disso o relatório para e avisa
   const TEMPO = 6000;       // ms por imagem
+  const LIMITE_TOTAL = 20000; // ms para o relatório inteiro; o resto vira "não analisadas"
 
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -60,7 +61,6 @@
   function carregar(url) {
     return new Promise((ok, falha) => {
       const img = new Image();
-      if (!/^data:/i.test(url)) img.crossOrigin = 'anonymous';
       const t = setTimeout(() => falha(new Error('tempo esgotado')), TEMPO);
       img.onload = () => { clearTimeout(t); ok(img); };
       img.onerror = () => { clearTimeout(t); falha(new Error('não foi possível ler')); };
@@ -173,10 +173,14 @@
 
   async function analisar(texto) {
     const md = String(texto || '');
-    const imagens = [], lista = imagensDe(md);
-    for (const item of lista.slice(0, MAX_IMAGENS)) imagens.push(await analisarImagem(item));
+    const imagens = [], lista = imagensDe(md), limite = Date.now() + LIMITE_TOTAL;
+    let parou = 0;
+    for (const item of lista.slice(0, MAX_IMAGENS)) {
+      if (Date.now() > limite) { parou++; continue; }
+      imagens.push(await analisarImagem(item));
+    }
     const mermaid = fluxosDe(md).map(analisarFluxo);
-    return { imagens, mermaid, restantes: Math.max(0, lista.length - MAX_IMAGENS) };
+    return { imagens, mermaid, restantes: Math.max(0, lista.length - MAX_IMAGENS) + parou };
   }
 
   /* ---------------------------- relatório ---------------------------- */

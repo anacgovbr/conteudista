@@ -144,9 +144,10 @@ def _corrigir_linha(linha, mapa):
             trocas.append((m.group(0), 'fill:' + mapa[_normal(m.group(2))]))
     for antigo, novo in trocas:
         linha = linha.replace(antigo, novo)
-    preenchimento = next((_normal(m.group(2)) for m in _RE_COR.finditer(linha) if m.group(1) == 'fill'), None)
-    if not preenchimento:
+    fill = next((m for m in _RE_COR.finditer(linha) if m.group(1) == 'fill'), None)
+    if not fill:
         return linha, ('remapa' if trocas else None)
+    preenchimento = _normal(fill.group(2))
     cor = next((m for m in _RE_COR.finditer(linha) if m.group(1) == 'color'), None)
     if cor and contraste(_normal(cor.group(2)), preenchimento) >= 4.5:
         return linha, ('remapa' if trocas else None)
@@ -156,12 +157,11 @@ def _corrigir_linha(linha, mapa):
         if contraste(alvo, ajustado) >= 4.5:
             break
         ajustado = _clarear(ajustado, -1 if alvo == '#ffffff' else 1)
-    if ajustado != preenchimento:
-        linha = linha.replace('fill:' + preenchimento, 'fill:' + ajustado)
-        linha = linha.replace('fill:' + preenchimento.upper(), 'fill:' + ajustado)
-    if cor:
-        linha = linha.replace(cor.group(0), 'color:' + alvo)
-    else:
+    # troca de trás para frente: os índices do fill e do color seguem válidos
+    trocas = [(fill.span(2), ajustado)] + ([(cor.span(2), alvo)] if cor else [])
+    for (a, b), novo in sorted(trocas, reverse=True):
+        linha = linha[:a] + novo + linha[b:]
+    if not cor:
         linha = linha.rstrip() + ',color:' + alvo
     return linha, 'texto'
 

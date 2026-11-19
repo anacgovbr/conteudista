@@ -107,6 +107,13 @@ def grupo6(amb, ctx, G):
                'distintos_no_daltonismo': len(fills) == 2 and pior_diferenca(fills[0], fills[1]) >= 12}
     G.chk('6.8', 'Fluxos Mermaid: vermelho e verde viram erro e apoio do tema, distintos no daltonismo',
           bool(det) and all(det.values()), det or (r.stderr or r.stdout)[-300:])
+    # Contraste do texto também com cor de 3 dígitos (#ddd) e com espaço depois dos dois pontos.
+    sys.path.insert(0, str(RAIZ))
+    from tools.conteudo.mermaid import contraste, corrigir as corrigir_mm
+    saida_mm, _ = corrigir_mm('flowchart LR\nA --> B\nstyle A fill:#ddd,color:#eee\nstyle B fill: #fff', {})
+    cores_mm = re.findall(r'fill:\s*(#[0-9a-f]{6})(?:,color:(#[0-9a-f]{6}))?', saida_mm)
+    G.chk('6.9', 'Fluxos Mermaid: texto com 4,5:1 mesmo com cor de 3 dígitos ou espaço após fill:',
+          len(cores_mm) == 2 and all(t and contraste(f, t) >= 4.5 for f, t in cores_mm), saida_mm)
     lic = amb.tmp / 'saida_licenciada'
     r = rodar([sys.executable, str(suporte.GERADOR), str(EXEMPLO_TREINO), str(EXEMPLO_APRES), '--prefixo', 'Licenca', '--saida', str(lic), '--tema', 'govbr', '--licenca', 'cc-by-4.0'], cwd=RAIZ)
     md_g = lic / 'Apostila_Licenca.md'; md_s = lic / 'Apresentacao_Licenca.md'

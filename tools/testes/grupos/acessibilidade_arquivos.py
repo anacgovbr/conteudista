@@ -117,14 +117,19 @@ def grupo17(amb, ctx, G):
             ['Aprovação do relatório', 'Prazo: 30 dias', 'Responsável: equipe', 'Revisão em janeiro']
               .forEach((t, i) => x.fillText(t, 12, 30 + i * 28));
           });
-          const md = ['# T', '', '![Cores](' + cores + ')', '', '![Prazos](' + texto + ')', '',
+          const foto = criar(160, 120, (x, w, h) => {
+            const g = x.createLinearGradient(0, 0, w, h);
+            ['#123456', '#8a5c00', '#e52207', '#1cb02b', '#ffffff', '#333333'].forEach((c, i, a) => g.addColorStop(i / (a.length - 1), c));
+            x.fillStyle = g; x.fillRect(0, 0, w, h);
+          });
+          const md = ['# T', '', '![Cores](' + cores + ')', '', '![Prazos](' + texto + ')', '', '![Paisagem](' + foto + ')', '',
                       '![Externa](https://example.com/figura.png)'].join(String.fromCharCode(10));
           const r = await ImagensA11y.analisar(md);
           return r.imagens.map(i => ({ alt: i.alt, rv: i.redVerde, vermelho: i.vermelho, verde: i.verde, texto: i.texto, erro: i.erro }));
         }""")
-        ok_rv = len(imagens) == 3 and imagens[0]['rv'] and imagens[0]['vermelho'] >= 40 and imagens[0]['verde'] >= 40
-        ok_texto = len(imagens) == 3 and imagens[1]['texto'] and not imagens[1]['rv']
-        ok_externa = len(imagens) == 3 and bool(imagens[2]['erro'])
+        ok_rv = len(imagens) == 4 and imagens[0]['rv'] and imagens[0]['vermelho'] >= 40 and imagens[0]['verde'] >= 40
+        ok_texto = len(imagens) == 4 and imagens[1]['texto'] and not imagens[1]['rv'] and not imagens[2]['texto']
+        ok_externa = len(imagens) == 4 and bool(imagens[3]['erro'])
         G.chk('17.7', 'Auditoria de imagens: vermelho×verde, texto embutido e imagem externa não verificada',
               ok_rv and ok_texto and ok_externa, imagens)
         audit.close()
