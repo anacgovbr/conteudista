@@ -364,6 +364,8 @@ Os arquivos gerados foram ajustados para facilitar a leitura, inclusive por pess
 | **Fontes** | **Padrão (Verdana)**, **Atkinson Hyperlegible Next** e **OpenDyslexic**. As duas últimas vão embutidas no arquivo e funcionam sem internet |
 | **Modo leitura** | Na apresentação HTML, use **Mais opções › Modo leitura** ou `L`. Os slides aparecem em sequência, com as notas abaixo. A barra mantém anterior, próximo e contador. Use `L` novamente para voltar aos slides |
 | **Painel Acessibilidade** | Ajusta fonte, tamanho, contraste, espaçamento e régua de leitura. Nos slides, também permite controlar legendas e manter a barra visível. O VLibras só carrega quando você o ativa e precisa de internet |
+| **Controle remoto** | Na apresentação HTML, clique em **Mais opções › Controle remoto…**. Escaneie o QR Code com o celular. O celular exibe botões Próximo, Anterior e Tela preta e recebe o slide atual, o título e as notas em tempo real. Exige internet no celular |
+| **Controle por webcam** | No painel Acessibilidade da apresentação HTML, marque **Controle por webcam**. Gestos: mão aberta = próximo, dois dedos = anterior, joinha = reproduzir/pausar. Processamento local, sem envio de imagens |
 | **EPUB** | Duas versões da apostila: a base, com Atkinson Hyperlegible Next, e a `_OpenDyslexic` |
 | **PDF** | Abra o HTML, escolha a Leitura e use **Imprimir / PDF** › **Salvar como PDF**, em A4. Universal Accessibility (UA) define requisitos de acessibilidade para PDF. O PDF usa a fonte escolhida, mas **não é um PDF/UA** |
 

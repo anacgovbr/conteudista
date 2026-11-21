@@ -136,7 +136,9 @@ def painel_a11y(vlibras=True, legendas=False, leitura=False):
             '<label><input type="checkbox" data-a11y="espacamento"> Espaçamento do texto (WCAG 1.4.12)</label>'
             '<label><input type="checkbox" data-a11y="regua"> Régua de leitura</label>'
             '<label><input type="checkbox" data-a11y="movimento"> Reduzir animações</label>'
-            '<h3 class="a11y-sub">Controles</h3><label><input type="checkbox" data-a11y="barra"> Manter a barra de controles visível</label>' + legenda +
+            '<h3 class="a11y-sub">Controles</h3><label><input type="checkbox" data-a11y="barra"> Manter a barra de controles visível</label>'
+            + ('<label><input type="checkbox" data-a11y="webcam"> Controle por webcam<br><small style="display:block;margin:2px 0 4px 32px;color:#555">Avance slides com gestos de mão (requer câmera)</small></label>' if leitura else '')
+            + legenda +
             '<h3 class="a11y-sub">Apoio</h3><button type="button" class="sec" data-a11y="ouvir">Ouvir texto atual</button>' + libras +
             '<p class="a11y-estado" id="a11yEstado" role="status" aria-live="polite"></p></div></dialog>' +
             '<div id="a11yRegua" class="a11y-ruler" aria-hidden="true"></div><p id="a11yLegendasLive" class="a11y-sr" role="status" aria-live="polite" aria-atomic="true"></p>')
@@ -165,6 +167,8 @@ def treinamento_html(md,bar,tema=None,vlibras=True,licenca=''):
 ZOOM_CSS=ler_recurso('zoom/layout.css')
 
 ZOOM_JS=ler_recurso('zoom/controles.js')
+
+WEBCAM_JS=ler_recurso('apresentacao/webcam.js')
 
 CSS_ESTREITO=ler_recurso('apresentacao/celular.css')
 
@@ -237,7 +241,7 @@ ICO_B={'prev':'M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z','next':'M10 6 8.59
  'sld':'M10 8v8l5-4-5-4zm9-5H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z',
  'more':'M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z'}
 
-ICO_B.update({'nota':'M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 14H6v-2h2v2zm0-3H6V9h2v2zm0-3H6V6h2v2zm7 6h-5v-2h5v2zm3-3h-8V9h8v2zm0-3h-8V6h8v2z','print':'M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z','auto':'M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z'})
+ICO_B.update({'nota':'M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 14H6v-2h2v2zm0-3H6V9h2v2zm0-3H6V6h2v2zm7 6h-5v-2h5v2zm3-3h-8V9h8v2zm0-3h-8V6h8v2z','print':'M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z','auto':'M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z','remote':'M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4 2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z'})
 
 def _ic(k,cls=''):
     return '<svg class="ic%s" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="%s"/></svg>'%((' '+cls) if cls else '',ICO_B[k])
@@ -283,13 +287,24 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
          +('<button id="ba" type="button" aria-pressed="false">Avanço automático</button>' if narr else '')
          +'<button id="bLer" class="mi md" type="button" aria-keyshortcuts="L">'+_ic('art','i-lt')+_ic('sld','i-sl')+'<span class="mi-t">Modo leitura (L)</span></button>'
          '<button id="imp" type="button" aria-haspopup="dialog" aria-keyshortcuts="Control+P" aria-controls="dimp" class="mi">'+_ic('print')+'<span class="mi-t">Imprimir / PDF…</span></button>'
+         '<button id="bRemote" type="button" aria-haspopup="dialog" aria-controls="dremote" class="mi">'+_ic('remote')+'<span class="mi-t">Controle remoto…</span></button>'
          '<div class="atalhos" id="atalhosB" tabindex="-1"><strong>Atalhos</strong><br><kbd>←/→</kbd> slides · <kbd>Espaço</kbd> reproduzir/pausar · <kbd>G</kbd> ir para o slide · <kbd>L</kbd> modo leitura/slides · <kbd>A</kbd> acessibilidade · <kbd>S</kbd> som · <kbd>N</kbd> notas · <kbd>F</kbd> tela cheia · <kbd>+</kbd> <kbd>−</kbd> zoom · <kbd>0</kbd> tamanho normal · <kbd>M</kbd> opções · <kbd>?</kbd> ajuda · <kbd>Esc</kbd> fechar</div></div></div>'
          '<button id="b2" type="button" aria-pressed="false" aria-label="Tela cheia" aria-keyshortcuts="F" data-dica="Tela cheia · F">'+_ic('fs','i-off')+_ic('fsx','i-on')+'</button>'
          '<div id="dica" role="tooltip" hidden></div>')
     hud+=IMP_DLG
+    hud+=('<dialog id="dremote" class="a11y-panel" aria-labelledby="dremoteT">'
+          '<header><h2 id="dremoteT" tabindex="-1">Controle remoto</h2>'
+          '<button type="button" class="sec" id="dremoteC">Fechar</button></header>'
+          '<div class="a11y-corpo">'
+          '<p>Escaneie o código com o celular para controlar a apresentação.</p>'
+          '<div style="text-align:center;margin:12px 0"><img id="dremoteQR" alt="QR Code" style="width:200px;height:200px;border:1px solid #ccc"></div>'
+          '<p style="word-break:break-all;font-size:13px;text-align:center"><a id="dremoteLink" href="#" target="_blank" rel="noopener"></a></p>'
+          '<p id="dremoteSt" style="font-size:13px;color:#555;text-align:center;font-weight:700">Conectando…</p>'
+          '<p style="font-size:13px;color:#555;text-align:center">O celular deve estar com acesso à internet.</p>'
+          '</div></dialog>')
     ini=('<div id="ini" role="dialog" aria-modal="true" aria-labelledby="iniT"><p id="iniT" class="it">Iniciar a apresentação</p>'
          '<button id="ini1" type="button">▶ Iniciar com narração</button><button id="ini0" type="button" class="ini0">Iniciar sem som</button></div>') if narr else ''
-    js='<script>'+ZOOM_JS+'</script><script>'+LEITURA_JS+JS_S+'</script>'+('<script>'+JS_NARR.replace('__AUTO__','true' if avancar else 'false')+'</script>' if narr else '')
+    js='<script>'+ZOOM_JS+'</script><script>'+LEITURA_JS+JS_S+'</script>'+('<script>'+JS_NARR.replace('__AUTO__','true' if avancar else 'false')+'</script>' if narr else '')+'<script>'+WEBCAM_JS+'</script>'
     mer=('<script>window.CONTEUDISTA_MERMAID=%s</script>'%mermaid_config(T))+_mer_s(o)
     return ('<!DOCTYPE html><html lang="pt-BR" data-leitura="padrao"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme" content="%s"><title>%s</title>'
     '<script>%s%s</script><style>%s</style></head><body><script>%s</script><a class="skip" href="#st">Ir para os slides</a>%s'

@@ -190,6 +190,13 @@
 <li>Para falar um texto diferente da nota, use <code>&lt;!-- narracao: texto --&gt;</code>; para um slide sem som, <code>&lt;!-- narracao: nao --&gt;</code>.</li>
 <li>Para revisar as notas slide a slide, use a aba <b>Locução › Notas dos slides</b>: importe, edite, ouça e <b>aplique à apresentação</b>. Os comentários acima são escritos por ela.</li>
 </ul>
+<h4>Controle remoto e webcam (apresentação HTML)</h4>
+<ul>
+<li><b>Controle remoto por celular</b>: na apresentação HTML gerada, clique em <b>Mais opções › Controle remoto…</b>. Um QR Code aparece na tela. Escaneie com o celular; ele abrirá uma página com os botões <b>Próximo</b>, <b>Anterior</b> e <b>Tela preta</b>. O celular precisa de acesso à internet para se conectar ao servidor de sinalização. Depois do pareamento, os comandos chegam com baixa latência. A conexão se restabelece sozinha em caso de queda.</li>
+<li><b>Modo apresentador no celular</b>: após conectar, o celular recebe o número do slide atual, o título, as notas do apresentador e o título do próximo slide em tempo real.</li>
+<li><b>Controle por webcam</b>: no painel <b>Acessibilidade</b> da apresentação, marque <b>Controle por webcam</b>. O navegador pedirá permissão para usar a câmera. Gestos reconhecidos: mão aberta = próximo slide, dois dedos = slide anterior, joinha = reproduzir/pausar. Cada gesto precisa ser mantido por 700 ms para ser executado, evitando acionamentos acidentais. O reconhecimento usa MediaPipe e ocorre <b>localmente no navegador</b>, sem enviar imagens. Exige conexão à internet na primeira ativação para carregar o modelo.</li>
+<li>A preferência de webcam é salva no navegador e restaurada automaticamente.</li>
+</ul>
 <h4>Guardar o conteúdo: arquivo ou link?</h4>
 <p>O Conteudista não guarda nenhum conteúdo no site. Você decide onde ele fica, e há dois tipos de saída:</p>
 <ul>

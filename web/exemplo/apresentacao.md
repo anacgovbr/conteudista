@@ -531,6 +531,19 @@ flowchart LR
 
 ---
 
+# Controle remoto e webcam
+
+| Recurso | Como usar |
+|---|---|
+| Controle remoto | Mais opções › Controle remoto… → escaneie o QR Code com o celular |
+| Controle por webcam | Acessibilidade → marque Controle por webcam |
+
+> [!info] O controle remoto exige acesso à internet no celular. A webcam processa tudo localmente, sem enviar imagens.
+
+<!-- notas: A apresentação HTML gerada pelo Conteudista oferece dois modos de controle sem teclado ou mouse. O controle remoto por celular fica em Mais opções, no botão Controle remoto. Ao clicar, aparece um QR Code. Escaneie com o celular, que abrirá uma página com os botões Próximo, Anterior e Tela preta. O celular precisa ter acesso à internet para se conectar ao servidor de sinalização. Depois do pareamento, os comandos são enviados diretamente. O controle por webcam fica no painel Acessibilidade. Marque a opção Controle por webcam. Mão aberta avança o slide, dois dedos voltam, joinha reproduz ou pausa. O reconhecimento de gestos usa MediaPipe e ocorre no próprio navegador, sem enviar imagens. -->
+
+---
+
 <!-- class: title -->
 
 # Bom trabalho!

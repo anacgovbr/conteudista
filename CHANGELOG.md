@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.112 - 21/11/2026
+- **Controle remoto por celular (Fase 1):** botão "Controle remoto…" no menu "Mais opções" da apresentação HTML. Ao clicar, exibe um QR Code que conecta o celular à apresentação via WebSocket seguro (`remote.conteudista.anac.gov.br`). O celular pode avançar, voltar e ativar tela preta sem instalar aplicativo. Reconexão automática em caso de queda.
+- **Modo apresentador (Fase 2):** a cada mudança de slide, a apresentação envia ao celular o número do slide atual, o título, as notas do apresentador e o título do próximo slide. A interface do celular exibe essas informações em tempo real.
+- **Controle por webcam (Fase 3):** nova opção no painel de Acessibilidade da apresentação. Quando ativada, usa MediaPipe Gesture Recognizer (carregado sob demanda) para reconhecer gestos de mão: mão aberta = próximo slide, dois dedos = anterior, joinha = reproduzir/pausar. Processamento 100% local, nenhuma imagem enviada a servidores.
+- **Testes:** 11 testes de módulos OK; coerência de versão e cache-busters OK.
+
 ## 1.111 - 21/11/2026
 - **Temas ANAC mais leves:** os slides intermediários dos temas ANAC 20 anos (claro e escuro) deixaram de usar imagens de fundo. Apenas capa e finalização mantêm as artes institucionais.
 - **PPTX ANAC otimizado:** apresentações ANAC não incorporam mais imagens de fundo nos slides intermediários, reduzindo o tamanho dos arquivos gerados.

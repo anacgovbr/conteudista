@@ -1,5 +1,5 @@
 (function(){'use strict';var D=document,H=D.documentElement,B=D.body,S=[].slice.call(D.querySelectorAll('.s')),N=S.length,i=0,st=D.getElementById('st'),hud=D.getElementById('hud'),K='conteudista.apresentacao.modo';
-function $(x){return D.getElementById(x)}var bLer=$('bLer'),b1=$('b1'),b2=$('b2'),bp=$('bp'),menu=$('bmais-menu'),bmais=$('bmais'),cb=$('cbtn'),pk=$('irpara'),pkN=$('irparaN'),pkE=$('irparaE'),pkL=$('irparaL'),dica=$('dica');
+function $(x){return D.getElementById(x)}var bLer=$('bLer'),b1=$('b1'),b2=$('b2'),bp=$('bp'),menu=$('bmais-menu'),bmais=$('bmais'),bRemote=$('bRemote'),cb=$('cbtn'),pk=$('irpara'),pkN=$('irparaN'),pkE=$('irparaE'),pkL=$('irparaL'),dica=$('dica');
 var UI={estado:'visible',entrada:'mouse',ponteiro:null,inatividade:null,reproduzindo:false,relogio:null,sobre:false};
 function campo(t){var n=(t&&t.tagName||'').toLowerCase();return n=='input'||n=='select'||n=='textarea'||(t&&t.isContentEditable)}
 function ler(){return B.classList.contains('modo-leitura')}
@@ -66,7 +66,93 @@ function atualizarDica(){if(dAlvo&&dica&&!dica.hidden){dica.textContent=dAlvo.ge
 [].slice.call(hud.querySelectorAll('button[data-dica]')).concat(b2?[b2]:[]).forEach(function(b){b.addEventListener('pointerenter',function(e){if(e.pointerType!=='mouse')return;clearTimeout(dT);clearTimeout(dH);dT=setTimeout(function(){mostrarDica(b)},300)});b.addEventListener('pointerleave',function(){clearTimeout(dT);esconderDica(false)});b.addEventListener('focus',function(){var fv=false;try{fv=b.matches(':focus-visible')}catch(x){}if(fv)mostrarDica(b)});b.addEventListener('blur',function(){esconderDica(true)});b.addEventListener('click',function(){esconderDica(true)})});
 if(dica)dica.addEventListener('pointerleave',function(){esconderDica(false)});
 function clique(id,fn){var b=$(id);if(b)b.addEventListener('click',function(e){fn(e);mostrar()})}
-clique('p',anterior);clique('n',proximo);clique('bp',reproduzir);clique('b1',nt);clique('b2',fs);clique('b2m',fs);clique('cbtn',abrirPick);clique('bLer',function(){modo(!ler(),true);fecharCamadas(bmais)});clique('imp',function(){abrirImp()});clique('bmais',alternarMenu);
+/* controle remoto — Fase 1 */
+var REMOTE={ws:null,sessao:null,dlg:null};
+function _remoteGerarSessao(){return Math.random().toString(36).slice(2,10)+Math.random().toString(36).slice(2,10)}
+function _remoteQR(url){
+  var c=document.createElement('canvas'),sz=200,ctx=c.getContext('2d');
+  c.width=sz;c.height=sz;
+  // QR simples: exibe URL em texto até integrar lib QR
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,sz,sz);
+  ctx.fillStyle='#000';ctx.font='11px monospace';
+  var palavras=url.split('');var linha='',y=20;
+  palavras.forEach(function(ch){
+    if(ctx.measureText(linha+ch).width>sz-10){ctx.fillText(linha,5,y);linha=ch;y+=14}else{linha+=ch}
+  });
+  if(linha)ctx.fillText(linha,5,y);
+  return c.toDataURL();
+}
+function _remoteConectar(sessao){
+  var proto=location.protocol==='https:'?'wss:':'ws:';
+  var host='remote.conteudista.anac.gov.br';
+  var url=proto+'//'+host+'/sessao/'+sessao;
+  try{
+    var ws=new WebSocket(url);
+    REMOTE.ws=ws;
+    ws.onmessage=function(e){
+      try{var m=JSON.parse(e.data);
+        if(m.tipo==='next')proximo();
+        else if(m.tipo==='prev')anterior();
+        else if(m.tipo==='blackout'){if(!ler())g(i);}
+        else if(m.tipo==='ping')ws.send(JSON.stringify({tipo:'pong'}));
+      }catch(ex){}
+    };
+    ws.onclose=function(){setTimeout(function(){if(REMOTE.sessao)_remoteConectar(REMOTE.sessao)},3000)};
+    ws.onerror=function(){ws.close()};
+  }catch(ex){}
+}
+function _remoteFechar(){
+  if(REMOTE.ws){try{REMOTE.ws.close()}catch(ex){}}
+  REMOTE.ws=null;REMOTE.sessao=null;
+  var dlg=D.getElementById('dremote');
+  if(dlg&&dlg.open)dlg.close();
+}
+function abrirControleRemoto(){
+  var dlg=D.getElementById('dremote');
+  if(!dlg)return;
+  if(!REMOTE.sessao){
+    REMOTE.sessao=_remoteGerarSessao();
+    _remoteConectar(REMOTE.sessao);
+  }
+  var urlRemota='https://remote.conteudista.anac.gov.br/#'+REMOTE.sessao;
+  var img=D.getElementById('dremoteQR');
+  if(img){img.src=_remoteQR(urlRemota);img.alt='QR Code para '+urlRemota}
+  var link=D.getElementById('dremoteLink');
+  if(link){link.href=urlRemota;link.textContent=urlRemota}
+  fecharSilencioso();setEstado('dialog-open');cancelarInatividade();
+  dlg.showModal();
+  var cl=D.getElementById('dremoteC');if(cl)cl.focus();
+}
+function _remoteEnviarEstado(){
+  if(!REMOTE.ws||REMOTE.ws.readyState!==1)return;
+  var s=S[i];var sn=S[i+1]||null;
+  var h=s?s.querySelector('h1,h2,h3'):null;
+  var hn=sn?sn.querySelector('h1,h2,h3'):null;
+  var nota=s?s.querySelector('.nt-x'):null;
+  REMOTE.ws.send(JSON.stringify({
+    tipo:'estado',
+    slide:i+1,
+    total:N,
+    titulo:h?h.textContent.trim():'',
+    tituloProximo:hn?hn.textContent.trim():'',
+    nota:nota?nota.textContent.trim():'',
+    temProximo:i<N-1,
+    temAnterior:i>0
+  }));
+}
+function _remoteAtualizarStatus(){
+  var st2=D.getElementById('dremoteSt');
+  if(!st2)return;
+  if(!REMOTE.sessao){st2.textContent='Sem sessão';return}
+  if(!REMOTE.ws){st2.textContent='Desconectado';return}
+  var rs=REMOTE.ws.readyState;
+  if(rs===0)st2.textContent='Conectando…';
+  else if(rs===1)st2.textContent='Conectado ✓';
+  else st2.textContent='Reconectando…';
+}
+D.addEventListener('conteudista:slide',function(){_remoteEnviarEstado()});
+setInterval(function(){_remoteAtualizarStatus()},1500);
+clique('p',anterior);clique('n',proximo);clique('bp',reproduzir);clique('b1',nt);clique('b2',fs);clique('b2m',fs);clique('cbtn',abrirPick);clique('bLer',function(){modo(!ler(),true);fecharCamadas(bmais)});clique('imp',function(){abrirImp()});clique('bRemote',abrirControleRemoto);clique('bmais',alternarMenu);
 D.addEventListener('pointerdown',function(e){if(aberta())return;setEntrada(e.pointerType||'mouse');var dentro=!!(e.target&&e.target.closest&&e.target.closest('#hud,#b2,#dica'));if(camadaAberta()&&!dentro)fecharCamadas(null);if(e.pointerType==='touch'||e.pointerType==='pen'){if(UI.estado==='hidden'){e.preventDefault();mostrar(e.pointerType);UI.ponteiro=null;return}UI.ponteiro={id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now(),ignorar:!!e.target.closest('#hud,#b2,button,a,input,select,textarea,[contenteditable],.rola')}}else mostrar('mouse')},{passive:false});
 D.addEventListener('pointermove',function(e){if(e.pointerType==='mouse'){mostrar('mouse');return}if(UI.ponteiro&&UI.ponteiro.id===e.pointerId)UI.ponteiro.mx=e.clientX,UI.ponteiro.my=e.clientY},{passive:true});
 D.addEventListener('pointerup',function(e){if(aberta()){UI.ponteiro=null;return}var q=UI.ponteiro;UI.ponteiro=null;if(!q||q.id!==e.pointerId||q.ignorar||ler())return;var dx=e.clientX-q.x,dy=e.clientY-q.y;if(Math.abs(dx)>=50&&Math.abs(dx)>Math.abs(dy)*1.25){e.preventDefault();g(i+(dx<0?1:-1));mostrar()}else if(e.target===st||e.target.closest('.s'))programarInatividade()},{passive:false});
@@ -127,4 +213,15 @@ if(k==='l'||k==='L'){e.preventDefault();modo(!ler(),true);return}if(k==='f'||k==
 if(ler())return;if(k===' '&&!ctl){e.preventDefault();reproduzir();return}
 if(k==='ArrowRight'||k==='PageDown'){e.preventDefault();g(i+1)}else if(k==='ArrowLeft'||k==='PageUp'){e.preventDefault();g(i-1)}else if(k==='Home'){e.preventDefault();g(0)}else if(k==='End'){e.preventDefault();g(N-1)}},true);
 addEventListener('resize',function(){f();ajustar(S[i]);posDica()});D.addEventListener('conteudista:leitura',function(){ajustar(S[i])});if(D.fonts&&D.fonts.ready)D.fonts.ready.then(function(){ajustar(S[i])});
-var h=parseInt(location.hash.slice(1));i=isNaN(h)?0:Math.max(0,Math.min(N-1,h-1));modo(ler(),false);if(ler()&&i>0)S[i].scrollIntoView();marcaFs();setEstado('visible');programarInatividade()})();
+var h=parseInt(location.hash.slice(1));i=isNaN(h)?0:Math.max(0,Math.min(N-1,h-1));modo(ler(),false);if(ler()&&i>0)S[i].scrollIntoView();marcaFs();setEstado('visible');programarInatividade();
+/* controle remoto — fechar diálogo */
+var dremote=D.getElementById('dremote');
+if(dremote){
+  dremote.addEventListener('close',function(){setEstado('visible');if(bmais)bmais.focus();programarInatividade()});
+  dremote.addEventListener('cancel',function(){setEstado('visible')});
+  var dremoteC=D.getElementById('dremoteC');
+  if(dremoteC)dremoteC.addEventListener('click',function(){_remoteFechar();setEstado('visible');if(bmais)bmais.focus();programarInatividade()});
+  dremote.addEventListener('pointerdown',function(e){if(e.target===dremote)_remoteFechar()});
+  dremote.addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();e.stopPropagation();_remoteFechar()}e.stopPropagation()});
+}
+})();
