@@ -5,7 +5,7 @@
 #   bash tools/verificar.sh            tudo
 # Etapas novas acrescentam testes AQUI, e não nos arquivos .github/workflows: assim os pacotes
 # enviados pelo celular continuam podendo ser aplicados pelo GitHub Actions.
-# Saída: 0 tudo certo · diferente de 0 na primeira falha.
+# Saída: 0 tudo certo · diferente de 0 na primeira falha (com o log completo da execução).
 # =====================================================================================
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -15,8 +15,13 @@ if [ "$#" -gt 0 ]; then
 fi
 TMP="${RUNNER_TEMP:-${TMPDIR:-/tmp}}/conteudista-verificar"
 rm -rf "$TMP"; mkdir -p "$TMP"
+LOG="$TMP/verificar.log"
 PY="${PYTHON:-python3}"; command -v "$PY" >/dev/null || PY=python
-etapa() { echo; echo "==> $*"; }
+ETAPAS=()
+exec 3>&1                      # resumo no terminal
+exec >>"$LOG" 2>&1             # saída das etapas só no log
+etapa() { ETAPAS+=("$*"); echo; echo "==> $*"; }
+trap 's=$?; printf "\nFALHOU (código %s). Saída completa:\n\n" "$s" >&3; cat "$LOG" >&3; exit "$s"' ERR
 
 etapa "Seleção conservadora e versão"
 "$PY" tools/testes/executar_seletivos.py --grupos minimos,versao
@@ -56,8 +61,7 @@ node tools/opcoes/testar_opcoes.js
 node tools/opcoes/verificar_opcoes.js
 
 etapa "Pacotes de atualização (envio pelo celular)"
-"$PY" tools/pacote/testar_pacote.py >/dev/null || "$PY" tools/pacote/testar_pacote.py
-echo "pacotes: ok"
+"$PY" tools/pacote/testar_pacote.py
 
 etapa "Sintaxe de todos os scripts da página"
 for js in web/*.js; do
@@ -71,6 +75,6 @@ for js in $(find web/lib -name '*.js'); do cp "$js" "$TMP/lib.mjs"; node --check
 node -e "import(require('node:url').pathToFileURL(process.argv[1]).href).then(m=>{const r=m.phonemizePTBR('Olá, mundo. A gestão de processos.');console.log(r);if(!/ˈ/.test(r))process.exit(1)})" "$TMP/ptbr-g2p.mjs"
 "$PY" -c "import re,sys;s=open('web/index.html',encoding='utf-8').read();open(sys.argv[1],'w',encoding='utf-8').write(re.findall(r'<script>(.*?)</script>',s,re.S)[-1])" "$TMP/app.js"
 node --check "$TMP/app.js"
-echo "sintaxe: ok"
 
-echo; echo "VERIFICAÇÃO SEM NAVEGADOR: TUDO CERTO."
+printf '\nVERIFICAÇÃO SEM NAVEGADOR: TUDO CERTO.\n' >&3
+printf '  ✓ %s\n' "${ETAPAS[@]}" >&3

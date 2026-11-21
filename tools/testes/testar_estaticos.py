@@ -34,10 +34,10 @@ def executar(modo):
             json.loads(arquivo.read_text(encoding='utf-8'))
     elif modo == 'web':
         for arquivo in sorted((RAIZ / 'web').rglob('*.js')):
-            subprocess.run(['node', '--input-type=module', '--check'], input=arquivo.read_text(encoding='utf-8'), text=True, check=True)
+            subprocess.run(['node', '--input-type=module', '--check'], input=arquivo.read_text(encoding='utf-8'), text=True, encoding='utf-8', check=True)
         index = (RAIZ / 'web' / 'index.html').read_text(encoding='utf-8')
         for codigo in re.findall(r'<script>(.*?)</script>', index, re.S):
-            subprocess.run(['node', '--check'], input=codigo, text=True, check=True)
+            subprocess.run(['node', '--check'], input=codigo, text=True, encoding='utf-8', check=True)
         referencias = Referencias()
         referencias.feed(index)
         if len(set(referencias.ids)) != len(referencias.ids):

@@ -76,10 +76,10 @@ def zip_com(man_mod, extra=None):
     p = os.path.join(TMP, 'mod.zip'); open(p, 'wb').write(b.getvalue()); return p
 
 def inseguros():
-    for c in ('../fora.txt', '/abs.txt', 'web\\x.js', '.git/config', 'web/../../x', 'C:/x'):
+    for c in ('../fora.txt', '/abs.txt', 'web\\x.js', '.git/config', 'web/../../x', 'C:/x', 'web/x\ny.js', 'web/x\ry.js'):
         p = zip_com(lambda m: m['arquivos'].append({'caminho': c, 'antes': None, 'depois': assinatura(b'x')}), {'arquivos/' + c.lstrip('/'): b'x'})
         assert aplicar.main([p, '--raiz', repo_base('ins' + str(abs(hash(c))))]) == 2, c
-t('aplicar: recusa caminhos perigosos (.., absolutos, \\, .git)', inseguros)
+t('aplicar: recusa caminhos perigosos (.., absolutos, \\, .git, controles)', inseguros)
 
 def workflow():
     p = zip_com(lambda m: m['arquivos'].append({'caminho': '.github/workflows/x.yml', 'antes': None, 'depois': assinatura(b'y')}), {'arquivos/.github/workflows/x.yml': b'y'})
@@ -110,6 +110,37 @@ def saida():
     s = open(o, encoding='utf-8').read(); assert 'versao=1.84' in s and 'web/novo.js' in s and 'Conferido' in open(md, encoding='utf-8').read()
     assert ler(r, 'web/a.js') == 'a = 1;\n', '--conferir não grava'
 t('saída para o GitHub Actions e --conferir sem gravar', saida)
+
+def atomico():
+    r = repo_base('atom')
+    antes = {c: ler(r, c) for c in ('web/a.js', 'web/changelog.js', 'web/velho.js')}
+    real = os.replace; chamadas = [0]
+    def falha(a, b):
+        chamadas[0] += 1
+        if chamadas[0] == 3: raise OSError('disco cheio')
+        return real(a, b)
+    os.replace = falha
+    try:
+        try: aplicar.main([PAC, '--raiz', r])
+        except OSError: pass
+        else: raise AssertionError('a gravação deveria falhar')
+    finally:
+        os.replace = real
+    assert {c: ler(r, c) for c in antes} == antes, 'estado original restaurado'
+    assert not os.path.exists(os.path.join(r, 'web/novo.js')), 'arquivo novo não pode sobrar'
+    assert not [p for p in os.listdir(r) if p.startswith('.pacote-')], 'pasta temporária removida'
+t('aplicar: falha no meio da gravação restaura tudo', atomico)
+
+def delimitador():
+    p = zip_com(lambda m: m['arquivos'].append({'caminho': 'FIM_CAMINHOS', 'antes': None, 'depois': assinatura(b'z')}), {'arquivos/FIM_CAMINHOS': b'z'})
+    r = repo_base('delim'); o = os.path.join(TMP, 'gh-delim.txt')
+    assert aplicar.main([p, '--raiz', r, '--saida-github', o, '--conferir']) == 0
+    linhas = open(o, encoding='utf-8').read().splitlines()
+    i = next(i for i, l in enumerate(linhas) if l.startswith('caminhos<<'))
+    fim = linhas[i][len('caminhos<<'):]
+    assert fim and fim != 'FIM_CAMINHOS', 'o delimitador precisa ser aleatório'
+    assert sorted(linhas[i + 1:linhas.index(fim, i + 1)]) == sorted(['web/a.js', 'web/changelog.js', 'web/novo.js', 'web/velho.js', 'FIM_CAMINHOS'])
+t('saída: nome igual ao delimitador não quebra o bloco do GitHub', delimitador)
 
 shutil.rmtree(TMP, ignore_errors=True)
 print('\n%d de %d testes aprovados.' % (n - f, n))

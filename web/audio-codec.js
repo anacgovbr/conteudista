@@ -10,6 +10,7 @@
   'use strict';
   const LAME_CDN = 'https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js';
   const base = (document.currentScript && document.currentScript.src) || location.href;
+  const LAME_LOCAL = new URL('vendor/lame.min.js', base).href;
   const pausa = () => new Promise(r => setTimeout(r, 0));
 
   async function paraBuffer(x) {
@@ -50,7 +51,7 @@
     lameP = (async () => {
       let local = null;
       try { const r = await fetch(new URL('modelos/manifest.json', base).href, { cache: 'no-cache' }); if (r.ok) { const m = await r.json(); local = m.vendor && m.vendor.lamejs; } } catch { /* sem hospedagem */ }
-      for (const u of [local && new URL(local, base).href, LAME_CDN].filter(Boolean)) {
+      for (const u of [LAME_LOCAL, local && new URL(local, base).href, LAME_CDN].filter(Boolean)) {
         try { await carregarScript(u); if (global.lamejs) return global.lamejs; } catch { /* próximo */ }
       }
       lameP = null; throw new Error('conversor MP3 indisponível');

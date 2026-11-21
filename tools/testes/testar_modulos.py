@@ -134,6 +134,26 @@ class ModulosTest(unittest.TestCase):
         self.assertIsNone(gerador.img_bytes('arquivo-inexistente.png'))
         codigo = '```markdown\n![Logo](arquivo-inexistente.png)\n```'
         self.assertEqual(gerador.embed_images(codigo), (codigo, 0, []))
+        remota = '![x](http://127.0.0.1:9/x.png)'
+        self.assertEqual(gerador.embed_images(remota), (remota, 0, ['http://127.0.0.1:9/x.png']))
+        self.assertEqual(gerador.embed_images(remota, remotas=True), (remota, 0, ['http://127.0.0.1:9/x.png']))
+
+    def test_geracao_sem_arquivo_antigo(self):
+        with tempfile.TemporaryDirectory() as pasta:
+            antigo = Path(pasta) / 'Apostila_Falha.docx'
+            antigo.write_bytes(b'antigo')
+            original = gerador.treinamento_docx
+            def falhar(*a, **k): raise RuntimeError('sem docx')
+            gerador.treinamento_docx = falhar
+            try:
+                arqs, res = gerador.gerar('# Apostila\n\nTexto.', '', prefixo='Falha', saida=pasta)
+            finally:
+                gerador.treinamento_docx = original
+            self.assertIn('docx: ERRO', res)
+            self.assertFalse(antigo.exists(), 'saída antiga do mesmo prefixo é removida')
+            self.assertTrue((Path(pasta) / 'Apostila_Falha.html').is_file())
+            self.assertNotIn(str(antigo), arqs)
+            self.assertEqual([p.name for p in Path(pasta).iterdir() if p.name.startswith('.gerar-')], [])
 
     def test_pacote_publicado_importavel(self):
         with tempfile.TemporaryDirectory() as pasta:

@@ -30,8 +30,8 @@ def assinatura(b):
 
 
 def caminho_seguro(c):
-    """Recusa caminhos absolutos, com '..', barras invertidas, vazios ou em pastas proibidas."""
-    if not isinstance(c, str) or not c or c != c.strip() or '\\' in c or c.startswith('/') or re.match(r'^[A-Za-z]:', c):
+    """Recusa caminhos absolutos, com controles, '..', barras invertidas, vazios ou em pastas proibidas."""
+    if not isinstance(c, str) or not c or c != c.strip() or re.search(r'[\x00-\x1f\x7f]', c) or '\\' in c or c.startswith('/') or re.match(r'^[A-Za-z]:', c):
         return False
     n = posixpath.normpath(c)
     if n != c or n.startswith('../') or n == '..' or '/../' in '/' + n + '/':
@@ -43,7 +43,8 @@ def versao_de(raiz):
     p = os.path.join(raiz, 'web', 'changelog.js')
     if not os.path.isfile(p):
         return ''
-    m = re.search(r"const VERSAO = '([\d.]+)'", open(p, encoding='utf-8', errors='replace').read())
+    with open(p, encoding='utf-8', errors='replace') as f:
+        m = re.search(r"const VERSAO = '([\d.]+)'", f.read())
     return m.group(1) if m else ''
 
 

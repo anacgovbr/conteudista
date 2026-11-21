@@ -370,7 +370,7 @@ function aplicar(d) {
   $('g').value = d.g || ''; $('s').value = d.s || ''; $('pref').value = d.p || 'Meu_Conteudo'; $('rod').value = d.r || ''; $('bar').value = d.b || ''; $('licenca').value = d.licenca || '';
   const tema = { tema: d.tema || '', tema_dados: d.tema_dados || null };
   if (window.Temas) Temas.aplicarSnapshot(tema); else if (tema.tema || tema.tema_dados) window.__temaPendente = tema;
-  statusImagens();
+  refreshEditors(); statusImagens();
 }
 function paraTexto(d) { return '<!-- conteudista:config ' + JSON.stringify({ p: d.p, r: d.r, b: d.b, licenca: d.licenca || '', tema: d.tema || '', ...(d.tema_dados ? { tema_dados: d.tema_dados } : {}) }) + ' -->\n' + d.g + '\n\n' + SEP + '\n\n' + d.s; }
 function deTexto(t) {
@@ -392,8 +392,9 @@ const nomeBase = src => { try { src = decodeURIComponent(src); } catch {} return
 /* Blocos de codigo e codigo em linha (mesmo tamanho, em branco): exemplos de sintaxe nao contam como imagens */
 const mascaraCodigo = t => t.replace(/^```[^\n]*\n[\s\S]*?^```[ \t]*$|`[^`\n]+`/gm, m => m.replace(/[^\n]/g, ' '));
 function pendentes(txt) { return [...mascaraCodigo(txt).matchAll(IMG)].map(m => m[2]).filter(s => !s.startsWith('data:')); }
+let tStatusImagens = 0;
+const agendarStatusImagens = () => { clearTimeout(tStatusImagens); tStatusImagens = setTimeout(statusImagens, 250); };
 function statusImagens() {
-  refreshEditors();
   const t = $('g').value + '\n' + $('s').value, tot = [...mascaraCodigo(t).matchAll(IMG)].length, pen = pendentes(t);
   $('imgst').innerHTML = !tot ? 'Imagens: nenhuma referência encontrada.' :
     'Imagens: <b>' + (tot - pen.length) + '</b> de ' + tot + ' em base64' +
@@ -415,7 +416,7 @@ async function embutir(txt) {
 }
 async function embutirTudo(silencioso) {
   const a = await embutir($('g').value), b = await embutir($('s').value);
-  $('g').value = a.out; $('s').value = b.out; statusImagens();
+  $('g').value = a.out; $('s').value = b.out; refreshEditors(); statusImagens();
   const n = a.n + b.n, f = [...new Set([...a.falhas, ...b.falhas])];
   if (n) log('Imagens convertidas para base64: ' + n + '.', 'ok');
   if (f.length && !silencioso) log('Imagens não encontradas (arraste os arquivos ou verifique o endereço): ' + f.join(', '), 'wa');
@@ -487,7 +488,7 @@ document.querySelectorAll('.drop').forEach(d => {
   d.ondragleave = () => d.classList.remove('over');
   d.ondrop = e => { e.preventDefault(); e.stopPropagation(); d.classList.remove('over'); receberArquivos(e.dataTransfer.files, d.dataset.t); };
 });
-['g', 's'].forEach(id => $(id).addEventListener('input', () => { statusImagens(); agendarAuto(); }));
+['g', 's'].forEach(id => $(id).addEventListener('input', () => { agendarStatusImagens(); agendarAuto(); }));
 $('fmd').onchange = async e => { await receberArquivos(e.target.files, alvo); e.target.value = ''; };
 ['pref', 'rod', 'bar'].forEach(id => $(id).addEventListener('input', agendarAuto));
 $('licenca').addEventListener('change', agendarAuto);
@@ -502,12 +503,16 @@ $('ex').onclick = async () => {
     if (window.Hist) await Hist.registrar('antes', 'Antes de carregar o exemplo');
     $('g').value = await (await fetch('exemplo/treinamento.md', { cache: 'no-store' })).text();
     $('s').value = await (await fetch('exemplo/apresentacao.md', { cache: 'no-store' })).text();
-    $('pref').value = 'Exemplo'; statusImagens(); log('Exemplo carregado.', 'ok');
+    $('pref').value = 'Exemplo'; refreshEditors(); statusImagens(); log('Exemplo carregado.', 'ok');
     if (window.Hist) Hist.registrar('exemplo', 'Exemplo');
   } catch { log('Exemplo indisponível.', 'err'); }
 };
 function limparDownloads() { urls.forEach(u => URL.revokeObjectURL(u)); urls = []; ultimos = []; $('res').innerHTML = 'Nenhum arquivo gerado ainda. Para guardar o texto agora, use <b>Compartilhar link</b>.'; $('prev').hidden = true; $('prev').src = 'about:blank'; }
-$('clr').onclick = () => { aplicar({}); imgMap.clear(); limparDownloads(); log('Tela limpa (rascunhos salvos não foram apagados).', 'ok'); };
+$('clr').onclick = async () => {
+  if (!await (window.Dialogo ? Dialogo.confirmar({ titulo: 'Limpar a tela?', descricao: 'O texto das duas abas será apagado. Os rascunhos salvos não são apagados; use Ctrl+Z ou o histórico para recuperar o conteúdo.', rotulo: 'Limpar', perigo: true }) : Promise.resolve(confirm('Limpar a tela? Os rascunhos salvos não serão apagados.')))) return;
+  if (window.Hist) await Hist.registrar('antes', 'Antes de limpar');
+  aplicar({}); imgMap.clear(); limparDownloads(); log('Tela limpa (rascunhos salvos não foram apagados).', 'ok');
+};
 
 /* =========================== Persistência local (IndexedDB) =========================== */
 let dbp = null;
@@ -838,7 +843,14 @@ $('open').onclick = async () => {
    O .md e o PPTX continuam como antes (código do fluxo e tabela). */
 let mermaidP = null;
 function carregarMermaid() {
-  if (!mermaidP) mermaidP = import('https://cdn.jsdelivr.net/npm/mermaid@10.9.8/dist/mermaid.esm.min.mjs').then(m => { m.default.initialize({ startOnLoad: false, securityLevel: 'strict' }); return m.default; });
+  if (!mermaidP) mermaidP = new Promise((ok, falha) => {
+    if (window.mermaid) { window.mermaid.initialize({ startOnLoad: false, securityLevel: 'strict' }); return ok(window.mermaid); }
+    const s = document.createElement('script');
+    s.src = new URL('vendor/mermaid.min.js', document.baseURI).href;
+    s.onload = () => { if (!window.mermaid) return falha(new Error('Mermaid indisponível')); window.mermaid.initialize({ startOnLoad: false, securityLevel: 'strict' }); ok(window.mermaid); };
+    s.onerror = () => { s.remove(); mermaidP = null; falha(new Error('Mermaid indisponível')); };
+    document.head.appendChild(s);
+  });
   return mermaidP;
 }
 function fluxosDoTexto(md) {
@@ -1030,7 +1042,7 @@ $('btnRestaurar').onclick = async () => {
   if (!await Dialogo.perguntar('Voltar todas as opções ao padrão? Seus textos, rascunhos e versões não são apagados.')) return;
   Opcoes.restaurar(); location.reload();
 };
-statusImagens();
+refreshEditors(); statusImagens();
 (async () => {  // recupera o último autossalvamento se a tela estiver vazia
   if (location.hash.startsWith('#cx=') || $('g').value || $('s').value) return;
   try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}

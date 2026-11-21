@@ -32,11 +32,11 @@ jobs:
       gerador_navegador: ${{ steps.plano.outputs.gerador_navegador || 'true' }}
       delegado: ${{ steps.plano.outputs.delegado_publicacao || (github.event_name == 'push' && github.ref == 'refs/heads/main' && 'true') || 'false' }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           fetch-depth: 0
           persist-credentials: false
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12'
       - name: Classificar mudanças
@@ -52,7 +52,7 @@ jobs:
           if [ "$EVENTO" = pull_request ]; then args+=(--merge-base); fi
           if [ "$COMPLETO" = true ]; then args+=(--completo); fi
           python tools/testes/classificar_mudancas.py "${args[@]}"
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: always()
         with:
           name: selecao-testes
@@ -64,14 +64,14 @@ jobs:
     needs: classificar
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12'
       - run: python tools/testes/executar_seletivos.py --grupos minimos,versao --saida relatorio-minimos
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: always()
         with:
           name: relatorio-minimos
@@ -84,20 +84,20 @@ jobs:
     if: needs.classificar.outputs.completo != 'true' && needs.classificar.outputs.estaticos != '[]'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12'
       - name: Instalar dependências do gerador somente quando necessárias
         if: needs.classificar.outputs.gerador_estaticos == 'true'
-        run: pip install -r tools/requirements.txt
-      - uses: actions/download-artifact@v5
+        run: pip install --require-hashes -r tools/requirements.lock
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: selecao-testes
       - run: python tools/testes/executar_seletivos.py --selecao selecao.json --tipo estatico --saida relatorio-estaticos
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: always()
         with:
           name: relatorio-estaticos
@@ -110,21 +110,20 @@ jobs:
     if: needs.classificar.outputs.completo != 'true' && needs.classificar.outputs.navegador != '[]'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           persist-credentials: false
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: '3.12'
           cache: pip
           cache-dependency-path: |
-            tools/requirements.txt
-            tools/testes/requirements.txt
-            tools/testes/requirements-estaticos.txt
-      - run: pip install -r tools/testes/requirements.txt
+            tools/requirements.lock
+            tools/testes/requirements.lock
+      - run: pip install --require-hashes -r tools/testes/requirements.lock
       - name: Instalar gerador somente quando necessário
         if: needs.classificar.outputs.gerador_navegador == 'true'
-        run: pip install -r tools/requirements.txt
+        run: pip install --require-hashes -r tools/requirements.lock
       - name: Instalar o Google Chrome
         run: |
           for tentativa in 1 2 3; do
@@ -139,11 +138,11 @@ jobs:
               sleep 20
             fi
           done
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: selecao-testes
       - run: python tools/testes/executar_seletivos.py --selecao selecao.json --tipo navegador --saida relatorio-navegador
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6
         if: always()
         with:
           name: relatorio-navegador

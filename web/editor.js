@@ -113,11 +113,21 @@
     }).join('') + '</div>';
   }
   let mermaidP = null;
+  function carregarMermaid() {
+    if (!mermaidP) mermaidP = new Promise((ok, falha) => {
+      if (window.mermaid) { window.mermaid.initialize({ startOnLoad: false, securityLevel: 'strict' }); return ok(window.mermaid); }
+      const s = document.createElement('script');
+      s.src = new URL('vendor/mermaid.min.js', document.baseURI).href;
+      s.onload = () => { if (!window.mermaid) return falha(new Error('Mermaid indisponível')); window.mermaid.initialize({ startOnLoad: false, securityLevel: 'strict' }); ok(window.mermaid); };
+      s.onerror = () => { s.remove(); mermaidP = null; falha(new Error('Mermaid indisponível')); };
+      document.head.appendChild(s);
+    });
+    return mermaidP;
+  }
   async function drawMermaid(root) {
     const els = root.querySelectorAll('pre.mermaid'); if (!els.length) return;
     try {
-      if (!mermaidP) mermaidP = import('https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs').then(m => { m.default.initialize({ startOnLoad: false, securityLevel: 'strict' }); return m.default; });
-      const mm = await mermaidP; await mm.run({ nodes: els });
+      const mm = await carregarMermaid(); await mm.run({ nodes: els });
     } catch (e) { /* offline: mantém o código */ }
   }
 
@@ -266,16 +276,16 @@
 
     let lastReal = null, tPv = null;
     /* ---- histórico próprio (Ctrl+Z / Ctrl+Y): cobre digitação, botões e alterações externas ---- */
-    const hist = [], HMAX = 300; let hpos = -1, hT = 0, hTipo = '';
+    const hist = [], HMAX = 300; let hpos = -1, hT = 0, hTipo = '', histBytes = 0;
     function snap(tipo) {
       const v = ta.value, cur = hist[hpos];
       if (cur && cur.v === v) { cur.s = ta.selectionStart; cur.e = ta.selectionEnd; return; }
       const agora = Date.now(), agrupa = tipo === 'dig' && hTipo === 'dig' && agora - hT < 900 && hpos === hist.length - 1 && hpos > 0;
-      if (agrupa) hist[hpos] = { v, s: ta.selectionStart, e: ta.selectionEnd };
+      if (agrupa) { histBytes += v.length - hist[hpos].v.length; hist[hpos] = { v, s: ta.selectionStart, e: ta.selectionEnd }; }
       else {
-        hist.splice(hpos + 1); hist.push({ v, s: ta.selectionStart, e: ta.selectionEnd });
+        hist.splice(hpos + 1); hist.push({ v, s: ta.selectionStart, e: ta.selectionEnd }); histBytes += v.length;
         // limite também em memória: ~16 MB de texto (UTF-16) por editor, sempre mantendo ao menos 2 passos
-        while (hist.length > 2 && (hist.length > HMAX || hist.reduce((t, h) => t + h.v.length, 0) > 8 * 1024 * 1024)) hist.shift();
+        while (hist.length > 2 && (hist.length > HMAX || histBytes > 8 * 1024 * 1024)) { histBytes -= hist[0].v.length; hist.shift(); }
         hpos = hist.length - 1;
       }
       hT = agora; hTipo = tipo; atualizaUR();

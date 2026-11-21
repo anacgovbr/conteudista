@@ -55,13 +55,13 @@ def fontes_faces_unicas(fonte):
     Retorna [(peso_css, estilo, arquivo, caminho)]."""
     nome=LEITURAS[fonte][0];grupos={}
     for peso,estilo,arq,cam in fontes_faces(fonte):
-        h=hashlib.sha256(open(cam,'rb').read()).hexdigest()
-        grupos.setdefault((estilo,h),[]).append((peso,arq,cam))
+        with open(cam,'rb') as f:b=f.read()
+        grupos.setdefault((estilo,hashlib.sha256(b).hexdigest()),[]).append((peso,arq,cam,b))
     r=[]
     for (estilo,_),it in grupos.items():
-        it.sort();pesos=[p for p,_,_ in it];_,arq,cam=it[0]
+        it.sort();pesos=[p for p,*_ in it];_,arq,cam,b=it[0]
         if len(it)==1:r.append((str(pesos[0]),estilo,arq,cam));continue
-        if 'fvar' in woff2_tabelas(open(cam,'rb').read()):r.append(('%d %d'%(min(pesos),max(pesos)),estilo,arq,cam))
+        if 'fvar' in woff2_tabelas(b):r.append(('%d %d'%(min(pesos),max(pesos)),estilo,arq,cam))
         else:
             aviso('Fonte de leitura %s (%s): os arquivos dos pesos %s são iguais e a fonte não é variável; o negrito será simulado pelo navegador. Rode tools/fontes/baixar-fontes.ps1.'%(nome,estilo,', '.join(map(str,pesos))))
             r.append((str(pesos[0]),estilo,arq,cam))
@@ -76,8 +76,9 @@ def fontes_css():
         o=[]
         for fonte,(nome,base,_) in LEITURAS.items():
             for peso,estilo,arq,cam in fontes_faces_unicas(fonte):
+                with open(cam,'rb') as f:b=f.read()
                 o.append('@font-face{font-family:"%s";src:url(data:font/woff2;base64,%s) format("woff2");font-weight:%s;font-style:%s;font-display:swap}'
-                         %(nome,base64.b64encode(open(cam,'rb').read()).decode(),peso,estilo))
+                         %(nome,base64.b64encode(b).decode(),peso,estilo))
         o.append(':root{--leitura:%s}html[data-leitura="padrao"]{--leitura:%s}'%(PILHA_LEITURA,PILHA_LEITURA))
         o.append('html[data-leitura="atkinson"]{--leitura:"Atkinson Hyperlegible Next",%s}html[data-leitura="opendyslexic"]{--leitura:"OpenDyslexic",%s}'%(PILHA_LEITURA,PILHA_LEITURA))
         _FONTES_CSS='\n'.join(o)+'\n'

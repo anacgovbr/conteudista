@@ -135,7 +135,7 @@ Limitações conhecidas:
 
 ## Biblioteca Linguagem Acessível (`web/lib/linguagem-acessivel/`)
 
-Confere acessibilidade e linguagem simples em textos Markdown. É a base do editor, do gerador, do `lac` e da API HTTP local. Nesta versão (0.3.0) traz 11 regras. Para corrigir: `i1`, `i2`, `e1`, `e2`, `e3` e `k1`; sugestões: `f1`, `f2`, `f3`, `s1` e `n1`. O glossário pode vir do conteúdo, de `config.siglas` ou da lista institucional, nessa ordem.
+Confere acessibilidade e linguagem simples em textos Markdown. É a base do editor, do gerador, do `lac` e da API HTTP local. A lista de regras, os níveis e os marcadores ficam em [`docs/linguagem-acessivel/README.md`](docs/linguagem-acessivel/README.md) e podem ser consultados no código por `LA.regras()`. O glossário pode vir do conteúdo, de `config.siglas` ou da lista institucional, nessa ordem.
 
 - **Linha de comando `lac` e API v1** (`tools/lac/`, versão 1.0.0): `lac c apostila.md`, `lac c -f relatorio apostila.md`, `lac c --config web/config/opcoes.yaml apostila.md`, `lac a -d apostila.md`, `lac p simplificar < trecho.txt`; `lac -v` mostra as versões. No Windows: `tools\lac\lac.cmd`. `lac servir -p 8787` inicia a API local; OpenAPI 3.1 em `tools/lac/openapi.json`. CORS é negado por padrão; `LAC_CORS_ORIGINS` configura origens permitidas. O servidor não registra nem guarda conteúdo. **Release:** a tag `lac-vX.Y.Z` publica `lac-X.Y.Z.tar.gz` e `SHA256SUMS` (fluxo `lac-release.yml`); para montar o pacote localmente, `node tools/lac/empacotar.mjs`. Ver `docs/lac.md`, `tools/lac/CHANGELOG.md` e a decisão 0008.
 

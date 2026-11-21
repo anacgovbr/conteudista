@@ -19,7 +19,19 @@ const BASE = new URL('./', self.location.href).href;
 const KOKORO_CDN = ['https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/dist/kokoro.web.js', 'https://cdn.jsdelivr.net/npm/kokoro-js@1.2.1/+esm'];
 const ESPEAK_CDN = ['https://cdn.jsdelivr.net/npm/espeak-ng@1.0.2/dist/espeak-ng.js', 'https://cdn.jsdelivr.net/npm/espeak-ng@1.0.2/+esm'];
 const MODEL_ID = 'onnx-community/Kokoro-82M-v1.0-ONNX';
-const VOZES_URL = 'https://huggingface.co/' + MODEL_ID + '/resolve/main/voices/';
+const MODEL_REVISAO = '1939ad2a8e416c0acfeecc08a694d14ef25f2231';
+const VOZES_URL = 'https://huggingface.co/' + MODEL_ID + '/resolve/' + MODEL_REVISAO + '/voices/';
+const HF_RESOLVE = 'https://huggingface.co/' + MODEL_ID + '/resolve/';
+// O kokoro-js baixa o modelo em resolve/main: reescreve para a revisão fixa (o pacote não repassa "revision").
+function fixarRevisao() {
+  if (self.__revisaoKokoro) return; self.__revisaoKokoro = true;
+  const original = self.fetch.bind(self);
+  self.fetch = (input, init) => {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input && input.url;
+    const alvo = url && url.replace(HF_RESOLVE + 'main/', HF_RESOLVE + MODEL_REVISAO + '/');
+    return original(alvo && alvo !== url ? alvo : input, init);
+  };
+}
 const STYLE_DIM = 256, SR = 24000, MAX_TOKENS = 500;
 // lang_code do Kokoro → idioma do espeak-ng (mesmo mapeamento do KPipeline)
 const ESPEAK_LANG = { e: 'es', f: 'fr-fr', h: 'hi', i: 'it', p: 'pt-br' };
@@ -50,6 +62,7 @@ async function init(op) {
   }
 }
 async function init_({ dtype = 'fp32', device = 'auto' }) {
+  fixarRevisao();
   espelhos = await ativarEspelhos(BASE);
   const { mod, url } = await importarPrimeiro(BASE, [espelhos.vendor.kokoro], KOKORO_CDN, kokoroSemLocal);
   const KokoroTTS = mod.KokoroTTS || (mod.default && mod.default.KokoroTTS);

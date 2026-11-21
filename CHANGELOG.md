@@ -1,8 +1,26 @@
 # Novidades do Conteudista
+## 1.109 - 20/11/2026
+- **Auditoria 1–13 implementadas:**
+  - **1. Caminhos seguros:** `caminho_seguro()` em `tools/pacote/comum.py` passa a rejeitar caracteres de controle `[\x00-\x1f\x7f]`.
+  - **2. Gravação atômica de pacotes:** `gravar()` em `tools/pacote/aplicar.py` usa pasta temporária `.pacote-*`, `os.replace()` e restauração automática em falha; delimitador aleatório `FIM_<hex>`; `_uma_linha()` higieniza título/mensagem.
+  - **3. Imagens remotas seguras:** `tools/conteudo/imagens.py` só baixa imagens externas com `remotas=True`; `_url_publica()` bloqueia IPs não globais; `_RedirecionamentoSeguro` revalida redirecionamentos; exige `image/*`; limite 20 MB; `shortcut:` sobre DNS rebinding.
+  - **4. Gerador com temp output:** `tools/gerador.py` ganha `--baixar-imagens-remotas`; escreve em `.gerar-*` e move ao final; saídas parciais de artefatos com falha são removidas.
+  - **5. Descritores de arquivo:** `open()` sem `with` substituídos por `with open()` / `Path.read_text()` / `Path.write_bytes()` em `tools/conteudo/fontes.py`, `tools/conteudo/epub.py`, `tools/gerador.py`, `tools/pacote/comum.py`, `tools/pacote/aplicar.py`.
+  - **6. Debounce de `statusImagens()`:** 250 ms no `input` dos editores; `refreshEditors()` removido da função e chamado explicitamente nos pontos programáticos (`aplicar`, `embutirTudo`, `receberArquivos`, exemplo).
+  - **7. Histórico com `histBytes`:** contador incremental substitui `hist.reduce()` a cada snapshot, mantendo o limite de ~16 MB por editor.
+  - **8. Lock files com hashes:** `uv pip compile --generate-hashes` para `tools/requirements.lock` e `tools/testes/requirements.lock`; workflows usam `pip install --require-hashes`.
+  - **9. Mermaid e lamejs vendidos:** `web/vendor/mermaid.min.js` (v10.9.8, UMD) e `web/vendor/lame.min.js`; carregadores em `web/editor.js`, `web/index.html` e `web/audio-codec.js` apontam para os arquivos locais. URLs do Hugging Face (`piper-voices`, `Kokoro-82M`) fixadas no commit SHA (`resolve/<sha>/`) em `web/modelos.json` e `web/locucao-worker.js` (com reescrita de `resolve/main/` para a revisão fixa).
+  - **10. Actions fixadas no SHA:** todos os `uses: actions/...@vN` substituídos por `uses: actions/...@<sha> # vN` nos 5 workflows.
+  - **11. Confirmação ao limpar a tela:** botão "Limpar" usa `Dialogo.confirmar` (perigo) e registra `"Antes de limpar"` no `Hist` antes de apagar.
+  - **12. README aponta para `docs/linguagem-acessivel/README.md` e `LA.regras()`:** versão da biblioteca corrigida para 0.5.0 (antes dizia 0.3.0 / 11 regras).
+  - **13. `tools/verificar.sh` silencioso no sucesso:** cada etapa grava em log; em caso de falha, o log completo é despejado no terminal; sucesso mostra só o resumo com ✓ por etapa.
+- **Testes:** `bash tools/verificar.sh` passa (11/11 módulos, 13/13 pacotes, grupos seletivos, estáticos, acessibilidade, links, motor Python).
+
 ## 1.108 - 19/11/2026
 - **Links mais seguros:** links como `javascript:` ou `data:` no Markdown deixam de virar link na prévia, no HTML e no EPUB. Só ficam links relativos, `#`, `http`, `https` e `mailto`.
 - **Bibliotecas externas fixadas:** o Mermaid passa a usar a versão exata 10.9.8, e o Pyodide e o gerador de QR code são conferidos por hash (SRI).
 - **Testes:** novos testes 6.10 (links), 17.8 (prévia), 17.9 (limite de tempo da auditoria de imagens) e 25.10b; o teste 5.2c agora confere todos os scripts do `index.html`.
+
 ## 1.107 - 19/11/2026
 - **Auditoria de imagens no relatório:** o relatório de acessibilidade ganhou a seção **Imagens**, com descrição ausente, tamanho, uso de vermelho e verde como cores principais, contraste estimado entre as duas cores dominantes e indício de texto embutido. A imagem original não é alterada.
 - **Fluxos Mermaid corrigidos:** quando um fluxo usa vermelho e verde nas cores dos nós, o HTML gerado aproxima essas cores do erro e do apoio do tema e garante texto com 4,5:1 sobre o preenchimento. A tabela do fluxo e o texto alternativo continuam iguais.

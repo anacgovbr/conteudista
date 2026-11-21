@@ -205,7 +205,10 @@ def treinamento_epub(md,path,foot,tema=None,fonte='atkinson',licenca=''):
         put('META-INF/container.xml',container);put('OEBPS/content.opf',opf);put('OEBPS/toc.ncx',ncx);put('OEBPS/css/style.css',css)
         put('OEBPS/nav.xhtml',docs['nav.xhtml'])
         for _,nome,_,_,_ in arquivos:put('OEBPS/'+nome,docs[nome])
-        for peso,estilo,arq,cam in faces:put('OEBPS/fonts/'+arq,open(cam,'rb').read())
-        if faces and os.path.isfile(os.path.join(FONTES_DIR,ofl)):put('OEBPS/fonts/'+ofl,open(os.path.join(FONTES_DIR,ofl),'rb').read())
+        for peso,estilo,arq,cam in faces:
+            with open(cam,'rb') as f:put('OEBPS/fonts/'+arq,f.read())
+        ofl_cam=os.path.join(FONTES_DIR,ofl)
+        if faces and os.path.isfile(ofl_cam):
+            with open(ofl_cam,'rb') as f:put('OEBPS/fonts/'+ofl,f.read())
         for nm,mime,raw in cx.imgs.values():put('OEBPS/'+nm,raw)
     return path

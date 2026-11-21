@@ -7,7 +7,7 @@ Uso:
 
 Códigos de saída: 0 aplicado · 2 recusado (nada foi alterado) · 3 já estava aplicado · 4 nenhum pacote.
 Nunca altera nada se alguma conferência falhar: primeiro confere tudo, depois grava."""
-import argparse, glob, os, sys
+import argparse, glob, os, re, shutil, sys, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from comum import PROIBIDOS, assinatura, ler_pacote, versao_de
 
@@ -22,6 +22,11 @@ def localizar(raiz):
     l = sorted(glob.glob(os.path.join(raiz, '*.zip')) + glob.glob(os.path.join(raiz, 'pacotes', '*.zip')))
     l = [p for p in l if not os.path.basename(p).startswith('conteudista-web')]
     return os.path.relpath(l[0], raiz).replace('\\', '/') if l else ''
+
+
+def _assinatura(cam):
+    with open(cam, 'rb') as f:
+        return assinatura(f.read())
 
 
 def conferir(raiz, caminho_zip):
@@ -40,7 +45,7 @@ def conferir(raiz, caminho_zip):
     estado = []
     for it in m['arquivos']:
         cam = os.path.join(raiz, it['caminho'])
-        atual = assinatura(open(cam, 'rb').read()) if os.path.isfile(cam) else None
+        atual = _assinatura(cam) if os.path.isfile(cam) else None
         estado.append((it, atual))
     if all(atual == it['depois'] for it, atual in estado):
         linhas.append('Todos os arquivos já estão como no pacote: nada a aplicar.')
@@ -61,18 +66,53 @@ def conferir(raiz, caminho_zip):
 
 
 def gravar(raiz, m, conteudos):
-    for it in m['arquivos']:
-        cam = os.path.join(raiz, it['caminho'])
-        if it['depois'] is None:
+    """Grava tudo em uma pasta temporária e só então troca os arquivos finais."""
+    tmp = tempfile.mkdtemp(dir=raiz, prefix='.pacote-')
+    novos, salvos, criados = [], [], []
+    def guardar(cam):
+        bak = os.path.join(tmp, 'antes', os.path.relpath(cam, raiz))
+        os.makedirs(os.path.dirname(bak), exist_ok=True)
+        os.replace(cam, bak)
+        salvos.append((cam, bak))
+    try:
+        for it in m['arquivos']:
+            cam = os.path.join(raiz, it['caminho'])
+            if it['depois'] is None:
+                if os.path.isfile(cam):
+                    guardar(cam)
+                continue
+            if os.path.isfile(cam) and _assinatura(cam) == it['depois']:
+                continue
+            t = os.path.join(tmp, 'depois', it['caminho'])
+            os.makedirs(os.path.dirname(t), exist_ok=True)
+            with open(t, 'wb') as f:
+                f.write(conteudos[it['caminho']])
+            novos.append((t, cam))
+        for t, cam in novos:
             if os.path.isfile(cam):
+                guardar(cam)
+            else:
+                criados.append(cam)
+            os.makedirs(os.path.dirname(cam) or '.', exist_ok=True)
+            os.replace(t, cam)
+    except BaseException:
+        for cam in criados:
+            try:
                 os.remove(cam)
-            continue
-        b = conteudos[it['caminho']]
-        if os.path.isfile(cam) and assinatura(open(cam, 'rb').read()) == it['depois']:
-            continue
-        os.makedirs(os.path.dirname(cam) or '.', exist_ok=True)
-        with open(cam, 'wb') as f:
-            f.write(b)
+            except OSError:
+                pass
+        for cam, bak in reversed(salvos):
+            try:
+                os.replace(bak, cam)
+            except OSError:
+                pass
+        raise
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
+def _uma_linha(v):
+    return re.sub(r'[\x00-\x1f\x7f]+', ' ', str(v)).strip()
 
 
 def main(argv=None):
@@ -101,9 +141,10 @@ def main(argv=None):
         with open(x.resumo, 'a', encoding='utf-8') as f:
             f.write(texto)
     if x.saida_github and m:
+        fim = 'FIM_' + os.urandom(8).hex()
         with open(x.saida_github, 'a', encoding='utf-8') as f:
-            f.write('versao=%s\nanterior=%s\ntitulo=%s\nmensagem=%s\n' % (m['versao'], m['anterior'], m['titulo'].replace('\n', ' '), m['mensagem'].replace('\n', ' ')))
-            f.write('caminhos<<FIM_CAMINHOS\n%s\nFIM_CAMINHOS\n' % '\n'.join(it['caminho'] for it in m['arquivos']))
+            f.write('versao=%s\nanterior=%s\ntitulo=%s\nmensagem=%s\n' % (m['versao'], m['anterior'], _uma_linha(m['titulo']), _uma_linha(m['mensagem'])))
+            f.write('caminhos<<%s\n%s\n%s\n' % (fim, '\n'.join(it['caminho'] for it in m['arquivos']), fim))
     return {'aplicar': 0, 'aplicado': 3, 'recusado': 2}[situacao]
 
 

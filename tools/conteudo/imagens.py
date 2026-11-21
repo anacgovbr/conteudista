@@ -1,9 +1,38 @@
 import re,html,os,base64,io,mimetypes,zipfile,hashlib,uuid,datetime
+import ipaddress,socket,urllib.error,urllib.parse,urllib.request
 from urllib.parse import unquote,unquote_to_bytes
 E=html.escape
 from .markdown import CODIGO_RX
 
 IMG=re.compile(r'!\[([^\]]*)\]\(([^)\s]+)\)')
+LIMITE_IMAGEM=20*1024*1024
+
+def _url_publica(u):
+    "True se o host http(s) só resolve para endereços públicos."
+    # shortcut: valida o DNS antes de conectar; um DNS que troque a resposta entre a checagem e a conexão ainda passaria — fixar o IP resolvido quando isso importar.
+    try:
+        if u.scheme not in('http','https') or not u.hostname:return False
+        for info in socket.getaddrinfo(u.hostname,u.port or (443 if u.scheme=='https' else 80),type=socket.SOCK_STREAM):
+            if not ipaddress.ip_address(info[4][0]).is_global:return False
+        return True
+    except Exception:return False
+
+class _RedirecionamentoSeguro(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self,req,fp,code,msg,headers,newurl):
+        if not _url_publica(urllib.parse.urlparse(newurl)):
+            raise urllib.error.URLError('redirecionamento para endereço não público')
+        return super().redirect_request(req,fp,code,msg,headers,newurl)
+
+def _baixar_imagem(src):
+    "Bytes e media-type de uma imagem pública; (None, None) se bloqueada, não for imagem ou passar do limite."
+    if not _url_publica(urllib.parse.urlparse(src)):return None,None
+    try:
+        with urllib.request.build_opener(_RedirecionamentoSeguro).open(src,timeout=15) as r:
+            mime=r.headers.get_content_type() or ''
+            if not mime.startswith('image/'):return None,None
+            raw=r.read(LIMITE_IMAGEM+1)
+    except Exception:return None,None
+    return (raw,mime) if len(raw)<=LIMITE_IMAGEM else (None,None)
 
 def img_bytes(src):
     """Bytes de uma imagem data:URI ou arquivo local; None se indisponível ou SVG."""
@@ -24,16 +53,17 @@ def img_size(raw):
         return Image.open(io.BytesIO(raw)).size
     except Exception:return (800,450)
 
-def embed_images(md,base_dir='.'):
-    """Substitui imagens locais/remotas por data:URI base64. Retorna (md, embutidas, falhas)."""
+def embed_images(md,base_dir='.',remotas=False):
+    """Substitui imagens locais (e remotas, se `remotas`) por data:URI base64. Retorna (md, embutidas, falhas)."""
     ok=[0];fail=[]
     def rep(m):
         alt,src=m.group(1),m.group(2)
         if src.startswith('data:'):return m.group(0)
         try:
             if re.match(r'https?://',src):
-                import urllib.request
-                with urllib.request.urlopen(src,timeout=15) as r:raw=r.read();mime=r.headers.get_content_type()
+                if not remotas:fail.append(src);return m.group(0)
+                raw,mime=_baixar_imagem(src)
+                if raw is None:fail.append(src);return m.group(0)
             else:
                 p=unquote(src if os.path.isabs(src) else os.path.join(base_dir,src))
                 raw=open(p,'rb').read();mime=mimetypes.guess_type(p)[0]
