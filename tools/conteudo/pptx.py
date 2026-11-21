@@ -56,7 +56,9 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
     if custom:
         L=px(pos.get('margem',60));CW=W-2*L
     n_original=len(sl)
-    if licenca:sl=list(sl)+[('licenciamento',licencas.blocos_slide(licenca),'')]
+    licenca_blocos = licencas.blocos_slide(licenca)
+    if licenca_blocos:
+        sl = list(sl) + [('licenciamento', licenca_blocos, '')]
     pasta_modelo=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'temas',modelo) if modelo else ''
     def fundo_anac(s,idx,cls):
         if not modelo:return False

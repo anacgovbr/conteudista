@@ -1,4 +1,8 @@
 # Novidades do Conteudista
+## 1.110 - 21/11/2026
+- **Licenciamento opcional corrigido:** o HTML da apresentação e o PPTX só criam o slide de licenciamento quando existe conteúdo de licença válido. Isso evita um slide final vazio quando o conteúdo está sem licenciamento.
+- **Testes:** validação dos módulos atualizada e execução dos testes concluída com sucesso.
+
 ## 1.109 - 20/11/2026
 - **Auditoria 1–13 implementadas:**
   - **1. Caminhos seguros:** `caminho_seguro()` em `tools/pacote/comum.py` passa a rejeitar caracteres de controle `[\x00-\x1f\x7f]`.

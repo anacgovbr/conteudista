@@ -251,9 +251,10 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
         nota='<aside class="nt" role="note" aria-label="Notas do apresentador"><p class="nt-t">Notas do apresentador</p><p class="nt-x">%s</p></aside>'%E(nt) if (nt or '').strip() else ''
         legenda='<p class="a11y-caption">%s</p>'%E(nt) if audios and k in audios and (nt or '').strip() else ''
         secs.append('<section class="s %s papel-%s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,papeis[k].replace('_','-'),rot,rot,html_of(b,None,None,paleta(T)),nota,legenda))
-    if licenca:
+    aviso_licenca=licencas.aviso_slide_html(licenca)
+    if aviso_licenca:
         rot='Slide %d de %d'%(n,n)
-        secs.append('<section class="s licenciamento papel-licenciamento" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div></section>'%(rot,rot,licencas.aviso_slide_html(licenca)))
+        secs.append('<section class="s licenciamento papel-licenciamento" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div></section>'%(rot,rot,aviso_licenca))
     o=_fluxos_img(''.join(secs),fluxos)
     css=fontes_css()+tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+_anac_html_css(tema,n,bool(licenca))+licencas.CSS
     narr=bool(audios);aud=''
