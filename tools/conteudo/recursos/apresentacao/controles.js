@@ -66,92 +66,26 @@ function atualizarDica(){if(dAlvo&&dica&&!dica.hidden){dica.textContent=dAlvo.ge
 [].slice.call(hud.querySelectorAll('button[data-dica]')).concat(b2?[b2]:[]).forEach(function(b){b.addEventListener('pointerenter',function(e){if(e.pointerType!=='mouse')return;clearTimeout(dT);clearTimeout(dH);dT=setTimeout(function(){mostrarDica(b)},300)});b.addEventListener('pointerleave',function(){clearTimeout(dT);esconderDica(false)});b.addEventListener('focus',function(){var fv=false;try{fv=b.matches(':focus-visible')}catch(x){}if(fv)mostrarDica(b)});b.addEventListener('blur',function(){esconderDica(true)});b.addEventListener('click',function(){esconderDica(true)})});
 if(dica)dica.addEventListener('pointerleave',function(){esconderDica(false)});
 function clique(id,fn){var b=$(id);if(b)b.addEventListener('click',function(e){fn(e);mostrar()})}
-/* controle remoto — Fase 1 */
-var REMOTE={ws:null,sessao:null,dlg:null};
-function _remoteGerarSessao(){return Math.random().toString(36).slice(2,10)+Math.random().toString(36).slice(2,10)}
-function _remoteQR(url){
-  var c=document.createElement('canvas'),sz=200,ctx=c.getContext('2d');
-  c.width=sz;c.height=sz;
-  // QR simples: exibe URL em texto até integrar lib QR
-  ctx.fillStyle='#fff';ctx.fillRect(0,0,sz,sz);
-  ctx.fillStyle='#000';ctx.font='11px monospace';
-  var palavras=url.split('');var linha='',y=20;
-  palavras.forEach(function(ch){
-    if(ctx.measureText(linha+ch).width>sz-10){ctx.fillText(linha,5,y);linha=ch;y+=14}else{linha+=ch}
-  });
-  if(linha)ctx.fillText(linha,5,y);
-  return c.toDataURL();
-}
-function _remoteConectar(sessao){
-  var proto=location.protocol==='https:'?'wss:':'ws:';
-  var host='remote.conteudista.anac.gov.br';
-  var url=proto+'//'+host+'/sessao/'+sessao;
-  try{
-    var ws=new WebSocket(url);
-    REMOTE.ws=ws;
-    ws.onmessage=function(e){
-      try{var m=JSON.parse(e.data);
-        if(m.tipo==='next')proximo();
-        else if(m.tipo==='prev')anterior();
-        else if(m.tipo==='blackout'){if(!ler())g(i);}
-        else if(m.tipo==='ping')ws.send(JSON.stringify({tipo:'pong'}));
-      }catch(ex){}
-    };
-    ws.onclose=function(){setTimeout(function(){if(REMOTE.sessao)_remoteConectar(REMOTE.sessao)},3000)};
-    ws.onerror=function(){ws.close()};
-  }catch(ex){}
-}
-function _remoteFechar(){
-  if(REMOTE.ws){try{REMOTE.ws.close()}catch(ex){}}
-  REMOTE.ws=null;REMOTE.sessao=null;
-  var dlg=D.getElementById('dremote');
-  if(dlg&&dlg.open)dlg.close();
-}
+/* Sinalização via PeerJS; comandos e estado seguem pelo WebRTC DataChannel. */
+var REMOTE={peer:null,conn:null,carregando:{}};
+var REMOTE_PAGINA='https://anacgovbr.github.io/conteudista/controle-remoto.html';
+function _remoteStatus(t){var x=$('dremoteSt');if(x)x.textContent=t}
+function _remoteId(){var a=new Uint8Array(18);crypto.getRandomValues(a);return Array.from(a,function(x){return x.toString(16).padStart(2,'0')}).join('')}
+function _remoteScript(url,global){if(window[global])return Promise.resolve();if(REMOTE.carregando[url])return REMOTE.carregando[url];REMOTE.carregando[url]=new Promise(function(ok,no){var s=D.createElement('script');s.src=url;s.async=true;s.onload=function(){window[global]?ok():no(Error('Biblioteca indisponível: '+global))};s.onerror=function(){no(Error('Falha ao carregar '+global+'. Verifique a internet.'))};D.head.appendChild(s)});return REMOTE.carregando[url]}
+function _remoteEnviarEstado(c){c=c||REMOTE.conn;if(!c||!c.open)return;var s=S[i],h=s&&s.querySelector('h1,h2,h3'),n=s&&s.querySelector('.nt-x');c.send({type:'state',slide:i+1,total:N,title:h?h.textContent.trim():'',notes:n?n.textContent.trim():'',previous:i>0,next:i<N-1})}
+function _remoteReceber(m){if(!m||m.type!=='command')return;if(m.command==='next')proximo();else if(m.command==='prev')anterior()}
+function _remoteFechar(){if(REMOTE.conn){REMOTE.conn.close();REMOTE.conn=null}if(REMOTE.peer){REMOTE.peer.destroy();REMOTE.peer=null}var d=$('dremote');if(d&&d.open)d.close()}
 function abrirControleRemoto(){
-  var dlg=D.getElementById('dremote');
-  if(!dlg)return;
-  if(!REMOTE.sessao){
-    REMOTE.sessao=_remoteGerarSessao();
-    _remoteConectar(REMOTE.sessao);
-  }
-  var urlRemota='https://remote.conteudista.anac.gov.br/#'+REMOTE.sessao;
-  var img=D.getElementById('dremoteQR');
-  if(img){img.src=_remoteQR(urlRemota);img.alt='QR Code para '+urlRemota}
-  var link=D.getElementById('dremoteLink');
-  if(link){link.href=urlRemota;link.textContent=urlRemota}
-  fecharSilencioso();setEstado('dialog-open');cancelarInatividade();
-  dlg.showModal();
-  var cl=D.getElementById('dremoteC');if(cl)cl.focus();
-}
-function _remoteEnviarEstado(){
-  if(!REMOTE.ws||REMOTE.ws.readyState!==1)return;
-  var s=S[i];var sn=S[i+1]||null;
-  var h=s?s.querySelector('h1,h2,h3'):null;
-  var hn=sn?sn.querySelector('h1,h2,h3'):null;
-  var nota=s?s.querySelector('.nt-x'):null;
-  REMOTE.ws.send(JSON.stringify({
-    tipo:'estado',
-    slide:i+1,
-    total:N,
-    titulo:h?h.textContent.trim():'',
-    tituloProximo:hn?hn.textContent.trim():'',
-    nota:nota?nota.textContent.trim():'',
-    temProximo:i<N-1,
-    temAnterior:i>0
-  }));
-}
-function _remoteAtualizarStatus(){
-  var st2=D.getElementById('dremoteSt');
-  if(!st2)return;
-  if(!REMOTE.sessao){st2.textContent='Sem sessão';return}
-  if(!REMOTE.ws){st2.textContent='Desconectado';return}
-  var rs=REMOTE.ws.readyState;
-  if(rs===0)st2.textContent='Conectando…';
-  else if(rs===1)st2.textContent='Conectado ✓';
-  else st2.textContent='Reconectando…';
+  var d=$('dremote');if(!d)return;fecharSilencioso();setEstado('dialog-open');cancelarInatividade();if(!d.open)d.showModal();$('dremoteC').focus();
+  if(REMOTE.peer)return;_remoteStatus('Conectando ao serviço de pareamento…');
+  Promise.all([_remoteScript('https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js','Peer'),_remoteScript('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js','qrcode')]).then(function(){
+    if(!d.open)return;var p=REMOTE.peer=new Peer(_remoteId(),{host:'0.peerjs.com',port:443,path:'/',secure:true});
+    p.on('open',function(id){if(REMOTE.peer!==p)return;var url=REMOTE_PAGINA+'#'+encodeURIComponent(id),q=qrcode(0,'M');q.addData(url);q.make();$('dremoteQR').src=q.createDataURL(6);$('dremoteQR').alt='QR Code para abrir o controle remoto no celular';var a=$('dremoteLink');a.href=url;a.textContent=url;_remoteStatus('Escaneie o QR Code para parear o celular.')});
+    p.on('connection',function(c){if(REMOTE.conn&&REMOTE.conn.open){c.close();return}REMOTE.conn=c;c.on('open',function(){_remoteStatus('Celular conectado via WebRTC.');_remoteEnviarEstado(c)});c.on('data',_remoteReceber);c.on('close',function(){if(REMOTE.conn===c){REMOTE.conn=null;_remoteStatus('Celular desconectado.')}})});
+    p.on('disconnected',function(){if(!p.destroyed)p.reconnect()});p.on('error',function(e){_remoteStatus('Falha no pareamento: '+(e.message||'erro de conexão'))});
+  }).catch(function(e){_remoteStatus(e.message)});
 }
 D.addEventListener('conteudista:slide',function(){_remoteEnviarEstado()});
-setInterval(function(){_remoteAtualizarStatus()},1500);
 clique('p',anterior);clique('n',proximo);clique('bp',reproduzir);clique('b1',nt);clique('b2',fs);clique('b2m',fs);clique('cbtn',abrirPick);clique('bLer',function(){modo(!ler(),true);fecharCamadas(bmais)});clique('imp',function(){abrirImp()});clique('bRemote',abrirControleRemoto);clique('bmais',alternarMenu);
 D.addEventListener('pointerdown',function(e){if(aberta())return;setEntrada(e.pointerType||'mouse');var dentro=!!(e.target&&e.target.closest&&e.target.closest('#hud,#b2,#dica'));if(camadaAberta()&&!dentro)fecharCamadas(null);if(e.pointerType==='touch'||e.pointerType==='pen'){if(UI.estado==='hidden'){e.preventDefault();mostrar(e.pointerType);UI.ponteiro=null;return}UI.ponteiro={id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now(),ignorar:!!e.target.closest('#hud,#b2,button,a,input,select,textarea,[contenteditable],.rola')}}else mostrar('mouse')},{passive:false});
 D.addEventListener('pointermove',function(e){if(e.pointerType==='mouse'){mostrar('mouse');return}if(UI.ponteiro&&UI.ponteiro.id===e.pointerId)UI.ponteiro.mx=e.clientX,UI.ponteiro.my=e.clientY},{passive:true});
@@ -218,7 +152,7 @@ var h=parseInt(location.hash.slice(1));i=isNaN(h)?0:Math.max(0,Math.min(N-1,h-1)
 var dremote=D.getElementById('dremote');
 if(dremote){
   dremote.addEventListener('close',function(){setEstado('visible');if(bmais)bmais.focus();programarInatividade()});
-  dremote.addEventListener('cancel',function(){setEstado('visible')});
+  dremote.addEventListener('cancel',function(e){e.preventDefault();_remoteFechar()});
   var dremoteC=D.getElementById('dremoteC');
   if(dremoteC)dremoteC.addEventListener('click',function(){_remoteFechar();setEstado('visible');if(bmais)bmais.focus();programarInatividade()});
   dremote.addEventListener('pointerdown',function(e){if(e.target===dremote)_remoteFechar()});

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1351b4"><title>Controle remoto — Conteudista</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#172b4d;font:16px/1.5 system-ui,sans-serif}main{max-width:520px;margin:auto;padding:20px}h1{font-size:1.4rem;margin:.2rem 0}.card{background:white;border:1px solid #ccd5e0;border-radius:14px;padding:18px;margin:16px 0;box-shadow:0 2px 8px #142b4d12}#status{font-weight:700;color:#555}#slide{font-size:1.1rem;font-weight:700;margin:12px 0}#notes{white-space:pre-wrap;color:#49566b}.buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px}button{min-height:72px;border:0;border-radius:12px;background:#1351b4;color:white;font-size:1.2rem;font-weight:700}button:disabled{background:#8795a8}small{color:#596579}
+</style>
+</head>
+<body><main>
+<h1>Controle remoto</h1>
+<section class="card" aria-live="polite"><p id="status">Iniciando conexão…</p><p id="slide">Aguardando a apresentação</p><p id="notes"></p></section>
+<div class="buttons"><button id="prev" type="button" disabled>← Anterior</button><button id="next" type="button" disabled>Próximo →</button></div>
+<p><small>Os comandos e o estado da apresentação trafegam diretamente entre os dispositivos por WebRTC. A internet é necessária apenas para o pareamento.</small></p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script>
+(function(){'use strict';var status=document.getElementById('status'),slide=document.getElementById('slide'),notes=document.getElementById('notes'),prev=document.getElementById('prev'),next=document.getElementById('next');
+function fail(t){status.textContent=t;prev.disabled=next.disabled=true}
+var id=decodeURIComponent(location.hash.slice(1));if(!id){fail('Abra esta página pelo QR Code exibido na apresentação.');return}
+if(!window.Peer){fail('A biblioteca de conexão não carregou. Verifique a internet e atualize.');return}
+var peer=new Peer();peer.on('open',function(){var c=peer.connect(id,{reliable:true});c.on('open',function(){status.textContent='Conectado à apresentação';prev.disabled=next.disabled=false});c.on('data',function(m){if(!m||m.type!=='state')return;slide.textContent='Slide '+m.slide+' de '+m.total+(m.title?' — '+m.title:'');notes.textContent=m.notes||'';prev.disabled=!m.previous;next.disabled=!m.next});c.on('close',function(){fail('Conexão encerrada. Reabra o controle pelo QR Code.')});c.on('error',function(){fail('Falha na conexão. Confira se a apresentação continua aberta.')});prev.onclick=function(){if(c.open)c.send({type:'command',command:'prev'})};next.onclick=function(){if(c.open)c.send({type:'command',command:'next'})}});
+peer.on('error',function(e){fail('Não foi possível parear: '+(e.type==='peer-unavailable'?'apresentação não encontrada':e.message||'verifique a internet'))});
+})();
+</script></body></html>

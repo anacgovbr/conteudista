@@ -87,7 +87,7 @@ jobs:
       - name: Montar a página (sem nenhum curso salvo)
         run: |
           mkdir -p site/wheels
-          cp web/index.html web/*.js web/*.css tools/gerador.py site/
+          cp web/index.html web/controle-remoto.html web/*.js web/*.css tools/gerador.py site/
           python -c "import shutil;shutil.copytree('tools/conteudo','site/conteudo',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))"
           cp -r web/config site/config
           cp -r web/lib site/lib
