@@ -129,7 +129,7 @@ def grupo6(amb, ctx, G):
     G.chk('6.4', 'CC BY: CLI gera o aviso final da Apostila e um slide final com URL oficial',
           r.returncode == 0 and md_g.exists() and md_s.exists() and conteudo_g.count('class="licenciamento"') == 1
           and conteudo_g.index('class="licenciamento"') < conteudo_g.index('</article>')
-          and conteudo_s.count('aria-label="Slide 40 de 40"') == 1
+          and conteudo_s.count('aria-label="Slide 41 de 41"') == 1
           and 'https://creativecommons.org/licenses/by/4.0/' in conteudo_s
           and (lic / 'Apostila_Licenca.docx').exists() and (lic / 'Apostila_Licenca.epub').exists()
           and (lic / 'Apresentacao_Licenca.pptx').exists(), (r.stderr or r.stdout)[-300:])
