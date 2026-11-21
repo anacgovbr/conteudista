@@ -186,7 +186,7 @@ def grupo15(amb, ctx, G):
     a = ler('web/exemplo/apresentacao.md')
     tit = ['# Acessibilidade do texto', '# O que é para corrigir', '# Sugestões de linguagem simples', '# Corrigir no próprio texto', '# Pedir ajuda a uma IA']
     n = len(re.findall(r'(?m)^---\s*$', a)) - 1
-    G.chk('15.5', 'Apresentação de exemplo com os 5 slides de acessibilidade (39 slides)', all(x in a for x in tit) and n == 39, n)
+    G.chk('15.5', 'Apresentação de exemplo com os 5 slides de acessibilidade (40 slides)', all(x in a for x in tit) and n == 40, n)
     aj = ler('web/ajuda.js')
     G.chk('15.6', 'Ajuda com "Escrever conteúdo acessível" e a tabela de atalhos da acessibilidade',
           '<h4>Escrever conteúdo acessível</h4>' in aj and '<kbd>Alt+Shift+I</kbd>' in aj and "t: '3. Confira a acessibilidade'" in aj)

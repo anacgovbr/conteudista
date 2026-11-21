@@ -298,7 +298,7 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
           '<div class="a11y-corpo">'
           '<p>Escaneie o código com o celular para controlar a apresentação.</p>'
           '<div style="text-align:center;margin:12px 0"><img id="dremoteQR" alt="QR Code" style="width:200px;height:200px;border:1px solid #ccc"></div>'
-          '<p style="word-break:break-all;font-size:13px;text-align:center"><a id="dremoteLink" href="#" target="_blank" rel="noopener"></a></p>'
+          '<p style="word-break:break-all;font-size:13px;text-align:center"><a id="dremoteLink" href="#" rel="noopener"></a></p>'
           '<p id="dremoteSt" style="font-size:13px;color:#555;text-align:center;font-weight:700">Conectando…</p>'
           '<p style="font-size:13px;color:#555;text-align:center">O celular deve estar com acesso à internet.</p>'
           '</div></dialog>')
