@@ -64,7 +64,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
         if not modelo:return False
         if cls=='title' and idx==0:nome='capa.png'
         elif cls=='title' and idx==n_original-1:nome='encerramento.png'
-        else:nome='conteudo-%s.png'%('a' if idx%2 else 'b')
+        else:return False
         cam=os.path.join(pasta_modelo,nome)
         if os.path.isfile(cam):alt_pic(s.shapes.add_picture(cam,0,0,width=Inches(W),height=Inches(7.5)),'',True);return True
         return False

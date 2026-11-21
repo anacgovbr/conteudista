@@ -352,7 +352,7 @@ def css_apresentacao(T,papeis):
         if papel in ('capa','finalizacao'):
             regras.append('%s .in{margin-left:%s%%;width:%s%%}'%(seletor,t['titulo_deslocamento_x'],t['titulo_largura']))
             regras.append('%s .in{transform:translateY(%s%%)}'%(seletor,t['titulo_deslocamento_y']))
-        regras.append('%s table{background:%s;color:%s}%s th{background:%s;color:#fff}%s td{border-color:%s}%s tr:nth-child(even) td{background:%s}'%(seletor,p['superficie'],p['texto'],seletor,p['primaria'],seletor,p['linha'],seletor,p['suave']))
+        regras.append('%s table{background:%s;color:%s;width:auto;max-width:100%%;table-layout:auto}%s th{background:%s;color:#fff;white-space:normal}%s td{border-color:%s;vertical-align:top;overflow-wrap:anywhere}%s tr:nth-child(even) td{background:%s}'%(seletor,p['superficie'],p['texto'],seletor,p['primaria'],seletor,p['linha'],seletor,p['suave']))
         regras.append('%s blockquote{background:%s;border-left-color:%s}%s blockquote p{color:%s}'%(seletor,p['suave'],p['apoio'],seletor,p['texto']))
         regras.append('%s .mw{background:%s;border-color:%s}%s pre.mermaid{color:%s}'%(seletor,T['mermaid']['fundo'],p['linha'],seletor,t['texto']))
     regras.append('.s p,.s li{font-size:%spx;line-height:%s}'%(f['tamanho_base'],f['entrelinha']))

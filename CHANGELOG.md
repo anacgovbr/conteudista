@@ -1,4 +1,11 @@
 # Novidades do Conteudista
+## 1.111 - 21/11/2026
+- **Temas ANAC mais leves:** os slides intermediários dos temas ANAC 20 anos (claro e escuro) deixaram de usar imagens de fundo. Apenas capa e finalização mantêm as artes institucionais.
+- **PPTX ANAC otimizado:** apresentações ANAC não incorporam mais imagens de fundo nos slides intermediários, reduzindo o tamanho dos arquivos gerados.
+- **Posicionamento de títulos:** capa e finalização dos temas ANAC tiveram a área de texto deslocada para evitar sobreposição com elementos gráficos.
+- **Tabelas dos slides:** tabelas passam a usar layout automático, quebra de conteúdo e alinhamento vertical mais próximos do comportamento do tema gov.br, preservando legibilidade e acessibilidade.
+- **Testes:** módulos e verificação de versão executados com sucesso.
+
 ## 1.110 - 21/11/2026
 - **Licenciamento opcional corrigido:** o HTML da apresentação e o PPTX só criam o slide de licenciamento quando existe conteúdo de licença válido. Isso evita um slide final vazio quando o conteúdo está sem licenciamento.
 - **Testes:** validação dos módulos atualizada e execução dos testes concluída com sucesso.

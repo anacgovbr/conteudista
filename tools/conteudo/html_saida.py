@@ -180,7 +180,7 @@ def _anac_html_css(tema,n,licenciada=False):
     def data(nome):
         cam=os.path.join(pasta,nome)
         return 'data:image/png;base64,'+base64.b64encode(open(cam,'rb').read()).decode('ascii') if os.path.isfile(cam) else ''
-    imgs=[data('capa.png'),data('conteudo-a.png'),data('conteudo-b.png'),data('encerramento.png')]
+    imgs=[data('capa.png'),'','',data('encerramento.png')]
     escuro=tema=='anac20-escuro'; tinta='#ffffff' if escuro else '#193f52'; mut='#dce8ee' if escuro else '#526d7c'
     regras=['.s{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:%s!important}'%tinta,
       '.s h1,.s h2,.s h3,.s p,.s li{color:%s!important}.s .in{position:relative;z-index:1}.s:not(.title) .in{padding-top:1.2vh}'%tinta,

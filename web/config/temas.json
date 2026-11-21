@@ -243,14 +243,14 @@
           "imagem_opacidade": 100,
           "imagem_posicao": "center",
           "titulo_alinhamento": "left",
-          "titulo_largura": 58,
-          "titulo_deslocamento_x": 37,
+          "titulo_largura": 52,
+          "titulo_deslocamento_x": 43,
           "titulo_deslocamento_y": 0
         },
         "interna_clara": {
           "fundo": "#ffffff",
           "texto": "#193f52",
-          "imagem": "temas/anac20-claro/conteudo-a.png",
+          "imagem": "",
           "imagem_opacidade": 100,
           "imagem_posicao": "center",
           "titulo_alinhamento": "left",
@@ -276,8 +276,8 @@
           "imagem_opacidade": 100,
           "imagem_posicao": "center",
           "titulo_alinhamento": "left",
-          "titulo_largura": 58,
-          "titulo_deslocamento_x": 37,
+          "titulo_largura": 52,
+          "titulo_deslocamento_x": 43,
           "titulo_deslocamento_y": 0
         },
         "licenciamento": {
@@ -345,8 +345,8 @@
           "imagem_opacidade": 100,
           "imagem_posicao": "center",
           "titulo_alinhamento": "left",
-          "titulo_largura": 58,
-          "titulo_deslocamento_x": 37,
+          "titulo_largura": 52,
+          "titulo_deslocamento_x": 43,
           "titulo_deslocamento_y": 0
         },
         "interna_clara": {
@@ -363,7 +363,7 @@
         "interna_escura": {
           "fundo": "#071d41",
           "texto": "#ffffff",
-          "imagem": "temas/anac20-escuro/conteudo-a.png",
+          "imagem": "",
           "imagem_opacidade": 100,
           "imagem_posicao": "center",
           "titulo_alinhamento": "left",
@@ -378,8 +378,8 @@
           "imagem_opacidade": 100,
           "imagem_posicao": "center",
           "titulo_alinhamento": "left",
-          "titulo_largura": 58,
-          "titulo_deslocamento_x": 37,
+          "titulo_largura": 52,
+          "titulo_deslocamento_x": 43,
           "titulo_deslocamento_y": 0
         },
         "licenciamento": {
