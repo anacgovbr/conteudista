@@ -533,6 +533,8 @@ flowchart LR
 
 # Controle remoto e webcam
 
+Tabela: recursos de controle da apresentação
+
 | Recurso | Como usar |
 |---|---|
 | Controle remoto | Mais opções › Controle remoto… → escaneie o QR Code com o celular |
