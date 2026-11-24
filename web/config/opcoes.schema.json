@@ -338,6 +338,90 @@
         }
       }
     },
+    "geracao": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "html": {
+          "description": "Gerar o arquivo HTML (tem pré-visualização e os recursos extras)",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "md": {
+          "description": "Gerar os arquivos Markdown (.md)",
+          "default": "ligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "docx": {
+          "description": "Gerar a apostila em DOCX",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "pptx": {
+          "description": "Gerar a apresentação em PPTX",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "epub": {
+          "description": "Gerar a apostila em EPUB",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "epub_opendyslexic": {
+          "description": "Gerar a apostila em EPUB com a fonte OpenDyslexic",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        }
+      }
+    },
     "celular": {
       "type": "object",
       "additionalProperties": false,

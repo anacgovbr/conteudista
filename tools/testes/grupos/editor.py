@@ -418,6 +418,30 @@ def grupo26(amb, ctx, G):
               oculta['regua'] == 'none' and oculta['camada'] == 'none'
               and oculta['visao'] == 'none' and volta == 12, {'oculta': oculta, 'volta': volta})
 
+        # Barra do editor compacta no computador: 4 ações visíveis + menus (1.116)
+        barra = pg.evaluate("""() => {
+            const tb = document.querySelector('#pg .mde-tb');
+            const vis = el => el.offsetParent !== null && el.getBoundingClientRect().height > 0;
+            const nome = el => (el.getAttribute('data-dica') || el.getAttribute('title') || el.getAttribute('aria-label') || el.textContent || '').trim();
+            const botoes = [...tb.querySelectorAll(':scope > button')];
+            return { compacta: tb.classList.contains('mv-tb'), visiveis: botoes.filter(vis).slice(0, 4).map(nome),
+                     grupos: [...tb.querySelectorAll(':scope > .mv-grp > .mv-bt')].filter(vis).map(b => b.dataset.g),
+                     escondidos: ['Título 1', 'Tabela', 'Imagem'].filter(n => botoes.some(b => nome(b).startsWith(n) && vis(b))) };
+        }""")
+        G.chk('26.18', 'Computador: barra do editor compacta com as 4 ações mais usadas e três menus',
+              barra['compacta'] and [n.split(' (')[0] for n in barra['visiveis']] == ['Desfazer', 'Refazer', 'Negrito', 'Itálico']
+              and barra['grupos'] == ['fmt', 'ins', 'mais'] and not barra['escondidos'], barra)
+        pg.locator('#pg .mv-bt[data-g=fmt]').click(); pg.wait_for_timeout(150)
+        itens = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [role=menuitem]')].map(x => x.textContent.trim())")
+        antes_barra = pg.evaluate("document.querySelector('#pg .mde-ta').value")
+        pg.locator('.mv-menu:not([hidden]) [role=menuitem]', has_text='Título 2').click(); pg.wait_for_timeout(200)
+        G.chk('26.19', 'Computador: menu Formatar lista os itens e aplica Título 2 no texto',
+              any('Título 2' in x for x in itens) and pg.evaluate("document.querySelector('#pg .mde-ta').value") != antes_barra, itens[:5])
+        pg.keyboard.press('Control+z'); pg.wait_for_timeout(100)
+        status_barra = pg.evaluate("(() => ({ mvOn: document.querySelector('#pg .mde').classList.contains('mv-on'), galVis: document.querySelector('#pg .mde-gal').offsetParent !== null }))()")
+        G.chk('26.20', 'Computador: contagem do texto e Imagens do texto continuam visíveis (só o celular recolhe)',
+              not status_barra['mvOn'] and status_barra['galVis'], status_barra)
+
         G.chk('26.17', 'Nenhum erro de JavaScript na régua de linhas', not erros, erros)
         pg.close()
     finally:

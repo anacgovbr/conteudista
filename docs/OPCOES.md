@@ -71,6 +71,17 @@ Arquivo: `web/config/opcoes.yaml`. Ele define como cada opção **começa**. Se 
 |---|---|---|---|---|
 | `aba_inicial` | Aba que abre em Importar. link: sempre a aba Link (padrão). ultima: a última usada; na primeira vez, Salvos (se houver) ou Computador. | link · ultima · salvos · computador · colar | `link` | não (vale ao abrir) |
 
+## Geração de arquivos
+
+| Opção | O que faz | Valores | Padrão | Lembrada no navegador |
+|---|---|---|---|---|
+| `html` | Gerar o arquivo HTML (tem pré-visualização e os recursos extras) | ligado · desligado | `ligado` | sim |
+| `md` | Gerar os arquivos Markdown (.md) | ligado · desligado | `ligado` | sim |
+| `docx` | Gerar a apostila em DOCX | ligado · desligado | `desligado` | sim |
+| `pptx` | Gerar a apresentação em PPTX | ligado · desligado | `desligado` | sim |
+| `epub` | Gerar a apostila em EPUB | ligado · desligado | `desligado` | sim |
+| `epub_opendyslexic` | Gerar a apostila em EPUB com a fonte OpenDyslexic | ligado · desligado | `desligado` | sim |
+
 ## Celular
 
 | Opção | O que faz | Valores | Padrão | Lembrada no navegador |

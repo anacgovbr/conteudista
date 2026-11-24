@@ -1,4 +1,9 @@
 # Novidades do Conteudista
+## 1.116 - 24/11/2026
+- **Editor mais compacto:** as ações pouco usadas foram para os menus Formatar, Inserir e Mais; Desfazer, Refazer, Negrito e Itálico continuam visíveis na barra.
+- **Formatos dos arquivos:** escolha quais formatos gerar (HTML, Markdown, DOCX, PPTX, EPUB e EPUB OpenDyslexic). HTML e Markdown vêm ligados; a escolha fica lembrada no navegador.
+- **Ajuda:** o painel explica que só o HTML tem pré-visualização no Conteudista, controle remoto, webcam, acessibilidade e funciona em qualquer navegador.
+
 ## 1.115 - 24/11/2026
 - **Apresentação ANAC escura:** slides de conteúdo agora usam fundo azul escuro com texto de contraste adequado em HTML e PPTX.
 - **Botões:** rótulos centralizados verticalmente nas ações principais.

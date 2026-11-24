@@ -59,6 +59,20 @@ def grupo16(amb, ctx, G):
         pg.focus('body'); pg.keyboard.press('Alt+Shift+g'); pg.wait_for_selector('.la-gerar-dialog[open]', timeout=5000)
         G.chk('16.8', 'Alt+Shift+G passa pela mesma confirmação', True)
         pg.keyboard.press('Escape')
+        # Formatos ao gerar (1.116): só HTML e Markdown ligados; a escolha fica lembrada.
+        fmt = pg.evaluate("""() => {
+            const ids = ['fmtHtml','fmtMd','fmtDocx','fmtPptx','fmtEpub','fmtEpubD'];
+            return { caixas: ids.map(i => { const c = document.getElementById(i); return c ? c.checked : null; }),
+                     escolhidos: typeof formatosSelecionados === 'function' ? formatosSelecionados() : null };
+        }""")
+        G.chk('16.10', 'Formatos: só HTML e Markdown começam ligados e a geração recebe a lista certa',
+              fmt['caixas'] == [True, True, False, False, False, False] and fmt['escolhidos'] == ['html', 'md'], fmt)
+        pg.click('#dxFmt > summary'); pg.wait_for_timeout(150)
+        pg.check('#fmtDocx'); pg.check('#fmtPptx'); pg.wait_for_timeout(100)
+        pg.reload(); pg.wait_for_selector('#go', timeout=15000); pg.wait_for_timeout(300)
+        lembrado = pg.evaluate("({ docx: document.getElementById('fmtDocx').checked, pptx: document.getElementById('fmtPptx').checked, html: document.getElementById('fmtHtml').checked, lista: formatosSelecionados() })")
+        G.chk('16.11', 'Formatos escolhidos ficam lembrados neste navegador',
+              lembrado['docx'] and lembrado['pptx'] and lembrado['html'] and lembrado['lista'] == ['html', 'md', 'docx', 'pptx'], lembrado)
         G.chk('16.9', 'Nenhum erro de JavaScript na confirmação ao gerar', not erros, erros)
         pg.close()
     finally:

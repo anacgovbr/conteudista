@@ -373,6 +373,17 @@ def grupo6(amb, ctx, G):
         m = pg.evaluate("({sw:document.documentElement.scrollWidth,iw:innerWidth,slides:document.querySelectorAll('.s').length,on:document.querySelectorAll('.s.on').length})")
         G.chk(f'6.3-{vp["width"]}', f'Apresentação em {nome}: sem rolagem horizontal, 1 slide ativo e sem erros', m['sw'] <= m['iw'] + 1 and m['on'] == 1 and not erros, f'{m} {erros}')
         c.close()
+    # Formatos escolhidos: só os marcados em "Formatos dos arquivos" são gerados.
+    so_txt = amb.tmp / 'saida_formatos_texto'
+    r = rodar([sys.executable, str(suporte.GERADOR), str(EXEMPLO_TREINO), str(EXEMPLO_APRES), '--prefixo', 'Fmt', '--saida', str(so_txt), '--formatos', 'html,md'], cwd=RAIZ)
+    feitos = sorted(p.suffix for p in so_txt.glob('*')) if so_txt.exists() else []
+    G.chk('6.19', 'Formatos escolhidos: --formatos html,md gera só HTML e Markdown',
+          r.returncode == 0 and feitos == ['.html', '.html', '.md', '.md'], feitos or (r.stderr or r.stdout)[-300:])
+    so_bin = amb.tmp / 'saida_formatos_bin'
+    r = rodar([sys.executable, str(suporte.GERADOR), str(EXEMPLO_TREINO), str(EXEMPLO_APRES), '--prefixo', 'Fmt', '--saida', str(so_bin), '--formatos', 'docx,pptx'], cwd=RAIZ)
+    feitos = sorted(p.suffix for p in so_bin.glob('*')) if so_bin.exists() else []
+    G.chk('6.20', 'Formatos escolhidos: --formatos docx,pptx não gera HTML, EPUB nem Markdown',
+          r.returncode == 0 and feitos == ['.docx', '.pptx'], feitos or (r.stderr or r.stdout)[-300:])
 
 def grupo15(amb, ctx, G):
     ler = lambda p: (RAIZ / p).read_text(encoding='utf-8')

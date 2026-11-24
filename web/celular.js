@@ -17,20 +17,23 @@
   const MQ = matchMedia('(max-width: 700px)');
   const op = (c, padrao) => (window.Opcoes ? Opcoes.ligado(c) : padrao);
   const BARRA = op('celular.barra_compacta', true), IMAGENS = op('celular.imagens_recolhidas', true);
-  if (!BARRA && !IMAGENS) return;
 
   /* ---------------------------- Estilos ---------------------------- */
   const css = document.createElement('style'); css.id = 'mv-css';
   css.textContent = `
+.mde-tb.mv-tb{display:flex;flex-wrap:wrap;gap:2px;padding:4px 6px}
+.mde-tb.mv-tb>.mv-oc{display:none!important}
+.mde-tb.mv-tb>.mv-grp{display:inline-flex;flex:0 0 auto}
+.mde-tb.mv-tb .mv-bt{display:inline-flex;align-items:center;justify-content:center;gap:2px;margin:0;padding:0 7px;min-height:28px;font:700 13px "Segoe UI",Arial,sans-serif}
+.mde-tb.mv-tb .mv-bt .mv-car{width:10px;height:10px;stroke-width:2.5}
+.mde-tb.mv-tb .mv-bt[aria-expanded="true"]{background:#dbe8fb!important;border-color:#1351b4!important}
 @media (max-width:700px){
-.mde-tb.mv-tb{display:flex;flex-wrap:wrap;gap:2px;padding:4px}
+.mde-tb.mv-tb{padding:4px}
 .mde-tb.mv-tb>:not(.mv-keep):not(.mv-grp):not(.mv-quebra){display:none!important}
 .mde-tb.mv-tb>.mv-keep,.mde-tb.mv-tb>.mv-grp{flex:1 1 0;min-width:32px;max-width:64px}
 .mde-tb.mv-tb>.mv-keep,.mde-tb.mv-tb .mv-bt{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:2px;margin:0;padding:0 2px}
+.mde-tb.mv-tb>.mv-ext{display:none!important}
 .mde-tb.mv-tb .mv-bt{width:100%;font:700 14px "Segoe UI",Arial,sans-serif}
-.mde-tb.mv-tb>.mv-grp{display:inline-flex}
-.mde-tb.mv-tb .mv-bt .mv-car{width:10px;height:10px;stroke-width:2.5}
-.mde-tb.mv-tb .mv-bt[aria-expanded="true"]{background:#dbe8fb!important;border-color:#1351b4!important}
 .mde-tb.mv-tb .mv-quebra{flex-basis:100%;height:0}
 .mde-tb.mv-tb>[data-m]{max-width:none;min-height:40px}
 .mde-tb.mv-tb [data-m]::after{content:attr(data-mv-rot);font:600 13px "Segoe UI",Arial,sans-serif;margin-left:6px}
@@ -88,6 +91,7 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
     if (el.matches('.mv-grp,.mv-quebra,.sep,.sp')) return null;
     if (el.matches('[data-m]')) return 'modo';
     const t = rot(el);
+    if (el.matches('.la-btn,.hbtn,.jn-cmpbtn') || /^Tela cheia/.test(t)) return 'extra';
     if (el.tagName === 'BUTTON' && MANTER.test(t)) return 'manter';
     for (const g of GRUPOS) if (g.re && g.re.test(t)) return g.id;
     return el.matches('button,select') ? 'mais' : null;
@@ -164,7 +168,8 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
   function montar(tb) {
     if (tb.classList.contains('mv-tb')) return;
     const box = tb.closest('.mde'); if (!box) return;
-    if (BARRA) {
+    const movel = MQ.matches, barra = movel ? BARRA : true;
+    if (barra) {
       tb.classList.add('mv-tb');
       const mk = (g, ordem) => {
         const w = document.createElement('span'); w.className = 'mv-grp'; w.style.order = ordem;
@@ -184,12 +189,14 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
       let ordem = 1;
       [...tb.children].forEach(el => {
         const g = grupoDe(el);
-        if (g === 'manter') { el.classList.add('mv-keep'); el.style.order = ordem++; }
+        if (g === 'manter' || g === 'extra') { el.classList.add('mv-keep'); if (g === 'extra') el.classList.add('mv-ext'); el.style.order = ordem++; }
         else if (g === 'modo') { el.classList.add('mv-keep'); el.style.order = 60 + ('esp'.indexOf(el.dataset.m) + 1); el.dataset.mvRot = ROT_MODO[el.dataset.m] || ''; }
+        else if (g || el.matches('.sep')) el.classList.add('mv-oc');
       });
       GRUPOS.forEach((g, k) => tb.append(mk(g, 10 + k)));
       tb.append(q);
     }
+    if (!movel || (!BARRA && !IMAGENS)) return;
     if (IMAGENS) box.classList.add('mv-img');
     box.classList.add('mv-on');
     const st = box.querySelector('.mde-st');
@@ -206,14 +213,14 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
     fecharMenu(false);
     tb.classList.remove('mv-tb');
     tb.querySelectorAll('.mv-grp,.mv-quebra').forEach(x => { const b = x.querySelector('.mv-bt'); if (b) { const m = document.getElementById(b.getAttribute('aria-controls')); if (m) m.remove(); } x.remove(); });
-    [...tb.children].forEach(el => { el.classList.remove('mv-keep'); el.style.order = ''; delete el.dataset.mvRot; });
+    [...tb.children].forEach(el => { el.classList.remove('mv-keep', 'mv-ext', 'mv-oc'); el.style.order = ''; delete el.dataset.mvRot; });
     if (box) {
       box.classList.remove('mv-on', 'mv-img');
       const st = box.querySelector('.mde-st'); if (st) { st.removeAttribute('role'); st.removeAttribute('tabindex'); st.removeAttribute('aria-expanded'); st.removeAttribute('aria-description'); st.classList.remove('mv-aberto'); }
       const gal = box.querySelector('.mde-gal'); if (gal && gal.classList.contains('mv-folha')) fecharFolha(gal);
     }
   }
-  function aplicar() { document.querySelectorAll('.mde > .mde-tb').forEach(tb => (MQ.matches ? montar(tb) : desmontar(tb))); }
+  function aplicar() { document.querySelectorAll('.mde > .mde-tb').forEach(tb => { desmontar(tb); montar(tb); }); }
 
   /* ---------------------------- Imagens do texto como folha inferior ---------------------------- */
   let folha = null;
