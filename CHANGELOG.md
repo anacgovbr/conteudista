@@ -1,4 +1,8 @@
 # Novidades do Conteudista
+## 1.114 - 24/11/2026
+- **Validação de áudio:** escuta Kokoro/Piper, pausa e retomada confirmadas; verificações em Safari/iPhone, Android, PowerPoint e impressão permanecem planejadas para sessão conjunta.
+- **Relatório de apresentação:** o roteiro distingue a validação manual confirmada das verificações ainda pendentes.
+
 ## 1.113 - 24/11/2026
 - **Temas ANAC 20 anos:** capa e selo ajustados, cores institucionais aplicadas e tabelas alinhadas em geometria, rolagem e zoom ao tema gov.br.
 - **Apresentações:** licença antes do encerramento vazio; ajuda contextual de acessibilidade e gestos de webcam documentados no painel.

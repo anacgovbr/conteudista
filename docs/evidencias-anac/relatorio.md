@@ -47,7 +47,7 @@ Para o ajuste de espaçamento, a captura antes foi renderizada do commit `b3805c
 
 ## Validação registrada
 
-- Suíte completa local: **314 ok, 0 falhas, 0 instáveis, 0 avisos, 0 pulados; 5 verificações manuais pendentes**, Chrome 157.0.8103.79; 269 s em 24/11/2026. Ver [relatório completo](../../tools/testes/relatorio/relatorio.md).
+- Suíte completa anterior: **314 ok, 0 falhas**; Chrome 157.0.8103.79; 269 s em 24/11/2026. Após atualizar o registro manual, o grupo 5 passou (**10 ok, 0 falhas**) e o grupo 13 isolado passou (**19 ok, 0 falhas**): M.5 consta como OK por confirmação do usuário e M.1–M.4 permanecem manuais. A nova execução completa foi encerrada pelo limite de 600 s enquanto estava no grupo 13, sem resultado final.
 - Após a correção local, grupo 6: **35 ok, 0 falhas**; inclui a nova matriz 6.17. Antes da correção, 6.17 falhou em 4 comparações ANAC, reproduzindo o deslocamento.
 - Casos relacionados: 6.11 (licença/encerramento), 6.12 (tabela), 6.13 (capa/cores), 6.14 (painel desktop/celular), 6.15 (gestos simulados), 6.16 (relay remoto) e 6.17 (matriz de tabelas).
 - CI do commit `c6a3051ffdd17167d3256890f1d3097d9483f7ff`: run `45481358350`, status/conclusão `completed/success`; build, testes Chrome e deploy concluídos com sucesso. A run seletiva `45481358246` também concluiu com sucesso.
@@ -66,7 +66,7 @@ O teste 6.17 reproduziu a diferença antes da correção e passou após a remoç
 
 ## Limites ainda não verificados
 
-- Continuam pendentes as cinco verificações manuais do relatório: Safari real/áudio, Chrome Android/toque, áudio PPTX no PowerPoint, impressão/PDF e voz real Kokoro/Piper; não há validação física de webcam/mão real.
+- M.1–M.4 aguardam validação conjunta: Safari real/áudio, Chrome Android/toque, áudio PPTX no PowerPoint e impressão/PDF. A escuta Kokoro/Piper (M.5) foi confirmada pelo usuário; não há validação física de webcam/mão real.
 - As capturas não são diff pixel a pixel; as paletas dos temas são diferentes por projeto.
 - PPTX/EPUB/DOCX foram cobertos pelos testes de geração/acessibilidade disponíveis; não foi feita inspeção visual manual de cada formato neste relatório.
 - As verificações físicas listadas acima não são cobertas pelo CI automatizado e continuam pendentes.

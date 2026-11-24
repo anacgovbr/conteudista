@@ -104,8 +104,7 @@ def executar_estaticos(ids, args):
             GRUPOS[gid][1](ambiente, None, grupo)
             for identificador, titulo, status, detalhe in grupo.itens:
                 relatorio.add(identificador, titulo, status, detalhe, gid)
-    for identificador, titulo in MANUAIS:
-        relatorio.add(identificador, titulo, 'MANUAL', '', 'M')
+    registrar_manuais(relatorio)
     contagem = {status: sum(item['status'] == status for item in relatorio.itens) for status in ('OK', 'FALHA', 'ERRO', 'INSTAVEL', 'AVISO', 'PULADO', 'MANUAL')}
     versao = re.search(r"const VERSAO = '([\d.]+)'", (RAIZ / 'web/changelog.js').read_text(encoding='utf-8')).group(1)
     resultado = {'versao': versao, 'navegador': None, 'versao_navegador': 'sem navegador', 'data': datetime.now().isoformat(timespec='seconds'), 'duracao_s': round(time.perf_counter() - inicio, 3), 'resumo': contagem, 'itens': relatorio.itens}
@@ -119,8 +118,17 @@ MANUAIS = [
     ('M.2', 'Android de verdade (Chrome): gesto de deslizar e toque na barra com o dedo, em retrato e paisagem'),
     ('M.3', 'PPTX no PowerPoint: o áudio de cada slide inicia sozinho e, com avanço automático, o slide passa ao fim do áudio'),
     ('M.4', 'Imprimir/PDF: a janela de impressão abre sem ativar o Modo leitura sozinha'),
-    ('M.5', 'Ouvir a voz real (Kokoro/Piper) pausar e retomar no mesmo ponto, sem estalos'),
 ]
+MANUAIS_OK = [
+    ('M.5', 'Ouvir a voz real (Kokoro/Piper) pausar e retomar no mesmo ponto, sem estalos',
+     'Confirmado pelo usuário; realizado fora desta execução.'),
+]
+
+def registrar_manuais(rel):
+    for identificador, titulo in MANUAIS:
+        rel.add(identificador, titulo, 'MANUAL', '', 'M')
+    for identificador, titulo, detalhe in MANUAIS_OK:
+        rel.add(identificador, titulo, 'OK', detalhe, 'M')
 
 
 # ----------------------------------------------------------------------------- execução
@@ -240,8 +248,7 @@ def main():
         nav.close()
 
         print('\nPendências manuais (não automatizáveis aqui):')
-        for id, tit in MANUAIS:
-            rel.add(id, tit, 'MANUAL', '', 'M')
+        registrar_manuais(rel)
 
     dur = time.time() - t_ini
     cont = {k: sum(1 for i in rel.itens if i['status'] == k) for k in ('OK', 'FALHA', 'ERRO', 'INSTAVEL', 'AVISO', 'PULADO', 'MANUAL')}
