@@ -1,6 +1,6 @@
 # Diagnóstico e evidências dos temas ANAC
 
-Escopo analisado: `anac20-claro`, `anac20-escuro` e `govbr`. A correção da regra de espaçamento está no working tree, ainda não publicada.
+Escopo analisado: `anac20-claro`, `anac20-escuro` e `govbr`. A correção do espaçamento foi publicada em `c6a3051`.
 
 ## Respostas do diagnóstico
 
@@ -50,7 +50,7 @@ Para o ajuste de espaçamento, a captura antes foi renderizada do commit `b3805c
 - Suíte completa local: **314 ok, 0 falhas, 0 instáveis, 0 avisos, 0 pulados; 5 verificações manuais pendentes**, Chrome 157.0.8103.79; 269 s em 24/11/2026. Ver [relatório completo](../../tools/testes/relatorio/relatorio.md).
 - Após a correção local, grupo 6: **35 ok, 0 falhas**; inclui a nova matriz 6.17. Antes da correção, 6.17 falhou em 4 comparações ANAC, reproduzindo o deslocamento.
 - Casos relacionados: 6.11 (licença/encerramento), 6.12 (tabela), 6.13 (capa/cores), 6.14 (painel desktop/celular), 6.15 (gestos simulados), 6.16 (relay remoto) e 6.17 (matriz de tabelas).
-- CI do commit `b3805ceed9d6bb71c64a7c391e85f985ca4ede93`: run `45446898392`, status/conclusão `completed/success`; build, testes Chrome e deploy concluídos com sucesso.
+- CI do commit `c6a3051ffdd17167d3256890f1d3097d9483f7ff`: run `45481358350`, status/conclusão `completed/success`; build, testes Chrome e deploy concluídos com sucesso. A run seletiva `45481358246` também concluiu com sucesso.
 - HTML independente: a apresentação é gerada como arquivo HTML e os testes abrem a saída local no navegador.
 
 ## Mudanças já publicadas relacionadas ao objetivo
@@ -60,12 +60,13 @@ Para o ajuste de espaçamento, a captura antes foi renderizada do commit `b3805c
 | `c436168` | `tools/conteudo/html_saida.py`, `tools/conteudo/pptx.py`, `tools/testes/grupos/geracao.py` | Licença penúltima, encerramento ANAC vazio e correção de tabelas. |
 | `d8015f1` | `tools/conteudo/html_saida.py`, `tools/conteudo/recursos/acessibilidade/painel.css`, `painel.html`, `tools/testes/grupos/geracao.py` | Layout de capa, cores e painel/ajuda contextual. |
 | `b3805ce` | `tools/conteudo/html_saida.py`, `tools/conteudo/recursos/apresentacao/controles.js`, `webcam.js`, `tools/testes/grupos/geracao.py`, `web/controle-remoto.html` | Gestos repetíveis e controle remoto cifrado por relay. |
+| `c6a3051` | `tools/conteudo/html_saida.py:209`, `tools/testes/grupos/geracao.py:196-229`, `docs/evidencias-anac/` | Remove o espaçamento ANAC divergente; teste 6.17 e matriz visual de cinco tabelas. |
 
-Mudanças locais ainda não publicadas: `tools/conteudo/html_saida.py:209` remove o espaçamento exclusivo ANAC que deslocava tabelas; `tools/testes/grupos/geracao.py:196-229` adiciona o caso 6.17 para cinco formatos de tabela, três temas, desktop/celular e zoom. O JSON e as capturas da matriz estão em `docs/evidencias-anac/`.
+O teste 6.17 reproduziu a diferença antes da correção e passou após a remoção; a suíte completa e o CI do commit publicado também passaram.
 
 ## Limites ainda não verificados
 
 - Continuam pendentes as cinco verificações manuais do relatório: Safari real/áudio, Chrome Android/toque, áudio PPTX no PowerPoint, impressão/PDF e voz real Kokoro/Piper; não há validação física de webcam/mão real.
 - As capturas não são diff pixel a pixel; as paletas dos temas são diferentes por projeto.
 - PPTX/EPUB/DOCX foram cobertos pelos testes de geração/acessibilidade disponíveis; não foi feita inspeção visual manual de cada formato neste relatório.
-- A run verde `45446898392` valida o commit publicado anterior. A suíte local completa passou para a alteração atual; o CI/deploy desta alteração ainda depende do push.
+- As verificações físicas listadas acima não são cobertas pelo CI automatizado e continuam pendentes.
