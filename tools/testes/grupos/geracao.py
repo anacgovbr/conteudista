@@ -240,6 +240,37 @@ def grupo6(amb, ctx, G):
             return { esquerda: Math.round((h.left - r.left) / k), direita: Math.round((r.right - h.right) / k), barraAzul: azul(getComputedStyle(s, '::before').backgroundColor), linhaAzul: azul(getComputedStyle(s.querySelector('h1')).borderBottomColor), progressoAzul: azul(getComputedStyle(document.getElementById('bar')).backgroundColor) }; }""")
         G.chk(f'6.13-{tema_c}', f'{tema_c}: capa com título à direita da arte, dentro da margem, e barra/linha em azul', m['esquerda'] >= 500 and m['direita'] >= 60 and m['barraAzul'] and m['linhaAzul'] and m['progressoAzul'], m)
         c.close()
+    # ANAC escuro: o texto claro dos slides intermediários precisa de fundo azul escuro em HTML e PPTX.
+    esc = amb.tmp / 'anac_escuro_contraste'; esc.mkdir(exist_ok=True)
+    (esc / 's.md').write_text('# Capa\n\n---\n\n## Conteúdo\n\nTexto de leitura. **Destaque**.\n\n| Campo | Valor |\n|---|---|\n| Exemplo | Legível |\n\n---\n\n# Fim\n', encoding='utf-8')
+    rodar([sys.executable, str(suporte.GERADOR), '-', str(esc / 's.md'), '--prefixo', 'E', '--saida', str(esc), '--tema', 'anac20-escuro'], cwd=RAIZ)
+    c = amb.novo_contexto(viewport={'width': 1280, 'height': 720}); pg_e = c.new_page()
+    pg_e.goto((esc / 'Apresentacao_E.html').as_uri()); pg_e.wait_for_timeout(300); pg_e.click('#n')
+    ce = pg_e.evaluate("""() => { const s=document.querySelector('.s.on'), bg=getComputedStyle(s).backgroundColor,
+        rgb=x=>x.match(/\\d+/g).slice(0,3).map(Number), lum=x=>{const f=rgb(x).map(v=>{v/=255;return v<=.04045?v/12.92:((v+.055)/1.055)**2.4});return .2126*f[0]+.7152*f[1]+.0722*f[2]},
+        contraste=(a,b)=>(Math.max(lum(a),lum(b))+.05)/(Math.min(lum(a),lum(b))+.05),
+        cores=[...s.querySelectorAll('h1,h2,h3,p,li,strong')].map(x=>getComputedStyle(x).color);
+        return { fundo:bg, contrastes:cores.map(c=>contraste(bg,c)), elementos:cores.length }; }""")
+    G.chk('6.18-anac20-escuro-html', 'ANAC escuro HTML: texto dos slides intermediários com fundo azul escuro e contraste mínimo 4,5:1',
+          ce['fundo'] == 'rgb(20, 51, 74)' and ce['elementos'] > 0 and min(ce['contrastes']) >= 4.5, ce)
+    c.close()
+    from pptx import Presentation
+    pp = Presentation(str(esc / 'Apresentacao_E.pptx')); slide_esc = pp.slides[1]
+    fundo_escuro = any(sh.shape_type == 1 and sh.width >= pp.slide_width and sh.height >= pp.slide_height
+                       and sh.fill.type is not None and str(sh.fill.fore_color.rgb) == '14334A' for sh in slide_esc.shapes)
+    fontes = [str(run.font.color.rgb) for sh in slide_esc.shapes if sh.has_text_frame
+              for par in sh.text_frame.paragraphs for run in par.runs if run.text.strip() and run.font.color.type is not None]
+    tabela_escura = any(sh.has_table and str(sh.table.cell(0, 0).fill.fore_color.rgb) == '163B57'
+                        and all(str(cell.fill.fore_color.rgb) in ('14334A', '1B4059', '163B57')
+                                for row in sh.table.rows for cell in row.cells) for sh in slide_esc.shapes)
+    def luminancia(hex_):
+        rgb = [int(hex_[i:i+2], 16) / 255 for i in (0, 2, 4)]
+        rgb = [v / 12.92 if v <= .04045 else ((v + .055) / 1.055) ** 2.4 for v in rgb]
+        return .2126 * rgb[0] + .7152 * rgb[1] + .0722 * rgb[2]
+    contrastes_pptx = [(max(luminancia(c), luminancia('14334A')) + .05) / (min(luminancia(c), luminancia('14334A')) + .05) for c in fontes]
+    G.chk('6.18-anac20-escuro-pptx', 'ANAC escuro PPTX: slide intermediário com fundo azul escuro e texto claro',
+          fundo_escuro and tabela_escura and bool(fontes) and min(contrastes_pptx) >= 4.5,
+          {'fundo_escuro': fundo_escuro, 'tabela_escura': tabela_escura, 'fontes': fontes, 'contrastes': contrastes_pptx})
     # painel de acessibilidade: visual gov.br e ajuda "i" em cada opção (desktop e celular)
     pa = amb.tmp / 'painel_a11y'; pa.mkdir(exist_ok=True)
     (pa / 's.md').write_text('# Slide\n\nTexto.\n<!-- notas: Narração. -->\n', encoding='utf-8')

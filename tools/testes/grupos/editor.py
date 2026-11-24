@@ -59,6 +59,14 @@ def grupo9(amb, ctx, G):
         pg = ctx.new_page(); erros = []
         pg.on('pageerror', lambda e: erros.append(str(e)))
         pg.goto(url); pg.wait_for_selector('#pg .mde-tb.mv-tb', state='attached', timeout=15000); pg.wait_for_timeout(500)
+        btns = pg.evaluate("""() => ['#btnImportar','#ex','#clr'].map(q => {
+          const b = document.querySelector(q), s = getComputedStyle(b);
+          return { id: q, display: s.display, align: s.alignItems, justify: s.justifyContent,
+            lineHeight: s.lineHeight, height: b.getBoundingClientRect().height };
+        })""")
+        G.chk('9.21', 'Ações principais: rótulos centralizados verticalmente nos botões', all(
+            b['display'] == 'flex' and b['align'] == 'center' and b['justify'] == 'center' and
+            b['lineHeight'] == 'normal' and b['height'] >= 32 for b in btns), btns)
         pg.keyboard.press('Escape')                                   # fecha o tutorial da primeira visita
         pg.click('#ex'); pg.wait_for_timeout(1200)
         pg.evaluate("document.querySelector('#pg .mde').scrollIntoView()")

@@ -206,8 +206,9 @@ def _anac_html_css(tema,n,licenciada=False):
     imgs=[data('capa.png'),'','',data('encerramento.png')]
     escuro=tema=='anac20-escuro'; tinta='#ffffff' if escuro else '#193f52'; mut='#dce8ee' if escuro else '#526d7c'
     regras=[':root{--ac2:%s}'%('#6ea8fe' if escuro else '#1351b4'),'.s{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:%s!important}'%tinta,
-      '.s h1,.s h2,.s h3,.s p,.s li{color:%s!important}.s .in{z-index:1}'%tinta,
+      '.s h1,.s h2,.s h3,.s p,.s li%s{color:%s!important}.s .in{z-index:1}'%(', .s strong' if escuro else '',tinta),
       '.s table{background:rgba(255,255,255,.94);color:#193f52}.s td,.s td *{color:#193f52!important}.s .nt{color:%s!important}'%mut]
+    if escuro:regras.append('.s:not(.title){background:#14334a!important}.s a{color:#ffdf5d!important}.s blockquote p,.s .nt{color:#193f52!important}')
     n_original=n-1 if licenciada else n
     for i in range(n):
         fundo=imgs[1 if i%2 else 2] if licenciada and i==n-2 else imgs[0] if i==0 else imgs[3] if i==n-1 else imgs[1 if i%2 else 2]

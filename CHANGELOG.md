@@ -1,4 +1,8 @@
 # Novidades do Conteudista
+## 1.115 - 24/11/2026
+- **Apresentação ANAC escura:** slides de conteúdo agora usam fundo azul escuro com texto de contraste adequado em HTML e PPTX.
+- **Botões:** rótulos centralizados verticalmente nas ações principais.
+
 ## 1.114 - 24/11/2026
 - **Validação de áudio:** escuta Kokoro/Piper, pausa e retomada confirmadas; verificações em Safari/iPhone, Android, PowerPoint e impressão permanecem planejadas para sessão conjunta.
 - **Relatório de apresentação:** o roteiro distingue a validação manual confirmada das verificações ainda pendentes.

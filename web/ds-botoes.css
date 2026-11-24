@@ -19,7 +19,9 @@ body :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .t
   --btn-h:40px;
   --btn-bw:0px;
   box-sizing:border-box;
-  display:inline-block;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
   height:var(--btn-h);
   min-height:var(--btn-h);
   max-height:var(--btn-h);
@@ -31,7 +33,7 @@ body :is(button,.btn):not(:where(.mde-tb *,.mde-gi *,.mde-dw .chips *,.mde-dw .t
   background-color:var(--interactive,#1351b4);
   color:#fff;
   font-size:16.8px;
-  line-height:calc(var(--btn-h) - 2 * var(--btn-bw));
+  line-height:normal;
   text-align:center;
   text-decoration:none;
   vertical-align:middle;

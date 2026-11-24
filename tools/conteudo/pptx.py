@@ -149,7 +149,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                     c=gt.cell(ri,ci);c.margin_left=c.margin_right=Inches(0.08);c.margin_top=c.margin_bottom=Inches(0.04)
                     tf=c.text_frame;tf.word_wrap=True;tf.paragraphs[0].text='';esp(tf.paragraphs[0],1.1,0)
                     addruns(tf.paragraphs[0],r[ci] if ci<len(r) else '',ts,WH if ri==0 else INK,ri==0)
-                    c.fill.solid();c.fill.fore_color.rgb=PRI if ri==0 else (SOFT if ri%2==0 else WH)
+                    c.fill.solid();c.fill.fore_color.rgb=(RGBColor.from_string('163B57') if ri==0 else (SOFT if ri%2==0 else RGBColor.from_string('1B4059'))) if escuro else (PRI if ri==0 else (SOFT if ri%2==0 else WH))
         elif k=='quote':
             if custom:
                 bg=C(PAL['suave']);bd={'info':ACC,'tip':AC2,'warning':C(PAL['alerta'])}.get(b[1],AC2)
@@ -183,7 +183,8 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
             if not tem_fundo:
                 if istitle:rect(s,0,0,W,7.5,PRI);rect(s,0,0,0.15,7.5,DEST)
                 else:
-                    if cls=='highlight':rect(s,0,0,W,7.5,C('F2F7FC'))
+                    if modelo and escuro:rect(s,0,0,W,7.5,SOFT)
+                    elif cls=='highlight':rect(s,0,0,W,7.5,C('F2F7FC'))
                     rect(s,0,0,0.15,7.5,PRI)
         h1=[b for b in bl if b[0]=='h' and b[1]==1];rest=[b for b in bl if not(b[0]=='h' and b[1]==1)]
         if modelo and istitle and idx==len(sl)-1:h1=[];rest=[]  # slide final ANAC sem texto
