@@ -102,7 +102,8 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
   function itensDe(tb, gid) {
     const l = [];
     [...tb.children].forEach(el => {
-      if (grupoDe(el) !== gid) return;
+      const g = grupoDe(el);
+      if (g !== gid && !(MQ.matches && gid === 'mais' && g === 'extra')) return;
       if (el.tagName === 'SELECT') {
         [...el.options].forEach((o, k) => { if (k > 0) l.push({ nome: 'Caixa: ' + o.text, ic: '❝', fazer: () => { el.selectedIndex = k; el.dispatchEvent(new Event('change', { bubbles: true })); } }); });
         return;
