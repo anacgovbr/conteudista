@@ -49,6 +49,9 @@ Para o ajuste de espaçamento, a captura antes foi renderizada do commit `b3805c
 
 - Suíte completa anterior: **314 ok, 0 falhas**; Chrome 157.0.8103.79; 269 s em 24/11/2026. Após atualizar o registro manual, o grupo 5 passou (**10 ok, 0 falhas**) e o grupo 13 isolado passou (**19 ok, 0 falhas**): M.5 consta como OK por confirmação do usuário e M.1–M.4 permanecem manuais. A nova execução completa foi encerrada pelo limite de 600 s enquanto estava no grupo 13, sem resultado final.
 - Após a correção local, grupo 6: **35 ok, 0 falhas**; inclui a nova matriz 6.17. Antes da correção, 6.17 falhou em 4 comparações ANAC, reproduzindo o deslocamento.
+- Na versão 1.115, grupos 6 e 9: **38/38** e **22/22**; verificações novas 6.18 (contraste ANAC escuro em HTML/PPTX) e 9.21 (centralização dos rótulos dos quatro botões).
+- Publicação 1.115: commit `0cdaf90`, workflow `45497950654` concluído com sucesso (build, Chrome e deploy). Site: <https://anacgovbr.github.io/conteudista/>.
+- Conferência pós-deploy no Chrome: os quatro botões mediram caixa de texto em **−0,5 px** do centro antes (CSS 1.114) e **0 px** depois (CSS servido pela 1.115); depois, `display:flex`, `align-items:center` e `line-height:normal`. Ver capturas [antes](botoes-antes-1.114.png) e [depois](botoes-depois-1.115.png). A captura “antes” foi reconstruída usando o CSS do commit anterior sobre a página publicada atual.
 - Casos relacionados: 6.11 (licença/encerramento), 6.12 (tabela), 6.13 (capa/cores), 6.14 (painel desktop/celular), 6.15 (gestos simulados), 6.16 (relay remoto) e 6.17 (matriz de tabelas).
 - CI do commit `c6a3051ffdd17167d3256890f1d3097d9483f7ff`: run `45481358350`, status/conclusão `completed/success`; build, testes Chrome e deploy concluídos com sucesso. A run seletiva `45481358246` também concluiu com sucesso.
 - HTML independente: a apresentação é gerada como arquivo HTML e os testes abrem a saída local no navegador.
@@ -61,12 +64,13 @@ Para o ajuste de espaçamento, a captura antes foi renderizada do commit `b3805c
 | `d8015f1` | `tools/conteudo/html_saida.py`, `tools/conteudo/recursos/acessibilidade/painel.css`, `painel.html`, `tools/testes/grupos/geracao.py` | Layout de capa, cores e painel/ajuda contextual. |
 | `b3805ce` | `tools/conteudo/html_saida.py`, `tools/conteudo/recursos/apresentacao/controles.js`, `webcam.js`, `tools/testes/grupos/geracao.py`, `web/controle-remoto.html` | Gestos repetíveis e controle remoto cifrado por relay. |
 | `c6a3051` | `tools/conteudo/html_saida.py:209`, `tools/testes/grupos/geracao.py:196-229`, `docs/evidencias-anac/` | Remove o espaçamento ANAC divergente; teste 6.17 e matriz visual de cinco tabelas. |
+| `0cdaf90` | `tools/conteudo/html_saida.py`, `tools/conteudo/pptx.py`, `web/ds-botoes.css`, testes dos grupos 6/9, versão 1.115 | Fundo azul escuro e contraste em slides ANAC HTML/PPTX; rótulos dos botões centralizados. Publicado e verificado no site. |
 
 O teste 6.17 reproduziu a diferença antes da correção e passou após a remoção; a suíte completa e o CI do commit publicado também passaram.
 
 ## Limites ainda não verificados
 
-- M.1–M.4 aguardam validação conjunta: Safari real/áudio, Chrome Android/toque, áudio PPTX no PowerPoint e impressão/PDF. A escuta Kokoro/Piper (M.5) foi confirmada pelo usuário; não há validação física de webcam/mão real.
+- M.1–M.4 aguardam validação conjunta: Safari real/áudio, Chrome Android/toque, áudio PPTX no PowerPoint e impressão/PDF. A escuta Kokoro/Piper (M.5), webcam com câmera/mão reais e controle remoto foram confirmados pelo usuário; os dois últimos não foram verificados independentemente pelo agente.
 - As capturas não são diff pixel a pixel; as paletas dos temas são diferentes por projeto.
 - PPTX/EPUB/DOCX foram cobertos pelos testes de geração/acessibilidade disponíveis; não foi feita inspeção visual manual de cada formato neste relatório.
 - As verificações físicas listadas acima não são cobertas pelo CI automatizado e continuam pendentes.
