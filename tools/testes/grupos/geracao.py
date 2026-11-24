@@ -166,6 +166,36 @@ def grupo6(amb, ctx, G):
             return { contraste: (Math.max(a, b) + .05) / (Math.min(a, b) + .05), foraDireita: Math.round(r.right - i.right), h1Direita: Math.round(h.right - i.right) }; }""")
         G.chk(f'6.12-{tema_t}', f'Tabela {tema_t}: cabeçalho com contraste mínimo de 4,5:1 e dentro da margem do slide', m['contraste'] >= 4.5 and m['foraDireita'] <= 1 and m['h1Direita'] <= 1, m)
         c.close()
+    # capa dos temas ANAC: título dentro da margem e à direita da arte; barra e linha do título em azul (não verde)
+    ca = amb.tmp / 'capa_anac'; ca.mkdir(exist_ok=True)
+    (ca / 's.md').write_text('<!-- class: title -->\n\n# Conteudista na Prática\n\n## Subtítulo\n\n---\n\n# Fim\n', encoding='utf-8')
+    for tema_c in ('anac20-claro', 'anac20-escuro'):
+        rodar([sys.executable, str(suporte.GERADOR), '-', str(ca / 's.md'), '--prefixo', 'T', '--saida', str(ca / tema_c), '--tema', tema_c], cwd=RAIZ)
+        c = amb.novo_contexto(viewport={'width': 1280, 'height': 720}); pg_c = c.new_page()
+        pg_c.goto((ca / tema_c / 'Apresentacao_T.html').as_uri()); pg_c.wait_for_timeout(400)
+        m = pg_c.evaluate("""() => { const s = document.querySelector('.s.on'), r = s.getBoundingClientRect(), k = r.width / 1280, h = s.querySelector('h1').getBoundingClientRect(), azul = v => { const [R, G, B] = v.match(/\\d+/g).map(Number); return B > R + 40 && B > G; };
+            return { esquerda: Math.round((h.left - r.left) / k), direita: Math.round((r.right - h.right) / k), barraAzul: azul(getComputedStyle(s, '::before').backgroundColor), linhaAzul: azul(getComputedStyle(s.querySelector('h1')).borderBottomColor), progressoAzul: azul(getComputedStyle(document.getElementById('bar')).backgroundColor) }; }""")
+        G.chk(f'6.13-{tema_c}', f'{tema_c}: capa com título à direita da arte, dentro da margem, e barra/linha em azul', m['esquerda'] >= 500 and m['direita'] >= 60 and m['barraAzul'] and m['linhaAzul'] and m['progressoAzul'], m)
+        c.close()
+    # painel de acessibilidade: visual gov.br e ajuda "i" em cada opção (desktop e celular)
+    pa = amb.tmp / 'painel_a11y'; pa.mkdir(exist_ok=True)
+    (pa / 's.md').write_text('# Slide\n\nTexto.\n<!-- notas: Narração. -->\n', encoding='utf-8')
+    rodar([sys.executable, str(suporte.GERADOR), '-', str(pa / 's.md'), '--prefixo', 'P', '--saida', str(pa / 'o')], cwd=RAIZ)
+    for nome_v, vp in (('desktop', {'width': 1280, 'height': 720}), ('celular', {'width': 390, 'height': 780})):
+        c = amb.novo_contexto(viewport=vp, touch=vp['width'] < 900); pg_p = c.new_page(); erros_p = []
+        pg_p.on('pageerror', lambda e: erros_p.append(str(e)))
+        pg_p.goto((pa / 'o' / 'Apresentacao_P.html').as_uri()); pg_p.wait_for_timeout(300)
+        if pg_p.locator('#ini0').count(): pg_p.click('#ini0')
+        pg_p.evaluate("document.getElementById('a11yToggle').click()"); pg_p.wait_for_selector('#a11yPanel[open]')
+        m = pg_p.evaluate("""() => { const p = document.getElementById('a11yPanel'), cx = [...p.querySelectorAll('input[type=checkbox]')], css = getComputedStyle(cx[0]), sel = getComputedStyle(p.querySelector('select')), bt = getComputedStyle(p.querySelector('button.sec'));
+            return { n: cx.length, semAjuda: cx.filter(i => !i.closest('.a11y-op').querySelector('.a11y-i')).map(i => i.dataset.a11y), caixa: css.width + ' ' + css.borderTopLeftRadius + ' ' + css.appearance, selRaio: sel.borderTopLeftRadius, botao: bt.borderTopLeftRadius, apoio: !!p.querySelector('.a11y-i[aria-controls="a11yAj-apoio"]') }; }""")
+        b = pg_p.locator('.a11y-i[aria-controls="a11yAj-webcam"]'); b.click()
+        w = pg_p.evaluate("() => { const a = document.getElementById('a11yAj-webcam'); return { visivel: !a.hidden, expandido: document.querySelector('.a11y-i[aria-controls=\"a11yAj-webcam\"]').getAttribute('aria-expanded'), texto: a.textContent }; }")
+        txt = w['texto']
+        G.chk(f'6.14-{nome_v}', f'Painel ({nome_v}): estilo gov.br, ajuda \"i\" em todas as op\u00e7\u00f5es e ajuda da webcam com gestos e permiss\u00f5es',
+              m['n'] >= 7 and not m['semAjuda'] and m['apoio'] and m['caixa'] == '24px 4px none' and m['selRaio'] == '4px' and m['botao'] != '0px'
+              and w['visivel'] and w['expandido'] == 'true' and all(x in txt for x in ('\U0001F590', '\u270C', '\U0001F44D', 'Chrome', 'Android', 'Safari', 'Edge')) and not erros_p, {'m': m, 'w': w['visivel']})
+        c.close()
     # regressão do Windows: o teste de acessibilidade tem de rodar com a saída em cp1252 (console/pipe padrão do Windows)
     r = subprocess.run([sys.executable, str(RAIZ / 'tools' / 'testar_acessibilidade.py'), str(amb.tmp / 'saida_govbr'), '--prefixo', 'Exemplo'],
                        capture_output=True, env=dict(os.environ, PYTHONIOENCODING='cp1252', PYTHONUTF8='0'), cwd=RAIZ)

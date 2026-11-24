@@ -122,24 +122,43 @@ TAM_JS=ler_recurso('acessibilidade/tamanho.js')
 
 PAINEL_A11Y_CSS=ler_recurso('acessibilidade/painel.css')
 
+AJUDAS={
+ 'contraste':'Fundo preto, letras brancas e links sublinhados, para enxergar melhor.',
+ 'espacamento':'Aumenta o espaço entre linhas, letras e palavras (WCAG 1.4.12) para facilitar a leitura.',
+ 'regua':'Mostra uma faixa que acompanha o ponteiro e destaca a linha que você está lendo.',
+ 'movimento':'Remove animações e transições da página.',
+ 'barra':'Mantém a barra de controles sempre visível, sem escondê-la após alguns segundos.',
+ 'atalhos':'Liga as teclas de uma letra (N, S, L…). Desligadas, use Alt+Shift e a letra. Setas, Home, End e Esc continuam iguais.',
+ 'webcam':'A câmera é processada no seu aparelho, sem enviar imagens.<br>🖐️ Mão aberta: próximo slide<br>✌️ Dois dedos: slide anterior<br>👍 Joinha: reproduzir ou pausar<br><b>Câmera bloqueada?</b> Chrome e Edge no computador: clique no ícone à esquerda do endereço (cadeado ou câmera), permita a câmera e recarregue. Chrome no Android: menu ⋮ › Configurações › Configurações do site › Câmera. Safari no iPhone ou iPad: Ajustes › Safari › Câmera, ou o botão aA na barra › Configurações do site.',
+ 'legendas':'Mostra o texto da narração do slide em uma legenda e o anuncia a leitores de tela.',
+ 'apoio':'Ouvir texto atual lê o slide em voz alta; clique de novo para parar. O VLibras traduz para Libras e usa um serviço externo (precisa de internet).'}
+
+def _aj(k,rotulo):
+    return ('<button type="button" class="a11y-i" aria-expanded="false" aria-controls="a11yAj-%s" aria-label="Como funciona: %s"><span aria-hidden="true">i</span></button>'%(k,rotulo.split(' (')[0]))
+
+def _aj_texto(k):
+    return '<p id="a11yAj-%s" class="a11y-ajuda" hidden>%s</p>'%(k,AJUDAS[k])
+
+def _op(k,rotulo,extra=''):
+    return '<div class="a11y-op"><label><input type="checkbox" data-a11y="%s" aria-describedby="a11yAj-%s"%s> %s</label>%s</div>%s'%(k,k,extra,rotulo,_aj(k,rotulo),_aj_texto(k))
+
 def painel_a11y(vlibras=True, legendas=False, leitura=False):
         libras = ('<p class="a11y-aviso">Ativar VLibras acessa um serviço externo e precisa de internet. Desative para conteúdo interno.</p>'
             '<button type="button" class="sec" data-a11y="vlibras">Ativar VLibras</button>') if vlibras else ''
-        legenda = '<label><input type="checkbox" data-a11y="legendas" checked> Legendas da narração</label>' if legendas else ''
+        legenda = _op('legendas','Legendas da narração',' checked') if legendas else ''
         texto = ('<h3 class="a11y-sub">Texto e leitura</h3><div class="a11y-campo">'+LEITURA_SEL.replace('>Leitura</label>','>Fonte de leitura</label>')+'</div>'
             '<div id="tam" class="tam" role="group" aria-labelledby="tamL"><span id="tamL" class="tam-l">Tamanho do texto</span><div class="tam-b">'
             '<button id="tamM" type="button" aria-label="A\u2212: diminuir texto">A\u2212</button><button id="tamR" type="button" aria-label="Tamanho do texto: 100%. Voltar a 100%">100%</button><button id="tamP" type="button" aria-label="A+: aumentar texto">A+</button></div>'
             '<span id="tamS" class="vh" role="status" aria-live="polite"></span></div>') if leitura else ''
         return ('<dialog id="a11yPanel" class="a11y-panel" aria-labelledby="a11yPanelTitle">'
             '<header><h2 id="a11yPanelTitle" tabindex="-1">Acessibilidade</h2><button type="button" class="sec" data-a11y="fechar">Fechar</button></header>'
-            '<div class="a11y-corpo">' + texto + '<h3 class="a11y-sub">Exibição</h3><label><input type="checkbox" data-a11y="contraste"> Alto contraste</label>'
-            '<label><input type="checkbox" data-a11y="espacamento"> Espaçamento do texto (WCAG 1.4.12)</label>'
-            '<label><input type="checkbox" data-a11y="regua"> Régua de leitura</label>'
-            '<label><input type="checkbox" data-a11y="movimento"> Reduzir animações</label>'
-            '<h3 class="a11y-sub">Controles</h3><label><input type="checkbox" data-a11y="barra"> Manter a barra de controles visível</label>'
-            + ('<label><input type="checkbox" data-a11y="webcam"> Controle por webcam<br><small style="display:block;margin:2px 0 4px 32px;color:#555">🖐️ Próximo · ✌️ Anterior · 👍 Reproduzir/Pausar<br>Câmera bloqueada? Clique no cadeado na barra de endereços (Chrome/Edge) ou em Configurações do site (Safari/Android) e permita a câmera.</small></label>' if leitura else '')
+            '<div class="a11y-corpo">' + texto + '<h3 class="a11y-sub">Exibição</h3>' + _op('contraste','Alto contraste') + _op('espacamento','Espaçamento do texto (WCAG 1.4.12)')
+            + _op('regua','Régua de leitura') + _op('movimento','Reduzir animações')
+            + '<h3 class="a11y-sub">Controles</h3>' + _op('barra','Manter a barra de controles visível')
+            + (_op('atalhos','Atalhos de uma tecla',' checked') + _op('webcam','Controle por webcam') if leitura else '')
             + legenda +
-            '<h3 class="a11y-sub">Apoio</h3><button type="button" class="sec" data-a11y="ouvir">Ouvir texto atual</button>' + libras +
+            '<div class="a11y-op"><h3 class="a11y-sub">Apoio</h3>' + _aj('apoio','Apoio') + '</div>' + _aj_texto('apoio')
+            + '<button type="button" class="sec" data-a11y="ouvir">Ouvir texto atual</button>' + libras +
             '<p class="a11y-estado" id="a11yEstado" role="status" aria-live="polite"></p></div></dialog>' +
             '<div id="a11yRegua" class="a11y-ruler" aria-hidden="true"></div><p id="a11yLegendasLive" class="a11y-sr" role="status" aria-live="polite" aria-atomic="true"></p>')
 
@@ -186,15 +205,15 @@ def _anac_html_css(tema,n,licenciada=False):
         return 'data:image/png;base64,'+base64.b64encode(open(cam,'rb').read()).decode('ascii') if os.path.isfile(cam) else ''
     imgs=[data('capa.png'),'','',data('encerramento.png')]
     escuro=tema=='anac20-escuro'; tinta='#ffffff' if escuro else '#193f52'; mut='#dce8ee' if escuro else '#526d7c'
-    regras=['.s{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:%s!important}'%tinta,
+    regras=[':root{--ac2:%s}'%('#6ea8fe' if escuro else '#1351b4'),'.s{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:%s!important}'%tinta,
       '.s h1,.s h2,.s h3,.s p,.s li{color:%s!important}.s .in{z-index:1}.s:not(.title) .in{padding-top:1.2vh}'%tinta,
       '.s table{background:rgba(255,255,255,.94);color:#193f52}.s td,.s td *{color:#193f52!important}.s .nt{color:%s!important}'%mut]
     n_original=n-1 if licenciada else n
     for i in range(n):
         fundo=imgs[1 if i%2 else 2] if licenciada and i==n-2 else imgs[0] if i==0 else imgs[3] if i==n-1 else imgs[1 if i%2 else 2]
         if fundo:regras.append('.s:nth-child(%d){background-image:url("%s")!important}'%(i+1,fundo))
-    if escuro:regras.append('.s.title .in{margin-left:37%;width:58%}.s.title h1{color:#fff!important}')
-    else:regras.append('.s.title .in{margin-left:37%;width:58%}.s.title h1{color:#193f52!important}')
+    if escuro:regras.append('.s.title .in{margin-left:37%;width:52%}.s.title h1{color:#fff!important}')
+    else:regras.append('.s.title .in{margin-left:37%;width:52%}.s.title h1{color:#193f52!important}')
     return '\n'.join(regras)
 
 MER_S=ler_recurso('diagramas/apresentacao.js')

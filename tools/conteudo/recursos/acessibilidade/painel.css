@@ -3,7 +3,7 @@
 .a11y-panel[open]{display:flex;flex-direction:column}.a11y-panel::backdrop{background:rgba(0,0,0,.45)}
 .a11y-panel header{display:flex;align-items:center;gap:12px;padding:16px;border-bottom:1px solid #ccc;background:#fff;color:#333}
 .a11y-panel h2{flex:1;margin:0;color:#0c326f;font-size:19px}.a11y-panel .a11y-corpo{overflow:auto;padding:16px}
-.a11y-panel label{display:flex;align-items:flex-start;gap:10px;margin:12px 0;color:#333;font-weight:400}.a11y-panel input{flex:0 0 auto;width:22px;height:22px;margin:1px 0;accent-color:#1351b4}
+.a11y-panel label{display:flex;align-items:flex-start;gap:10px;margin:12px 0;color:#333;font-weight:400}.a11y-panel input{flex:0 0 auto;width:24px;height:24px;margin:1px 0}
 .a11y-panel button{min-height:44px}.a11y-panel .a11y-aviso{margin:8px 0;padding:10px 12px;border-left:5px solid #8a5c00;background:#fff5c2;color:#333}
 .a11y-panel .a11y-estado{min-height:1.5em;margin:12px 0;color:#0c326f}.a11y-ruler{position:fixed;z-index:2999;left:0;right:0;height:2.5em;border-block:2px solid #8a5c00;background:rgba(255,245,194,.28);pointer-events:none;display:none}
 html.a11y-spacing body,html.a11y-spacing body *{line-height:1.5!important;letter-spacing:.12em!important;word-spacing:.16em!important}html.a11y-spacing p{margin-bottom:2em!important}
@@ -16,10 +16,10 @@ html.a11y-reduce *,html.a11y-reduce *::before,html.a11y-reduce *::after{scroll-b
 .a11y-caption{display:none;position:absolute;z-index:4;left:8%;right:8%;bottom:8%;max-height:24%;overflow:auto;margin:0;padding:8px 12px;border-radius:4px;background:rgba(0,0,0,.9);color:#fff!important;text-align:center;font-size:1.05em;line-height:1.5}
 html.a11y-legendas-on .s.on .a11y-caption{display:block}
 .a11y-sr{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.a11y-panel-toggle:focus-visible,.a11y-panel button:focus-visible{outline:3px solid #c2850c;outline-offset:3px}
+.a11y-panel-toggle:focus-visible,.a11y-panel button:focus-visible{outline:4px dashed #c2850c;outline-offset:4px}
 .a11y-panel .a11y-sub{margin:18px 0 2px;font-size:15px;color:#0c326f}.a11y-panel .a11y-corpo>.a11y-sub:first-child{margin-top:0}
 .a11y-panel .a11y-campo{margin:8px 0}.a11y-panel .a11y-campo label{display:block;margin:0 0 4px;font-weight:700}
-.a11y-panel select{width:100%;min-height:44px;padding:0 10px;border:1px solid #555;border-radius:6px;background:#fff;color:#333;font:inherit}
+.a11y-panel select{width:100%;min-height:44px;padding:0 10px;border:1px solid #888;border-radius:4px;background:#fff;color:#333;font:inherit}
 .a11y-panel .tam{margin:12px 0}.a11y-panel .tam-l{display:block;margin:0 0 4px;font-weight:700}.a11y-panel .tam-b{display:flex;gap:8px}
 .a11y-panel .tam-b button{flex:1;min-width:44px;border:1px solid #1351b4;border-radius:999px;background:#fff;color:#1351b4;font-weight:700;font-size:15px;cursor:pointer}
 .a11y-panel .tam-b button[aria-disabled="true"]{color:#636363;border-color:#888;cursor:not-allowed}
@@ -28,3 +28,22 @@ html.a11y-contrast .a11y-panel .a11y-sub,html.a11y-contrast .a11y-panel .tam-l{c
 @media(max-width:700px){.a11y-panel{inset:auto 0 0;width:100%;height:min(78vh,640px);height:min(78dvh,640px);max-height:90vh;border:0;border-top:1px solid #888;border-radius:16px 16px 0 0;box-shadow:0 -8px 28px rgba(0,0,0,.3)}.a11y-panel header{padding:18px 16px 10px}.a11y-panel .a11y-corpo{padding:10px 16px max(16px,env(safe-area-inset-bottom))}}
 @media(prefers-reduced-motion:reduce){.a11y-panel *{scroll-behavior:auto!important}}
 @media(forced-colors:active){.a11y-panel,.a11y-panel button,.a11y-ruler{border:1px solid CanvasText}.a11y-panel button:focus-visible{outline:3px solid Highlight}}
+/* visual gov.br: caixa de seleção, botões em pílula, foco tracejado, hover e estado ativo */
+.a11y-panel input[type=checkbox]{appearance:none;-webkit-appearance:none;border:1px solid #888;border-radius:4px;background:#fff center/16px no-repeat;cursor:pointer}
+.a11y-panel input[type=checkbox]:hover{box-shadow:0 0 0 6px rgba(19,81,180,.16)}
+.a11y-panel input[type=checkbox]:checked{border-color:#1351b4;background-color:#1351b4;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 4.8' fill='none' stroke='%23fff' stroke-width='2.4'/%3E%3C/svg%3E")}
+.a11y-panel input:focus-visible,.a11y-panel select:focus-visible{outline:4px dashed #c2850c;outline-offset:4px}
+.a11y-panel select:hover{background:#edf5ff}
+.a11y-panel button.sec{padding:0 24px;border:1px solid #1351b4;border-radius:100em;background:#fff;color:#1351b4;font-weight:600;cursor:pointer}
+.a11y-panel button.sec:hover,.a11y-panel .tam-b button:hover{background:rgba(19,81,180,.12)}
+.a11y-panel button.sec:active,.a11y-panel button.sec[aria-pressed="true"]{background:#1351b4;color:#fff}
+.a11y-panel .a11y-op{display:flex;align-items:flex-start;gap:4px}.a11y-panel .a11y-op label{flex:1}.a11y-panel .a11y-op .a11y-sub{flex:1;margin:18px 0 2px}
+.a11y-panel .a11y-i{flex:0 0 auto;width:44px;margin:2px -10px 0 0;padding:0;border:0;background:transparent;color:#1351b4;cursor:pointer}
+.a11y-panel .a11y-i span{display:inline-grid;place-items:center;width:24px;height:24px;border:2px solid #1351b4;border-radius:50%;font:italic 700 15px/1 Georgia,serif}
+.a11y-panel .a11y-i:hover span,.a11y-panel .a11y-i[aria-expanded="true"] span{background:#1351b4;color:#fff}
+.a11y-panel .a11y-ajuda{margin:-4px 0 12px 34px;padding:10px 12px;border-left:4px solid #1351b4;background:#edf5ff;color:#333;font-size:14px;line-height:1.5}
+html.a11y-contrast .a11y-panel input[type=checkbox]{background-color:#000!important;border-color:#fff!important}
+html.a11y-contrast .a11y-panel input[type=checkbox]:checked{background-color:#ff0!important;border-color:#ff0!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 4.8' fill='none' stroke='%23000' stroke-width='2.4'/%3E%3C/svg%3E")!important}
+html.a11y-contrast .a11y-panel button.sec,html.a11y-contrast .a11y-panel .a11y-i{background:#000!important;color:#fff!important;border-color:#fff!important}
+html.a11y-contrast .a11y-panel .a11y-i span{border-color:#fff!important}html.a11y-contrast .a11y-panel .a11y-ajuda{background:#000!important;color:#fff!important;border-color:#ff0!important}
+@media(forced-colors:active){.a11y-panel input[type=checkbox]:checked{background-color:Highlight;border-color:Highlight}}
