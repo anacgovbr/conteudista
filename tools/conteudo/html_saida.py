@@ -137,7 +137,7 @@ def painel_a11y(vlibras=True, legendas=False, leitura=False):
             '<label><input type="checkbox" data-a11y="regua"> Régua de leitura</label>'
             '<label><input type="checkbox" data-a11y="movimento"> Reduzir animações</label>'
             '<h3 class="a11y-sub">Controles</h3><label><input type="checkbox" data-a11y="barra"> Manter a barra de controles visível</label>'
-            + ('<label><input type="checkbox" data-a11y="webcam"> Controle por webcam<br><small style="display:block;margin:2px 0 4px 32px;color:#555">Avance slides com gestos de mão (requer câmera)</small></label>' if leitura else '')
+            + ('<label><input type="checkbox" data-a11y="webcam"> Controle por webcam<br><small style="display:block;margin:2px 0 4px 32px;color:#555">🖐️ Próximo · ✌️ Anterior · 👍 Reproduzir/Pausar<br>Câmera bloqueada? Clique no cadeado na barra de endereços (Chrome/Edge) ou em Configurações do site (Safari/Android) e permita a câmera.</small></label>' if leitura else '')
             + legenda +
             '<h3 class="a11y-sub">Apoio</h3><button type="button" class="sec" data-a11y="ouvir">Ouvir texto atual</button>' + libras +
             '<p class="a11y-estado" id="a11yEstado" role="status" aria-live="polite"></p></div></dialog>' +
@@ -248,7 +248,7 @@ def _ic(k,cls=''):
 
 def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True,licenca=''):
     """Monta o HTML da apresentação (com ou sem narração): ARIA, leitura, modo leitura, auto-ajuste e impressão A4."""
-    _TB[0]=0;T=tema_de(tema);n_original=len(sl);n=n_original+bool(licenca);secs=[]
+    _TB[0]=0;T=tema_de(tema);n_original=len(sl);n=n_original+bool(licenca)+1;secs=[]
     papeis=papeis_slides(sl,bool(licenca))
     for k,(c,b,nt) in enumerate(sl):
         rot='Slide %d de %d'%(k+1,n)
@@ -257,8 +257,10 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
         secs.append('<section class="s %s papel-%s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,papeis[k].replace('_','-'),rot,rot,html_of(b,None,None,paleta(T)),nota,legenda))
     aviso_licenca=licencas.aviso_slide_html(licenca)
     if aviso_licenca:
-        rot='Slide %d de %d'%(n,n)
+        rot='Slide %d de %d'%(n-1,n)
         secs.append('<section class="s licenciamento papel-licenciamento" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div></section>'%(rot,rot,aviso_licenca))
+    rot='Slide %d de %d'%(n,n)
+    secs.append('<section class="s title papel-finalizacao papel-encerramento" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo"></div></div></section>'%(rot,rot))
     o=_fluxos_img(''.join(secs),fluxos)
     css=fontes_css()+tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+_anac_html_css(tema,n,bool(licenca))+licencas.CSS
     narr=bool(audios);aud=''

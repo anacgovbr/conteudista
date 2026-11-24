@@ -129,7 +129,7 @@ def grupo6(amb, ctx, G):
     G.chk('6.4', 'CC BY: CLI gera o aviso final da Apostila e um slide final com URL oficial',
           r.returncode == 0 and md_g.exists() and md_s.exists() and conteudo_g.count('class="licenciamento"') == 1
           and conteudo_g.index('class="licenciamento"') < conteudo_g.index('</article>')
-          and conteudo_s.count('aria-label="Slide 41 de 41"') == 1
+          and conteudo_s.count('aria-label="Slide 41 de 42"') == 1
           and 'https://creativecommons.org/licenses/by/4.0/' in conteudo_s
           and (lic / 'Apostila_Licenca.docx').exists() and (lic / 'Apostila_Licenca.epub').exists()
           and (lic / 'Apresentacao_Licenca.pptx').exists(), (r.stderr or r.stdout)[-300:])
@@ -142,8 +142,10 @@ def grupo6(amb, ctx, G):
     pg_lic.goto(html_s.as_uri()); pg_lic.wait_for_timeout(500)
     total = pg_lic.locator('.s').count()
     for _ in range(total - 1): pg_lic.click('#n')
-    final = pg_lic.evaluate("() => { const s = document.querySelector('.s.on'); const a = s && s.querySelector('a[rel=license]'); const r = s && s.getBoundingClientRect(); return { nome: s && s.getAttribute('aria-label'), url: a && a.href, largura: r && r.width, altura: r && r.height, visivel: !!s && getComputedStyle(s).display !== 'none' }; }")
-    G.chk('6.6', 'CC BY: o último slide é acessível, visível e navegável no Chrome', total > 1 and final['nome'] == 'Slide %d de %d' % (total, total) and final['url'] == 'https://creativecommons.org/licenses/by/4.0/' and final['largura'] > 0 and final['altura'] > 0 and final['visivel'] and not erros_lic, final)
+    final = pg_lic.evaluate("() => { const s = document.querySelector('.s.on'); const r = s && s.getBoundingClientRect(); return { nome: s && s.getAttribute('aria-label'), largura: r && r.width, altura: r && r.height, visivel: !!s && getComputedStyle(s).display !== 'none', classe: s && s.className }; }")
+    pg_lic.click('#p')
+    penult = pg_lic.evaluate("() => { const s = document.querySelector('.s.on'); const a = s && s.querySelector('a[rel=license]'); return { nome: s && s.getAttribute('aria-label'), url: a && a.href }; }")
+    G.chk('6.6', 'CC BY: encerramento vazio é o último; licença é o penultimo com URL oficial', total > 1 and final['nome'] == 'Slide %d de %d' % (total, total) and 'encerramento' in (final['classe'] or '') and final['largura'] > 0 and final['visivel'] and penult['url'] == 'https://creativecommons.org/licenses/by/4.0/' and not erros_lic, {'final': final, 'penult': penult})
     c.close()
     # regressão do Windows: o teste de acessibilidade tem de rodar com a saída em cp1252 (console/pipe padrão do Windows)
     r = subprocess.run([sys.executable, str(RAIZ / 'tools' / 'testar_acessibilidade.py'), str(amb.tmp / 'saida_govbr'), '--prefixo', 'Exemplo'],
