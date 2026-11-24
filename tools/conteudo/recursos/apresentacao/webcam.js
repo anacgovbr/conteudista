@@ -8,9 +8,9 @@
      dois dedos (Victory)       → slide anterior
      joinha (Thumb_Up)          → reproduzir/pausar
 */
-var WEBCAM={ativo:false,sessao:0,stream:null,video:null,recognizer:null,ultimo:null,tGesto:0,disparado:false,raf:null,ultimoFrame:0};
+var WEBCAM={ativo:false,sessao:0,stream:null,video:null,recognizer:null,ultimo:null,tGesto:0,disparado:false,tAcao:0,raf:null,ultimoFrame:0};
 var GESTOS={Open_Palm:'next',Victory:'prev','Thumb_Up':'play'};
-var DELAY=700;
+var DELAY=700,COOLDOWN=800;
 
 function _salvar(v){try{localStorage.setItem('conteudista.gerados.webcam',v?'1':'0')}catch(e){}}
 function _salvo(){try{return localStorage.getItem('conteudista.gerados.webcam')==='1'}catch(e){return false}}
@@ -18,15 +18,12 @@ function _salvo(){try{return localStorage.getItem('conteudista.gerados.webcam')=
 function _status(msg){var s=document.getElementById('a11yEstado');if(s)s.textContent=msg}
 
 function _executarGesto(nome){
-  var acao=GESTOS[nome];if(!acao)return;
   var agora=Date.now();
   if(nome!==WEBCAM.ultimo){WEBCAM.ultimo=nome;WEBCAM.tGesto=agora;WEBCAM.disparado=false;return}
-  if(WEBCAM.disparado||agora-WEBCAM.tGesto<DELAY)return;
-  WEBCAM.disparado=true;
-  document.dispatchEvent(new CustomEvent('conteudista:webcam:gesto',{detail:acao}));
-  if(acao==='next'){document.getElementById('n')&&document.getElementById('n').click()}
-  else if(acao==='prev'){document.getElementById('p')&&document.getElementById('p').click()}
-  else if(acao==='play'){document.getElementById('bp')&&document.getElementById('bp').click()}
+  var acao=GESTOS[nome];
+  if(!acao||WEBCAM.disparado||agora-WEBCAM.tGesto<DELAY||agora-WEBCAM.tAcao<COOLDOWN)return;
+  WEBCAM.disparado=true;WEBCAM.tAcao=agora;
+  document.dispatchEvent(new CustomEvent('conteudista:cmd',{detail:acao}));
 }
 
 function _loop(){
@@ -35,12 +32,10 @@ function _loop(){
     var now=performance.now();
     if(now-WEBCAM.ultimoFrame<100){WEBCAM.raf=requestAnimationFrame(_loop);return}
     WEBCAM.ultimoFrame=now;
-    var r=WEBCAM.recognizer.recognizeForVideo(WEBCAM.video,now);
-    if(r&&r.gestures&&r.gestures.length>0){
-      var g=r.gestures[0][0];
-      if(g&&g.score>0.82)_executarGesto(g.categoryName);
-      else{WEBCAM.ultimo=null;WEBCAM.disparado=false}
-    }else{WEBCAM.ultimo=null;WEBCAM.disparado=false}
+    var r=WEBCAM.recognizer.recognizeForVideo(WEBCAM.video,now),g=r&&r.gestures&&r.gestures[0]&&r.gestures[0][0];
+    /* toda categoria (inclusive None) conta como quadro: trocar de gesto rearma o disparo */
+    if(g&&g.score>0.7)_executarGesto(g.categoryName);
+    else{WEBCAM.ultimo=null;WEBCAM.disparado=false}
   }catch(ex){_status('Erro ao reconhecer gesto: '+ex.message);desativar();return}
   WEBCAM.raf=requestAnimationFrame(_loop);
 }

@@ -315,7 +315,7 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
     hud+=IMP_DLG
     hud+=('<dialog id="dremote" class="a11y-panel" aria-labelledby="dremoteT">'
           '<header><h2 id="dremoteT" tabindex="-1">Controle remoto</h2>'
-          '<button type="button" class="sec" id="dremoteC">Fechar</button></header>'
+          '<button type="button" class="sec" id="dremoteX">Desligar</button><button type="button" class="sec" id="dremoteC">Fechar</button></header>'
           '<div class="a11y-corpo">'
           '<p>Escaneie o código com o celular para controlar a apresentação.</p>'
           '<div style="text-align:center;margin:12px 0"><img id="dremoteQR" alt="QR Code" style="width:200px;height:200px;border:1px solid #ccc"></div>'

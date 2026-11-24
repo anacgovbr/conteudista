@@ -66,26 +66,37 @@ function atualizarDica(){if(dAlvo&&dica&&!dica.hidden){dica.textContent=dAlvo.ge
 [].slice.call(hud.querySelectorAll('button[data-dica]')).concat(b2?[b2]:[]).forEach(function(b){b.addEventListener('pointerenter',function(e){if(e.pointerType!=='mouse')return;clearTimeout(dT);clearTimeout(dH);dT=setTimeout(function(){mostrarDica(b)},300)});b.addEventListener('pointerleave',function(){clearTimeout(dT);esconderDica(false)});b.addEventListener('focus',function(){var fv=false;try{fv=b.matches(':focus-visible')}catch(x){}if(fv)mostrarDica(b)});b.addEventListener('blur',function(){esconderDica(true)});b.addEventListener('click',function(){esconderDica(true)})});
 if(dica)dica.addEventListener('pointerleave',function(){esconderDica(false)});
 function clique(id,fn){var b=$(id);if(b)b.addEventListener('click',function(e){fn(e);mostrar()})}
-/* Sinalização via PeerJS; comandos e estado seguem pelo WebRTC DataChannel. */
-var REMOTE={peer:null,conn:null,carregando:{}};
-var REMOTE_PAGINA='https://anacgovbr.github.io/conteudista/controle-remoto.html';
+/* Controle remoto: o celular fala com a apresentacao por um relay HTTPS (ntfy) e as mensagens vao cifradas (AES-GCM);
+   a chave so viaja no fragmento do QR Code, que o navegador nao envia a servidor nenhum.
+   shortcut: o ntfy.sh publico limita ~250 mensagens/dia por IP; em uso institucional hospede um ntfy proprio e defina window.CONTEUDISTA_RELAY. */
+var REMOTE={es:null,topic:null,key:null,url:null,conectado:false,carregando:{}};
+var RELAY=window.CONTEUDISTA_RELAY||'https://ntfy.sh',REMOTE_PAGINA='https://anacgovbr.github.io/conteudista/controle-remoto.html';
 function _remoteStatus(t){var x=$('dremoteSt');if(x)x.textContent=t}
-function _remoteId(){var a=new Uint8Array(18);crypto.getRandomValues(a);return Array.from(a,function(x){return x.toString(16).padStart(2,'0')}).join('')}
-function _remoteScript(url,global){if(window[global])return Promise.resolve();if(REMOTE.carregando[url])return REMOTE.carregando[url];REMOTE.carregando[url]=new Promise(function(ok,no){var s=D.createElement('script');s.src=url;s.async=true;s.onload=function(){window[global]?ok():no(Error('Biblioteca indisponível: '+global))};s.onerror=function(){no(Error('Falha ao carregar '+global+'. Verifique a internet.'))};D.head.appendChild(s)});return REMOTE.carregando[url]}
-function _remoteEnviarEstado(c){c=c||REMOTE.conn;if(!c||!c.open)return;var s=S[i],h=s&&s.querySelector('h1,h2,h3'),n=s&&s.querySelector('.nt-x');c.send({type:'state',slide:i+1,total:N,title:h?h.textContent.trim():'',notes:n?n.textContent.trim():'',previous:i>0,next:i<N-1})}
-function _remoteReceber(m){if(!m||m.type!=='command')return;if(m.command==='next')proximo();else if(m.command==='prev')anterior()}
-function _remoteFechar(){if(REMOTE.conn){REMOTE.conn.close();REMOTE.conn=null}if(REMOTE.peer){REMOTE.peer.destroy();REMOTE.peer=null}var d=$('dremote');if(d&&d.open)d.close()}
+function _b64(u){var s='';u.forEach(function(b){s+=String.fromCharCode(b)});return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function _ub64(t){var s=atob(t.replace(/-/g,'+').replace(/_/g,'/')),u=new Uint8Array(s.length);for(var k=0;k<s.length;k++)u[k]=s.charCodeAt(k);return u}
+function _cifrar(o){var iv=crypto.getRandomValues(new Uint8Array(12));return crypto.subtle.encrypt({name:'AES-GCM',iv:iv},REMOTE.key,new TextEncoder().encode(JSON.stringify(o))).then(function(c){var u=new Uint8Array(12+c.byteLength);u.set(iv);u.set(new Uint8Array(c),12);return _b64(u)})}
+function _decifrar(t){var u=_ub64(t);return crypto.subtle.decrypt({name:'AES-GCM',iv:u.slice(0,12)},REMOTE.key,u.slice(12)).then(function(p){return JSON.parse(new TextDecoder().decode(p))})}
+function _remoteScript(url,global){if(window[global])return Promise.resolve();if(REMOTE.carregando[url])return REMOTE.carregando[url];REMOTE.carregando[url]=new Promise(function(ok,no){var s=D.createElement('script');s.src=url;s.async=true;s.onload=function(){window[global]?ok():no(Error('Biblioteca indispon\u00edvel: '+global))};s.onerror=function(){no(Error('Falha ao carregar o gerador de QR Code. Verifique a internet.'))};D.head.appendChild(s)});return REMOTE.carregando[url]}
+function _remoteEnviarEstado(){if(!REMOTE.key||!REMOTE.conectado)return;var s=S[i],h=s&&s.querySelector('h1,h2,h3'),n=s&&s.querySelector('.nt-x');_cifrar({slide:i+1,total:N,title:h?h.textContent.trim():'',notes:(n?n.textContent.trim():'').slice(0,1200)}).then(function(m){fetch(RELAY+'/'+REMOTE.topic+'-s',{method:'POST',body:m}).catch(function(){})})}
+function _remoteReceber(m){if(!m||!m.c)return;if(!REMOTE.conectado){REMOTE.conectado=true;_remoteStatus('Celular conectado.')}if(m.c==='hello')_remoteEnviarEstado();else D.dispatchEvent(new CustomEvent('conteudista:cmd',{detail:m.c}))}
+function _remoteDesligar(){if(REMOTE.es)REMOTE.es.close();REMOTE.es=REMOTE.key=REMOTE.topic=REMOTE.url=null;REMOTE.conectado=false;var q=$('dremoteQR');if(q)q.removeAttribute('src');_remoteStatus('Controle remoto desligado.')}
+function _remoteMostrar(){_remoteScript('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js','qrcode').then(function(){if(!REMOTE.url)return;var q=qrcode(0,'M');q.addData(REMOTE.url);q.make();$('dremoteQR').src=q.createDataURL(6);$('dremoteQR').alt='QR Code para abrir o controle remoto no celular';var a=$('dremoteLink');a.href=REMOTE.url;a.textContent=REMOTE.url;_remoteStatus(REMOTE.conectado?'Celular conectado.':'Escaneie o QR Code com o celular. Pode fechar esta janela: o controle continua ativo.')}).catch(function(e){_remoteStatus(e.message)})}
+function _remoteIniciar(){
+  if(!(window.crypto&&crypto.subtle)){_remoteStatus('Este navegador n\u00e3o permite o controle remoto (sem criptografia).');return}
+  var topic=_b64(crypto.getRandomValues(new Uint8Array(16)));
+  crypto.subtle.generateKey({name:'AES-GCM',length:128},true,['encrypt','decrypt']).then(function(k){REMOTE.key=k;return crypto.subtle.exportKey('raw',k)}).then(function(raw){
+    REMOTE.topic=topic;REMOTE.url=REMOTE_PAGINA+'#'+topic+'.'+_b64(new Uint8Array(raw));
+    var es=REMOTE.es=new EventSource(RELAY+'/'+topic+'-c/sse');
+    es.onmessage=function(e){var j;try{j=JSON.parse(e.data)}catch(x){return}if(j.event!=='message')return;_decifrar(j.message).then(_remoteReceber).catch(function(){})};
+    _remoteMostrar()
+  }).catch(function(e){_remoteStatus('N\u00e3o foi poss\u00edvel iniciar o controle remoto: '+e.message)})
+}
 function abrirControleRemoto(){
   var d=$('dremote');if(!d)return;fecharSilencioso();setEstado('dialog-open');cancelarInatividade();if(!d.open)d.showModal();$('dremoteC').focus();
-  if(REMOTE.peer)return;_remoteStatus('Conectando ao serviço de pareamento…');
-  Promise.all([_remoteScript('https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js','Peer'),_remoteScript('https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js','qrcode')]).then(function(){
-    if(!d.open)return;var p=REMOTE.peer=new Peer(_remoteId(),{host:'0.peerjs.com',port:443,path:'/',secure:true});
-    p.on('open',function(id){if(REMOTE.peer!==p)return;var url=REMOTE_PAGINA+'#'+encodeURIComponent(id),q=qrcode(0,'M');q.addData(url);q.make();$('dremoteQR').src=q.createDataURL(6);$('dremoteQR').alt='QR Code para abrir o controle remoto no celular';var a=$('dremoteLink');a.href=url;a.textContent=url;_remoteStatus('Escaneie o QR Code para parear o celular.')});
-    p.on('connection',function(c){if(REMOTE.conn&&REMOTE.conn.open){c.close();return}REMOTE.conn=c;c.on('open',function(){_remoteStatus('Celular conectado via WebRTC.');_remoteEnviarEstado(c)});c.on('data',_remoteReceber);c.on('close',function(){if(REMOTE.conn===c){REMOTE.conn=null;_remoteStatus('Celular desconectado.')}})});
-    p.on('disconnected',function(){if(!p.destroyed)p.reconnect()});p.on('error',function(e){_remoteStatus('Falha no pareamento: '+(e.message||'erro de conexão'))});
-  }).catch(function(e){_remoteStatus(e.message)});
+  if(REMOTE.url)_remoteMostrar();else{_remoteStatus('Gerando o c\u00f3digo.');_remoteIniciar()}
 }
 D.addEventListener('conteudista:slide',function(){_remoteEnviarEstado()});
+D.addEventListener('conteudista:cmd',function(e){var a=e.detail;if(a==='next')proximo();else if(a==='prev')anterior();else if(a==='play')reproduzir();mostrar()});
 clique('p',anterior);clique('n',proximo);clique('bp',reproduzir);clique('b1',nt);clique('b2',fs);clique('b2m',fs);clique('cbtn',abrirPick);clique('bLer',function(){modo(!ler(),true);fecharCamadas(bmais)});clique('imp',function(){abrirImp()});clique('bRemote',abrirControleRemoto);clique('bmais',alternarMenu);
 D.addEventListener('pointerdown',function(e){if(aberta())return;setEntrada(e.pointerType||'mouse');var dentro=!!(e.target&&e.target.closest&&e.target.closest('#hud,#b2,#dica'));if(camadaAberta()&&!dentro)fecharCamadas(null);if(e.pointerType==='touch'||e.pointerType==='pen'){if(UI.estado==='hidden'){e.preventDefault();mostrar(e.pointerType);UI.ponteiro=null;return}UI.ponteiro={id:e.pointerId,x:e.clientX,y:e.clientY,t:Date.now(),ignorar:!!e.target.closest('#hud,#b2,button,a,input,select,textarea,[contenteditable],.rola')}}else mostrar('mouse')},{passive:false});
 D.addEventListener('pointermove',function(e){if(e.pointerType==='mouse'){mostrar('mouse');return}if(UI.ponteiro&&UI.ponteiro.id===e.pointerId)UI.ponteiro.mx=e.clientX,UI.ponteiro.my=e.clientY},{passive:true});
@@ -152,10 +163,9 @@ var h=parseInt(location.hash.slice(1));i=isNaN(h)?0:Math.max(0,Math.min(N-1,h-1)
 var dremote=D.getElementById('dremote');
 if(dremote){
   dremote.addEventListener('close',function(){setEstado('visible');if(bmais)bmais.focus();programarInatividade()});
-  dremote.addEventListener('cancel',function(e){e.preventDefault();_remoteFechar()});
-  var dremoteC=D.getElementById('dremoteC');
-  if(dremoteC)dremoteC.addEventListener('click',function(){_remoteFechar();setEstado('visible');if(bmais)bmais.focus();programarInatividade()});
-  dremote.addEventListener('pointerdown',function(e){if(e.target===dremote)_remoteFechar()});
-  dremote.addEventListener('keydown',function(e){if(e.key==='Escape'){e.preventDefault();e.stopPropagation();_remoteFechar()}e.stopPropagation()});
+  $('dremoteC').addEventListener('click',function(){dremote.close()});
+  $('dremoteX').addEventListener('click',function(){_remoteDesligar();dremote.close()});
+  dremote.addEventListener('pointerdown',function(e){if(e.target===dremote)dremote.close()});
+  dremote.addEventListener('keydown',function(e){e.stopPropagation()});
 }
 })();

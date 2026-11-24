@@ -45,6 +45,33 @@ def grupo5(amb, ctx, G):
     G.chk('5.8', 'Catálogo dos temas embutidos igual no gerador e no editor',
           json.loads(ler('tools/conteudo/recursos/temas/padroes.json')) == json.loads(ler('web/config/temas.json')))
 
+def _relay_falso():
+    "Relay local no formato do ntfy (POST /topico, GET /topico/sse), s\u00f3 para o teste do controle remoto."
+    import queue, threading
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    topicos, gravado = {}, []
+    class H(BaseHTTPRequestHandler):
+        def log_message(self, *a): pass
+        def _cors(self): self.send_header('Access-Control-Allow-Origin', '*'); self.send_header('Access-Control-Allow-Headers', '*')
+        def do_OPTIONS(self): self.send_response(200); self._cors(); self.end_headers()
+        def do_POST(self):
+            corpo = self.rfile.read(int(self.headers.get('Content-Length', 0))).decode('utf-8'); gravado.append(corpo)
+            for q in list(topicos.get(self.path.strip('/'), [])): q.put(corpo)
+            self.send_response(200); self._cors(); self.end_headers(); self.wfile.write(b'{}')
+        def do_GET(self):
+            nome = self.path.strip('/').rsplit('/sse', 1)[0]; q = queue.Queue(); topicos.setdefault(nome, []).append(q)
+            self.send_response(200); self._cors(); self.send_header('Content-Type', 'text/event-stream'); self.end_headers()
+            try:
+                self.wfile.write(b'event: open\ndata: {"event":"open"}\n\n'); self.wfile.flush()
+                while True:
+                    try: m = q.get(timeout=10)
+                    except queue.Empty: self.wfile.write(b'event: keepalive\ndata: {}\n\n'); self.wfile.flush(); continue
+                    self.wfile.write(('data: ' + json.dumps({'event': 'message', 'message': m}) + '\n\n').encode('utf-8')); self.wfile.flush()
+            except Exception: pass
+            finally: topicos[nome].remove(q)
+    srv = ThreadingHTTPServer(('127.0.0.1', 0), H); threading.Thread(target=srv.serve_forever, daemon=True).start()
+    return srv, gravado
+
 def grupo6(amb, ctx, G):
     for tema in ('govbr', 'classico'):
         d = amb.tmp / f'saida_{tema}'
@@ -196,6 +223,71 @@ def grupo6(amb, ctx, G):
               m['n'] >= 7 and not m['semAjuda'] and m['apoio'] and m['caixa'] == '24px 4px none' and m['selRaio'] == '4px' and m['botao'] != '0px'
               and w['visivel'] and w['expandido'] == 'true' and all(x in txt for x in ('\U0001F590', '\u270C', '\U0001F44D', 'Chrome', 'Android', 'Safari', 'Edge')) and not erros_p, {'m': m, 'w': w['visivel']})
         c.close()
+    # webcam: gestos repetidos (palma avança várias vezes; joinha alterna reproduzir/pausar), com reconhecedor MediaPipe simulado
+    wc = amb.tmp / 'webcam'; wc.mkdir(exist_ok=True)
+    (wc / 's.md').write_text('\n\n---\n\n'.join('# Slide %d\n\nTexto.' % k for k in range(1, 7)) + '\n', encoding='utf-8')
+    rodar([sys.executable, str(suporte.GERADOR), '-', str(wc / 's.md'), '--prefixo', 'W', '--saida', str(wc / 'o')], cwd=RAIZ)
+    mp_falso = ("export const FilesetResolver={forVisionTasks:async()=>({})};"
+                "export const GestureRecognizer={createFromOptions:async()=>({close(){},recognizeForVideo(){const g=window.__g;return g?{gestures:[[{categoryName:g,score:.95}]]}:{gestures:[]}}})};")
+    c = amb.novo_contexto(viewport={'width': 1280, 'height': 720}); pg_w = c.new_page(); erros_w = []
+    pg_w.on('pageerror', lambda e: erros_w.append(str(e)))
+    pg_w.route('**/vision_bundle.mjs', lambda r: r.fulfill(status=200, content_type='application/javascript', headers={'access-control-allow-origin': '*'}, body=mp_falso))
+    pg_w.add_init_script("navigator.mediaDevices.getUserMedia = async () => { const c = document.createElement('canvas'); c.width = c.height = 16; const x = c.getContext('2d'); setInterval(() => { x.fillStyle = '#' + Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0'); x.fillRect(0, 0, 16, 16); }, 50); return c.captureStream(20); };")
+    pg_w.goto((wc / 'o' / 'Apresentacao_W.html').as_uri()); pg_w.wait_for_timeout(300)
+    pg_w.evaluate("document.querySelector('[data-a11y=webcam]').click()")
+    pg_w.wait_for_function("document.getElementById('a11yEstado').textContent.includes('ativo')", timeout=15000)
+    def gesto(nome, ms):
+        pg_w.evaluate('(n) => { window.__g = n; }', nome); pg_w.wait_for_timeout(ms)
+    slide = lambda: pg_w.evaluate("document.getElementById('c').textContent.trim()")
+    play = lambda: pg_w.evaluate("document.getElementById('bp').getAttribute('aria-label')")
+    pg_w.wait_for_timeout(3500)  # barra de controles já recolhida: o gesto não pode depender dela
+    for _ in range(3):
+        gesto('Open_Palm', 1300); gesto('None', 500)
+    gesto('', 300)
+    avancou = slide()
+    estados = []
+    for _ in range(3):
+        gesto('Thumb_Up', 1300); estados.append(play()); gesto('None', 500)
+    gesto('', 300)
+    G.chk('6.15', 'Webcam: palma avan\u00e7a em cada repeti\u00e7\u00e3o e joinha alterna reproduzir/pausar sem depender da barra',
+          avancou == 'Slide 4 de 6' and estados == ['Pausar apresenta\u00e7\u00e3o', 'Reproduzir apresenta\u00e7\u00e3o', 'Pausar apresenta\u00e7\u00e3o'] and not erros_w,
+          {'slide': avancou, 'play': estados, 'erros': erros_w})
+    c.close()
+    # controle remoto: celular controla a apresentação por relay HTTPS com mensagens cifradas, mesmo com o diálogo do QR fechado
+    rl_srv, gravado = _relay_falso(); relay = 'http://127.0.0.1:%d' % rl_srv.server_address[1]
+    web_srv, web_url = _servidor(RAIZ / 'web')
+    rm = amb.tmp / 'remoto'; rm.mkdir(exist_ok=True)
+    (rm / 's.md').write_text('# Slide 1\n\nTexto.\n\n<!-- notas: Nota secreta do primeiro slide. -->\n\n---\n\n# Slide 2\n\nTexto.\n\n---\n\n# Slide 3\n\nTexto.\n', encoding='utf-8')
+    rodar([sys.executable, str(suporte.GERADOR), '-', str(rm / 's.md'), '--prefixo', 'R', '--saida', str(rm / 'o')], cwd=RAIZ)
+    det = {}; ok_r = False
+    try:
+        c = amb.novo_contexto(viewport={'width': 1280, 'height': 720}); init = "window.CONTEUDISTA_RELAY='%s';" % relay
+        pres = c.new_page(); pres.add_init_script(init); pres.goto((rm / 'o' / 'Apresentacao_R.html').as_uri()); pres.wait_for_timeout(300)
+        pres.evaluate("document.getElementById('bRemote').click()")
+        pres.wait_for_function("document.getElementById('dremoteLink').href.includes('controle-remoto.html#')", timeout=15000)
+        hash_r = pres.evaluate("new URL(document.getElementById('dremoteLink').href).hash"); base_cel = web_url.rsplit('/', 1)[0] + '/controle-remoto.html'
+        cel = c.new_page(); cel.add_init_script(init); cel.goto(base_cel + hash_r)
+        cel.wait_for_function("document.getElementById('status').textContent.includes('Conectado')", timeout=15000)
+        pres.wait_for_function("document.getElementById('dremoteSt').textContent.includes('onectado')", timeout=10000)
+        pres.click('#dremoteC'); pres.wait_for_timeout(300)  # fechar o diálogo não pode derrubar o controle
+        det['notas'] = 'Nota secreta do primeiro slide.' in cel.evaluate("document.getElementById('notes').textContent")
+        cel.click('#next'); pres.wait_for_function("document.getElementById('c').textContent.includes('Slide 2 de 3')", timeout=10000)
+        cel.wait_for_function("document.getElementById('slide').textContent.includes('Slide 2 de 3')", timeout=10000)
+        cel.click('#play'); pres.wait_for_function("document.getElementById('bp').getAttribute('aria-label').startsWith('Pausar')", timeout=10000); cel.click('#play')
+        pres.wait_for_function("document.getElementById('bp').getAttribute('aria-label').startsWith('Reproduzir')", timeout=10000)
+        cel.click('#prev'); pres.wait_for_function("document.getElementById('c').textContent.includes('Slide 1 de 3')", timeout=10000)
+        imp = c.new_page(); imp.add_init_script(init); imp.goto(base_cel + '#' + hash_r[1:].split('.')[0] + '.AAAAAAAAAAAAAAAAAAAAAA'); imp.wait_for_timeout(800)
+        imp.evaluate("document.getElementById('next').disabled = false; document.getElementById('next').click()"); imp.wait_for_timeout(1500)
+        det['impostor_ignorado'] = pres.evaluate("document.getElementById('c').textContent").strip() == 'Slide 1 de 3'
+        det['relay_so_cifrado'] = len(gravado) >= 4 and not any('Nota secreta' in m or 'Slide' in m for m in gravado)
+        det['sem_peerjs'] = 'peerjs' not in (rm / 'o' / 'Apresentacao_R.html').read_text(encoding='utf-8').lower()
+        ok_r = all(det.values())
+        c.close()
+    except Exception as ex:
+        det['erro'] = str(ex)[:300]
+    finally:
+        rl_srv.shutdown(); web_srv.shutdown()
+    G.chk('6.16', 'Controle remoto: celular controla (próximo, anterior, reproduzir), v\u00ea as notas, ignora chave errada, relay s\u00f3 v\u00ea texto cifrado e o di\u00e1logo pode ser fechado', ok_r, det)
     # regressão do Windows: o teste de acessibilidade tem de rodar com a saída em cp1252 (console/pipe padrão do Windows)
     r = subprocess.run([sys.executable, str(RAIZ / 'tools' / 'testar_acessibilidade.py'), str(amb.tmp / 'saida_govbr'), '--prefixo', 'Exemplo'],
                        capture_output=True, env=dict(os.environ, PYTHONIOENCODING='cp1252', PYTHONUTF8='0'), cwd=RAIZ)
