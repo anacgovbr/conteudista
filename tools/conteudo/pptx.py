@@ -57,13 +57,15 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
         L=px(pos.get('margem',60));CW=W-2*L
     n_original=len(sl)
     licenca_blocos = licencas.blocos_slide(licenca)
+    antes=bool(licenca_blocos) and n_original>1
     if licenca_blocos:
-        sl = list(sl) + [('licenciamento', licenca_blocos, '')]
+        sl = list(sl[:-1] if antes else sl) + [('licenciamento', licenca_blocos, '')] + (list(sl[-1:]) if antes else [])  # licença penúltima; o slide final vem depois
+        if papeis and antes:papeis=papeis[:-2]+[papeis[-1],papeis[-2]]
     pasta_modelo=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),'temas',modelo) if modelo else ''
     def fundo_anac(s,idx,cls):
         if not modelo:return False
         if cls=='title' and idx==0:nome='capa.png'
-        elif cls=='title' and idx==n_original-1:nome='encerramento.png'
+        elif cls=='title' and idx==len(sl)-1:nome='encerramento.png'
         else:return False
         cam=os.path.join(pasta_modelo,nome)
         if os.path.isfile(cam):alt_pic(s.shapes.add_picture(cam,0,0,width=Inches(W),height=Inches(7.5)),'',True);return True
@@ -184,6 +186,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                     if cls=='highlight':rect(s,0,0,W,7.5,C('F2F7FC'))
                     rect(s,0,0,0.15,7.5,PRI)
         h1=[b for b in bl if b[0]=='h' and b[1]==1];rest=[b for b in bl if not(b[0]=='h' and b[1]==1)]
+        if modelo and istitle and idx==len(sl)-1:h1=[];rest=[]  # slide final ANAC sem texto
         if istitle:
             sub=[b for b in rest if b[0]=='h'];body=[b for b in rest if b[0]!='h'];y=2.2
             if custom:
@@ -228,8 +231,9 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
             ntf=s.notes_slide.notes_text_frame;ntf.text=notes
             for pp in ntf.paragraphs:
                 for rr in pp.runs:rr.font.language_id=PT_BR
-        if audios and idx<n_original and idx in audios:
-            try:_pptx_audio(s,audios[idx],W,avancar,(duracoes or {}).get(idx))
+        ai=None if antes and idx==n_original-1 else (n_original-1 if antes and idx==n_original else idx)
+        if audios and ai is not None and ai<n_original and ai in audios:
+            try:_pptx_audio(s,audios[ai],W,avancar,(duracoes or {}).get(ai))
             except Exception as e:print('AVISO: narração do slide %d não incluída no PPTX: %s'%(idx+1,e))
     P.core_properties.title=t;P.core_properties.language='pt-BR';P.save(path)
 

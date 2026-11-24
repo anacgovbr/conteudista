@@ -129,7 +129,7 @@ def grupo6(amb, ctx, G):
     G.chk('6.4', 'CC BY: CLI gera o aviso final da Apostila e um slide final com URL oficial',
           r.returncode == 0 and md_g.exists() and md_s.exists() and conteudo_g.count('class="licenciamento"') == 1
           and conteudo_g.index('class="licenciamento"') < conteudo_g.index('</article>')
-          and conteudo_s.count('aria-label="Slide 41 de 42"') == 1
+          and conteudo_s.count('aria-label="Slide 41 de 41"') == 1
           and 'https://creativecommons.org/licenses/by/4.0/' in conteudo_s
           and (lic / 'Apostila_Licenca.docx').exists() and (lic / 'Apostila_Licenca.epub').exists()
           and (lic / 'Apresentacao_Licenca.pptx').exists(), (r.stderr or r.stdout)[-300:])
@@ -141,12 +141,31 @@ def grupo6(amb, ctx, G):
     pg_lic.on('pageerror', lambda e: erros_lic.append(str(e)))
     pg_lic.goto(html_s.as_uri()); pg_lic.wait_for_timeout(500)
     total = pg_lic.locator('.s').count()
-    for _ in range(total - 1): pg_lic.click('#n')
-    final = pg_lic.evaluate("() => { const s = document.querySelector('.s.on'); const r = s && s.getBoundingClientRect(); return { nome: s && s.getAttribute('aria-label'), largura: r && r.width, altura: r && r.height, visivel: !!s && getComputedStyle(s).display !== 'none', classe: s && s.className }; }")
-    pg_lic.click('#p')
-    penult = pg_lic.evaluate("() => { const s = document.querySelector('.s.on'); const a = s && s.querySelector('a[rel=license]'); return { nome: s && s.getAttribute('aria-label'), url: a && a.href }; }")
-    G.chk('6.6', 'CC BY: encerramento vazio é o último; licença é o penultimo com URL oficial', total > 1 and final['nome'] == 'Slide %d de %d' % (total, total) and 'encerramento' in (final['classe'] or '') and final['largura'] > 0 and final['visivel'] and penult['url'] == 'https://creativecommons.org/licenses/by/4.0/' and not erros_lic, {'final': final, 'penult': penult})
+    for _ in range(total - 2): pg_lic.click('#n')  # a licença é a penúltima; o slide final vem depois
+    final = pg_lic.evaluate("() => { const s = document.querySelector('.s.on'); const a = s && s.querySelector('a[rel=license]'); const r = s && s.getBoundingClientRect(); return { nome: s && s.getAttribute('aria-label'), url: a && a.href, largura: r && r.width, altura: r && r.height, visivel: !!s && getComputedStyle(s).display !== 'none' }; }")
+    G.chk('6.6', 'CC BY: o último slide é acessível, visível e navegável no Chrome', total > 1 and final['nome'] == 'Slide %d de %d' % (total - 1, total) and final['url'] == 'https://creativecommons.org/licenses/by/4.0/' and final['largura'] > 0 and final['altura'] > 0 and final['visivel'] and not erros_lic, final)
     c.close()
+    for tema_a in ('anac20-claro', 'anac20-escuro'):
+        da = amb.tmp / f'saida_{tema_a}'
+        rodar([sys.executable, str(suporte.GERADOR), '-', str(EXEMPLO_APRES), '--prefixo', 'A', '--saida', str(da), '--tema', tema_a, '--licenca', 'cc-by-4.0'], cwd=RAIZ)
+        ha = next(da.glob('Apresentacao_A.html'), None)
+        secs = re.findall(r'<section class="s ([^"]*)"[^>]*aria-label="([^"]*)"[^>]*>(.*?)</section>', ha.read_text(encoding='utf-8'), re.S) if ha else []
+        corpo_final = re.search(r'<div class="conteudo">(.*?)</div></div>', secs[-1][2], re.S) if secs else None
+        G.chk(f'6.11-{tema_a}', f'{tema_a}: licen\u00e7a penúltima e slide final sem texto',
+              len(secs) > 2 and 'licenciamento' in secs[-2][0] and 'licenciamento' not in secs[-1][0]
+              and secs[-1][1] == f'Slide {len(secs)} de {len(secs)}' and corpo_final is not None and not corpo_final.group(1).strip(), [s[:2] for s in secs[-3:]])
+    # tabelas dos temas ANAC: mesmo comportamento do govbr (cabeçalho legível e dentro da margem do slide)
+    ta = amb.tmp / 'tabelas_anac'; ta.mkdir(exist_ok=True)
+    (ta / 's.md').write_text('# Capa\n\n---\n\n# Tabela\n\n| A | B | C |\n|---|---|---|\n| 1 | 2 | 3 |\n\n---\n\n# Fim\n', encoding='utf-8')
+    for tema_t in ('govbr', 'anac20-claro', 'anac20-escuro'):
+        rodar([sys.executable, str(suporte.GERADOR), '-', str(ta / 's.md'), '--prefixo', 'T', '--saida', str(ta / tema_t), '--tema', tema_t], cwd=RAIZ)
+        c = amb.novo_contexto(viewport={'width': 1280, 'height': 720}); pg_t = c.new_page()
+        pg_t.goto((ta / tema_t / 'Apresentacao_T.html').as_uri()); pg_t.wait_for_timeout(400); pg_t.click('#n'); pg_t.wait_for_timeout(300)
+        m = pg_t.evaluate("""() => { const rgb = x => x.match(/\\d+/g).slice(0, 3).map(Number), lum = v => { const f = rgb(v).map(n => { n /= 255; return n <= .03928 ? n / 12.92 : ((n + .055) / 1.055) ** 2.4; }); return .2126 * f[0] + .7152 * f[1] + .0722 * f[2]; };
+            const th = getComputedStyle(document.querySelector('.s.on th')), a = lum(th.color), b = lum(th.backgroundColor), i = (s => ({ right: s.right - 60 * s.width / 1280 }))(document.querySelector('.s.on').getBoundingClientRect()), r = document.querySelector('.s.on table').getBoundingClientRect(), h = document.querySelector('.s.on h1').getBoundingClientRect();
+            return { contraste: (Math.max(a, b) + .05) / (Math.min(a, b) + .05), foraDireita: Math.round(r.right - i.right), h1Direita: Math.round(h.right - i.right) }; }""")
+        G.chk(f'6.12-{tema_t}', f'Tabela {tema_t}: cabeçalho com contraste mínimo de 4,5:1 e dentro da margem do slide', m['contraste'] >= 4.5 and m['foraDireita'] <= 1 and m['h1Direita'] <= 1, m)
+        c.close()
     # regressão do Windows: o teste de acessibilidade tem de rodar com a saída em cp1252 (console/pipe padrão do Windows)
     r = subprocess.run([sys.executable, str(RAIZ / 'tools' / 'testar_acessibilidade.py'), str(amb.tmp / 'saida_govbr'), '--prefixo', 'Exemplo'],
                        capture_output=True, env=dict(os.environ, PYTHONIOENCODING='cp1252', PYTHONUTF8='0'), cwd=RAIZ)

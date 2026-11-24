@@ -187,11 +187,11 @@ def _anac_html_css(tema,n,licenciada=False):
     imgs=[data('capa.png'),'','',data('encerramento.png')]
     escuro=tema=='anac20-escuro'; tinta='#ffffff' if escuro else '#193f52'; mut='#dce8ee' if escuro else '#526d7c'
     regras=['.s{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:%s!important}'%tinta,
-      '.s h1,.s h2,.s h3,.s p,.s li{color:%s!important}.s .in{position:relative;z-index:1}.s:not(.title) .in{padding-top:1.2vh}'%tinta,
-      '.s table{background:rgba(255,255,255,.94);color:#193f52}.s table *{color:#193f52!important}.s .nt{color:%s!important}'%mut]
+      '.s h1,.s h2,.s h3,.s p,.s li{color:%s!important}.s .in{z-index:1}.s:not(.title) .in{padding-top:1.2vh}'%tinta,
+      '.s table{background:rgba(255,255,255,.94);color:#193f52}.s td,.s td *{color:#193f52!important}.s .nt{color:%s!important}'%mut]
     n_original=n-1 if licenciada else n
     for i in range(n):
-        fundo=imgs[1 if i%2 else 2] if licenciada and i==n-1 else imgs[0] if i==0 else imgs[3] if i==n_original-1 else imgs[1 if i%2 else 2]
+        fundo=imgs[1 if i%2 else 2] if licenciada and i==n-2 else imgs[0] if i==0 else imgs[3] if i==n-1 else imgs[1 if i%2 else 2]
         if fundo:regras.append('.s:nth-child(%d){background-image:url("%s")!important}'%(i+1,fundo))
     if escuro:regras.append('.s.title .in{margin-left:37%;width:58%}.s.title h1{color:#fff!important}')
     else:regras.append('.s.title .in{margin-left:37%;width:58%}.s.title h1{color:#193f52!important}')
@@ -248,26 +248,26 @@ def _ic(k,cls=''):
 
 def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True,licenca=''):
     """Monta o HTML da apresentação (com ou sem narração): ARIA, leitura, modo leitura, auto-ajuste e impressão A4."""
-    _TB[0]=0;T=tema_de(tema);n_original=len(sl);n=n_original+bool(licenca)+1;secs=[]
+    _TB[0]=0;T=tema_de(tema);n_original=len(sl);n=n_original+bool(licenca);secs=[]
     papeis=papeis_slides(sl,bool(licenca))
+    anac=str(tema or '').startswith('anac20-');antes=bool(licenca) and n_original>1  # licença penúltima; com 1 slide ela segue no fim
     for k,(c,b,nt) in enumerate(sl):
-        rot='Slide %d de %d'%(k+1,n)
+        ultimo=k==n_original-1;rot='Slide %d de %d'%(k+1+(antes and ultimo),n)
         nota='<aside class="nt" role="note" aria-label="Notas do apresentador"><p class="nt-t">Notas do apresentador</p><p class="nt-x">%s</p></aside>'%E(nt) if (nt or '').strip() else ''
         legenda='<p class="a11y-caption">%s</p>'%E(nt) if audios and k in audios and (nt or '').strip() else ''
-        secs.append('<section class="s %s papel-%s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,papeis[k].replace('_','-'),rot,rot,html_of(b,None,None,paleta(T)),nota,legenda))
+        secs.append('<section class="s %s papel-%s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,papeis[k].replace('_','-'),rot,rot,'' if anac and ultimo else html_of(b,None,None,paleta(T)),nota,legenda))
     aviso_licenca=licencas.aviso_slide_html(licenca)
     if aviso_licenca:
-        rot='Slide %d de %d'%(n-1,n)
-        secs.append('<section class="s licenciamento papel-licenciamento" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div></section>'%(rot,rot,aviso_licenca))
-    rot='Slide %d de %d'%(n,n)
-    secs.append('<section class="s title papel-finalizacao papel-encerramento" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo"></div></div></section>'%(rot,rot))
+        rot='Slide %d de %d'%(n-antes,n)
+        secs.insert(len(secs)-antes,'<section class="s licenciamento papel-licenciamento" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div></section>'%(rot,rot,aviso_licenca))
     o=_fluxos_img(''.join(secs),fluxos)
-    css=fontes_css()+tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+_anac_html_css(tema,n,bool(licenca))+licencas.CSS
+    css=fontes_css()+tcss(CSS_S.replace('__F__',foot.replace('"','')),T,T['extra_s'])+_anac_html_css(tema,n,antes)+licencas.CSS
     narr=bool(audios);aud=''
     if narr:
         css+=CSS_NARR
         for k,cam in sorted(audios.items()):
             if 0<=k<n_original:
+                k+=antes and k==n_original-1
                 mime=MIME_AUDIO.get(os.path.splitext(cam)[1].lower(),'audio/mpeg')
                 aud+='<audio class="narr" data-s="%d" preload="auto" src="data:%s;base64,%s"></audio>'%(k,mime,base64.b64encode(open(cam,'rb').read()).decode())
     css+=CSS_S_A11Y+CSS_BPLUS+CSS_ESTREITO+ZOOM_CSS+PAINEL_A11Y_CSS+css_apresentacao(T,papeis)
