@@ -193,6 +193,42 @@ def grupo6(amb, ctx, G):
             return { contraste: (Math.max(a, b) + .05) / (Math.min(a, b) + .05), foraDireita: Math.round(r.right - i.right), h1Direita: Math.round(h.right - i.right) }; }""")
         G.chk(f'6.12-{tema_t}', f'Tabela {tema_t}: cabeçalho com contraste mínimo de 4,5:1 e dentro da margem do slide', m['contraste'] >= 4.5 and m['foraDireita'] <= 1 and m['h1Direita'] <= 1, m)
         c.close()
+    # Matriz de tabelas: geometria, overflow e zoom iguais ao GOVBR em desktop/celular.
+    mt = amb.tmp / 'matriz_tabelas'; mt.mkdir(exist_ok=True)
+    img = mt / 'pixel.png'; img.write_bytes((RAIZ / 'tools' / 'temas' / 'anac20-claro' / 'conteudo-a.png').read_bytes())
+    longo = 'Texto longo para verificar quebra automática e largura da tabela. ' * 8
+    casos = [
+        ('simples', '| Código | Descrição | Estado |\n|---|---|---|\n| A1 | Item simples | Ativo |'),
+        ('larga', '| Identificador | Descrição | Responsável | Prazo | Situação |\n|---|---|---|---|---|\n| 001 | %s | Equipe | 30/11 | Análise |' % longo),
+        ('imagem', '| Ícone | Descrição | Estado |\n|---|---|---|\n| ![pixel](pixel.png) | Imagem na célula | Ativo |'),
+        ('texto-longo', '| Campo | Conteúdo |\n|---|---|\n| Texto | %s |' % (longo * 2)),
+        ('muitas-colunas', '|' + '|'.join(f'C{i}' for i in range(1, 15)) + '|\n|' + '|'.join(['---'] * 14) + '|\n|' + '|'.join(str(i) for i in range(1, 15)) + '|'),
+    ]
+    md_m = '# Capa\n\n---\n\n' + '\n\n---\n\n'.join('# %s\n\n%s' % x for x in casos) + '\n\n---\n\n# Encerramento\n'
+    (mt / 'slides.md').write_text(md_m, encoding='utf-8')
+    refs = {}
+    for tema_m in ('govbr', 'anac20-claro', 'anac20-escuro'):
+        dm = mt / tema_m
+        r = rodar([sys.executable, str(suporte.GERADOR), '-', str(mt / 'slides.md'), '--prefixo', 'M', '--saida', str(dm), '--tema', tema_m], cwd=RAIZ)
+        G.chk(f'6.17-{tema_m}-geracao', f'Matriz de tabelas: apresentação {tema_m} gerada', r.returncode == 0 and (dm / 'Apresentacao_M.html').exists())
+        for vp in ({'width': 1280, 'height': 720}, {'width': 390, 'height': 780}):
+            c = amb.novo_contexto(viewport=vp); pg = c.new_page()
+            pg.goto((dm / 'Apresentacao_M.html').as_uri()); pg.wait_for_timeout(250)
+            medidas = []
+            for _nome, _ in casos:
+                pg.click('#n'); pg.wait_for_selector('.s.on .tbl')
+                medidas.append(pg.evaluate("""() => {const w=document.querySelector('.s.on .tbl'),t=w.querySelector('table'),r=x=>{const b=x.getBoundingClientRect();return [b.x,b.y,b.width,b.height].map(v=>Math.round(v*10)/10)};
+                    const antes=r(w);window.ZoomConteudista.zoom(1.5);const depois=r(w);window.ZoomConteudista.zoom(1);
+                    return {wrapper:antes,table:r(t),overflow:w.scrollWidth>w.clientWidth,columns:t.rows[0].cells.length,images:t.querySelectorAll('img').length,zoom:Math.round((depois[2]/antes[2])*100)/100};}"""))
+            chave=f'{vp["width"]}'
+            if tema_m == 'govbr':
+                refs[chave] = medidas
+                ok = len(medidas) == len(casos)
+            else:
+                ok = all(m == ref for m, ref in zip(medidas, refs.get(chave, [])))
+            G.chk(f'6.17-{tema_m}-{chave}', f'Matriz de tabelas {tema_m} ({chave}px): geometria, overflow e zoom iguais ao GOVBR',
+                  len(medidas) == len(casos) and ok, medidas)
+            c.close()
     # capa dos temas ANAC: título dentro da margem e à direita da arte; barra e linha do título em azul (não verde)
     ca = amb.tmp / 'capa_anac'; ca.mkdir(exist_ok=True)
     (ca / 's.md').write_text('<!-- class: title -->\n\n# Conteudista na Prática\n\n## Subtítulo\n\n---\n\n# Fim\n', encoding='utf-8')

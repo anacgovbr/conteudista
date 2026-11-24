@@ -1,0 +1,1102 @@
+{
+  "browser": "Chrome local",
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "width": 390,
+      "height": 780
+    }
+  ],
+  "themes": [
+    "govbr",
+    "anac20-claro",
+    "anac20-escuro"
+  ],
+  "cases": {
+    "simples": {
+      "govbr": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            132.3
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            118.6
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 135,
+          "scrollHeight": 135,
+          "columns": 3,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            88.6
+          ],
+          "table": [
+            19.5,
+            111.7,
+            355.9,
+            78.8
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 438,
+          "clientHeight": 109,
+          "scrollHeight": 109,
+          "columns": 3,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      },
+      "anac20-claro": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            132.3
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            118.6
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 135,
+          "scrollHeight": 135,
+          "columns": 3,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            88.6
+          ],
+          "table": [
+            19.5,
+            111.7,
+            355.9,
+            78.8
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 438,
+          "clientHeight": 109,
+          "scrollHeight": 109,
+          "columns": 3,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      },
+      "anac20-escuro": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            132.3
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            118.6
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 135,
+          "scrollHeight": 135,
+          "columns": 3,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            88.6
+          ],
+          "table": [
+            19.5,
+            111.7,
+            355.9,
+            78.8
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 438,
+          "clientHeight": 109,
+          "scrollHeight": 109,
+          "columns": 3,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      }
+    },
+    "larga": {
+      "govbr": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            205.8
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            192.1
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 210,
+          "scrollHeight": 210,
+          "columns": 5,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            106.6,
+            355.9,
+            595
+          ],
+          "table": [
+            19.5,
+            109.7,
+            412.7,
+            585.6
+          ],
+          "clientWidth": 455,
+          "scrollWidth": 528,
+          "clientHeight": 761,
+          "scrollHeight": 761,
+          "columns": 5,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      },
+      "anac20-claro": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            205.8
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            192.1
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 210,
+          "scrollHeight": 210,
+          "columns": 5,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            106.6,
+            355.9,
+            595
+          ],
+          "table": [
+            19.5,
+            109.7,
+            412.7,
+            585.6
+          ],
+          "clientWidth": 455,
+          "scrollWidth": 528,
+          "clientHeight": 761,
+          "scrollHeight": 761,
+          "columns": 5,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      },
+      "anac20-escuro": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            205.8
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            192.1
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 210,
+          "scrollHeight": 210,
+          "columns": 5,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            106.6,
+            355.9,
+            595
+          ],
+          "table": [
+            19.5,
+            109.7,
+            412.7,
+            585.6
+          ],
+          "clientWidth": 455,
+          "scrollWidth": 528,
+          "clientHeight": 761,
+          "scrollHeight": 761,
+          "columns": 5,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      }
+    },
+    "imagem": {
+      "govbr": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            93.1
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            79.4
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 95,
+          "scrollHeight": 95,
+          "columns": 3,
+          "images": 1,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            62.6
+          ],
+          "table": [
+            19.5,
+            111.7,
+            355.9,
+            52.8
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 438,
+          "clientHeight": 77,
+          "scrollHeight": 77,
+          "columns": 3,
+          "images": 1,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      },
+      "anac20-claro": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            93.1
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            79.4
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 95,
+          "scrollHeight": 95,
+          "columns": 3,
+          "images": 1,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            62.6
+          ],
+          "table": [
+            19.5,
+            111.7,
+            355.9,
+            52.8
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 438,
+          "clientHeight": 77,
+          "scrollHeight": 77,
+          "columns": 3,
+          "images": 1,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      },
+      "anac20-escuro": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            93.1
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            79.4
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 95,
+          "scrollHeight": 95,
+          "columns": 3,
+          "images": 1,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            62.6
+          ],
+          "table": [
+            19.5,
+            111.7,
+            355.9,
+            52.8
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 438,
+          "clientHeight": 77,
+          "scrollHeight": 77,
+          "columns": 3,
+          "images": 1,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      }
+    },
+    "texto-longo": {
+      "govbr": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            318.5
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            304.8
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 325,
+          "scrollHeight": 325,
+          "columns": 2,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            340.4
+          ],
+          "table": [
+            19.5,
+            111.7,
+            463.9,
+            330.7
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 571,
+          "clientHeight": 419,
+          "scrollHeight": 419,
+          "columns": 2,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      },
+      "anac20-claro": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            318.5
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            304.8
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 325,
+          "scrollHeight": 325,
+          "columns": 2,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            340.4
+          ],
+          "table": [
+            19.5,
+            111.7,
+            463.9,
+            330.7
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 571,
+          "clientHeight": 419,
+          "scrollHeight": 419,
+          "columns": 2,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      },
+      "anac20-escuro": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            318.5
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            304.8
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 325,
+          "scrollHeight": 325,
+          "columns": 2,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            340.4
+          ],
+          "table": [
+            19.5,
+            111.7,
+            463.9,
+            330.7
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 571,
+          "clientHeight": 419,
+          "scrollHeight": 419,
+          "columns": 2,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      }
+    },
+    "muitas-colunas": {
+      "govbr": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            93.1
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            79.4
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 95,
+          "scrollHeight": 95,
+          "columns": 14,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            62.6
+          ],
+          "table": [
+            19.5,
+            111.7,
+            489.3,
+            52.8
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 602,
+          "clientHeight": 77,
+          "scrollHeight": 77,
+          "columns": 14,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      },
+      "anac20-claro": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            93.1
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            79.4
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 95,
+          "scrollHeight": 95,
+          "columns": 14,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            62.6
+          ],
+          "table": [
+            19.5,
+            111.7,
+            489.3,
+            52.8
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 602,
+          "clientHeight": 77,
+          "scrollHeight": 77,
+          "columns": 14,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      },
+      "anac20-escuro": {
+        "1280": {
+          "slide": [
+            12.8,
+            7.2,
+            1254.4,
+            705.6
+          ],
+          "wrapper": [
+            71.6,
+            131.7,
+            1136.8,
+            93.1
+          ],
+          "table": [
+            71.6,
+            135.6,
+            1136.8,
+            79.4
+          ],
+          "clientWidth": 1160,
+          "scrollWidth": 1160,
+          "clientHeight": 95,
+          "scrollHeight": 95,
+          "columns": 14,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        },
+        "390": {
+          "slide": [
+            0,
+            0,
+            390,
+            780
+          ],
+          "wrapper": [
+            19.5,
+            108.5,
+            355.9,
+            62.6
+          ],
+          "table": [
+            19.5,
+            111.7,
+            489.3,
+            52.8
+          ],
+          "clientWidth": 438,
+          "scrollWidth": 602,
+          "clientHeight": 77,
+          "scrollHeight": 77,
+          "columns": 14,
+          "images": 0,
+          "overflow": "auto",
+          "zoom": 1.5,
+          "zoomLevel": 1.5,
+          "errors": []
+        }
+      }
+    }
+  },
+  "comparison": [
+    {
+      "case": "simples",
+      "viewport": 1280,
+      "theme": "anac20-claro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "simples",
+      "viewport": 1280,
+      "theme": "anac20-escuro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "simples",
+      "viewport": 390,
+      "theme": "anac20-claro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "simples",
+      "viewport": 390,
+      "theme": "anac20-escuro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "larga",
+      "viewport": 1280,
+      "theme": "anac20-claro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "larga",
+      "viewport": 1280,
+      "theme": "anac20-escuro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "larga",
+      "viewport": 390,
+      "theme": "anac20-claro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "larga",
+      "viewport": 390,
+      "theme": "anac20-escuro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "imagem",
+      "viewport": 1280,
+      "theme": "anac20-claro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "imagem",
+      "viewport": 1280,
+      "theme": "anac20-escuro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "imagem",
+      "viewport": 390,
+      "theme": "anac20-claro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "imagem",
+      "viewport": 390,
+      "theme": "anac20-escuro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "texto-longo",
+      "viewport": 1280,
+      "theme": "anac20-claro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "texto-longo",
+      "viewport": 1280,
+      "theme": "anac20-escuro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "texto-longo",
+      "viewport": 390,
+      "theme": "anac20-claro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "texto-longo",
+      "viewport": 390,
+      "theme": "anac20-escuro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "muitas-colunas",
+      "viewport": 1280,
+      "theme": "anac20-claro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "muitas-colunas",
+      "viewport": 1280,
+      "theme": "anac20-escuro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "muitas-colunas",
+      "viewport": 390,
+      "theme": "anac20-claro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    },
+    {
+      "case": "muitas-colunas",
+      "viewport": 390,
+      "theme": "anac20-escuro",
+      "sameGeometryOverflowZoom": true,
+      "differentFields": []
+    }
+  ]
+}
