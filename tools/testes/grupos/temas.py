@@ -271,6 +271,25 @@ def grupo25(amb, ctx, G):
         G.chk('25.21', 'Temas embutidos sem cores de significado que se confundem no daltonismo',
               bool(cvd) and all(x['falhas'] == 0 for x in cvd), cvd)
 
+        # Comparacao de dois temas distintos (renderer HTML / temas embutidos).
+        pg.evaluate("Temas.abrir('versoes')")
+        pg.wait_for_selector('#tmVerTemas', timeout=10000)
+        pg.evaluate("""() => {
+            document.getElementById('tmCmpA').value = 'govbr';
+            document.getElementById('tmCmpB').value = 'classico';
+            document.getElementById('tmCmpComparar').click();
+        }""")
+        pg.wait_for_function("document.querySelectorAll('#tmCmpRes .tm-diff tbody tr').length > 0", timeout=10000)
+        cmp = pg.evaluate("""() => ({
+            opcoes: document.getElementById('tmCmpA').options.length,
+            html: [...document.querySelectorAll('#tmCmpA option')].some(o => o.value === 'bold-signal'),
+            linhas: document.querySelectorAll('#tmCmpRes .tm-diff tbody tr').length,
+            selector: [...document.querySelectorAll('#tema optgroup[label="Embutidos"] option')].map(o => o.value)
+        })""")
+        G.chk('25.22', 'Comparar dois temas diferentes na aba Versões sem poluir o seletor do gerador',
+              cmp['opcoes'] >= 16 and cmp['html'] and cmp['linhas'] > 0
+              and set(cmp['selector']) == {'govbr', 'classico', 'anac20-claro', 'anac20-escuro'}, cmp)
+
         G.chk('25.18', 'Nenhum erro de JavaScript durante o fluxo de temas', not erros, erros)
         pg.close()
     finally:
