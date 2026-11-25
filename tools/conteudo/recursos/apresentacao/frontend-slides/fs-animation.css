@@ -1,0 +1,39 @@
+/*
+ * fs-animation.css — reveal dos blocos de conteudo quando o slide fica ativo.
+ * Nao depende de classes adicionadas ao HTML: usa a ordem dos filhos de .conteudo.
+ * O tema define --fs-duration, --fs-ease e --fs-stagger via css_vars_tema().
+ */
+.fs-on .s .conteudo>*{
+  opacity:0;
+  transform:translateY(20px);
+  transition:opacity var(--fs-duration,600ms) var(--fs-ease,ease),
+             transform var(--fs-duration,600ms) var(--fs-ease,ease);
+}
+.fs-on .s.on .conteudo>*{opacity:1;transform:none}
+.fs-on .s.on .conteudo>*:nth-child(1){transition-delay:calc(1 * var(--fs-stagger,100ms))}
+.fs-on .s.on .conteudo>*:nth-child(2){transition-delay:calc(2 * var(--fs-stagger,100ms))}
+.fs-on .s.on .conteudo>*:nth-child(3){transition-delay:calc(3 * var(--fs-stagger,100ms))}
+.fs-on .s.on .conteudo>*:nth-child(4){transition-delay:calc(4 * var(--fs-stagger,100ms))}
+.fs-on .s.on .conteudo>*:nth-child(5){transition-delay:calc(5 * var(--fs-stagger,100ms))}
+.fs-on .s.on .conteudo>*:nth-child(6){transition-delay:calc(6 * var(--fs-stagger,100ms))}
+
+/* reveal=geometric */
+[data-fs-reveal="geometric"] .fs-on .s.on .conteudo>*{
+  clip-path:inset(0 100% 0 0);
+  animation:fs-wipe var(--fs-duration,400ms) var(--fs-ease,ease) forwards;
+}
+@keyframes fs-wipe{to{clip-path:inset(0 0 0 0)}}
+
+/* reveal=glow / bounce / rise / cursor / instant: variacoes economicas sobre a mesma base */
+[data-fs-reveal="glow"] .fs-on .s.on .conteudo>*{filter:drop-shadow(0 0 10px var(--token-accent-color,transparent))}
+[data-fs-reveal="bounce"] .fs-on .s.on .conteudo>*{transition-timing-function:cubic-bezier(0.34,1.56,0.64,1)}
+[data-fs-reveal="rise"] .fs-on .s .conteudo>*{transform:translateY(36px)}
+[data-fs-reveal="rise"] .fs-on .s.on .conteudo>*{transform:none}
+[data-fs-reveal="instant"] .fs-on .conteudo>*{opacity:1;transform:none;transition:none;animation:none}
+
+@media (prefers-reduced-motion:reduce){
+  .fs-on .conteudo>*,.fs-on .s.on .conteudo>*{
+    opacity:1!important;transform:none!important;filter:none!important;
+    animation:none!important;transition:none!important;clip-path:none!important;
+  }
+}

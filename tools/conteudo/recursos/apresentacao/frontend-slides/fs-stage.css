@@ -1,0 +1,14 @@
+/*
+ * fs-stage.css — adapta o viewport do frontend-slides ao Conteudista.
+ * Usa #st / .s / .s.on (o viewport-base.css original usa .deck-stage/.slide/.active
+ * e por isso nao pode ser includo). O layout.css existente ja controla a
+ * visibilidade com display:none/display:block; aqui so se adiciona a entrada.
+ */
+#st .s{overflow:hidden}
+#st .s:not(.on){pointer-events:none}
+#st .s.on{animation:fs-slide-in var(--fs-duration,600ms) var(--fs-ease,ease) both}
+@keyframes fs-slide-in{from{opacity:0}to{opacity:1}}
+#st .s img,#st .s video,#st .s canvas,#st .s svg{max-width:100%;max-height:100%}
+@media (prefers-reduced-motion:reduce){
+  #st .s.on{animation:none}
+}
