@@ -136,7 +136,7 @@ Capturas complementares da ajuda da webcam no tema escuro: [desktop](spec08-webc
 - **Validação:** grupo 6: **52 ok, 0 falhas**. Suíte completa Chrome: **340 ok, 0 falhas, 355 s**. M.3 áudio no PowerPoint segue pendente de verificação manual; não foi validado neste ambiente.
 - **Evidências HTML (Chrome 1280×720):** claro [antes simulado](m3-anac20-claro-antes-simulado.png) / [depois](m3-anac20-claro-depois.png); escuro [antes simulado](m3-anac20-escuro-antes-simulado.png) / [depois](m3-anac20-escuro-depois.png). As imagens “antes” reativam por CSS a faixa que existia antes; não são capturas históricas.
 - **Limite manual:** PowerPoint não está instalado/disponível neste ambiente (`Get-Command POWERPNT.EXE` sem resultado). A abertura/renderização visual do PPTX e o áudio M.3 não foram verificados no aplicativo real; validação automatizada confirma a imagem Mermaid embutida e as formas/cores no arquivo.
-- **Estado:** alterações e evidências locais, não commitadas nem publicadas.
+- **Estado:** alterações e evidências incluídas no commit `8ace5e4` e publicadas na v1.118; pendências manuais registradas em M.1/M.3.
 
 
 ## Barra do editor Markdown: extras sem gaveta “Mais” (25/11/2026)
@@ -145,7 +145,7 @@ Capturas complementares da ajuda da webcam no tema escuro: [desktop](spec08-webc
 - **Correção mínima:** os botões existentes são exibidos e ordenados após edição/inserção e antes dos modos; removido o separador forçado entre linhas no celular para caber em até duas linhas.
 - **TDD/validação:** o teste 26.21 falhou antes ao verificar extras ocultos e menu Mais. Após a alteração, os grupos `editor` e `12` passaram; o grupo `9` passou com **25 ok, 0 falhas**, incluindo inserção via menu, ordem móvel e acessibilidade.
 - **Suíte completa após a correção:** `python tools/testes/testar_apresentacao.py --completo --navegador chrome --tentativas 2` — **342 ok, 0 falhas**, 351 s. M.1–M.4 continuam aparecendo como verificações manuais no relatório automatizado; M.3 tem confirmação do usuário de que o áudio tocou.
-- **Publicação 1.118:** o primeiro workflow para `8ace5e4` passou nos testes Chrome, mas o build encontrou o snapshot de acessibilidade do exemplo com linhas antigas após a remoção intencional de duas linhas da capa. `tools/linguagem-acessivel/testar.mjs --atualizar-exemplo` atualizou apenas as posições esperadas. Verificações locais após a atualização: **177/177** no motor e `bash tools/verificar.sh` — **TUDO CERTO**; novo workflow após este ajuste ainda precisa confirmar o deploy.
+- **Publicação 1.118:** o primeiro workflow para `8ace5e4` passou nos testes Chrome, mas o build encontrou o snapshot de acessibilidade do exemplo com linhas antigas após a remoção intencional de duas linhas da capa. `tools/linguagem-acessivel/testar.mjs --atualizar-exemplo` atualizou apenas as posições esperadas. Verificações locais após a atualização: **177/177** no motor e `bash tools/verificar.sh` — **TUDO CERTO**; correção enviada no commit `27ea7f5`. O workflow [45556336002](https://github.com/anacgovbr/conteudista/actions/runs/45556336002) concluiu com sucesso em `classificar`, `build`, `testes / Testes (chrome)` (3m41s) e `deploy`; o site publicado serve `VERSAO = '1.118'` e 36 cache-busters `?v=1.118`.
 - **Arquivos:** `web/celular.js`, `tools/testes/grupos/editor.py`, `tools/testes/grupos/acessibilidade_texto.py`, `web/ajuda.js`.
 - As capturas anteriores mostram a gaveta antiga e já não representam a interface atual.
 - Capturas atuais da toolbar sem “Mais”, geradas após a suíte: [desktop](toolbar-sem-mais-desktop.png) e [celular](toolbar-sem-mais-mobile.png). No celular: 2 menus, 4 extras visíveis, 3 modos e sem overflow (390 px).
@@ -168,4 +168,4 @@ Capturas complementares da ajuda da webcam no tema escuro: [desktop](spec08-webc
 | 09 — Webcam | Testes 6.14–6.16; ajuda inclui gestos e instruções Chrome/Android/Safari/Edge | Textos e gestos simulados cobertos. Permissões/câmera reais e recuperação em cada navegador requerem validação manual. |
 | 10 — Validação final | Suíte completa após toolbar: **342 ok, 0 falhas**; testes de geração 6.21–6.26 | Chrome e saídas HTML/PPTX/EPUB/DOCX/GOVBR/ANAC cobertos automaticamente. M.1 e avanço automático M.3 ainda sem confirmação; M.2/M.4 confirmados pelo usuário. |
 
-HTML independente: a apresentação gerada é aberta como arquivo HTML local nos testes, sem exigir o aplicativo web. Evidências e relatórios permanecem locais, sem commit/publicação nesta etapa.
+HTML independente: a apresentação gerada é aberta como arquivo HTML local nos testes, sem exigir o aplicativo web. Evidências e relatórios estão versionados no repositório; a publicação da v1.118 foi concluída com sucesso.
