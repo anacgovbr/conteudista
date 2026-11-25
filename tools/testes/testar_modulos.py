@@ -118,6 +118,33 @@ class ModulosTest(unittest.TestCase):
         self.assertEqual(len(slides), 2)
         self.assertEqual(markdown.notas_para_narracao('---\ntitle: Teste\n---\n\n# Primeiro\n\n<!-- notas: Nota. -->\n\n---\n\n# Segundo\n'), ['Nota.', ''])
 
+    def test_layouts_de_slide(self):
+        import zipfile
+        slugs = ('branco titulo-conteudo somente-titulo imagem-direita imagem-esquerda meio-meio '
+                 'imagem-destaque colunas-2 colunas-3 pros-contras antes-depois cards-4 cards-6 cards-8 '
+                 'matriz-2x2 plano-cartesiano swot priorizacao etapas-3 etapas-5 linha-tempo '
+                 'fluxo-horizontal indicadores-2 indicadores-4 dashboard').split()
+        self.assertEqual(len(slugs), 25)
+        ed = (RAIZ / 'web/editor.js').read_text(encoding='utf-8')
+        cel = (RAIZ / 'web/celular.js').read_text(encoding='utf-8')
+        for s in slugs:
+            with self.subTest(slug=s):
+                self.assertIn("'%s'" % s, ed, s)
+        self.assertIn('Slide:', cel)
+        _, sl = markdown.split_slides('# Slide\n\n<!-- layout: cards-4 -->\n\n| A | B |\n|---|---|\n| 1 | 2 |')
+        self.assertEqual(sl[0][3], 'cards-4')
+        _, ruim = markdown.split_slides('# Slide\n\n<!-- layout: inexistente -->')
+        self.assertEqual(ruim[0][3], '')
+        css = (RAIZ / 'tools/conteudo/recursos/apresentacao/layouts-slide.css').read_text(encoding='utf-8')
+        self.assertIn('.s.lay-imagem-direita', css)
+        self.assertIn('lay-cards-4', gerador.slides_html('Apresentação', sl, 'Rodapé'))
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / 'slides.pptx'
+            gerador.slides_pptx('Apresentação', sl, str(p), 'Rodapé')
+            with zipfile.ZipFile(p) as z:
+                self.assertIsNone(z.testzip())
+                self.assertIn('ppt/slides/slide1.xml', z.namelist())
+
     def test_estado_compartilhado(self):
         for texto in ['<!-- linguagem-acessivel: decorativa -->\n![Logo](logo.png)', '![Logo](logo.png)']:
             contexto.registrar_decorativas(texto)

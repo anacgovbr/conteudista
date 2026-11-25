@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.120 - 25/11/2026
+- **Inserir slide:** o menu passa a oferecer 25 modelos semânticos — em branco, título e conteúdo, imagem em 1/3, 1/2 ou 2/3, duas e três colunas, prós e contras, antes e depois, 4/6/8 cards, matrizes 2×2, plano cartesiano, SWOT, priorização, 3/5 etapas, linha do tempo, fluxo horizontal, 2/4 indicadores e dashboard.
+- **Modelos sem motor novo:** cada opção insere uma diretiva `<!-- layout: ... -->` no Markdown; os blocos continuam sendo os de sempre, então HTML, PPTX, DOCX e EPUB seguem gerando sem quebrar.
+- **Temas e acessibilidade:** os modelos usam os tokens do tema ativo (GOV.BR, clássico, ANAC 20 anos e temas HTML), mantêm a ordem de leitura e respeitam o palco fixo no computador e no celular.
+- **Validação:** grupos 6, 9 e 26, geração dos 25 modelos em HTML/PPTX e checagens de acessibilidade aprovadas; o PPTX foi validado como arquivo, não aberto no PowerPoint neste ambiente.
+
 ## 1.119 - 25/11/2026
 - **Temas para web:** 12 temas HTML do frontend-slides entram no catálogo com tokens de layout, fontes e movimento. Eles ficam fora do seletor do gerador para não alterar PPTX/DOCX.
 - **Apresentações:** pipeline Theme → Layout → Render com 8 layouts adaptados ao palco 1280×720 do Conteudista; animações respeitam movimento reduzido e os temas antigos seguem no HTML anterior.

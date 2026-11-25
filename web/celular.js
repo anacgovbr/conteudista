@@ -75,7 +75,7 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
   const MANTER = /^(Desfazer|Refazer|Negrito|It[aá]lico)\b/;
   const GRUPOS = [
     { id: 'fmt', rotulo: 'Títulos, código e listas', curto: 'H', re: /^(T[ií]tulo [123]|C[oó]digo|Lista|Checklist)/ },
-    { id: 'ins', rotulo: 'Inserir', icone: 'plus', re: /^(Link \(|Imagem|Tabela|Caixa|Fluxo|Novo slide|Marcar slide|Notas do apresentador|Separador|Modelo de exerc)/ },
+    { id: 'ins', rotulo: 'Inserir', icone: 'plus', re: /^(Link \(|Imagem|Tabela|Caixa|Fluxo|Slide:|Novo slide|Marcar slide|Notas do apresentador|Separador|Modelo de exerc)/ },
   ];
   const SVG = {
     car: '<svg class="mv-car" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg>',

@@ -709,7 +709,40 @@
       ['', 'Caixa / citação (Ctrl+Shift+. cita)', null, 'callout'],
       [IC.flow, 'Fluxo Mermaid', () => block('```mermaid\n' + MERMAID + '\n```')],
     ];
-    if (tipo === 'slides') B.push('|', [IC.plus + ' Slide', 'Novo slide', () => block('---\n\n# Título do slide\n\n- Tópico')], ['Capa', 'Marcar slide como capa/encerramento', () => ins('<!-- class: title -->\n')], ['Destaque', 'Marcar slide como destaque', () => ins('<!-- class: highlight -->\n')], [IC.note + ' Notas', 'Notas do apresentador', () => block('<!-- notas: texto para o apresentador -->')]);
+    if (tipo === 'slides') {
+      const tab = (n, r = 1) => Array.from({ length: r }, (_, j) => '| ' + Array.from({ length: n }, (_, i) => j ? 'Texto ' + (j + 1) + '.' + (i + 1) : 'Coluna ' + (i + 1)).join(' | ') + ' |').join('\n');
+      const passos = n => Array.from({ length: n }, (_, i) => (i + 1) + '. Etapa ' + (i + 1) + ' — descreva a ação').join('\n');
+      const LAYOUTS = [
+        ['Slide em branco', 'branco', ''],
+        ['Título e conteúdo', 'titulo-conteudo', '# Título do slide\n\nTexto de apoio.'],
+        ['Somente título', 'somente-titulo', '# Título do slide'],
+        ['Imagem à direita (2/3 + 1/3)', 'imagem-direita', '# Título do slide\n\nTexto do slide.\n\n<!-- insira a imagem aqui -->'],
+        ['Imagem à esquerda (1/3 + 2/3)', 'imagem-esquerda', '# Título do slide\n\n<!-- insira a imagem aqui -->\n\nTexto do slide.'],
+        ['Imagem e texto 50/50', 'meio-meio', '# Título do slide\n\n<!-- insira a imagem aqui -->\n\nTexto do slide.'],
+        ['Imagem destaque (2/3 da página)', 'imagem-destaque', '# Título do slide\n\n<!-- insira a imagem aqui -->\n\nLegenda curta.'],
+        ['Duas colunas', 'colunas-2', '# Título do slide\n\n' + tab(2)],
+        ['Três colunas', 'colunas-3', '# Título do slide\n\n' + tab(3)],
+        ['Prós e contras', 'pros-contras', '# Título do slide\n\n| Prós | Contras |\n|---|---|\n| Vantagem | Desvantagem |'],
+        ['Antes e depois', 'antes-depois', '# Título do slide\n\n| Antes | Depois |\n|---|---|\n| Situação atual | Situação desejada |'],
+        ['4 cards', 'cards-4', '# Título do slide\n\n' + tab(4)],
+        ['6 cards', 'cards-6', '# Título do slide\n\n' + tab(3, 2)],
+        ['8 cards', 'cards-8', '# Título do slide\n\n' + tab(4, 2)],
+        ['Matriz 2x2', 'matriz-2x2', '# Título do slide\n\n| | Coluna A | Coluna B |\n|---|---|---|\n| Linha A | Um | Dois |\n| Linha B | Três | Quatro |'],
+        ['Plano cartesiano', 'plano-cartesiano', '# Título do slide\n\n| | Negativo | Positivo |\n|---|---|---|\n| Vertical | Q2 | Q1 |\n| Horizontal | Q3 | Q4 |'],
+        ['SWOT', 'swot', '# Título do slide\n\n| | Positivo | Negativo |\n|---|---|---|\n| Interno | Forças | Fraquezas |\n| Externo | Oportunidades | Ameaças |'],
+        ['Priorização impacto × esforço', 'priorizacao', '# Título do slide\n\n| | Baixo esforço | Alto esforço |\n|---|---|---|\n| Alto impacto | Fazer agora | Planejar |\n| Baixo impacto | Delegar | Evitar |'],
+        ['3 etapas', 'etapas-3', '# Título do slide\n\n' + passos(3)],
+        ['5 etapas', 'etapas-5', '# Título do slide\n\n' + passos(5)],
+        ['Linha do tempo', 'linha-tempo', '# Título do slide\n\n1. 2024 — Início\n2. 2025 — Desenvolvimento\n3. 2026 — Entrega'],
+        ['Fluxo horizontal', 'fluxo-horizontal', '# Título do slide\n\n```mermaid\nflowchart LR\n    A[Início] --> B[Etapa] --> C[Fim]\n```'],
+        ['2 indicadores', 'indicadores-2', '# Título do slide\n\n| Indicador | Valor |\n|---|---|\n| Meta | 0 |\n| Realizado | 0 |'],
+        ['4 indicadores', 'indicadores-4', '# Título do slide\n\n' + tab(4)],
+        ['Dashboard simples', 'dashboard', '# Título do slide\n\n| Métrica | Valor | Tendência | Situação |\n|---|---|---|---|\n| Meta | 0 | — | — |\n| Realizado | 0 | — | — |'],
+      ];
+      B.push('|', [IC.plus + ' Slide', 'Novo slide', () => block('---\n\n# Título do slide\n\n- Tópico')]);
+      LAYOUTS.forEach(([rot, slug, corpo]) => B.push([IC.plus + ' Layout', 'Slide: ' + rot, () => block('---\n\n<!-- layout: ' + slug + ' -->\n' + corpo)]));
+      B.push(['Capa', 'Marcar slide como capa/encerramento', () => ins('<!-- class: title -->\n')], ['Destaque', 'Marcar slide como destaque', () => ins('<!-- class: highlight -->\n')], [IC.note + ' Notas', 'Notas do apresentador', () => block('<!-- notas: texto para o apresentador -->')]);
+    }
     else B.push('|', [IC.hr, 'Separador', () => block('---')], [IC.ex + ' Exercício', 'Modelo de exercício', () => block('### Exercício N — Título\n\nEnunciado.')]);
     B.push('sp', [IC.edit, 'Somente editor', null, 'm:e'], [IC.split, 'Editor + prévia', null, 'm:s'], [IC.eye, 'Somente prévia', null, 'm:p'], [IC.full, 'Tela cheia (Esc para sair)', null, 'fs']);
     B.forEach(x => {

@@ -113,6 +113,14 @@ def grupo9(amb, ctx, G):
         G.chk('9.25', 'Tag "nova": texto centralizado vertical e horizontalmente na cápsula',
               badge['display'] == 'inline-flex' and badge['alinhar'] == 'center' and badge['justificar'] == 'center'
               and badge['altura'] == '11px' and badge['vertical'] == 'middle', badge)
+        pg.click('#ts'); pg.wait_for_timeout(120)
+        pg.locator('#ps .mv-bt[data-g=ins]').click(); pg.wait_for_timeout(150)
+        modelos = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [role=menuitem]')].map(x => x.textContent.trim()).filter(x => x.startsWith('Slide:'))")
+        G.chk('9.26', 'Celular: Inserir oferece os 25 modelos de slide', len(modelos) == 25, {'total': len(modelos), 'exemplos': modelos[:3]})
+        pg.locator('.mv-menu:not([hidden]) [role=menuitem]', has_text='4 cards').click(); pg.wait_for_timeout(200)
+        G.chk('9.27', 'Celular: modelo insere a diretiva de layout no slide', '<!-- layout: cards-4 -->' in pg.evaluate("document.querySelector('#ps .mde-ta').value"))
+        pg.keyboard.press('Control+z'); pg.wait_for_timeout(100)
+        pg.click('#tg'); pg.wait_for_timeout(120)
         antes = pg.evaluate("document.querySelector('#pg .mde-ta').value.length")
         pg.locator('#pg .mv-bt[data-g=fmt]').click(); pg.locator('.mv-menu:not([hidden]) [role=menuitem]', has_text='Título 2').click(); pg.wait_for_timeout(150)
         G.chk('9.6', 'Item do menu aciona o botão original (Título 2 altera o texto)', pg.evaluate("document.querySelector('#pg .mde-ta').value.length") != antes)
@@ -474,6 +482,11 @@ def grupo26(amb, ctx, G):
         G.chk('26.19', 'Computador: menu Formatar lista os itens e aplica Título 2 no texto',
               any('Título 2' in x for x in itens) and pg.evaluate("document.querySelector('#pg .mde-ta').value") != antes_barra, itens[:5])
         pg.keyboard.press('Control+z'); pg.wait_for_timeout(100)
+        pg.click('#ts'); pg.wait_for_timeout(120)
+        pg.locator('#ps .mv-bt[data-g=ins]').click(); pg.wait_for_timeout(150)
+        modelos = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [role=menuitem]')].map(x => x.textContent.trim()).filter(x => x.startsWith('Slide:'))")
+        G.chk('26.22', 'Computador: Inserir lista os 25 modelos de slide', len(modelos) == 25, {'total': len(modelos), 'exemplos': modelos[:3]})
+        pg.keyboard.press('Escape'); pg.click('#tg'); pg.wait_for_timeout(120)
         status_barra = pg.evaluate("(() => ({ mvOn: document.querySelector('#pg .mde').classList.contains('mv-on'), galVis: document.querySelector('#pg .mde-gal').offsetParent !== null }))()")
         G.chk('26.20', 'Computador: contagem do texto e Imagens do texto continuam visíveis (só o celular recolhe)',
               not status_barra['mvOn'] and status_barra['galVis'], status_barra)

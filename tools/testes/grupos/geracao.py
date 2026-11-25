@@ -528,6 +528,35 @@ def grupo6(amb, ctx, G):
         m = pg.evaluate("({sw:document.documentElement.scrollWidth,iw:innerWidth,slides:document.querySelectorAll('.s').length,on:document.querySelectorAll('.s.on').length})")
         G.chk(f'6.3-{vp["width"]}', f'Apresentação em {nome}: sem rolagem horizontal, 1 slide ativo e sem erros', m['sw'] <= m['iw'] + 1 and m['on'] == 1 and not erros, f'{m} {erros}')
         c.close()
+    # 1.120: os 25 modelos semânticos viram classes no HTML e slides no PPTX, sem estourar o palco.
+    from conteudo import markdown as md_layouts
+    png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nKkAAAAASUVORK5CYII='
+    blocos = []
+    for slug in sorted(md_layouts.LAYOUTS):
+        corpo = '# Slide\n\nTexto.'
+        if slug.startswith(('imagem-', 'meio-meio')):
+            corpo = '# Slide\n\n![Imagem](%s)\n\nTexto.' % png
+        blocos.append('<!-- layout: %s -->\n%s' % (slug, corpo))
+    sm = amb.tmp / 'modelos-slides.md'
+    sm.write_text('---\ntitle: Modelos\n---\n\n' + '\n\n---\n\n'.join(blocos), encoding='utf-8')
+    dm = amb.tmp / 'saida_modelos'
+    r = rodar([sys.executable, str(suporte.GERADOR), '-', str(sm), '--prefixo', 'Modelos', '--saida', str(dm), '--tema', 'govbr', '--formatos', 'html,pptx'], cwd=RAIZ)
+    h = next(dm.glob('*Apresentacao*.html'), None)
+    ppt = next(dm.glob('*Apresentacao*.pptx'), None)
+    ok_ppt = bool(ppt) and zipfile.ZipFile(ppt).testzip() is None
+    G.chk('6.23', '25 modelos: HTML e PPTX gerados, com PPTX íntegro', r.returncode == 0 and bool(h) and ok_ppt, (r.stderr or r.stdout)[-200:])
+    if h:
+        for nome, vp in (('computador', {'width': 1280, 'height': 720}), ('celular', {'width': 390, 'height': 780})):
+            c = amb.novo_contexto(viewport=vp, touch=vp['width'] < 900)
+            pg = c.new_page(); erros = []
+            pg.on('pageerror', lambda e: erros.append(str(e)))
+            pg.goto(h.as_uri()); pg.wait_for_timeout(600)
+            m = pg.evaluate("""() => ({modelos:document.querySelectorAll('.s[class*=" lay-"]').length,
+                colunas:getComputedStyle(document.querySelector('.s.lay-imagem-direita .conteudo')).gridTemplateColumns.split(' ').length,
+                sw:document.documentElement.scrollWidth, iw:innerWidth, on:document.querySelectorAll('.s.on').length})""")
+            G.chk(f'6.24-{vp["width"]}', f'25 modelos em {nome}: classes aplicadas, divisão em duas colunas e sem rolagem',
+                  m['modelos'] == 25 and m['colunas'] == 2 and m['sw'] <= m['iw'] + 1 and m['on'] == 1 and not erros, f'{m} {erros}')
+            c.close()
     # Formatos escolhidos: só os marcados em "Formatos dos arquivos" são gerados.
     so_txt = amb.tmp / 'saida_formatos_texto'
     r = rodar([sys.executable, str(suporte.GERADOR), str(EXEMPLO_TREINO), str(EXEMPLO_APRES), '--prefixo', 'Fmt', '--saida', str(so_txt), '--formatos', 'html,md'], cwd=RAIZ)

@@ -11,6 +11,12 @@ LI=re.compile(r'^(\s*)([-*]|\d+\.)\s+(.*)$')
 
 CODIGO_RX=re.compile(r'(?ms)(^```[^\n]*\n.*?^```[ \t]*$|`[^`\n]+`)')
 
+# Modelos semânticos de slide aceitos na diretiva <!-- layout: ... -->.
+LAYOUTS=frozenset('''branco titulo-conteudo somente-titulo imagem-direita imagem-esquerda meio-meio
+imagem-destaque colunas-2 colunas-3 pros-contras antes-depois cards-4 cards-6 cards-8
+matriz-2x2 plano-cartesiano swot priorizacao etapas-3 etapas-5 linha-tempo
+fluxo-horizontal indicadores-2 indicadores-4 dashboard'''.split())
+
 def url_ok(u):
     "Link seguro: sem esquema (relativo ou #) ou só http, https e mailto. Bloqueia javascript:, data: e afins."
     u=re.sub(r'[\x00-\x20]','',u)
@@ -134,13 +140,17 @@ def split_slides(md):
         x=re.search(r'^title:\s*(.+)$',fm.group(1),re.M);t=x.group(1).strip() if x else t;md=md[fm.end():]
     out=[]
     for p in [p.strip() for p in re.split(r'\n---\s*\n',md) if p.strip()]:
-        c='';n=''
+        c='';n='';ly=''
         m=re.search(r'<!--\s*class:\s*(\w+)\s*-->',p)
         if m:c=m.group(1);p=p.replace(m.group(0),'')
         m=re.search(r'<!--\s*notas:\s*(.*?)-->',p,re.S)
         if m:n=m.group(1).strip();p=p.replace(m.group(0),'')
+        m=re.search(r'<!--\s*layout:\s*([\w-]+)\s*-->',p)
+        if m:
+            ly=m.group(1) if m.group(1) in LAYOUTS else ''
+            p=p.replace(m.group(0),'')
         p=re.sub(r'<!--.*?-->','',p,flags=re.S).strip()
-        if p:out.append((c,blocks(p),n))
+        if p or ly:out.append((c,blocks(p),n,ly))
     return t,out
 
 def notas_para_narracao(md):

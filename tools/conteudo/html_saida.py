@@ -16,6 +16,8 @@ LEITURA_SEL=ler_recurso('acessibilidade/fonte.html')
 
 LEITURA_JS=ler_recurso('acessibilidade/fonte.js')
 
+CSS_LAYOUTS=ler_recurso('apresentacao/layouts-slide.css')
+
 def inl(t):
     s=''
     for x,b,i,c,u in runs(t):
@@ -284,12 +286,14 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
     _TB[0]=0;T=tema_de(tema);n_original=len(sl);n=n_original+bool(licenca);secs=[]
     papeis=papeis_slides(sl,bool(licenca))
     anac=str(tema or '').startswith('anac20-');antes=bool(licenca) and n_original>1  # licença penúltima; com 1 slide ela segue no fim
-    for k,(c,b,nt) in enumerate(sl):
+    for k,(c,b,nt,*extra) in enumerate(sl):
+        ly=extra[0] if extra else ''
         ultimo=k==n_original-1;rot='Slide %d de %d'%(k+1+(antes and ultimo),n)
         nota='<aside class="nt" role="note" aria-label="Notas do apresentador"><p class="nt-t">Notas do apresentador</p><p class="nt-x">%s</p></aside>'%E(nt) if (nt or '').strip() else ''
         legenda='<p class="a11y-caption">%s</p>'%E(nt) if audios and k in audios and (nt or '').strip() else ''
         cls_fs=(' fs-'+_fs_layout(b)) if fs else ''
-        secs.append('<section class="s %s papel-%s%s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,papeis[k].replace('_','-'),cls_fs,rot,rot,'' if anac and ultimo else html_of(b,None,None,paleta(T)),nota,legenda))
+        cls_ly=(' lay-'+ly) if ly else ''
+        secs.append('<section class="s %s papel-%s%s%s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,papeis[k].replace('_','-'),cls_fs,cls_ly,rot,rot,'' if anac and ultimo else html_of(b,None,None,paleta(T)),nota,legenda))
     aviso_licenca=licencas.aviso_slide_html(licenca)
     if aviso_licenca:
         rot='Slide %d de %d'%(n-antes,n)
@@ -304,7 +308,7 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
                 k+=antes and k==n_original-1
                 mime=MIME_AUDIO.get(os.path.splitext(cam)[1].lower(),'audio/mpeg')
                 aud+='<audio class="narr" data-s="%d" preload="auto" src="data:%s;base64,%s"></audio>'%(k,mime,base64.b64encode(open(cam,'rb').read()).decode())
-    css+=CSS_S_A11Y+CSS_BPLUS+CSS_ESTREITO+ZOOM_CSS+PAINEL_A11Y_CSS+css_apresentacao(T,papeis)+css_extra
+    css+=CSS_S_A11Y+CSS_BPLUS+CSS_ESTREITO+ZOOM_CSS+PAINEL_A11Y_CSS+css_apresentacao(T,papeis)+css_extra+CSS_LAYOUTS
     hud=('<div id="hud" role="group" aria-label="Controles da apresentação" class="bplus" data-estado="visible">'
          '<button id="p" type="button" aria-label="Slide anterior" aria-keyshortcuts="ArrowLeft" data-dica="Slide anterior · ←">'+_ic('prev')+'</button>'
          '<button id="bp" type="button" aria-label="Reproduzir apresentação" aria-keyshortcuts="Space" data-on="false" data-dica="Reproduzir · Espaço">'+_ic('play','i-off')+_ic('pause','i-on')+'</button>'

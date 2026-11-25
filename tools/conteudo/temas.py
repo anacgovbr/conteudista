@@ -302,10 +302,10 @@ def papeis_slides(sl,tem_licenca=False):
     "Uma funcao por slide: capa, interna_clara, interna_escura, finalizacao e licenciamento."
     n=len(sl or [])
     ultimo_titulo=-1
-    for i,(c,b,nt) in enumerate(sl or []):
+    for i,(c,b,nt,*_) in enumerate(sl or []):
         if c=='title' or any(x[0]=='h' and x[1]==1 for x in (b or [])):ultimo_titulo=i
     papeis=[]
-    for i,(c,b,nt) in enumerate(sl or []):
+    for i,(c,b,nt,*_) in enumerate(sl or []):
         if c in TELAS:papel=c
         elif i==0:papel='capa'
         elif i==ultimo_titulo:papel='finalizacao'

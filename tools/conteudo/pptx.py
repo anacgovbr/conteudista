@@ -183,7 +183,22 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
             else:
                 tb,tf=tbox(s,x,y,w,h);r=tf.paragraphs[0].add_run();r.text=b[2];r.font.name='Consolas';r.font.size=Pt(12);r.font.color.rgb=col;r.font.language_id=PT_BR
         return h
-    for idx,(cls,bl,notes) in enumerate(sl):
+    def draw_lay(s,blocos,y,size,col,ly,x0=L,w0=CW):
+        "Modelos com imagem: duas colunas; os demais modelos usam os blocos nativos."
+        frac={'imagem-direita':(2/3,1/3,False),'imagem-esquerda':(1/3,2/3,True),
+              'meio-meio':(1/2,1/2,True),'imagem-destaque':(1/3,2/3,True)}
+        if ly not in frac or not any(b[0]=='img' for b in blocos):
+            for b in blocos:y+=draw(s,b,y,size,col,x0,w0)
+            return y
+        tw,iw,primeira=frac[ly]
+        tx=x0+(w0*tw if primeira else 0);ix=x0+(0 if primeira else w0*tw)
+        yt=yi=y
+        for b in blocos:
+            if b[0]=='img':yi+=draw(s,b,yi,size,col,ix,w0*iw)
+            else:yt+=draw(s,b,yt,size,col,tx,w0*tw)
+        return max(yt,yi)
+    for idx,(cls,bl,notes,*extra) in enumerate(sl):
+        ly=extra[0] if extra else ''
         s=P.slides.add_slide(P.slide_layouts[6])
         if custom:
             papel=papeis[idx];tela=fundo_custom(s,papel);istitle=papel in ('capa','finalizacao')
@@ -216,7 +231,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                 rect(s,L0,y,min(CW0,len(plain(h1[0][2]))*0.36),0.06,DEST);y+=0.25
             for b in sub:
                 tb,tf=tbox(s,L0,y,CW0,0.7);addruns(tf.paragraphs[0],b[2],fs_sub if custom else 28,cor_txt if custom else (C('D6ECFF') if not modelo else (WH if escuro else INK)),True,FONTE_TITULO);y+=0.75
-            for b in body:y+=draw(s,b,y,fs_body if custom else 20,cor_txt if custom else ((WH if escuro else INK) if modelo else C('E8F2FB')),L0,CW0)
+            y=draw_lay(s,body,y,fs_body if custom else 20,cor_txt if custom else ((WH if escuro else INK) if modelo else C('E8F2FB')),ly,L0,CW0)
         else:
             if custom:
                 y=max(0.3,px(pos.get('topo',44)))
@@ -226,7 +241,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                     rect(s,L,y,CW,0.05,DEST);y+=0.25
                 avail=max(0.8,7.5-px(pos.get('base',60))-y);size=max(MIN_CORPO,min(28,round(float(T['fontes']['tamanho_base']))))
                 while size>MIN_CORPO and sum(est(b,size) for b in rest)>avail:size-=1
-                for b in rest:y+=draw(s,b,y,size,cor_txt)
+                y=draw_lay(s,rest,y,size,cor_txt,ly)
             else:
                 y=0.62 if modelo else 0.45
                 if h1:
@@ -234,7 +249,7 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                     rect(s,L,y,CW,0.05,ACC);y+=0.25
                 avail=6.75-y;size=22
                 while size>MIN_CORPO and sum(est(b,size) for b in rest)>avail:size-=1  # se não couber em 16 pt, o texto flui (não volta a 12 pt)
-                for b in rest:y+=draw(s,b,y,size,INK)
+                y=draw_lay(s,rest,y,size,INK,ly)
         cor_rod=cor_txt if custom else ((WH if modelo and escuro else MU) if modelo else (C('CFE3F5') if istitle else MU))
         tb,tf=tbox(s,L,7.05,8,0.3);addruns(tf.paragraphs[0],foot,11,cor_rod)
         tb,tf=tbox(s,W-1.5,7.05,1,0.3);addruns(tf.paragraphs[0],'%d / %d'%(idx+1,len(sl)),11,cor_rod)

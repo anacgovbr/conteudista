@@ -1,0 +1,10 @@
+/* Modelos semânticos de slide: só tokens do tema, sem cores novas. */
+.s.lay-imagem-direita .conteudo,.s.lay-imagem-esquerda .conteudo,.s.lay-meio-meio .conteudo,.s.lay-imagem-destaque .conteudo{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;align-items:start}
+.s.lay-imagem-direita .conteudo{grid-template-columns:2fr 1fr}
+.s.lay-imagem-esquerda .conteudo,.s.lay-imagem-destaque .conteudo{grid-template-columns:1fr 2fr}
+.s.lay-imagem-direita .conteudo>h1,.s.lay-imagem-esquerda .conteudo>h1,.s.lay-meio-meio .conteudo>h1,.s.lay-imagem-destaque .conteudo>h1{grid-column:1/-1}
+.s.lay-etapas-3 .conteudo>ol,.s.lay-etapas-5 .conteudo>ol,.s.lay-linha-tempo .conteudo>ol{display:grid;gap:.8rem}
+.s.lay-etapas-3 .conteudo>ol{grid-template-columns:repeat(3,1fr)}
+.s.lay-etapas-5 .conteudo>ol{grid-template-columns:repeat(5,1fr)}
+.s.lay-linha-tempo .conteudo>ol{grid-template-columns:repeat(3,1fr)}
+.s.lay-branco .conteudo,.s.lay-somente-titulo .conteudo{justify-content:center}
