@@ -1,0 +1,49 @@
+{
+  "commit_antes": "5ba5d54",
+  "commit_depois": "33898fc",
+  "pares": {
+    "capa": {
+      "mesmo_tamanho": true,
+      "bbox": null,
+      "pixels_diferentes": 0
+    },
+    "final": {
+      "mesmo_tamanho": true,
+      "bbox": null,
+      "pixels_diferentes": 0
+    },
+    "painel": {
+      "mesmo_tamanho": true,
+      "bbox": null,
+      "pixels_diferentes": 0
+    }
+  },
+  "antes": {
+    "capa": {
+      "png": "196d08eaf409773a",
+      "erros": []
+    },
+    "final": {
+      "png": "252dc741c93abb6e",
+      "erros": []
+    },
+    "painel": {
+      "png": "adcad4ee37efc176",
+      "erros": []
+    }
+  },
+  "depois": {
+    "capa": {
+      "png": "196d08eaf409773a",
+      "erros": []
+    },
+    "final": {
+      "png": "252dc741c93abb6e",
+      "erros": []
+    },
+    "painel": {
+      "png": "adcad4ee37efc176",
+      "erros": []
+    }
+  }
+}

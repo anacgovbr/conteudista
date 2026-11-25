@@ -357,6 +357,25 @@ def grupo6(amb, ctx, G):
               '1351B4' in dx and '0C326F' in dx and not any(x in dx for x in ('163B57', 'D5A900', '14334A'))
               and '#0b3d6e' in css and '#1351b4' not in css and '14334a' not in css,
               {'docx_govbr': '1351B4' in dx and '0C326F' in dx, 'epub_neutro': '#0b3d6e' in css and '#1351b4' not in css})
+    # SPEC 07: foco, hover e estado ativo do painel gov.br dentro do tema ANAC
+    c = amb.novo_contexto(viewport={'width': 1280, 'height': 720}); pg_f = c.new_page()
+    pg_f.goto((anac_saidas['anac20-claro'] / 'Apresentacao_A.html').as_uri()); pg_f.wait_for_timeout(300)
+    pg_f.evaluate("document.getElementById('a11yToggle').click()"); pg_f.wait_for_selector('#a11yPanel[open]')
+    pg_f.locator('[data-a11y=contraste]').focus()
+    foco = pg_f.evaluate("() => getComputedStyle(document.querySelector('[data-a11y=contraste]')).outline")
+    pg_f.locator('[data-a11y=contraste]').hover()
+    hover_cb = pg_f.evaluate("() => getComputedStyle(document.querySelector('[data-a11y=contraste]')).boxShadow")
+    pg_f.locator('select#leitura').hover()
+    hover_sel = pg_f.evaluate("() => getComputedStyle(document.querySelector('select#leitura')).backgroundColor")
+    pg_f.locator('.a11y-i[aria-controls="a11yAj-webcam"]').hover()
+    hover_i = pg_f.evaluate("""() => { const s = getComputedStyle(document.querySelector('.a11y-i[aria-controls="a11yAj-webcam"] span')); return [s.backgroundColor, s.color]; }""")
+    ativo = pg_f.evaluate("""() => { const b = document.querySelector('button.sec[data-a11y=ouvir]'); b.setAttribute('aria-pressed', 'true'); const s = getComputedStyle(b); return [s.backgroundColor, s.color]; }""")
+    mf = {'foco': foco, 'hoverCb': hover_cb, 'hoverSel': hover_sel, 'hoverI': hover_i}
+    G.chk('6.25-anac-estados', 'Painel ANAC: foco tracejado, hover gov.br e estado ativo em azul com texto branco',
+          mf['foco'] == 'rgb(194, 133, 12) dashed 4px' and 'rgba(19, 81, 180, 0.16)' in mf['hoverCb']
+          and mf['hoverSel'] == 'rgb(237, 245, 255)' and mf['hoverI'] == ['rgb(19, 81, 180)', 'rgb(255, 255, 255)']
+          and ativo == ['rgb(19, 81, 180)', 'rgb(255, 255, 255)'], {'m': mf, 'ativo': ativo})
+    c.close()
     # webcam: gestos repetidos (palma avança várias vezes; joinha alterna reproduzir/pausar), com reconhecedor MediaPipe simulado
     wc = amb.tmp / 'webcam'; wc.mkdir(exist_ok=True)
     (wc / 's.md').write_text('\n\n---\n\n'.join('# Slide %d\n\nTexto.' % k for k in range(1, 7)) + '\n', encoding='utf-8')
