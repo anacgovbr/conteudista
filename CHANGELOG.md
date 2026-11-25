@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.119 - 25/11/2026
+- **Temas para web:** 12 temas HTML do frontend-slides entram no catálogo com tokens de layout, fontes e movimento. Eles ficam fora do seletor do gerador para não alterar PPTX/DOCX.
+- **Apresentações:** pipeline Theme → Layout → Render com 8 layouts adaptados ao palco 1280×720 do Conteudista; animações respeitam movimento reduzido e os temas antigos seguem no HTML anterior.
+- **Editor:** a aba Versões compara dois temas diferentes, inclusive um tema HTML, sem poluir o seletor principal.
+- **Validação:** grupos 5, 6, 20 e 25 e 11 testes de módulos aprovados localmente; a falha pré-existente do grupo 21 segue registrada.
+
 ## 1.118 - 25/11/2026
 - **Apresentações ANAC:** contraste dos destaques do PPTX corrigido, fluxos Mermaid incluídos como imagem e faixa lateral removida; capa e encerramento preservam as artes do tema.
 - **Ajuda de acessibilidade:** popover reposicionado para caber na tela; instruções de webcam e leitura continuam no painel compartilhado GOV.BR.

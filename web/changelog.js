@@ -5,7 +5,7 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const VERSAO = '1.118';
+  const VERSAO = '1.119';
   const CHAVE = 'conteudista.versaoVista';
   const st = document.createElement('style');
   st.textContent = `#btnNews{position:relative}#btnNews .pt{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#168821;border:2px solid #fff}
