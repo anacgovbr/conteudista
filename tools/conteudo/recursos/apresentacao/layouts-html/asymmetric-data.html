@@ -1,0 +1,28 @@
+<!-- Layout: asymmetric-data — KPIs e resultados. Destaque principal à esquerda, tabela/valores à direita. -->
+<style>
+.s.fs-asymmetric-data{background:var(--c-fundo)}
+.s.fs-asymmetric-data .in{left:0;right:0;top:0;bottom:0;display:block}
+.s.fs-asymmetric-data .conteudo{
+  height:100%;display:grid;grid-template-columns:35% 65%;
+  background:var(--token-card-bg);
+}
+.s.fs-asymmetric-data .conteudo>*:first-child{
+  margin:0;padding:60px 48px;border-right:1px solid var(--token-divider-color);
+  display:flex;flex-direction:column;justify-content:center;
+}
+.s.fs-asymmetric-data .conteudo>*:first-child strong{
+  font-family:var(--font-display);font-size:76px;line-height:1;
+  color:var(--token-accent-color);
+}
+.s.fs-asymmetric-data .conteudo>*:last-child{padding:60px 48px;align-self:center}
+.s.fs-asymmetric-data table{width:100%;background:transparent;font-size:19px}
+.s.fs-asymmetric-data th{background:var(--token-accent-color);color:var(--c-fundo)}
+.s.fs-asymmetric-data td{border-color:var(--token-card-border)}
+.s.fs-asymmetric-data tr:nth-child(even) td{background:var(--c-superficie)}
+</style>
+<template>
+<div class="fs-layout fs-data" data-slot="root">
+  <div data-slot="hero"><div data-slot="hero-stat">42%</div><div data-slot="hero-label">Indicador principal</div></div>
+  <div data-slot="kpi-grid"><div data-slot="kpi"><span data-slot="kpi-value">—</span><span data-slot="kpi-label">Indicador</span></div></div>
+</div>
+</template>

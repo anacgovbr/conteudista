@@ -1,0 +1,32 @@
+<!-- Layout: staggered-reveal — processo sequencial de 3 a 5 etapas. -->
+<style>
+.s.fs-staggered-reveal{background:var(--c-fundo)}
+.s.fs-staggered-reveal .in{display:flex;justify-content:center}
+.s.fs-staggered-reveal h2{
+  font-family:var(--font-display);font-size:36px;color:var(--token-heading-color);
+  border:0;padding:0;margin:0 0 48px;
+}
+.s.fs-staggered-reveal ol,.s.fs-staggered-reveal ul{
+  list-style:none;padding:0;margin:0;display:flex;gap:24px;counter-reset:fs-step;
+}
+.s.fs-staggered-reveal li{
+  flex:1;position:relative;text-align:center;font-size:15px;
+  color:var(--token-muted-color);counter-increment:fs-step;
+}
+.s.fs-staggered-reveal li::before{
+  content:counter(fs-step,decimal-leading-zero);display:flex;align-items:center;justify-content:center;
+  width:56px;height:56px;margin:0 auto 20px;border-radius:50%;
+  background:var(--token-accent-color);color:var(--c-fundo);
+  font-family:var(--font-display);font-size:24px;font-weight:900;
+}
+.s.fs-staggered-reveal li:not(:last-child)::after{
+  content:"";position:absolute;top:28px;left:calc(50% + 32px);width:calc(100% - 64px);height:2px;
+  background:var(--token-divider-color);
+}
+</style>
+<template>
+<div class="fs-layout fs-stagger" data-slot="root">
+  <h2 data-slot="title">Título do processo</h2>
+  <ol data-slot="steps"><li data-slot="step"><span data-slot="step-title">Etapa</span><span data-slot="step-description">Descrição</span></li></ol>
+</div>
+</template>

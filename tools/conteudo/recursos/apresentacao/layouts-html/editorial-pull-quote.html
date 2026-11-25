@@ -1,0 +1,29 @@
+<!-- Layout: editorial-pull-quote — citação de especialista, depoimento ou princípio. -->
+<style>
+.s.fs-editorial-pull-quote{background:var(--c-fundo)}
+.s.fs-editorial-pull-quote .in{display:flex;justify-content:center;padding:40px 60px}
+.s.fs-editorial-pull-quote .conteudo{position:relative;max-width:960px}
+.s.fs-editorial-pull-quote blockquote{
+  position:relative;margin:0;padding:0 0 0 36px;border:0;background:transparent;
+  border-left:4px solid var(--token-accent-color);
+}
+.s.fs-editorial-pull-quote blockquote::before{
+  content:"“";position:absolute;left:-8px;top:-100px;z-index:-1;
+  font-family:var(--font-display);font-size:240px;line-height:1;
+  color:var(--token-accent-color);opacity:.12;pointer-events:none;
+}
+.s.fs-editorial-pull-quote blockquote p{
+  font-family:var(--font-display);font-style:italic;font-size:40px;line-height:1.35;
+  color:var(--token-heading-color);margin:0 0 32px;
+}
+.s.fs-editorial-pull-quote footer{font-size:16px;color:var(--token-muted-color)}
+.s.fs-editorial-pull-quote cite{display:block;font-weight:700;font-style:normal;color:var(--token-heading-color)}
+</style>
+<template>
+<div class="fs-layout fs-quote" data-slot="root">
+  <blockquote>
+    <p data-slot="quote">Citação principal aqui</p>
+    <footer><cite data-slot="attribution">Nome</cite><span data-slot="source">Fonte / Cargo</span></footer>
+  </blockquote>
+</div>
+</template>

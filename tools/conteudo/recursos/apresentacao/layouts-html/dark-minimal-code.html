@@ -1,0 +1,26 @@
+<!-- Layout: dark-minimal-code — arquitetura e snippets técnicos. Fundo fixo de IDE por contrato. -->
+<style>
+/* Exceção documentada: fundo de IDE fixo, independente da paleta do tema. */
+.s.fs-dark-minimal-code{background:#1e1e2e;color:#c9d1d9}
+.s.fs-dark-minimal-code .in{display:flex;justify-content:center}
+.s.fs-dark-minimal-code h2{font-size:22px;font-weight:400;color:rgba(255,255,255,.55);border:0;padding:0;margin:0 0 24px}
+.s.fs-dark-minimal-code .conteudo{max-width:1050px}
+.s.fs-dark-minimal-code pre.code{
+  background:#2a2a3e;border:1px solid rgba(255,255,255,.08);border-radius:8px;
+  padding:32px 36px;margin:0 0 28px;color:var(--token-code-text);
+  font-family:"JetBrains Mono",Consolas,"Courier New",monospace;font-size:18px;line-height:1.65;
+  white-space:pre-wrap;word-break:break-word;
+}
+.s.fs-dark-minimal-code p{
+  font-size:16px;font-weight:700;color:var(--token-accent-color);
+  border-left:3px solid var(--token-accent-color);padding-left:16px;
+}
+</style>
+<template>
+<div class="fs-layout fs-code-dark" data-slot="root">
+  <h2 data-slot="title">Título técnico</h2>
+  <span data-slot="language">JS</span>
+  <pre data-slot="code">// código aqui</pre>
+  <div data-slot="insight">Conclusão ou insight</div>
+</div>
+</template>

@@ -1,0 +1,28 @@
+<!-- Layout: split-accent — 3 a 5 pontos. Coluna esquerda em cor de destaque, direita em cards. -->
+<style>
+.s.fs-split-accent{background:var(--c-superficie)}
+.s.fs-split-accent .in{left:0;right:0;top:0;bottom:0;display:block}
+.s.fs-split-accent .conteudo{
+  height:100%;display:grid;grid-template-columns:38% 62%;
+  background:var(--token-accent-color);align-content:stretch;
+}
+.s.fs-split-accent .conteudo>*{padding:56px 48px;margin:0;background:var(--c-superficie)}
+.s.fs-split-accent .conteudo>*:first-child{
+  background:var(--token-accent-color);display:flex;align-items:center;
+  font-family:var(--font-display);font-size:46px;line-height:1.1;font-weight:900;
+  color:var(--c-fundo);border:0;
+}
+.s.fs-split-accent ul,.s.fs-split-accent ol{list-style:none;padding:0;margin:0;display:grid;gap:18px;align-content:center}
+.s.fs-split-accent li{position:relative;padding-left:48px;font-size:19px;color:var(--token-body-color)}
+.s.fs-split-accent li::before{
+  content:"→";position:absolute;left:0;top:0;width:34px;height:34px;border-radius:8px;
+  background:var(--token-card-icon-bg);color:var(--token-accent-color);
+  display:flex;align-items:center;justify-content:center;font-weight:700;
+}
+</style>
+<template>
+<div class="fs-layout fs-split-accent" data-slot="root">
+  <h1 data-slot="title">Título</h1>
+  <div data-slot="items"><div data-slot="item"><span data-slot="icon">→</span><strong data-slot="label">Rótulo</strong><span data-slot="description">Descrição</span></div></div>
+</div>
+</template>

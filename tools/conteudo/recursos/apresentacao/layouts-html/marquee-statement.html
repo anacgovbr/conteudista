@@ -1,0 +1,24 @@
+<!-- Layout: marquee-statement — abertura de seção, citação curta, estatística única. Sem imagem. -->
+<style>
+.s.fs-marquee-statement{background:var(--c-fundo);color:var(--c-texto)}
+.s.fs-marquee-statement .in{display:flex;align-items:center}
+.s.fs-marquee-statement .conteudo{max-width:1000px}
+.s.fs-marquee-statement h1{
+  font-family:var(--font-display);font-size:84px;line-height:1.02;font-weight:900;
+  letter-spacing:-.02em;color:var(--token-heading-color);margin:0 0 36px;
+  border:0;padding:0;
+}
+.s.fs-marquee-statement p{font-size:20px;color:var(--token-muted-color);max-width:780px}
+.s.fs-marquee-statement .conteudo>*:first-child::before{
+  content:"";display:block;width:80px;height:4px;margin-bottom:28px;
+  background:var(--token-accent-color);
+}
+</style>
+<template>
+<div class="fs-layout fs-marquee" data-slot="root">
+  <div data-slot="eyebrow">Eyebrow</div>
+  <h1 data-slot="title">Título principal</h1>
+  <div data-slot="rule"></div>
+  <p data-slot="footer">Rodapé ou fonte</p>
+</div>
+</template>
