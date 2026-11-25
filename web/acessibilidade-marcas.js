@@ -209,7 +209,7 @@ html.contraste .la-balao{background:#000;color:#fff;border-color:#fff}
   /* ---------------------------- Rodapé e interruptores ---------------------------- */
   function montarRodape(k) {
     const c = C[k], st = c.box.querySelector('.mde-st'); if (!st) return;
-    c.rod = document.createElement('button'); c.rod.type = 'button'; c.rod.className = 'st-la'; c.rod.hidden = true;
+    c.rod = document.createElement('button'); c.rod.type = 'button'; c.rod.className = 'st-la'; c.rod.hidden = true; c.rod.setAttribute('aria-label', 'Abrir o painel Acessibilidade (Alt+Shift+C)');
     c.rod.addEventListener('click', e => { e.stopPropagation(); A().abrir(k); });
     // o editor reescreve o rodapé a cada tecla: devolve o resumo ao fim
     new MutationObserver(() => { if (!MQ_RODAPE.matches && c.rod.parentNode !== st) st.append(c.rod); }).observe(st, { childList: true });
