@@ -8,7 +8,7 @@ from .fontes import fontes_css
 from .markdown import blocks, mermaid_edges, plain, runs, slug, title_of, url_ok, ICONE_DESTAQUE, ROTULO_DESTAQUE
 from .mermaid import corrigir as corrigir_mermaid
 from .recursos import ler_recurso
-from .temas import TEMA_PADRAO, tcss, tema_de, css_apostila, css_apresentacao, papeis_slides, mermaid_config, eh_personalizado, chave_markdown, paleta
+from .temas import TEMA_PADRAO, tcss, tema_de, css_apostila, css_apresentacao, papeis_slides, mermaid_config, eh_personalizado, chave_markdown, paleta, eh_html, css_vars_tema
 
 LEITURA_HEAD=ler_recurso('acessibilidade/preferencias.js')
 
@@ -266,7 +266,20 @@ ICO_B.update({'nota':'M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c
 def _ic(k,cls=''):
     return '<svg class="ic%s" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="%s"/></svg>'%((' '+cls) if cls else '',ICO_B[k])
 
-def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True,licenca=''):
+def _fs_layout(b):
+    "Escolhe o layout frontend-slides a partir dos blocos do slide."
+    blocos=b or []
+    imagens=sum(1 for x in blocos if x[0]=='img')
+    if imagens>=3:return 'mosaic-feature'
+    if imagens:return 'cinematic-banner'
+    if any(x[0]=='code' for x in blocos):return 'dark-minimal-code'
+    if any(x[0]=='quote' for x in blocos):return 'editorial-pull-quote'
+    if any(x[0]=='table' for x in blocos):return 'asymmetric-data'
+    if any(x[0]=='list' for x in blocos):return 'split-accent'
+    return 'marquee-statement' if len(blocos)<=4 else 'staggered-reveal'
+
+
+def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True,licenca='',css_extra='',fs=False,fs_reveal='stagger'):
     """Monta o HTML da apresentação (com ou sem narração): ARIA, leitura, modo leitura, auto-ajuste e impressão A4."""
     _TB[0]=0;T=tema_de(tema);n_original=len(sl);n=n_original+bool(licenca);secs=[]
     papeis=papeis_slides(sl,bool(licenca))
@@ -275,7 +288,8 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
         ultimo=k==n_original-1;rot='Slide %d de %d'%(k+1+(antes and ultimo),n)
         nota='<aside class="nt" role="note" aria-label="Notas do apresentador"><p class="nt-t">Notas do apresentador</p><p class="nt-x">%s</p></aside>'%E(nt) if (nt or '').strip() else ''
         legenda='<p class="a11y-caption">%s</p>'%E(nt) if audios and k in audios and (nt or '').strip() else ''
-        secs.append('<section class="s %s papel-%s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,papeis[k].replace('_','-'),rot,rot,'' if anac and ultimo else html_of(b,None,None,paleta(T)),nota,legenda))
+        cls_fs=(' fs-'+_fs_layout(b)) if fs else ''
+        secs.append('<section class="s %s papel-%s%s" role="group" aria-roledescription="slide" aria-label="%s" tabindex="-1"><p class="slide-num" aria-hidden="true">%s</p><div class="in"><div class="conteudo">%s</div></div>%s%s</section>'%(c,papeis[k].replace('_','-'),cls_fs,rot,rot,'' if anac and ultimo else html_of(b,None,None,paleta(T)),nota,legenda))
     aviso_licenca=licencas.aviso_slide_html(licenca)
     if aviso_licenca:
         rot='Slide %d de %d'%(n-antes,n)
@@ -290,7 +304,7 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
                 k+=antes and k==n_original-1
                 mime=MIME_AUDIO.get(os.path.splitext(cam)[1].lower(),'audio/mpeg')
                 aud+='<audio class="narr" data-s="%d" preload="auto" src="data:%s;base64,%s"></audio>'%(k,mime,base64.b64encode(open(cam,'rb').read()).decode())
-    css+=CSS_S_A11Y+CSS_BPLUS+CSS_ESTREITO+ZOOM_CSS+PAINEL_A11Y_CSS+css_apresentacao(T,papeis)
+    css+=CSS_S_A11Y+CSS_BPLUS+CSS_ESTREITO+ZOOM_CSS+PAINEL_A11Y_CSS+css_apresentacao(T,papeis)+css_extra
     hud=('<div id="hud" role="group" aria-label="Controles da apresentação" class="bplus" data-estado="visible">'
          '<button id="p" type="button" aria-label="Slide anterior" aria-keyshortcuts="ArrowLeft" data-dica="Slide anterior · ←">'+_ic('prev')+'</button>'
          '<button id="bp" type="button" aria-label="Reproduzir apresentação" aria-keyshortcuts="Space" data-on="false" data-dica="Reproduzir · Espaço">'+_ic('play','i-off')+_ic('pause','i-on')+'</button>'
@@ -328,10 +342,11 @@ def _slides_doc(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
          '<button id="ini1" type="button">▶ Iniciar com narração</button><button id="ini0" type="button" class="ini0">Iniciar sem som</button></div>') if narr else ''
     js='<script>'+ZOOM_JS+'</script><script>'+LEITURA_JS+JS_S+'</script>'+('<script>'+JS_NARR.replace('__AUTO__','true' if avancar else 'false')+'</script>' if narr else '')+'<script>'+WEBCAM_JS+'</script>'
     mer=('<script>window.CONTEUDISTA_MERMAID=%s</script>'%mermaid_config(T))+_mer_s(o)
-    return ('<!DOCTYPE html><html lang="pt-BR" data-leitura="padrao"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme" content="%s"><title>%s</title>'
+    attrs=(' class="fs-on" data-fs-reveal="%s"'%E(fs_reveal)) if fs else ''
+    return ('<!DOCTYPE html><html lang="pt-BR" data-leitura="padrao"%s><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme" content="%s"><title>%s</title>'
     '<script>%s%s</script><style>%s</style></head><body><script>%s</script><a class="skip" href="#st">Ir para os slides</a>%s'
     '<div id="st" role="region" aria-roledescription="apresentação" aria-label="Apresentação" tabindex="-1">%s</div><div id="bar" aria-hidden="true"></div>%s%s%s%s%s%s</body></html>'
-    )%(E(chave_markdown(tema)),E(t),LEITURA_HEAD,SLIDES_MODO_HEAD,css,SLIDES_MODO_BODY,hud,o,ini,aud,painel_a11y(vlibras,narr,True),js,mer,A11Y_JS)
+    )%(attrs,E(chave_markdown(tema)),E(t),LEITURA_HEAD,SLIDES_MODO_HEAD,css,SLIDES_MODO_BODY,hud,o,ini,aud,painel_a11y(vlibras,narr,True),js,mer,A11Y_JS)
 
 def slides_html(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True,licenca=''):
     return _slides_doc(t,sl,foot,tema,audios,avancar,fluxos,vlibras,licenca)
@@ -339,3 +354,24 @@ def slides_html(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibra
 def _slides_html_narrado(t,sl,foot,tema,audios,avancar,fluxos=None,vlibras=True,licenca=''):
     """Compatibilidade: a montagem é a mesma de slides_html (_slides_doc); a narração escuta o evento conteudista:slide."""
     return _slides_doc(t,sl,foot,tema,audios,avancar,fluxos,vlibras,licenca)
+
+
+_LAYOUTS_FS=('marquee-statement','split-accent','cinematic-banner','asymmetric-data',
+             'staggered-reveal','editorial-pull-quote','mosaic-feature','dark-minimal-code')
+
+def slides_html_fs(t,sl,foot,tema=None,audios=None,avancar=False,fluxos=None,vlibras=True,licenca=''):
+    """Variante Theme -> Layout -> Render. Temas HTML usam os layouts do frontend-slides;
+    qualquer outro tema segue exatamente o pipeline slides_html existente."""
+    T=tema_de(tema)
+    if not eh_html(T):
+        return _slides_doc(t,sl,foot,tema,audios,avancar,fluxos,vlibras,licenca)
+    css=css_vars_tema(T)
+    for nome in ('fs-stage.css','fs-animation.css'):
+        css+='\n'+ler_recurso('apresentacao/frontend-slides/'+nome)
+    for nome in _LAYOUTS_FS:
+        html=ler_recurso('apresentacao/layouts-html/'+nome+'.html')
+        css+='\n'+'\n'.join(re.findall(r'<style>(.*?)</style>',html,re.S))
+    saida=_slides_doc(t,sl,foot,tema,audios,avancar,fluxos,vlibras,licenca,
+                      css_extra=css,fs=True,fs_reveal=(T.get('motion') or {}).get('reveal','stagger'))
+    links=''.join('<link rel="stylesheet" href="%s">'%E(u) for u in (T.get('fonts_web') or []))
+    return saida.replace('</head>',links+'</head>',1) if links else saida

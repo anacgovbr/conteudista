@@ -38,7 +38,7 @@ from conteudo.html_saida import (
     PAINEL_A11Y_CSS, SLIDES_MODO_BODY, SLIDES_MODO_HEAD, TAM_HTML, TAM_JS, ZOOM_CSS,
     ZOOM_JS, _anac_html_css, _fluxo_alt, _fluxos_dict, _fluxos_img, _ic,
     _mer_s, _mermaid_html, _slides_doc, _slides_html_narrado, _tabela_fluxo, html_of,
-    inl, lst_html, painel_a11y, slides_html, treinamento_html
+    inl, lst_html, painel_a11y, slides_html, slides_html_fs, treinamento_html
 )
 from conteudo.imagens import (
     IMG, _ep_img_raw, embed_images, img_bytes, img_size
@@ -104,7 +104,7 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
             if quer('md'):
                 Path(T('.md','Apresentacao_')).write_text(licencas.anexar_markdown(sm,licenca,True),encoding='utf-8');arqs.append(P('.md','Apresentacao_'))
             if quer('html'):
-                Path(T('.html','Apresentacao_')).write_text(slides_html(t,sl,rodape,tema,nr['html'],nr['avancar'],_fluxos_dict(fluxos),vlibras,licenca),encoding='utf-8');arqs.append(P('.html','Apresentacao_'))
+                Path(T('.html','Apresentacao_')).write_text(slides_html_fs(t,sl,rodape,tema,nr['html'],nr['avancar'],_fluxos_dict(fluxos),vlibras,licenca),encoding='utf-8');arqs.append(P('.html','Apresentacao_'))
             if quer('pptx'):
                 try:registrar_decorativas(sm);slides_pptx(t,sl,T('.pptx','Apresentacao_'),rodape,tema,nr['pptx'],nr['avancar'],nr['duracoes'],licenca,_fluxos_dict(fluxos));arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
                 except Exception as e:falhas.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ERRO %s'%e
