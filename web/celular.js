@@ -1,8 +1,7 @@
 /* =====================================================================================
    Conteudista — Editor no celular (1.79)
    Em telas de até 700 px:
-   - Barra do editor em até duas linhas. Linha 1: Desfazer, Refazer, Negrito, Itálico e três
-     "caixas" (menus): Formatar (títulos, código e listas), Inserir e Mais. Linha 2: modos Editar · Dividido · Prévia.
+   - Barra do editor em até duas linhas, com Formatar e Inserir; extras e modos ficam visíveis.
      Os botões originais continuam no lugar (escondidos) e cada item do menu aciona o original:
      atalhos, desfazer e os demais módulos seguem funcionando.
    - Contagem do texto em uma linha; tocar mostra os detalhes.
@@ -32,8 +31,8 @@
 .mde-tb.mv-tb>:not(.mv-keep):not(.mv-grp):not(.mv-quebra){display:none!important}
 .mde-tb.mv-tb>.mv-keep,.mde-tb.mv-tb>.mv-grp{flex:1 1 0;min-width:32px;max-width:64px}
 .mde-tb.mv-tb>.mv-keep,.mde-tb.mv-tb .mv-bt{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:2px;margin:0;padding:0 2px}
-.mde-tb.mv-tb>.mv-ext{display:none!important}
 .mde-tb.mv-tb .mv-bt{width:100%;font:700 14px "Segoe UI",Arial,sans-serif}
+.mde-tb.mv-tb .la-rot{display:none}
 .mde-tb.mv-tb .mv-quebra{flex-basis:100%;height:0}
 .mde-tb.mv-tb>[data-m]{max-width:none;min-height:40px}
 .mde-tb.mv-tb [data-m]::after{content:attr(data-mv-rot);font:600 13px "Segoe UI",Arial,sans-serif;margin-left:6px}
@@ -77,7 +76,6 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
   const GRUPOS = [
     { id: 'fmt', rotulo: 'Títulos, código e listas', curto: 'H', re: /^(T[ií]tulo [123]|C[oó]digo|Lista|Checklist)/ },
     { id: 'ins', rotulo: 'Inserir', icone: 'plus', re: /^(Link \(|Imagem|Tabela|Caixa|Fluxo|Novo slide|Marcar slide|Notas do apresentador|Separador|Modelo de exerc)/ },
-    { id: 'mais', rotulo: 'Mais opções', icone: 'mais', re: null },
   ];
   const SVG = {
     car: '<svg class="mv-car" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg>',
@@ -103,7 +101,7 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
     const l = [];
     [...tb.children].forEach(el => {
       const g = grupoDe(el);
-      if (g !== gid && !(MQ.matches && gid === 'mais' && g === 'extra')) return;
+      if (g !== gid) return;
       if (el.tagName === 'SELECT') {
         [...el.options].forEach((o, k) => { if (k > 0) l.push({ nome: 'Caixa: ' + o.text, ic: '❝', fazer: () => { el.selectedIndex = k; el.dispatchEvent(new Event('change', { bubbles: true })); } }); });
         return;
@@ -121,7 +119,7 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
   }
   function abrirMenu(bt, foco) {
     fecharMenu(false);
-    const tb = bt.closest('.mde-tb'), menu = bt._mvMenu, itens = itensDe(tb, bt.dataset.g);
+    const tb = bt.closest('.mde-tb'), menu = bt._mvMenu, gid = bt.dataset.g, itens = itensDe(tb, gid);
     menu.innerHTML = ''; const els = [];
     itens.forEach(it => {
       if (it === 'sep') { const s = document.createElement('div'); s.className = 'mv-sep'; s.setAttribute('role', 'separator'); menu.append(s); return; }
@@ -186,16 +184,18 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
         bt._mvMenu = m;
         return w;
       };
-      const q = document.createElement('span'); q.className = 'mv-quebra'; q.style.order = 50; q.setAttribute('aria-hidden', 'true');
       let ordem = 1;
       [...tb.children].forEach(el => {
         const g = grupoDe(el);
-        if (g === 'manter' || g === 'extra') { el.classList.add('mv-keep'); if (g === 'extra') el.classList.add('mv-ext'); el.style.order = ordem++; }
+        if (g === 'manter' || g === 'extra') {
+          el.classList.add('mv-keep');
+          if (g === 'extra') { el.classList.add('mv-ext'); el.style.order = 13 + ordem++; }
+          else el.style.order = ordem++;
+        }
         else if (g === 'modo') { el.classList.add('mv-keep'); el.style.order = 60 + ('esp'.indexOf(el.dataset.m) + 1); el.dataset.mvRot = ROT_MODO[el.dataset.m] || ''; }
         else if (g || el.matches('.sep')) el.classList.add('mv-oc');
       });
       GRUPOS.forEach((g, k) => tb.append(mk(g, 10 + k)));
-      tb.append(q);
     }
     if (!movel || (!BARRA && !IMAGENS)) return;
     if (IMAGENS) box.classList.add('mv-img');
@@ -268,7 +268,9 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
     aplicar();
     if (MQ.addEventListener) MQ.addEventListener('change', aplicar); else if (MQ.addListener) MQ.addListener(aplicar);
     // barras criadas depois (outros módulos) também entram
-    new MutationObserver(ms => { if (ms.some(m => [...m.addedNodes].some(n => n.nodeType === 1 && (n.matches('.mde') || n.querySelector && n.querySelector('.mde'))))) aplicar(); })
+    new MutationObserver(ms => { if (ms.some(m => [...m.addedNodes].some(n => n.nodeType === 1 &&
+      (n.matches('.mde') || n.querySelector && n.querySelector('.mde') ||
+       m.target.matches('.mde-tb') && !n.matches('.mv-grp,.mv-quebra'))))) aplicar(); })
       .observe(document.body, { childList: true, subtree: true });
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else setTimeout(iniciar, 0);

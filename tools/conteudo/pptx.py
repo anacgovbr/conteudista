@@ -20,7 +20,7 @@ def _imagem_bytes(src):
         if os.path.isfile(cam):return open(cam,'rb').read()
     return None
 
-def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None,licenca=''):
+def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None,licenca='',fluxos=None):
     T=tema_de(tema);custom=eh_personalizado(T);PAL=paleta(T);FONTE=T['pptx_font']
     FONTE_TITULO=(T['fontes']['titulo'].split(',')[0].strip("'\" ") if custom else FONTE)
     from pptx import Presentation
@@ -155,9 +155,10 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                 bg=C(PAL['suave']);bd={'info':ACC,'tip':AC2,'warning':C(PAL['alerta'])}.get(b[1],AC2)
             else:
                 bg,bd={'info':(C('EAF1F8'),C('0A7CC1')),'tip':(C('E9F6F0'),C('1E7B4F')),'warning':(C('FFF4E0'),C('9A5B00'))}.get(b[1],(C('E9F6F0'),AC2))
+            cor_caixa=C('193F52') if modelo and (escuro or b[1] in ('info','tip','warning')) else col
             rect(s,x,y,w,h-0.05,bg);rect(s,x,y,0.08,h-0.05,bd)
             yy=y+0.1
-            for q in com_icone(b[2],b[1]):draw(s,q,yy,max(MIN_CORPO,size-1),col,x+0.2,w-0.3);yy+=est(q,max(MIN_CORPO,size-1))
+            for q in com_icone(b[2],b[1]):draw(s,q,yy,max(MIN_CORPO,size-1),cor_caixa,x+0.2,w-0.3);yy+=est(q,max(MIN_CORPO,size-1))
         elif k=='img':
             raw=img_bytes(b[2])
             if raw is None:
@@ -169,7 +170,16 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                 if b[1]:
                     tb,tf=tbox(s,x,y+hh+0.03,w,0.32);tf.paragraphs[0].alignment=2;addruns(tf.paragraphs[0],b[1],12,col if custom else MU)
         elif k=='code':
-            if b[1]=='mermaid':draw(s,('table',mermaid_edges(b[2])),y,size,col,x,w)
+            if b[1]=='mermaid':
+                imagem=(fluxos or {}).get(b[2].strip())
+                if isinstance(imagem,str) and imagem.startswith('data:image/'):
+                    try:
+                        dados=base64.b64decode(imagem.split(',',1)[1])
+                        iw,ih=img_size(dados);hh=min(4.6,w*ih/max(iw,1),ih/96);ww=hh*iw/max(ih,1)
+                        alt='Fluxo: '+'; '.join(plain(v) for r in mermaid_edges(b[2])[1:] for v in (r[0],r[2]) if v)
+                        alt_pic(s.shapes.add_picture(io.BytesIO(dados),Inches(x+(w-ww)/2),Inches(y),Inches(ww),Inches(hh)),alt,False)
+                    except Exception:draw(s,('table',mermaid_edges(b[2])),y,size,col,x,w)
+                else:draw(s,('table',mermaid_edges(b[2])),y,size,col,x,w)
             else:
                 tb,tf=tbox(s,x,y,w,h);r=tf.paragraphs[0].add_run();r.text=b[2];r.font.name='Consolas';r.font.size=Pt(12);r.font.color.rgb=col;r.font.language_id=PT_BR
         return h
@@ -181,11 +191,11 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
         else:
             istitle=cls=='title';tem_fundo=fundo_anac(s,idx,cls)
             if not tem_fundo:
-                if istitle:rect(s,0,0,W,7.5,PRI);rect(s,0,0,0.15,7.5,DEST)
+                if istitle:rect(s,0,0,W,7.5,PRI)
                 else:
                     if modelo and escuro:rect(s,0,0,W,7.5,SOFT)
                     elif cls=='highlight':rect(s,0,0,W,7.5,C('F2F7FC'))
-                    rect(s,0,0,0.15,7.5,PRI)
+                if not modelo:rect(s,0,0,0.15,7.5,PRI)
         h1=[b for b in bl if b[0]=='h' and b[1]==1];rest=[b for b in bl if not(b[0]=='h' and b[1]==1)]
         if modelo and istitle and idx==len(sl)-1:h1=[];rest=[]  # slide final ANAC sem texto
         if istitle:

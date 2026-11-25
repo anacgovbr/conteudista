@@ -290,7 +290,7 @@
 <h4>Tutorial</h4>
 <p>O tutorial abre sozinho na primeira visita. Para vê-lo de novo, use o botão <b>▶ Tutorial</b>, o botão <b>↺ Reiniciar tutorial</b> desta janela ou <kbd>Alt+Shift+R</kbd>. Dentro do tutorial, <b>↺</b> volta ao primeiro passo.</p>
 <h4>Acessibilidade do texto</h4>
-<p>O botão <b>Acessibilidade</b>, na barra do editor (no celular, no menu <b>⋯</b>), confere o texto e mostra o que melhorar. O número vermelho no botão é a quantidade de itens <b>para corrigir</b>. Atalho: <kbd>Alt+Shift+C</kbd>.</p>
+<p>O botão <b>Acessibilidade</b>, na barra do editor, confere o texto e mostra o que melhorar. O número vermelho no botão é a quantidade de itens <b>para corrigir</b>. Atalho: <kbd>Alt+Shift+C</kbd>.</p>
 <ul><li><b>Para corrigir</b>: impedem alguém de ler, como imagem sem descrição, título que pula nível, link "clique aqui", slide sem título e tabela sem cabeçalho.</li>
 <li><b>Sugestões</b>: deixam o texto mais fácil, como frase longa, sigla sem explicação e texto em maiúsculas. Não contam como erro.</li>
 <li>Botões de cada item: a correção (por exemplo, <b>Ajustar nível</b> ou <b>É decorativa</b>), <b>Ir para</b> (seleciona o trecho no editor), <b>Por quê?</b> e, nas sugestões, <b>Ignorar</b>. Toda correção pode ser desfeita com <kbd>Ctrl+Z</kbd>.</li>
@@ -321,7 +321,7 @@
 <li><b>Links</b> com texto que diz aonde levam. Nunca "clique aqui".</li></ol>
 <p>Exemplos de antes e depois estão na seção <b>10.6</b> da apostila de exemplo. O prompt padrão 1.1 (seção <b>11.3</b>) leva essas regras para a IA.</p>
 <h4>Editor no celular</h4>
-<p>Em telas pequenas, a barra do editor ocupa no máximo duas linhas. Na primeira ficam <b>Desfazer</b>, <b>Refazer</b>, <b>Negrito</b>, <b>Itálico</b> e três menus: <b>H</b> (títulos, código e listas), <b>+</b> (Inserir: link, imagem, tabela, caixas, fluxo e <b>Imagens do texto</b>) e <b>⋯</b> (Mais: compartilhar link, versões e tela cheia). Na segunda, os modos <b>Editar</b>, <b>Dividido</b> e <b>Prévia</b>. A contagem do texto ocupa uma linha; toque nela para ver os detalhes. Nos menus, as setas trocam de item e <kbd>Esc</kbd> fecha.</p>
+<p>Em telas pequenas, a barra do editor ocupa no máximo duas linhas. Na primeira ficam <b>Desfazer</b>, <b>Refazer</b>, <b>Negrito</b>, <b>Itálico</b> e dois menus: <b>H</b> (títulos, código e listas) e <b>+</b> (Inserir: link, imagem, tabela, caixas, fluxo e <b>Imagens do texto</b>). Na segunda ficam <b>Acessibilidade</b>, <b>Compartilhar link</b>, <b>Versões</b>, <b>Tela cheia</b> e os modos <b>Editar</b>, <b>Dividido</b> e <b>Prévia</b>. A contagem do texto ocupa uma linha; toque nela para ver os detalhes. Nos menus, as setas trocam de item e <kbd>Esc</kbd> fecha.</p>
 <h4>Ampliar (zoom) nos arquivos gerados</h4>
 <p>Na <b>apostila</b>, use a pinça com dois dedos ou <kbd>Ctrl</kbd> + roda do mouse. Na <b>apresentação</b>, use a pinça, o toque duplo, <kbd>Ctrl</kbd> + roda do mouse ou as teclas <kbd>+</kbd> e <kbd>−</kbd>; com o slide ampliado, as setas movem a visão e <kbd>0</kbd> (ou o botão <b>100% ↺</b>) volta ao tamanho normal. Ao trocar de slide, o zoom volta a 100%. Em imagens e fluxos, o botão com a lupa (ou um toque na imagem) abre a imagem em tela cheia, com zoom próprio; <kbd>Esc</kbd> fecha.</p>
 <h4>Opções padrão (para quem mantém o Conteudista)</h4>

@@ -8,8 +8,6 @@ title: Conteudista na Prática
 
 ## Do texto ao conteúdo pronto, no navegador
 
-Apresentação de uso da aplicação
-
 <!-- notas: Esta apresentação percorre o uso do Conteudista, aplicação que transforma textos em Markdown em uma apostila e em uma apresentação. O percurso começa pelo início rápido e passa por edição, importação e guarda do trabalho. Depois, trata de geração dos arquivos, narração e apoio de inteligência artificial. Cada slide trata de uma funcionalidade. As notas complementam o que está na tela. -->
 
 ---

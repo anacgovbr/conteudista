@@ -37,11 +37,12 @@ html.a11y-contrast .a11y-panel .a11y-sub,html.a11y-contrast .a11y-panel .tam-l{c
 .a11y-panel button.sec{padding:0 24px;border:1px solid #1351b4;border-radius:100em;background:#fff;color:#1351b4;font-weight:600;cursor:pointer}
 .a11y-panel button.sec:hover,.a11y-panel .tam-b button:hover{background:rgba(19,81,180,.12)}
 .a11y-panel button.sec:active,.a11y-panel button.sec[aria-pressed="true"]{background:#1351b4;color:#fff}
-.a11y-panel .a11y-op{display:flex;align-items:flex-start;gap:4px}.a11y-panel .a11y-op label{flex:1}.a11y-panel .a11y-op .a11y-sub{flex:1;margin:18px 0 2px}
+.a11y-panel .a11y-op{position:relative;display:flex;align-items:flex-start;gap:4px}.a11y-panel .a11y-op label{flex:1}.a11y-panel .a11y-op .a11y-sub{flex:1;margin:18px 0 2px}
 .a11y-panel .a11y-i{flex:0 0 auto;width:44px;margin:2px -10px 0 0;padding:0;border:0;background:transparent;color:#1351b4;cursor:pointer}
 .a11y-panel .a11y-i span{display:inline-grid;place-items:center;width:24px;height:24px;border:2px solid #1351b4;border-radius:50%;font:italic 700 15px/1 Georgia,serif}
 .a11y-panel .a11y-i:hover span,.a11y-panel .a11y-i[aria-expanded="true"] span{background:#1351b4;color:#fff}
-.a11y-panel .a11y-ajuda{margin:-4px 0 12px 34px;padding:10px 12px;border-left:4px solid #1351b4;background:#edf5ff;color:#333;font-size:14px;line-height:1.5}
+.a11y-panel .a11y-ajuda{position:absolute;z-index:5;top:auto;bottom:100%;left:34px;right:0;margin:0;padding:10px 12px;border-left:4px solid #1351b4;background:#edf5ff;color:#333;font-size:14px;line-height:1.5;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+@media(max-width:700px){.a11y-panel .a11y-op{flex-wrap:wrap}.a11y-panel .a11y-ajuda{position:static;flex:1 0 calc(100% - 34px);margin:-4px 0 12px 34px;box-shadow:none}}
 html.a11y-contrast .a11y-panel input[type=checkbox]{background-color:#000!important;border-color:#fff!important}
 html.a11y-contrast .a11y-panel input[type=checkbox]:checked{background-color:#ff0!important;border-color:#ff0!important;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 4.8' fill='none' stroke='%23000' stroke-width='2.4'/%3E%3C/svg%3E")!important}
 html.a11y-contrast .a11y-panel button.sec,html.a11y-contrast .a11y-panel .a11y-i{background:#000!important;color:#fff!important;border-color:#fff!important}

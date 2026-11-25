@@ -85,17 +85,15 @@ def grupo9(amb, ctx, G):
         G.chk('9.4', 'Inserir lista Link, Imagem, Tabela e Imagens do texto; foco no primeiro item', any(x.startswith('Link') for x in itens) and any(x.startswith('Imagens do texto') for x in itens) and foco == 'menuitem', itens[:4] + ['…'])
         pg.keyboard.press('ArrowDown'); pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
         G.chk('9.5', 'Esc fecha o menu e devolve o foco ao botão', pg.evaluate("document.activeElement.dataset.g") == 'ins' and bt.get_attribute('aria-expanded') == 'false')
-        pg.locator('#pg .mv-bt[data-g=mais]').click(); pg.wait_for_timeout(150)
-        cortes = pg.evaluate("""() => { const m = document.querySelector('.mv-menu:not([hidden])'), mr = m.getBoundingClientRect();
-          const itens = [...m.querySelectorAll('[role=menuitem]')].map(b => {
-            const r = b.getBoundingClientRect(), ic = b.querySelector('.mv-ic').getBoundingClientRect(), at = b.querySelector('.mv-at');
-            return { nome: b.textContent.trim(), transborda: b.scrollWidth > b.clientWidth + 1,
-              icEsq: Math.round(ic.left - r.left), atDir: Math.round(r.right - (at ? at.getBoundingClientRect().right : r.right)) };
-          });
-          return { itens, naTela: mr.left >= 0 && mr.right <= innerWidth }; }""")
-        G.chk('9.22', 'Celular: itens do menu ⋯ não cortam ícone, texto ou atalho',
-              cortes['naTela'] and all(not i['transborda'] and i['icEsq'] >= 0 and i['atDir'] >= 0 for i in cortes['itens']), cortes)
-        pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
+        extras_movel = pg.evaluate("""() => { const tb=document.querySelector('#pg .mde-tb'), r=q=>tb.querySelector(q).getBoundingClientRect();
+          return {mais:!!tb.querySelector('.mv-bt[data-g=mais]'), extras:[...tb.querySelectorAll('.mv-ext')].map(e=>({ordem:+e.style.order,vis:e.getBoundingClientRect().width>0})),
+            inserir:+tb.querySelector('.mv-bt[data-g=ins]').parentElement.style.order,
+            modo:Math.min(...[...tb.querySelectorAll('[data-m]')].map(e=>+e.style.order)), rolagem:tb.scrollWidth>tb.clientWidth+1}; }""")
+        G.chk('9.22', 'Celular: sem gaveta Mais vazia; extras visíveis entre edição e modos do painel',
+              not extras_movel['mais'] and all(x['vis'] for x in extras_movel['extras'])
+              and extras_movel['inserir'] < extras_movel['extras'][0]['ordem']
+              and all(extras_movel['extras'][i]['ordem'] < extras_movel['extras'][i+1]['ordem'] for i in range(3))
+              and extras_movel['extras'][-1]['ordem'] < extras_movel['modo'] and not extras_movel['rolagem'], extras_movel)
         # 1.116: itens do menu Salvar com ícone e bloco de texto no mesmo eixo vertical
         pg.locator('#btnSalvar').click(); pg.wait_for_timeout(150)
         salvar = pg.evaluate("""() => [...document.querySelectorAll('#jnMenuSalvar .jn-mi')].map(b => {
@@ -458,9 +456,17 @@ def grupo26(amb, ctx, G):
                      grupos: [...tb.querySelectorAll(':scope > .mv-grp > .mv-bt')].filter(vis).map(b => b.dataset.g),
                      escondidos: ['Título 1', 'Tabela', 'Imagem'].filter(n => botoes.some(b => nome(b).startsWith(n) && vis(b))) };
         }""")
-        G.chk('26.18', 'Computador: barra do editor compacta com as 4 ações mais usadas e três menus',
+        G.chk('26.18', 'Computador: barra do editor compacta com as 4 ações mais usadas e dois menus',
               barra['compacta'] and [n.split(' (')[0] for n in barra['visiveis']] == ['Desfazer', 'Refazer', 'Negrito', 'Itálico']
-              and barra['grupos'] == ['fmt', 'ins', 'mais'] and not barra['escondidos'], barra)
+              and barra['grupos'] == ['fmt', 'ins'] and not barra['escondidos'], barra)
+        extras = pg.evaluate("""() => { const tb=document.querySelector('#pg .mde-tb'), m=document.querySelector('.mv-menu:not([hidden])');
+          const r=q=>tb.querySelector(q).getBoundingClientRect().left;
+          return {mais:!!tb.querySelector('.mv-bt[data-g=mais]'), extras:[...tb.querySelectorAll('.mv-ext')].map(e=>({nome:e.title||e.textContent.trim(),x:e.getBoundingClientRect().left,vis:e.offsetParent!==null})),
+            grupos:['fmt','ins'].map(g=>r('.mv-bt[data-g='+g+']')),modo:r('[data-m]')}; }""")
+        G.chk('26.21', 'Computador: sem gaveta vazia; edição, extras e modos ficam nessa ordem',
+              not extras['mais'] and len(extras['extras']) == 4 and all(e['vis'] for e in extras['extras'])
+              and extras['grupos'][0] < extras['grupos'][1] < extras['extras'][0]['x']
+              < extras['extras'][1]['x'] < extras['extras'][2]['x'] < extras['extras'][3]['x'] < extras['modo'], extras)
         pg.locator('#pg .mv-bt[data-g=fmt]').click(); pg.wait_for_timeout(150)
         itens = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [role=menuitem]')].map(x => x.textContent.trim())")
         antes_barra = pg.evaluate("document.querySelector('#pg .mde-ta').value")

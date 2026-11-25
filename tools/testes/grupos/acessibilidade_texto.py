@@ -83,12 +83,15 @@ def grupo12(amb, ctx, G):
         c2 = amb.novo_contexto(movel=True)
         try:
             m = c2.new_page(); _editor_com_texto(m, url)
-            m.locator('#pg .mv-bt[data-g=mais]').click(); m.wait_for_timeout(150)
-            tem = m.locator('.mv-menu:not([hidden]) [role=menuitem]', has_text='Conferir acessibilidade')
-            G.chk('12.16', 'Celular: "Conferir acessibilidade" no menu ⋯ da barra', tem.count() == 1)
+            tem = m.locator('#pg .la-btn')
+            G.chk('12.16', 'Celular: "Conferir acessibilidade" permanece na barra do editor', tem.count() == 1 and tem.is_visible())
             tem.click(); m.wait_for_timeout(300)
             e = m.evaluate("(() => { const p = document.getElementById('laP-g'); return [p.classList.contains('folha'), p.getAttribute('role'), p.getAttribute('aria-modal'), document.activeElement.id]; })()")
             G.chk('12.17', 'Celular: painel abre como folha inferior modal, com o foco no título', e == [True, 'dialog', 'true', 'laT-g'], e)
+            m.locator('#laP-g h3').focus(); m.keyboard.press('Escape'); m.wait_for_timeout(100)
+            G.chk('12.19', 'Celular: Esc fecha o painel e devolve o foco a Acessibilidade',
+                  not m.is_visible('#laP-g') and m.evaluate("document.activeElement.classList.contains('la-btn')"))
+            tem.click(); m.wait_for_timeout(300)
             m.locator('#laP-g .la-it', has_text='Descreva').locator('button', has_text='Ir para').click(); m.wait_for_timeout(300)
             G.chk('12.18', 'Celular: "Ir para" fecha a folha e seleciona o trecho', not m.is_visible('#laP-g') and m.evaluate("(() => { const t = ED.g.textarea; return t.value.slice(t.selectionStart, t.selectionEnd); })()") == '![](fluxo.png)')
             m.close()

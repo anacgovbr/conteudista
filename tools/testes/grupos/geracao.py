@@ -274,6 +274,59 @@ def grupo6(amb, ctx, G):
     G.chk('6.18-anac20-escuro-pptx', 'ANAC escuro PPTX: slide intermediário com fundo azul escuro e texto claro',
           fundo_escuro and tabela_escura and bool(fontes) and min(contrastes_pptx) >= 4.5,
           {'fundo_escuro': fundo_escuro, 'tabela_escura': tabela_escura, 'fontes': fontes, 'contrastes': contrastes_pptx})
+    # Regressão M.3: destaque legível, sem barra lateral e Mermaid embutido nas variantes ANAC.
+    from pptx.enum.shapes import MSO_SHAPE_TYPE
+    anac_reg = amb.tmp / 'anac_regressao'; anac_reg.mkdir(exist_ok=True)
+    conteudo_reg = ('# Capa\n\n---\n\n# Informação\n\n> [!INFO]\n> Informação.\n\n---\n\n'
+        '# Dica\n\n> [!TIP]\n> Dica.\n\n---\n\n# Atenção\n\n> [!WARNING]\n> Atenção.\n\n---\n\n'
+        '# Fluxo\n\n```mermaid\nflowchart LR\nA[Início] --> B[Fim]\n```\n')
+    (anac_reg / 's.md').write_text(conteudo_reg, encoding='utf-8')
+    codigo_fluxo = 'flowchart LR\nA[Início] --> B[Fim]'
+    png_fluxo = 'data:image/png;base64,' + base64.b64encode(
+        (RAIZ / 'tools' / 'temas' / 'anac20-claro' / 'conteudo-a.png').read_bytes()).decode('ascii')
+    sys.path.insert(0, str(RAIZ / 'tools'))
+    from gerador import gerar
+    for tema_reg in ('anac20-claro', 'anac20-escuro'):
+        pasta_reg = anac_reg / tema_reg
+        gerar('', conteudo_reg, 'R', saida=str(pasta_reg),
+              tema=tema_reg, fluxos={codigo_fluxo: png_fluxo}, formatos='html,pptx')
+        reg_ppt = Presentation(str(pasta_reg / 'Apresentacao_R.pptx'))
+        caixas = []
+        fundos_caixa = {'EAF1F8', 'E9F6F0', 'FFF4E0', '14334A', 'DBE8FB', 'E3F5E1', 'FFF5C2'}
+        slides_caixa = [reg_ppt.slides[i] for i in range(1, 4)]
+        for reg_slide in slides_caixa:
+            for sh in reg_slide.shapes:
+                if sh.shape_type == MSO_SHAPE_TYPE.AUTO_SHAPE:
+                    try:
+                        fill = str(sh.fill.fore_color.rgb)
+                        if fill in fundos_caixa:
+                            texto = next((r for x in reg_slide.shapes if x.has_text_frame
+                                          and abs(x.left - sh.left) < 350000
+                                          and abs(x.top - sh.top) < 350000
+                                          for p in x.text_frame.paragraphs for r in p.runs if r.text.strip()), None)
+                            if texto:
+                                caixas.append((fill, str(texto.font.color.rgb)))
+                    except (AttributeError, TypeError, ValueError):
+                        pass
+        def contraste_hex(a, b):
+            def lum(c):
+                rgb = [int(c[i:i+2], 16) / 255 for i in (0, 2, 4)]
+                rgb = [v / 12.92 if v <= .04045 else ((v + .055) / 1.055) ** 2.4 for v in rgb]
+                return .2126 * rgb[0] + .7152 * rgb[1] + .0722 * rgb[2]
+            x, y = lum(a), lum(b)
+            return (max(x, y) + .05) / (min(x, y) + .05)
+        midia = [sh for sh in reg_ppt.slides[4].shapes if sh.shape_type == MSO_SHAPE_TYPE.PICTURE]
+        reg_html = (pasta_reg / 'Apresentacao_R.html').read_text(encoding='utf-8')
+        barras_html = re.findall(r'\.s:before\s*\{([^}]*)\}', reg_html)
+        contraste_ok = len(caixas) >= 3 and all(contraste_hex(f, t) >= 4.5 for f, t in caixas)
+        G.chk(f'6.26-{tema_reg}', f'{tema_reg}: destaques legíveis, sem faixa lateral e Mermaid como imagem no PPTX',
+              contraste_ok
+              and not any(sh.shape_type == MSO_SHAPE_TYPE.AUTO_SHAPE and sh.left == 0
+                          and sh.width < reg_ppt.slide_width and sh.height == reg_ppt.slide_height
+                          for slide in slides_caixa for sh in slide.shapes)
+              and bool(midia) and any('display:none' in regra.replace(' ', '') for regra in barras_html),
+              {'caixas': caixas, 'contraste_ok': contraste_ok, 'imagens_pptx': len(midia),
+               'barras_html': barras_html})
     # painel de acessibilidade: visual gov.br e ajuda "i" em cada opção (desktop e celular)
     pa = amb.tmp / 'painel_a11y'; pa.mkdir(exist_ok=True)
     (pa / 's.md').write_text('# Slide\n\nTexto.\n<!-- notas: Narração. -->\n', encoding='utf-8')
@@ -285,13 +338,14 @@ def grupo6(amb, ctx, G):
         if pg_p.locator('#ini0').count(): pg_p.click('#ini0')
         pg_p.evaluate("document.getElementById('a11yToggle').click()"); pg_p.wait_for_selector('#a11yPanel[open]')
         m = pg_p.evaluate("""() => { const p = document.getElementById('a11yPanel'), cx = [...p.querySelectorAll('input[type=checkbox]')], css = getComputedStyle(cx[0]), sel = getComputedStyle(p.querySelector('select')), bt = getComputedStyle(p.querySelector('button.sec'));
-            return { n: cx.length, semAjuda: cx.filter(i => !i.closest('.a11y-op').querySelector('.a11y-i')).map(i => i.dataset.a11y), caixa: css.width + ' ' + css.borderTopLeftRadius + ' ' + css.appearance, selRaio: sel.borderTopLeftRadius, botao: bt.borderTopLeftRadius, apoio: !!p.querySelector('.a11y-i[aria-controls="a11yAj-apoio"]') }; }""")
+            return { n: cx.length, semAjuda: cx.filter(i => !i.closest('.a11y-op').querySelector('.a11y-i')).map(i => i.dataset.a11y), caixa: css.width + ' ' + css.borderTopLeftRadius + ' ' + css.appearance, selRaio: sel.borderTopLeftRadius, botao: bt.borderTopLeftRadius, apoio: !!p.querySelector('.a11y-i[aria-controls="a11yAj-apoio"]'), ajudaPosition: getComputedStyle(p.querySelector('#a11yAj-webcam')).position }; }""")
         b = pg_p.locator('.a11y-i[aria-controls="a11yAj-webcam"]'); b.click()
-        w = pg_p.evaluate("() => { const a = document.getElementById('a11yAj-webcam'); return { visivel: !a.hidden, expandido: document.querySelector('.a11y-i[aria-controls=\"a11yAj-webcam\"]').getAttribute('aria-expanded'), texto: a.textContent }; }")
+        w = pg_p.evaluate("() => { const a = document.getElementById('a11yAj-webcam'), r = a.getBoundingClientRect(); return { visivel: !a.hidden, expandido: document.querySelector('.a11y-i[aria-controls=\"a11yAj-webcam\"]').getAttribute('aria-expanded'), texto: a.textContent, dentro: r.top >= -2 && r.bottom <= innerHeight + 2 }; }")
         txt = w['texto']
         G.chk(f'6.14-{nome_v}', f'Painel ({nome_v}): estilo gov.br, ajuda \"i\" em todas as op\u00e7\u00f5es e ajuda da webcam com gestos e permiss\u00f5es',
               m['n'] >= 7 and not m['semAjuda'] and m['apoio'] and m['caixa'] == '24px 4px none' and m['selRaio'] == '4px' and m['botao'] != '0px'
-              and w['visivel'] and w['expandido'] == 'true' and all(x in txt for x in ('\U0001F590', '\u270C', '\U0001F44D', 'Chrome', 'Android', 'Safari', 'Edge')) and not erros_p, {'m': m, 'w': w['visivel']})
+              and m['ajudaPosition'] == ('absolute' if nome_v == 'desktop' else 'static')
+              and w['visivel'] and w['expandido'] == 'true' and w['dentro'] and all(x in txt for x in ('\U0001F590', '\u270C', '\U0001F44D', 'Chrome', 'Android', 'Safari', 'Edge')) and not erros_p, {'m': m, 'w': w['visivel'], 'dentro': w['dentro']})
         c.close()
     # 1.116: capa/selo ANAC no HTML e no PPTX, e encerramento do PPTX sem texto próprio
     for tema_a in ('anac20-claro', 'anac20-escuro'):
@@ -309,10 +363,12 @@ def grupo6(amb, ctx, G):
                 return sha(z.read('ppt/' + alvo.group(1))) if alvo else ''
             texto_final = [t for t in re.findall(r'<a:t>(.*?)</a:t>', z.read(slides[-1]).decode('utf-8'))
                            if not re.fullmatch(r'\d+ / \d+', t)]
+            xml_capa = z.read(slides[0]).decode('utf-8')
+            capa_sem_texto_solto = 'Apresentação de uso da aplicação' not in xml_capa
             capa_pptx, fim_pptx = imagem_slide(1), imagem_slide(len(slides))
         G.chk(f'6.21-{tema_a}', f'{tema_a}: arte da capa/selo e do encerramento no HTML e no PPTX, com slide final sem texto',
-              fundos[:2] == [capa, encerramento] and capa_pptx == capa and fim_pptx == encerramento and not texto_final,
-              {'html': [x[:12] for x in fundos[:2]], 'pptx': [capa_pptx[:12], fim_pptx[:12]], 'texto_final': texto_final})
+              fundos[:2] == [capa, encerramento] and capa_pptx == capa and fim_pptx == encerramento and not texto_final and capa_sem_texto_solto,
+              {'html': [x[:12] for x in fundos[:2]], 'pptx': [capa_pptx[:12], fim_pptx[:12]], 'texto_final': texto_final, 'capa_sem_texto_solto': capa_sem_texto_solto})
     # painel de acessibilidade dentro dos temas ANAC: mesma base gov.br, sem comportamento novo
     for tema_a in ('anac20-claro', 'anac20-escuro'):
         html_anac = anac_saidas[tema_a] / 'Apresentacao_A.html'
@@ -322,12 +378,24 @@ def grupo6(amb, ctx, G):
             pg_p.goto(html_anac.as_uri()); pg_p.wait_for_timeout(300)
             pg_p.evaluate("document.getElementById('a11yToggle').click()"); pg_p.wait_for_selector('#a11yPanel[open]')
             m = pg_p.evaluate("""() => { const p = document.getElementById('a11yPanel'), cx = [...p.querySelectorAll('input[type=checkbox]')], css = getComputedStyle(cx[0]), sel = getComputedStyle(p.querySelector('select')), bt = getComputedStyle(p.querySelector('button.sec'));
-                return { n: cx.length, semAjuda: cx.filter(i => !i.closest('.a11y-op').querySelector('.a11y-i')).map(i => i.dataset.a11y), caixa: css.width + ' ' + css.borderTopLeftRadius + ' ' + css.appearance, selRaio: sel.borderTopLeftRadius, botao: bt.borderTopLeftRadius, webcam: !!p.querySelector('.a11y-i[aria-controls="a11yAj-webcam"]') }; }""")
+                return { n: cx.length, semAjuda: cx.filter(i => !i.closest('.a11y-op').querySelector('.a11y-i')).map(i => i.dataset.a11y), caixa: css.width + ' ' + css.borderTopLeftRadius + ' ' + css.appearance, selRaio: sel.borderTopLeftRadius, botao: bt.borderTopLeftRadius, webcam: !!p.querySelector('.a11y-i[aria-controls="a11yAj-webcam"]'),
+                  ajudas: Object.fromEntries([...p.querySelectorAll('.a11y-i')].map(b => { const id = b.getAttribute('aria-controls'); return [id, document.getElementById(id).textContent]; })) }; }""")
             pg_p.locator('.a11y-i[aria-controls="a11yAj-webcam"]').click()
-            w = pg_p.evaluate("() => document.getElementById('a11yAj-webcam').textContent")
+            w = pg_p.evaluate("""() => { const a = document.getElementById('a11yAj-webcam'), b = document.querySelector('.a11y-i[aria-controls="a11yAj-webcam"]'), r = a.getBoundingClientRect();
+                document.documentElement.classList.add('a11y-contrast'); const s = getComputedStyle(a), contraste = [s.backgroundColor, s.color, s.borderLeftColor]; document.documentElement.classList.remove('a11y-contrast');
+                return { texto: a.textContent, expandido: b.getAttribute('aria-expanded'), dentro: r.top >= -2 && r.bottom <= innerHeight + 2, contraste }; }""")
+            dicas = {'a11yAj-contraste':'Fundo preto', 'a11yAj-espacamento':'Aumenta o espaço entre linhas',
+                     'a11yAj-regua':'faixa que acompanha o ponteiro', 'a11yAj-movimento':'Remove animações',
+                     'a11yAj-barra':'Mantém a barra de controles', 'a11yAj-atalhos':'Alt+Shift',
+                     'a11yAj-apoio':'Ouvir texto atual'}
             G.chk(f'6.22-{tema_a}-{nome_v}', f'{tema_a} ({nome_v}): painel com estilo gov.br, ajuda "i" e gestos da webcam',
                   m['n'] >= 7 and not m['semAjuda'] and m['webcam'] and m['caixa'] == '24px 4px none' and m['selRaio'] == '4px' and m['botao'] != '0px'
-                  and all(x in w for x in ('\U0001F590', '\u270C', '\U0001F44D', 'Chrome', 'Android', 'Safari', 'Edge')) and not erros_p, {'m': m, 'erros': erros_p})
+                  and all(k in m['ajudas'] and t in m['ajudas'][k] for k, t in dicas.items())
+                  and w['expandido'] == 'true' and w['dentro'] and w['contraste'] == ['rgb(0, 0, 0)', 'rgb(255, 255, 255)', 'rgb(255, 255, 0)']
+                  and all(x in w['texto'] for x in ('\U0001F590', '\u270C', '\U0001F44D', 'Chrome e Edge no computador',
+                      'ícone à esquerda do endereço', 'Chrome no Android: menu \u22ee \u203a Configurações \u203a Configurações do site \u203a Câmera',
+                      'Safari no iPhone ou iPad: Ajustes \u203a Safari \u203a Câmera', 'botão aA na barra \u203a Configurações do site'))
+                  and not erros_p, {'m': m, 'webcam': w, 'dicas': list(dicas), 'erros': erros_p})
             c.close()
     # legendas/narração: ajuda contextual existe quando há áudio, inclusive no tema ANAC
     nar = amb.tmp / 'anac_narracao'; nar.mkdir(exist_ok=True)
@@ -342,7 +410,8 @@ def grupo6(amb, ctx, G):
     mn = pg_n.evaluate("""() => { const p = document.getElementById('a11yPanel'), l = p.querySelector('[data-a11y=legendas]'), a = document.getElementById('a11yAj-legendas');
         return { tem: !!l, descr: l && l.getAttribute('aria-describedby'), ajuda: a && a.textContent, legenda: !!document.querySelector('.a11y-caption'), icone: !!p.querySelector('.a11y-i[aria-controls="a11yAj-legendas"]') }; }""")
     G.chk('6.23-anac-legendas', 'ANAC com narração: painel explica legendas/narração e a legenda do slide existe',
-          mn['tem'] and mn['descr'] == 'a11yAj-legendas' and mn['icone'] and 'narração' in (mn['ajuda'] or '') and mn['legenda'] and not erros_n,
+          mn['tem'] and mn['descr'] == 'a11yAj-legendas' and mn['icone'] and 'narração' in (mn['ajuda'] or '')
+          and 'leitores de tela' in (mn['ajuda'] or '') and mn['legenda'] and not erros_n,
           {'m': mn, 'erros': erros_n})
     c.close()
     # DOCX e EPUB gerados com tema ANAC continuam com o padrão gov.br / claro e neutro

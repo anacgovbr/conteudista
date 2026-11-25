@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.118 - 25/11/2026
+- **Apresentações ANAC:** contraste dos destaques do PPTX corrigido, fluxos Mermaid incluídos como imagem e faixa lateral removida; capa e encerramento preservam as artes do tema.
+- **Ajuda de acessibilidade:** popover reposicionado para caber na tela; instruções de webcam e leitura continuam no painel compartilhado GOV.BR.
+- **Barra do editor:** extras visíveis fora dos menus; removido o menu “Mais” vazio. No celular, o rótulo visual de Acessibilidade não cobre Inserir.
+- **Validação:** suíte completa Chrome com 342 testes aprovados; áudio PPTX tocou em validação manual. Safari real e avanço automático ao fim do áudio permanecem pendentes.
+
 ## 1.117 - 24/11/2026
 - **Alinhamento:** rótulos e ícones das ações principais e do menu Salvar ficaram no mesmo eixo vertical; o ✓ de confirmação acompanha o texto.
 - **Novidades:** a tag "nova" centraliza o texto dentro da cápsula.

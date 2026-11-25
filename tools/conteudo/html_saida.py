@@ -140,7 +140,7 @@ def _aj_texto(k):
     return '<p id="a11yAj-%s" class="a11y-ajuda" hidden>%s</p>'%(k,AJUDAS[k])
 
 def _op(k,rotulo,extra=''):
-    return '<div class="a11y-op"><label><input type="checkbox" data-a11y="%s" aria-describedby="a11yAj-%s"%s> %s</label>%s</div>%s'%(k,k,extra,rotulo,_aj(k,rotulo),_aj_texto(k))
+    return '<div class="a11y-op"><label><input type="checkbox" data-a11y="%s" aria-describedby="a11yAj-%s"%s> %s</label>%s%s</div>'%(k,k,extra,rotulo,_aj(k,rotulo),_aj_texto(k))
 
 def painel_a11y(vlibras=True, legendas=False, leitura=False):
         libras = ('<p class="a11y-aviso">Ativar VLibras acessa um serviço externo e precisa de internet. Desative para conteúdo interno.</p>'
@@ -157,7 +157,7 @@ def painel_a11y(vlibras=True, legendas=False, leitura=False):
             + '<h3 class="a11y-sub">Controles</h3>' + _op('barra','Manter a barra de controles visível')
             + (_op('atalhos','Atalhos de uma tecla',' checked') + _op('webcam','Controle por webcam') if leitura else '')
             + legenda +
-            '<div class="a11y-op"><h3 class="a11y-sub">Apoio</h3>' + _aj('apoio','Apoio') + '</div>' + _aj_texto('apoio')
+            '<div class="a11y-op"><h3 class="a11y-sub">Apoio</h3>' + _aj('apoio','Apoio') + _aj_texto('apoio') + '</div>'
             + '<button type="button" class="sec" data-a11y="ouvir">Ouvir texto atual</button>' + libras +
             '<p class="a11y-estado" id="a11yEstado" role="status" aria-live="polite"></p></div></dialog>' +
             '<div id="a11yRegua" class="a11y-ruler" aria-hidden="true"></div><p id="a11yLegendasLive" class="a11y-sr" role="status" aria-live="polite" aria-atomic="true"></p>')
@@ -205,7 +205,7 @@ def _anac_html_css(tema,n,licenciada=False):
         return 'data:image/png;base64,'+base64.b64encode(open(cam,'rb').read()).decode('ascii') if os.path.isfile(cam) else ''
     imgs=[data('capa.png'),'','',data('encerramento.png')]
     escuro=tema=='anac20-escuro'; tinta='#ffffff' if escuro else '#193f52'; mut='#dce8ee' if escuro else '#526d7c'
-    regras=[':root{--ac2:%s}'%('#6ea8fe' if escuro else '#1351b4'),'.s{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:%s!important}'%tinta,
+    regras=[':root{--ac2:%s}'%('#6ea8fe' if escuro else '#1351b4'),'.s:before{display:none}.s{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;color:%s!important}'%tinta,
       '.s h1,.s h2,.s h3,.s p,.s li%s{color:%s!important}.s .in{z-index:1}'%(', .s strong' if escuro else '',tinta),
       '.s table{background:rgba(255,255,255,.94);color:#193f52}.s td,.s td *{color:#193f52!important}.s .nt{color:%s!important}'%mut]
     if escuro:regras.append('.s:not(.title){background:#14334a!important}.s a{color:#ffdf5d!important}.s blockquote p,.s .nt{color:#193f52!important}')

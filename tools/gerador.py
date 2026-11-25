@@ -106,7 +106,7 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
             if quer('html'):
                 Path(T('.html','Apresentacao_')).write_text(slides_html(t,sl,rodape,tema,nr['html'],nr['avancar'],_fluxos_dict(fluxos),vlibras,licenca),encoding='utf-8');arqs.append(P('.html','Apresentacao_'))
             if quer('pptx'):
-                try:registrar_decorativas(sm);slides_pptx(t,sl,T('.pptx','Apresentacao_'),rodape,tema,nr['pptx'],nr['avancar'],nr['duracoes'],licenca);arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
+                try:registrar_decorativas(sm);slides_pptx(t,sl,T('.pptx','Apresentacao_'),rodape,tema,nr['pptx'],nr['avancar'],nr['duracoes'],licenca,_fluxos_dict(fluxos));arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
                 except Exception as e:falhas.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ERRO %s'%e
             if nr['html'] or nr['pptx']:msg+=' | narração: %d slide(s)'%len(set(nr['html'])|set(nr['pptx']))
         else:msg+=' | apresentação: vazia (não gerada)'
