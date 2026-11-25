@@ -155,11 +155,31 @@ def normalizar_tema(dados):
     T['pptx_destaque']=T['paleta']['destaque'][1:].upper()
     return T
 
+def eh_html(T):
+    "True quando o tema serve somente ao renderer HTML (nao entra em PPTX/DOCX)."
+    if isinstance(T,str):
+        r=(catalogo().get('temas',{}).get(T) or {}).get('renderer_support') or []
+    else:
+        r=(T or {}).get('renderer_support') or []
+    return 'html' in r and 'pptx' not in r
+
+
+def tema_html(t):
+    "Tema HTML do catalogo, com os campos extras preservados."
+    d=catalogo().get('temas',{}).get(t)
+    if not d or not eh_html(d):return None
+    T=normalizar_tema(d)
+    for k in ('source','tone','renderer_support','layout_tokens','motion','fonts_web'):
+        if k in d:T[k]=_copia(d[k])
+    T['embutido']=True
+    return T
+
+
 def tema_de(t):
-    "Tema embutido (chave) ou personalizado (dict/JSON). Sempre devolve um tema valido."
+    "Tema embutido (chave), HTML do catalogo ou personalizado (dict/JSON). Sempre devolve um tema valido."
     if isinstance(t,dict) or (isinstance(t,str) and t.lstrip().startswith('{')):
         return normalizar_tema(t)
-    return TEMAS.get(t or TEMA_PADRAO) or TEMAS[TEMA_PADRAO]
+    return TEMAS.get(t or TEMA_PADRAO) or tema_html(t) or TEMAS[TEMA_PADRAO]
 
 def eh_personalizado(T):
     return bool(isinstance(T,dict) and T.get('custom'))
@@ -370,6 +390,36 @@ def css_mermaid_variaveis(T):
     return ('%%{init: {"theme": "%s", "themeVariables": {"primaryColor": "%s", "primaryTextColor": "%s", "lineColor": "%s", "secondaryColor": "%s", "tertiaryColor": "%s", "fontFamily": "%s"}}}%%'
             %(T['mermaid'].get('tema','default'),p['suave'],p['texto'],p['texto_suave'],p['superficie'],p['fundo'],T['fontes']['texto'].split(',')[0].strip("'\" ")))
 
+def resolver_tokens(T):
+    "Resolve layout_tokens do tema para valores concretos da paleta."
+    tokens=T.get('layout_tokens') or {}
+    pal=paleta(T)
+    out={}
+    for k,ref in tokens.items():
+        out[k]=[pal.get(x,x) for x in ref] if isinstance(ref,list) else pal.get(ref,ref)
+    return out
+
+
+def css_vars_tema(T):
+    "Bloco :root com CSS custom properties do tema (paleta, tokens, fontes e motion)."
+    motion=T.get('motion') or {}
+    fontes=T.get('fontes') or {}
+    linhas=[':root{']
+    for k,v in paleta(T).items():
+        linhas.append('--c-%s:%s;'%(k.replace('_','-'),v))
+    for k,v in resolver_tokens(T).items():
+        if isinstance(v,list):
+            for i,c in enumerate(v):linhas.append('--token-%s-%d:%s;'%(k.replace('_','-'),i+1,c))
+        else:linhas.append('--token-%s:%s;'%(k.replace('_','-'),v))
+    linhas.append('--fs-duration:%sms;'%motion.get('duration_ms',600))
+    linhas.append('--fs-ease:%s;'%motion.get('ease','cubic-bezier(0.16,1,0.3,1)'))
+    linhas.append('--fs-stagger:%sms;'%motion.get('stagger_ms',100))
+    if fontes.get('titulo'):linhas.append('--font-display:%s;'%fontes['titulo'])
+    if fontes.get('texto'):linhas.append('--font-body:%s;'%fontes['texto'])
+    linhas.append('}')
+    return '\n'.join(linhas)
+
+
 def mermaid_config(T):
     "Configuracao entregue ao Mermaid no HTML gerado (vazia nos temas embutidos: comportamento anterior)."
     if not eh_personalizado(T):return '{}'
@@ -382,11 +432,13 @@ def mermaid_config(T):
 
 def nome_de(t):
     if isinstance(t,dict):return t.get('nome') or 'Tema personalizado'
-    return (TEMAS.get(t or TEMA_PADRAO) or TEMAS[TEMA_PADRAO])['nome']
+    if t in TEMAS:return TEMAS[t]['nome']
+    h=tema_html(t)
+    return h['nome'] if h else TEMAS[TEMA_PADRAO]['nome']
 
 def chave_markdown(t):
     "Identificador curto e seguro para o frontmatter theme: de um tema personalizado."
-    if isinstance(t,str) and not t.lstrip().startswith('{'):return t if t in TEMAS else TEMA_PADRAO
+    if isinstance(t,str) and not t.lstrip().startswith('{'):return t if (t in TEMAS or eh_html(t)) else TEMA_PADRAO
     n=nome_de(t)
     s=re.sub(r'[^a-z0-9]+','-',str(n).lower().translate(str.maketrans('áàâãäéèêëíìîïóòôõöúùûüçñ','aaaaaeeeeiiiiooooouuuucn'))).strip('-')
     return s or 'personalizado'
