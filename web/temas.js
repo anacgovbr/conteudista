@@ -148,6 +148,9 @@
       posicoes: Object.assign({}, POSICOES_PADRAO, base.posicoes || {})
     };
     TELAS.forEach(t => { T.telas[t] = Object.assign({}, TELAS_PADRAO, (base.telas || {})[t] || {}); });
+    ['renderer_support', 'layout_tokens', 'motion', 'fonts_web', 'source', 'tone'].forEach(k => {
+      if (base[k] !== undefined) T[k] = clone(base[k]);
+    });
     return T;
   }
 
@@ -683,6 +686,9 @@
     let html = '<optgroup label="Embutidos">';
     Object.keys(catalogo.temas).forEach(k => {
       const t = catalogo.temas[k];
+      // Temas exclusivos do renderer HTML nao entram no seletor do gerador (PPTX/DOCX).
+      const r = t.renderer_support || [];
+      if (r.includes('html') && !r.includes('pptx')) return;
       html += '<option value="' + esc(k) + '">' + esc(t.nome || k) + '</option>';
     });
     html += '</optgroup>';
@@ -2024,6 +2030,20 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
         s.campos.map(c => '<tr><td>' + esc(c.rotulo) + '</td><td>' + c.a + '</td><td>' + c.b + '</td></tr>').join('') + '</tbody></table>').join('');
   }
 
+  async function compararDoisTemas() {
+    const a = $('tmCmpA'), b = $('tmCmpB'), out = $('tmCmpRes');
+    if (!out) return;
+    if (!a.value || !b.value || a.value === b.value) {
+      out.innerHTML = '<p class="tm-msg">Escolha dois temas diferentes.</p>';
+      return;
+    }
+    const [A, B] = await Promise.all([temaDe(a.value), temaDe(b.value)]);
+    if (!A || !B) { out.innerHTML = '<p class="tm-msg">Um dos temas não existe mais.</p>'; return; }
+    renderComparacao(compararSecoes(A, B));
+    const res = $('tmVerRes');
+    out.innerHTML = res ? res.innerHTML : '';
+  }
+
   function diffLinhas(a, b) {
     const A = String(a).split('\n'), B = String(b).split('\n');
     if (A.length > 2000 || B.length > 2000) return A.map(x => ['-', x]).concat(B.map(x => ['+', x]));
@@ -2241,7 +2261,13 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
       '<div class="tm-campo"><label for="tmJsonB">JSON B</label><textarea id="tmJsonB" spellcheck="false" aria-label="JSON da versão B"></textarea></div></div>' +
       '<div class="tm-acoes"><button type="button" class="sec mini" id="tmVerPreencher">Preencher com A e B</button>' +
       '<button type="button" class="go mini" id="tmVerJson">Comparar JSON</button></div>' +
-      '<div id="tmVerJsonRes"></div></details></div>';
+      '<div id="tmVerJsonRes"></div></details>' +
+      '<details class="tm-detalhe" id="tmVerTemas"><summary>Comparar dois temas diferentes</summary>' +
+      '<p class="tm-nota">Compara a paleta e as fontes de dois temas distintos — útil para escolher entre um tema embutido, HTML ou personalizado.</p>' +
+      '<div class="tm-grade"><div class="tm-campo"><label for="tmCmpA">Tema A</label><select id="tmCmpA"></select></div>' +
+      '<div class="tm-campo"><label for="tmCmpB">Tema B</label><select id="tmCmpB"></select></div></div>' +
+      '<div class="tm-acoes"><button type="button" class="go mini" id="tmCmpComparar">Comparar temas</button></div>' +
+      '<div id="tmCmpRes"></div></details></div>';
     $('tmVerTema').addEventListener('change', () => {
       preencherVersoesDoTema($('tmVerTema').value).catch(e => msgVersoes('Não foi possível carregar as versões: ' + ((e && e.message) || e), 'erro'));
     });
@@ -2256,6 +2282,16 @@ html.contraste #jnTemasWin :focus-visible{outline-color:#ffff00}
     $('tmVerExcluir').onclick = () => excluirA();
     $('tmVerPreencher').onclick = () => preencherJsonSelecionadas();
     $('tmVerJson').onclick = () => compararJson();
+    Promise.all([carregarCatalogo(), temasPersonalizados()]).then(([c, customs]) => {
+      const opcoes = Object.keys(c.temas).map(k => '<option value="' + esc(k) + '">' + esc(c.temas[k].nome || k) + '</option>').join('') +
+        customs.map(t => '<option value="custom:' + esc(t.id) + '">' + esc(t.nome) + '</option>').join('');
+      ['tmCmpA', 'tmCmpB'].forEach((id, i) => {
+        const sel = $(id); if (!sel) return;
+        sel.innerHTML = opcoes;
+        sel.value = i === 0 ? 'govbr' : (Object.keys(c.temas)[1] || 'classico');
+      });
+    }).catch(() => {});
+    $('tmCmpComparar').onclick = () => compararDoisTemas().catch(e => msgVersoes('Não foi possível comparar os temas: ' + ((e && e.message) || e), 'erro'));
   }
 
   /* ---------------------------- Importar ---------------------------- */
