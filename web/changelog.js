@@ -5,12 +5,12 @@
    ===================================================================================== */
 (function () {
   'use strict';
-  const VERSAO = '1.116';
+  const VERSAO = '1.117';
   const CHAVE = 'conteudista.versaoVista';
   const st = document.createElement('style');
   st.textContent = `#btnNews{position:relative}#btnNews .pt{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#168821;border:2px solid #fff}
 .cl-v{border-left:4px solid #1351b4;padding:2px 0 2px 12px;margin:0 0 14px}.cl-v h4{margin:0 0 4px!important;color:#0c326f;font-size:15px}.cl-v h4 small{color:#636363;font-weight:400}
-.cl-v.nova{border-left-color:#168821}.cl-v.nova h4::after{content:' nova';font-size:11px;background:#168821;color:#fff;border-radius:8px;padding:1px 7px;margin-left:6px;vertical-align:2px}
+.cl-v.nova{border-left-color:#168821}.cl-v.nova h4::after{content:'nova';display:inline-flex;align-items:center;justify-content:center;font-size:11px;line-height:1;background:#168821;color:#fff;border-radius:8px;padding:3px 8px;margin-left:6px;vertical-align:middle}
 .cl-v ul{margin:2px 0;padding-left:20px}.cl-v li{margin:2px 0}`;
   document.head.appendChild(st);
   const nav = document.querySelector('header .hb'); if (!nav) return;

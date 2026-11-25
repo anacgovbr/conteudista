@@ -96,6 +96,25 @@ def grupo9(amb, ctx, G):
         G.chk('9.22', 'Celular: itens do menu ⋯ não cortam ícone, texto ou atalho',
               cortes['naTela'] and all(not i['transborda'] and i['icEsq'] >= 0 and i['atDir'] >= 0 for i in cortes['itens']), cortes)
         pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
+        # 1.116: itens do menu Salvar com ícone e bloco de texto no mesmo eixo vertical
+        pg.locator('#btnSalvar').click(); pg.wait_for_timeout(150)
+        salvar = pg.evaluate("""() => [...document.querySelectorAll('#jnMenuSalvar .jn-mi')].map(b => {
+          const r = b.getBoundingClientRect(), sv = b.querySelector('svg').getBoundingClientRect();
+          const sp = b.querySelector('span'), ss = getComputedStyle(sp);
+          return { nome: b.querySelector('b').textContent, icone: Math.round((sv.top + sv.bottom) / 2 - (r.top + r.bottom) / 2),
+            display: ss.display, direcao: ss.flexDirection, justificar: ss.justifyContent }; })""")
+        G.chk('9.24', 'Menu Salvar: ícone e bloco de texto centralizados no item',
+              all(i['icone'] == 0 and i['display'] == 'flex' and i['direcao'] == 'column' and i['justificar'] == 'center' for i in salvar), salvar)
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
+        # 1.116: a tag "nova" das Novidades centraliza o texto dentro da cápsula
+        badge = pg.evaluate("""() => { const d = document.createElement('div'); d.className = 'cl-v nova';
+          d.innerHTML = '<h4>Versão 1.116</h4>'; document.body.appendChild(d);
+          const s = getComputedStyle(d.querySelector('h4'), '::after');
+          const v = { display: s.display, alinhar: s.alignItems, justificar: s.justifyContent, altura: s.lineHeight, vertical: s.verticalAlign };
+          d.remove(); return v; }""")
+        G.chk('9.25', 'Tag "nova": texto centralizado vertical e horizontalmente na cápsula',
+              badge['display'] == 'inline-flex' and badge['alinhar'] == 'center' and badge['justificar'] == 'center'
+              and badge['altura'] == '11px' and badge['vertical'] == 'middle', badge)
         antes = pg.evaluate("document.querySelector('#pg .mde-ta').value.length")
         pg.locator('#pg .mv-bt[data-g=fmt]').click(); pg.locator('.mv-menu:not([hidden]) [role=menuitem]', has_text='Título 2').click(); pg.wait_for_timeout(150)
         G.chk('9.6', 'Item do menu aciona o botão original (Título 2 altera o texto)', pg.evaluate("document.querySelector('#pg .mde-ta').value.length") != antes)

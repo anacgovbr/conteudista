@@ -1,4 +1,8 @@
 # Novidades do Conteudista
+## 1.117 - 24/11/2026
+- **Alinhamento:** rótulos e ícones das ações principais e do menu Salvar ficaram no mesmo eixo vertical; o ✓ de confirmação acompanha o texto.
+- **Novidades:** a tag "nova" centraliza o texto dentro da cápsula.
+
 ## 1.116 - 24/11/2026
 - **Editor mais compacto:** as ações pouco usadas foram para os menus Formatar, Inserir e Mais; Desfazer, Refazer, Negrito e Itálico continuam visíveis na barra.
 - **Formatos dos arquivos:** escolha quais formatos gerar (HTML, Markdown, DOCX, PPTX, EPUB e EPUB OpenDyslexic). HTML e Markdown vêm ligados; a escolha fica lembrada no navegador.

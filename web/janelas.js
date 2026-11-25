@@ -186,6 +186,7 @@ html.contraste .jn-mn .jn-sepm{background:#fff}
 .jn-mn .jn-mi{display:flex!important;align-items:center;gap:10px;width:100%;height:auto!important;min-height:44px!important;max-height:none!important;margin:0!important;padding:6px 10px!important;background:transparent!important;background-image:none!important;color:#333333!important;border:0!important;border-radius:6px!important;text-align:left!important;white-space:normal!important;overflow:visible!important;line-height:1.3!important;font-weight:400!important;font-size:14px!important}
 .jn-mn .jn-mi:hover,.jn-mn .jn-mi:focus{background:#edf5ff!important}
 .jn-mn .jn-mi svg{width:18px;height:18px;margin:0;vertical-align:0;fill:none;stroke:#1351b4;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.jn-mi>span{display:flex;flex-direction:column;justify-content:center;line-height:1.25}
 .jn-mi b{display:block;font-weight:600}
 .jn-mi small{display:block;color:#636363;font-size:12.5px}
 .jn-sw{display:inline-flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;position:relative;margin:0;font-weight:600;color:#333333}

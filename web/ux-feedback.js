@@ -26,9 +26,9 @@
 .action-saindo{transition:background-color .2s ease,border-color .2s ease,color .2s ease!important}
 .action-tick{position:relative}
 .action-tick::after,.ux-tick-in{content:'';display:block;width:var(--tick-size,14px);height:var(--tick-size,14px);background:currentColor;-webkit-mask:var(--ux-tick) center/contain no-repeat;mask:var(--ux-tick) center/contain no-repeat;pointer-events:none}
-.action-tick::after{position:absolute;left:var(--tick-left,4px);top:50%;margin-top:calc(var(--tick-size,14px) / -2);color:#fff;opacity:0;transition:opacity .2s ease}
+.action-tick::after{position:absolute;left:var(--tick-left,4px);top:calc(50% + .5px);margin-top:calc(var(--tick-size,14px) / -2);color:#fff;opacity:0;transition:opacity .2s ease}
 .action-tick.action-ok::after{opacity:1}
-.ux-tick-in{display:inline-block;vertical-align:-2px;margin-right:6px;color:inherit}
+.ux-tick-in{display:inline-block;vertical-align:middle;margin-right:6px;color:inherit}
 @media(prefers-reduced-motion:reduce){.action-saindo,.action-tick::after{transition:none!important}}
 .ux-sr{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 @media(max-width:700px){.file-links{gap:7px 14px}.file-link{font-size:13px!important}}
