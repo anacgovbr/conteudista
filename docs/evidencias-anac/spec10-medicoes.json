@@ -1,0 +1,102 @@
+{
+  "versao": "1.116",
+  "themes": {
+    "anac20-claro": {
+      "html_data_png": [
+        "8d3ec7aa565e",
+        "7ffccc78a27b",
+        "597a1fac01bb",
+        "25bca9976e76",
+        "a46c21fde1f8"
+      ],
+      "pptx_media_png": [
+        "8d3ec7aa565e",
+        "597a1fac01bb",
+        "25bca9976e76",
+        "a46c21fde1f8",
+        "7ffccc78a27b"
+      ],
+      "docx_govbr": true,
+      "docx_sem_tokens_anac": true,
+      "epub_claro_neutro": true,
+      "assets": {
+        "capa": "8d3ec7aa565e",
+        "encerramento": "7ffccc78a27b"
+      },
+      "desktop": {
+        "slides": 41,
+        "painel_aberto": true,
+        "ajudas": 8,
+        "js_erros": []
+      },
+      "celular": {
+        "slides": 41,
+        "painel_aberto": true,
+        "ajudas": 8,
+        "js_erros": []
+      }
+    },
+    "anac20-escuro": {
+      "html_data_png": [
+        "bcf1baed670d",
+        "70e4d0122177",
+        "597a1fac01bb",
+        "25bca9976e76",
+        "a46c21fde1f8"
+      ],
+      "pptx_media_png": [
+        "bcf1baed670d",
+        "597a1fac01bb",
+        "25bca9976e76",
+        "a46c21fde1f8",
+        "70e4d0122177"
+      ],
+      "docx_govbr": true,
+      "docx_sem_tokens_anac": true,
+      "epub_claro_neutro": true,
+      "assets": {
+        "capa": "bcf1baed670d",
+        "encerramento": "70e4d0122177"
+      },
+      "desktop": {
+        "slides": 41,
+        "painel_aberto": true,
+        "ajudas": 8,
+        "js_erros": []
+      },
+      "celular": {
+        "slides": 41,
+        "painel_aberto": true,
+        "ajudas": 8,
+        "js_erros": []
+      }
+    },
+    "govbr": {
+      "html_data_png": [
+        "597a1fac01bb",
+        "25bca9976e76",
+        "a46c21fde1f8"
+      ],
+      "pptx_media_png": [
+        "597a1fac01bb",
+        "25bca9976e76",
+        "a46c21fde1f8"
+      ],
+      "docx_govbr": true,
+      "docx_sem_tokens_anac": true,
+      "epub_claro_neutro": true,
+      "desktop": {
+        "slides": 41,
+        "painel_aberto": true,
+        "ajudas": 8,
+        "js_erros": []
+      },
+      "celular": {
+        "slides": 41,
+        "painel_aberto": true,
+        "ajudas": 8,
+        "js_erros": []
+      }
+    }
+  }
+}

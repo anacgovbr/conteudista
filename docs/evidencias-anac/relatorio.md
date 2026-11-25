@@ -68,6 +68,17 @@ Para o ajuste de espaçamento, a captura antes foi renderizada do commit `b3805c
 
 O teste 6.17 reproduziu a diferença antes da correção e passou após a remoção; a suíte completa e o CI do commit publicado também passaram.
 
+## Validação final da SPEC 10 (1.116)
+
+Nenhum código dos temas ANAC foi alterado nesta fase: a investigação não encontrou defeito novo. Para fechar a cobertura que faltava, foram acrescentados os testes `6.21` (arte de capa/selo e encerramento no HTML/PPTX, com slide final sem texto), `6.22` (painel dentro dos temas ANAC em desktop e celular), `6.23` (ajuda de legendas/narração com áudio) e `6.24` (DOCX gov.br e EPUB neutro com tema ANAC) em `tools/testes/grupos/geracao.py`.
+
+- Comando: `python tools/testes/testar_apresentacao.py --navegador chrome --tentativas 1` → **334 ok, 0 falhas, 4 manuais**.
+- Grupo isolado: `--grupo 6 --navegador chrome --tentativas 1` → **49 ok, 0 falhas**. Os novos testes falharam primeiro por dois erros no próprio teste (leitura de ZIP já fechado em 6.21 e uso de `.s.on` antes de iniciar a apresentação em 6.23); corrigidos os testes, passaram sem alterar o produto.
+- Os quatro formatos foram gerados para `anac20-claro`, `anac20-escuro` e `govbr` com `tools/gerador.py`; os hashes das artes ANAC coincidem no HTML (`data:image/png;base64`) e no PPTX (`ppt/media`), e o último slide do PPTX contém apenas a numeração.
+- Medições: [spec10-medicoes.json](spec10-medicoes.json). Capturas atuais (capa, slide final e painel; desktop 1280×720 e celular 390×780): `spec10-1.116-<tema>-<área>-<largura>.png` para os três temas.
+- Antes/depois das correções anteriores permanecem válidos: [tabela](tabela-antes.png)/[tabela](tabela-atual.png), [capa](capa-antes.png)/[capa](capa-atual.png), [painel](painel-antes.png)/[painel](painel-atual.png) e [espaçamento](matriz-simples-anac20-claro-antes-spacing-1280.png)/[espaçamento](matriz-simples-anac20-claro-1280.png). Como não houve nova alteração visual em 1.116, não há novo par “antes/depois” de tema ANAC.
+- Publicação: correção do menu ⋯ do celular em `5ba5d54`; testes seletivos `45513175009` e publicação `45513175259` concluídos com sucesso. Site servindo `VERSAO = '1.116'`.
+
 ## Limites ainda não verificados
 
 - M.1–M.4 aguardam validação conjunta: Safari real/áudio, Chrome Android/toque, áudio PPTX no PowerPoint e impressão/PDF. A escuta Kokoro/Piper (M.5), webcam com câmera/mão reais e controle remoto foram confirmados pelo usuário; os dois últimos não foram verificados independentemente pelo agente.

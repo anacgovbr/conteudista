@@ -1,4 +1,4 @@
-import argparse, json, math, os, re, struct, subprocess, sys, tempfile, time, traceback, wave, zipfile
+import argparse, base64, hashlib, json, math, os, re, struct, subprocess, sys, tempfile, time, traceback, wave, zipfile
 from datetime import datetime
 from pathlib import Path
 import suporte
@@ -73,6 +73,7 @@ def _relay_falso():
     return srv, gravado
 
 def grupo6(amb, ctx, G):
+    sha = lambda b: hashlib.sha256(b).hexdigest()
     for tema in ('govbr', 'classico'):
         d = amb.tmp / f'saida_{tema}'
         r = rodar([sys.executable, str(suporte.GERADOR), str(EXEMPLO_TREINO), str(EXEMPLO_APRES), '--prefixo', 'Exemplo', '--rodape', 'Teste', '--saida', str(d), '--tema', tema], cwd=RAIZ)
@@ -172,9 +173,11 @@ def grupo6(amb, ctx, G):
     final = pg_lic.evaluate("() => { const s = document.querySelector('.s.on'); const a = s && s.querySelector('a[rel=license]'); const r = s && s.getBoundingClientRect(); return { nome: s && s.getAttribute('aria-label'), url: a && a.href, largura: r && r.width, altura: r && r.height, visivel: !!s && getComputedStyle(s).display !== 'none' }; }")
     G.chk('6.6', 'CC BY: o último slide é acessível, visível e navegável no Chrome', total > 1 and final['nome'] == 'Slide %d de %d' % (total - 1, total) and final['url'] == 'https://creativecommons.org/licenses/by/4.0/' and final['largura'] > 0 and final['altura'] > 0 and final['visivel'] and not erros_lic, final)
     c.close()
+    anac_saidas = {}
     for tema_a in ('anac20-claro', 'anac20-escuro'):
         da = amb.tmp / f'saida_{tema_a}'
         rodar([sys.executable, str(suporte.GERADOR), '-', str(EXEMPLO_APRES), '--prefixo', 'A', '--saida', str(da), '--tema', tema_a, '--licenca', 'cc-by-4.0'], cwd=RAIZ)
+        anac_saidas[tema_a] = da
         ha = next(da.glob('Apresentacao_A.html'), None)
         secs = re.findall(r'<section class="s ([^"]*)"[^>]*aria-label="([^"]*)"[^>]*>(.*?)</section>', ha.read_text(encoding='utf-8'), re.S) if ha else []
         corpo_final = re.search(r'<div class="conteudo">(.*?)</div></div>', secs[-1][2], re.S) if secs else None
@@ -290,6 +293,70 @@ def grupo6(amb, ctx, G):
               m['n'] >= 7 and not m['semAjuda'] and m['apoio'] and m['caixa'] == '24px 4px none' and m['selRaio'] == '4px' and m['botao'] != '0px'
               and w['visivel'] and w['expandido'] == 'true' and all(x in txt for x in ('\U0001F590', '\u270C', '\U0001F44D', 'Chrome', 'Android', 'Safari', 'Edge')) and not erros_p, {'m': m, 'w': w['visivel']})
         c.close()
+    # 1.116: capa/selo ANAC no HTML e no PPTX, e encerramento do PPTX sem texto próprio
+    for tema_a in ('anac20-claro', 'anac20-escuro'):
+        da = anac_saidas[tema_a]
+        conteudo = (da / 'Apresentacao_A.html').read_text(encoding='utf-8')
+        fundos = [sha(base64.b64decode(x)) for x in re.findall(r'data:image/png;base64,([^"]+)', conteudo)]
+        capa = sha((RAIZ / 'tools' / 'temas' / tema_a / 'capa.png').read_bytes())
+        encerramento = sha((RAIZ / 'tools' / 'temas' / tema_a / 'encerramento.png').read_bytes())
+        with zipfile.ZipFile(da / 'Apresentacao_A.pptx') as z:
+            slides = sorted([n for n in z.namelist() if re.fullmatch(r'ppt/slides/slide\d+\.xml', n)],
+                            key=lambda n: int(re.search(r'\d+', n.split('/')[-1]).group()))
+            def imagem_slide(k):
+                rels = z.read(f'ppt/slides/_rels/slide{k}.xml.rels').decode('utf-8')
+                alvo = re.search(r'Target="\.\./(media/[^"]+\.png)"', rels)
+                return sha(z.read('ppt/' + alvo.group(1))) if alvo else ''
+            texto_final = [t for t in re.findall(r'<a:t>(.*?)</a:t>', z.read(slides[-1]).decode('utf-8'))
+                           if not re.fullmatch(r'\d+ / \d+', t)]
+            capa_pptx, fim_pptx = imagem_slide(1), imagem_slide(len(slides))
+        G.chk(f'6.21-{tema_a}', f'{tema_a}: arte da capa/selo e do encerramento no HTML e no PPTX, com slide final sem texto',
+              fundos[:2] == [capa, encerramento] and capa_pptx == capa and fim_pptx == encerramento and not texto_final,
+              {'html': [x[:12] for x in fundos[:2]], 'pptx': [capa_pptx[:12], fim_pptx[:12]], 'texto_final': texto_final})
+    # painel de acessibilidade dentro dos temas ANAC: mesma base gov.br, sem comportamento novo
+    for tema_a in ('anac20-claro', 'anac20-escuro'):
+        html_anac = anac_saidas[tema_a] / 'Apresentacao_A.html'
+        for nome_v, vp in (('desktop', {'width': 1280, 'height': 720}), ('celular', {'width': 390, 'height': 780})):
+            c = amb.novo_contexto(viewport=vp, touch=vp['width'] < 900); pg_p = c.new_page(); erros_p = []
+            pg_p.on('pageerror', lambda e: erros_p.append(str(e)))
+            pg_p.goto(html_anac.as_uri()); pg_p.wait_for_timeout(300)
+            pg_p.evaluate("document.getElementById('a11yToggle').click()"); pg_p.wait_for_selector('#a11yPanel[open]')
+            m = pg_p.evaluate("""() => { const p = document.getElementById('a11yPanel'), cx = [...p.querySelectorAll('input[type=checkbox]')], css = getComputedStyle(cx[0]), sel = getComputedStyle(p.querySelector('select')), bt = getComputedStyle(p.querySelector('button.sec'));
+                return { n: cx.length, semAjuda: cx.filter(i => !i.closest('.a11y-op').querySelector('.a11y-i')).map(i => i.dataset.a11y), caixa: css.width + ' ' + css.borderTopLeftRadius + ' ' + css.appearance, selRaio: sel.borderTopLeftRadius, botao: bt.borderTopLeftRadius, webcam: !!p.querySelector('.a11y-i[aria-controls="a11yAj-webcam"]') }; }""")
+            pg_p.locator('.a11y-i[aria-controls="a11yAj-webcam"]').click()
+            w = pg_p.evaluate("() => document.getElementById('a11yAj-webcam').textContent")
+            G.chk(f'6.22-{tema_a}-{nome_v}', f'{tema_a} ({nome_v}): painel com estilo gov.br, ajuda "i" e gestos da webcam',
+                  m['n'] >= 7 and not m['semAjuda'] and m['webcam'] and m['caixa'] == '24px 4px none' and m['selRaio'] == '4px' and m['botao'] != '0px'
+                  and all(x in w for x in ('\U0001F590', '\u270C', '\U0001F44D', 'Chrome', 'Android', 'Safari', 'Edge')) and not erros_p, {'m': m, 'erros': erros_p})
+            c.close()
+    # legendas/narração: ajuda contextual existe quando há áudio, inclusive no tema ANAC
+    nar = amb.tmp / 'anac_narracao'; nar.mkdir(exist_ok=True)
+    (nar / 's.md').write_text('# Capa\n\n<!-- notas: Narração de exemplo. -->\n\n---\n\n# Fim\n', encoding='utf-8')
+    with wave.open(str(nar / '1.wav'), 'wb') as w:
+        w.setnchannels(1); w.setsampwidth(2); w.setframerate(22050); w.writeframes(b'\0' * 4410)
+    rodar([sys.executable, str(suporte.GERADOR), '-', str(nar / 's.md'), '--prefixo', 'N', '--saida', str(nar / 'o'), '--tema', 'anac20-claro', '--audios', str(nar)], cwd=RAIZ)
+    c = amb.novo_contexto(viewport={'width': 1280, 'height': 720}); pg_n = c.new_page(); erros_n = []
+    pg_n.on('pageerror', lambda e: erros_n.append(str(e)))
+    pg_n.goto((nar / 'o' / 'Apresentacao_N.html').as_uri()); pg_n.wait_for_timeout(300)
+    pg_n.evaluate("document.getElementById('a11yToggle').click()"); pg_n.wait_for_selector('#a11yPanel[open]')
+    mn = pg_n.evaluate("""() => { const p = document.getElementById('a11yPanel'), l = p.querySelector('[data-a11y=legendas]'), a = document.getElementById('a11yAj-legendas');
+        return { tem: !!l, descr: l && l.getAttribute('aria-describedby'), ajuda: a && a.textContent, legenda: !!document.querySelector('.a11y-caption'), icone: !!p.querySelector('.a11y-i[aria-controls="a11yAj-legendas"]') }; }""")
+    G.chk('6.23-anac-legendas', 'ANAC com narração: painel explica legendas/narração e a legenda do slide existe',
+          mn['tem'] and mn['descr'] == 'a11yAj-legendas' and mn['icone'] and 'narração' in (mn['ajuda'] or '') and mn['legenda'] and not erros_n,
+          {'m': mn, 'erros': erros_n})
+    c.close()
+    # DOCX e EPUB gerados com tema ANAC continuam com o padrão gov.br / claro e neutro
+    for tema_a in ('anac20-claro', 'anac20-escuro'):
+        de = amb.tmp / f'apostila_{tema_a}'
+        rodar([sys.executable, str(suporte.GERADOR), str(EXEMPLO_TREINO), '-', '--prefixo', 'A', '--saida', str(de), '--tema', tema_a], cwd=RAIZ)
+        with zipfile.ZipFile(de / 'Apostila_A.docx') as z:
+            dx = z.read('word/document.xml').decode('utf-8', 'ignore') + z.read('word/styles.xml').decode('utf-8', 'ignore')
+        with zipfile.ZipFile(de / 'Apostila_A.epub') as z:
+            css = z.read('OEBPS/css/style.css').decode('utf-8', 'ignore')
+        G.chk(f'6.24-{tema_a}', f'{tema_a}: DOCX segue gov.br e EPUB permanece claro e neutro',
+              '1351B4' in dx and '0C326F' in dx and not any(x in dx for x in ('163B57', 'D5A900', '14334A'))
+              and '#0b3d6e' in css and '#1351b4' not in css and '14334a' not in css,
+              {'docx_govbr': '1351B4' in dx and '0C326F' in dx, 'epub_neutro': '#0b3d6e' in css and '#1351b4' not in css})
     # webcam: gestos repetidos (palma avança várias vezes; joinha alterna reproduzir/pausar), com reconhecedor MediaPipe simulado
     wc = amb.tmp / 'webcam'; wc.mkdir(exist_ok=True)
     (wc / 's.md').write_text('\n\n---\n\n'.join('# Slide %d\n\nTexto.' % k for k in range(1, 7)) + '\n', encoding='utf-8')
