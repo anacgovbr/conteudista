@@ -85,6 +85,17 @@ def grupo9(amb, ctx, G):
         G.chk('9.4', 'Inserir lista Link, Imagem, Tabela e Imagens do texto; foco no primeiro item', any(x.startswith('Link') for x in itens) and any(x.startswith('Imagens do texto') for x in itens) and foco == 'menuitem', itens[:4] + ['…'])
         pg.keyboard.press('ArrowDown'); pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
         G.chk('9.5', 'Esc fecha o menu e devolve o foco ao botão', pg.evaluate("document.activeElement.dataset.g") == 'ins' and bt.get_attribute('aria-expanded') == 'false')
+        pg.locator('#pg .mv-bt[data-g=mais]').click(); pg.wait_for_timeout(150)
+        cortes = pg.evaluate("""() => { const m = document.querySelector('.mv-menu:not([hidden])'), mr = m.getBoundingClientRect();
+          const itens = [...m.querySelectorAll('[role=menuitem]')].map(b => {
+            const r = b.getBoundingClientRect(), ic = b.querySelector('.mv-ic').getBoundingClientRect(), at = b.querySelector('.mv-at');
+            return { nome: b.textContent.trim(), transborda: b.scrollWidth > b.clientWidth + 1,
+              icEsq: Math.round(ic.left - r.left), atDir: Math.round(r.right - (at ? at.getBoundingClientRect().right : r.right)) };
+          });
+          return { itens, naTela: mr.left >= 0 && mr.right <= innerWidth }; }""")
+        G.chk('9.22', 'Celular: itens do menu ⋯ não cortam ícone, texto ou atalho',
+              cortes['naTela'] and all(not i['transborda'] and i['icEsq'] >= 0 and i['atDir'] >= 0 for i in cortes['itens']), cortes)
+        pg.keyboard.press('Escape'); pg.wait_for_timeout(100)
         antes = pg.evaluate("document.querySelector('#pg .mde-ta').value.length")
         pg.locator('#pg .mv-bt[data-g=fmt]').click(); pg.locator('.mv-menu:not([hidden]) [role=menuitem]', has_text='Título 2').click(); pg.wait_for_timeout(150)
         G.chk('9.6', 'Item do menu aciona o botão original (Título 2 altera o texto)', pg.evaluate("document.querySelector('#pg .mde-ta').value.length") != antes)
