@@ -205,11 +205,16 @@ def main():
         ver_nav = f'{args.navegador} {nav.version}'
         print(f'Navegador: {ver_nav}')
 
-        def novo_contexto(viewport=None, touch=False, movel=False):
+        def _novo_contexto_base(viewport=None, touch=False, movel=False):
             if movel and motor == 'chromium' and 'Pixel 7' in p.devices:
                 d = dict(p.devices['Pixel 7'])
                 return nav.new_context(**d)
             return nav.new_context(viewport=viewport or {'width': 1280, 'height': 720}, has_touch=touch)
+        def novo_contexto(*a, **k):
+            # 1.123: o app reabre na ultima aba usada; os testes partem da Apostila, como antes
+            c = _novo_contexto_base(*a, **k)
+            c.add_init_script("try { localStorage.setItem('conteudista.aba', 'apostila'); } catch (e) {}")
+            return c
         amb.novo_contexto = novo_contexto
 
         for gid in ids:

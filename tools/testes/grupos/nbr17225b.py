@@ -41,10 +41,10 @@ def grupo23(amb, ctx, G):
         e = pg.evaluate("({ ps: document.getElementById('ps').hidden, pg: document.getElementById('pg').hidden, foco: document.activeElement.id, tg: document.getElementById('tg').tabIndex, ts: document.getElementById('ts').tabIndex })")
         G.chk('23.2', 'Seta para a direita passa para Apresentacao, mostra o painel e leva o foco para a aba',
               (not e['ps']) and e['pg'] and e['foco'] == 'ts' and e['tg'] == -1 and e['ts'] == 0, e)
-        pg.keyboard.press('Home')
+        pg.keyboard.press('End')
         pg.wait_for_function("document.getElementById('tg').getAttribute('aria-selected') === 'true'", timeout=5000)
         e = pg.evaluate("({ pg: document.getElementById('pg').hidden, foco: document.activeElement.id })")
-        G.chk('23.3', 'Home volta para Apostila', (not e['pg']) and e['foco'] == 'tg', e)
+        G.chk('23.3', 'End volta para Apostila (ultima aba)', (not e['pg']) and e['foco'] == 'tg', e)
         areas = pg.evaluate("[...document.querySelectorAll('.drop')].map(d => [d.getAttribute('role'), d.tabIndex])")
         G.chk('23.4', 'Areas de arquivo sao botoes alcancaveis pelo teclado', len(areas) == 2 and all(a == ['button', 0] for a in areas), areas)
         pg.evaluate("window.__fmd = 0; document.getElementById('fmd').addEventListener('click', ev => { window.__fmd++; ev.preventDefault(); })")

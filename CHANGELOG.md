@@ -1,6 +1,6 @@
 # Novidades do Conteudista
 ## 1.123 - 26/11/2026
-- **Abas no padrão gov.br:** uma barra única no modelo Tab do Design System — **Apresentação · Narração │ Apostila**. A página abre na Apresentação, a aba ativa ganha o indicador inferior e a Narração mostra quantos slides têm notas (por exemplo, 8/12).
+- **Abas no padrão gov.br:** uma barra única no modelo Tab do Design System — **Apresentação · Narração │ Apostila**. A página abre na Apresentação (depois, na última aba usada), a aba ativa ganha o indicador inferior e a Narração mostra quantos slides têm notas (por exemplo, 8/12).
 - **Locução agora é Narração:** ajuda, tutorial, opções, versões, mensagens, conteúdo de exemplo e documentação usam o novo nome. Preferências, rascunhos e histórico de áudios são mantidos.
 - **Atalhos por posição:** Alt+Shift+1 abre a Apresentação, Alt+Shift+2 a Narração e Alt+Shift+3 a Apostila. As setas, Home e End navegam entre as abas.
 - **Validação:** checagem de sintaxe (node --check) dos arquivos alterados.

@@ -165,6 +165,8 @@
     '<button type="button" role="tab" class="g" data-aba="locucao" aria-selected="false" tabindex="-1" aria-controls="secLoc" title="Texto em fala (Alt+Shift+2)">' + icoAba('M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3zM5 11h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.9V21h-2v-3.1A7 7 0 0 1 5 11z') + '<span>Narração</span><span class="cnt" id="locCnt" hidden></span></button>' +
     '<span class="sep" aria-hidden="true"></span>' +
     '<button type="button" role="tab" data-aba="apostila" aria-selected="false" tabindex="-1" aria-controls="pg" title="Apostila (Alt+Shift+3)">' + icoAba('M4 3h6a3 3 0 0 1 2 .8A3 3 0 0 1 14 3h6v16h-6a2 2 0 0 0-1 .3V21h-2v-1.7a2 2 0 0 0-1-.3H4V3zm2 2v12h4a4 4 0 0 1 1 .1V6a1 1 0 0 0-1-1H6zm8 0a1 1 0 0 0-1 1v11.1a4 4 0 0 1 1-.1h4V5h-4z') + '<span>Apostila</span></button>';
+  // Reaproveita os botões #tg e #ts: ids, aria-controls e .click() de testes e módulos continuam valendo.
+  [['apresentacao', 'ts'], ['apostila', 'tg']].forEach(([k, id]) => { const novo = abas.querySelector('[data-aba="' + k + '"]'), real = document.getElementById(id); if (!novo || !real) return; real.className = novo.className; real.title = novo.title; real.innerHTML = novo.innerHTML; real.dataset.aba = k; novo.replaceWith(real); });
   main.parentNode.insertBefore(abas, main);
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secLoc'; sec.hidden = true;
   sec.innerHTML = '<h2>Narração</h2>' +
@@ -246,7 +248,7 @@
     abas.querySelectorAll('button[data-aba]').forEach(b => { const on = b.dataset.aba === nome; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; });
     [...main.children].forEach(el => { if (el.tagName === 'SECTION') el.hidden = nome === 'locucao' ? el !== sec : el === sec; });
     contarNarracao();
-    if (nome === 'locucao') carregarHistorico();
+    try { localStorage.setItem('conteudista.aba', nome); } catch (e) { /* sem armazenamento */ } if (nome === 'locucao') carregarHistorico();
   }
   function mostrarAba(nome) {  // 'apresentacao' | 'locucao' | 'apostila' ('curso' = volta ao texto aberto)
     if (nome === 'curso') nome = $('ps') && !$('ps').hidden ? 'apresentacao' : 'apostila';
@@ -258,7 +260,7 @@
     const sl = slidesDe(($('s') && $('s').value) || ''), n = sl.filter(p => /<!--\s*notas:\s*[^\s-]/.test(p)).length;
     c.hidden = !sl.length; c.textContent = n + '/' + sl.length; c.setAttribute('aria-label', n + ' de ' + sl.length + ' slides com notas para narração');
   }
-  abas.addEventListener('click', e => { const b = e.target.closest('button[data-aba]'); if (b) mostrarAba(b.dataset.aba); });
+  abas.addEventListener('click', e => { const b = e.target.closest('button[data-aba]'); if (b && b.dataset.aba === 'locucao') mostrarAba('locucao'); });  // #tg/#ts: onclick do index.html + captura abaixo
   abas.addEventListener('keydown', e => {
     const bs = [...abas.querySelectorAll('button[data-aba]')], i = bs.indexOf(document.activeElement); if (i < 0) return;
     const j = { ArrowRight: (i + 1) % bs.length, ArrowLeft: (i - 1 + bs.length) % bs.length, Home: 0, End: bs.length - 1 }[e.key];
@@ -748,7 +750,7 @@
   /* ---------------------------- Montagem (sem carregar recursos de áudio) ---------------------------- */
   contar(); carregarHistorico(); atualizarMotorUI();
   const sTxt = $('s'); let tCnt = null; if (sTxt) sTxt.addEventListener('input', () => { clearTimeout(tCnt); tCnt = setTimeout(contarNarracao, 300); });
-  const abaInicial = () => mostrarAba('apresentacao');  // Apresentação é a aba inicial
+  const abaInicial = () => { let a = null; try { a = localStorage.getItem('conteudista.aba'); } catch (e) { /* sem armazenamento */ } if (!['apresentacao', 'locucao', 'apostila'].includes(a)) a = 'apresentacao'; if (a === 'apostila' && !$('pg').hidden) exibirAba(a); else mostrarAba(a); };  // 1ª visita: Apresentação; depois, a última aba usada
   if (document.readyState === 'loading') addEventListener('DOMContentLoaded', abaInicial); else setTimeout(abaInicial);
   if ($('locPreload').checked && !location.hash.startsWith('#cx=')) {
     const go = () => carregarRecursos().catch(() => {});

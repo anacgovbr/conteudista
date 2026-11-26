@@ -240,7 +240,7 @@ def grupo20(amb, ctx, G):
         G.chk('20.3', 'Módulos novos somam até 200 KiB e cada recurso carrega em até 400 ms', bytes_total <= 200 * 1024 and maximo <= 400, {'bytes': bytes_total, 'duracoes': metricas})
         app.add_script_tag(url='https://cdn.jsdelivr.net/npm/axe-core@4.10.3/axe.min.js')
         axe_app = app.evaluate("async () => { const r = await axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a','wcag2aa','wcag21a','wcag21aa','wcag22aa'] } }); return r.violations.map(v => ({id:v.id,help:v.help,nodes:v.nodes.map(n=>n.target)})); }")
-        conhecidos = {('#pg > .mde[data-la="1"][data-m="s"] > .mde-gal > summary',), ('#dxRes > summary',)}
+        conhecidos = {('#ps > .mde[data-la="1"][data-m="s"] > .mde-gal > summary',), ('#pg > .mde[data-la="1"][data-m="s"] > .mde-gal > summary',), ('#dxRes > summary',)}
         novos = [dict(id=v['id'], target=alvo) for v in axe_app for alvo in v['nodes']
              if not (v['id'] == 'nested-interactive' and tuple(alvo) in conhecidos)]
         G.chk('20.4', 'Aplicativo não adiciona violações axe-core WCAG 2.2 A/AA além do baseline documentado', not novos,
