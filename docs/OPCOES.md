@@ -81,6 +81,14 @@ Arquivo: `web/config/opcoes.yaml`. Ele define como cada opção **começa**. Se 
 | `pptx` | Gerar a apresentação em PPTX | ligado · desligado | `desligado` | sim |
 | `epub` | Gerar a apostila em EPUB | ligado · desligado | `desligado` | sim |
 | `epub_opendyslexic` | Gerar a apostila em EPUB com a fonte OpenDyslexic | ligado · desligado | `desligado` | sim |
+| `odt` | Gerar a apostila em ODT (OpenDocument) | ligado · desligado | `desligado` | sim |
+| `odp` | Gerar a apresentação em ODP (OpenDocument) | ligado · desligado | `desligado` | sim |
+| `pdf` | Gerar PDF em texto simples (sem etiquetas de acessibilidade) | ligado · desligado | `desligado` | sim |
+| `rtf` | Gerar RTF | ligado · desligado | `desligado` | sim |
+| `txt` | Gerar texto simples (.txt) | ligado · desligado | `desligado` | sim |
+| `yaml` | Gerar a estrutura do conteúdo em YAML | ligado · desligado | `desligado` | sim |
+| `json` | Gerar a estrutura do conteúdo em JSON | ligado · desligado | `desligado` | sim |
+| `wiki` | Gerar marcação Wiki (MediaWiki) | ligado · desligado | `desligado` | sim |
 
 ## Celular
 

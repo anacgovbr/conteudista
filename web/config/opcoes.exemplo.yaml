@@ -92,6 +92,22 @@ geracao:  # Geração de arquivos
   epub: desligado
   # Gerar a apostila em EPUB com a fonte OpenDyslexic [ligado | desligado]
   epub_opendyslexic: desligado
+  # Gerar a apostila em ODT (OpenDocument) [ligado | desligado]
+  odt: desligado
+  # Gerar a apresentação em ODP (OpenDocument) [ligado | desligado]
+  odp: desligado
+  # Gerar PDF em texto simples (sem etiquetas de acessibilidade) [ligado | desligado]
+  pdf: desligado
+  # Gerar RTF [ligado | desligado]
+  rtf: desligado
+  # Gerar texto simples (.txt) [ligado | desligado]
+  txt: desligado
+  # Gerar a estrutura do conteúdo em YAML [ligado | desligado]
+  yaml: desligado
+  # Gerar a estrutura do conteúdo em JSON [ligado | desligado]
+  json: desligado
+  # Gerar marcação Wiki (MediaWiki) [ligado | desligado]
+  wiki: desligado
 
 celular:  # Celular
   # Celular: barra do editor em até duas linhas, com os botões agrupados em menus [ligado | desligado]

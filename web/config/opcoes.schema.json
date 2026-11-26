@@ -419,6 +419,110 @@
             true,
             false
           ]
+        },
+        "odt": {
+          "description": "Gerar a apostila em ODT (OpenDocument)",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "odp": {
+          "description": "Gerar a apresentação em ODP (OpenDocument)",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "pdf": {
+          "description": "Gerar PDF em texto simples (sem etiquetas de acessibilidade)",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "rtf": {
+          "description": "Gerar RTF",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "txt": {
+          "description": "Gerar texto simples (.txt)",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "yaml": {
+          "description": "Gerar a estrutura do conteúdo em YAML",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "json": {
+          "description": "Gerar a estrutura do conteúdo em JSON",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
+        },
+        "wiki": {
+          "description": "Gerar marcação Wiki (MediaWiki)",
+          "default": "desligado",
+          "enum": [
+            "ligado",
+            "desligado",
+            "sim",
+            "não",
+            "nao",
+            true,
+            false
+          ]
         }
       }
     },

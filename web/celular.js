@@ -205,6 +205,8 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
         else if (g || el.matches('.sep')) el.classList.add('mv-oc');
       });
       GRUPOS.forEach((g, k) => tb.append(mk(g, 10 + k)));
+      // Inserção e formatação ficam à esquerda; as ferramentas da janela (acessibilidade, compartilhar, versões, modos) à direita.
+      const sp = tb.querySelector('.sp'); if (sp) sp.style.order = 12;
     }
     if (!movel || (!BARRA && !IMAGENS)) return;
     if (IMAGENS) box.classList.add('mv-img');

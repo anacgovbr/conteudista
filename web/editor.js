@@ -719,9 +719,9 @@
       ['H1', 'Título 1 (Ctrl+Shift+1)', () => heading(1)], ['H2', 'Título 2 — seção (Ctrl+Shift+2)', () => heading(2)], ['H3', 'Título 3 (Ctrl+Shift+3)', () => heading(3)], '|',
       ['<b>B</b>', 'Negrito (Ctrl+B)', () => wrap('**', '**', 'texto')], ['<i>I</i>', 'Itálico (Ctrl+I)', () => wrap('*', '*', 'texto')], [IC.code, 'Código (Ctrl+E)', () => wrap('`', '`', 'código')], '|',
       [IC.list, 'Lista (Ctrl+Shift+8)', () => togglePrefix('- ', /^[-*] (?!\[)/)], [IC.olist, 'Lista numerada (Ctrl+Shift+7)', () => togglePrefix(i => (i + 1) + '. ', /^\d+\. /)], [IC.check, 'Checklist (Ctrl+Shift+9)', () => togglePrefix('- [ ] ', /^[-*] \[[ x]\] /)], '|',
-      [IC.link, 'Link (Ctrl+K)', link], [IC.img, 'Imagem (convertida para base64)', () => fileIn.click()], [IC.table, 'Tabela', tabela], '|',
+      [IC.link, 'Link (Ctrl+K)', link, undefined, 'Geral'], [IC.img, 'Imagem (convertida para base64)', () => fileIn.click(), undefined, 'Geral'], [IC.table, 'Tabela', tabela, undefined, 'Geral'], '|',
       ['', 'Caixa / citação (Ctrl+Shift+. cita)', null, 'callout'],
-      [IC.flow, 'Fluxo Mermaid', () => block('```mermaid\n' + MERMAID + '\n```')],
+      [IC.flow, 'Fluxo Mermaid', () => block('```mermaid\n' + MERMAID + '\n```'), undefined, 'Geral'],
     ];
     if (tipo === 'slides') {
       const tab = (n, r = 1) => Array.from({ length: r }, (_, j) => '| ' + Array.from({ length: n }, (_, i) => j ? 'Texto ' + (j + 1) + '.' + (i + 1) : 'Coluna ' + (i + 1)).join(' | ') + ' |').join('\n');
@@ -762,9 +762,9 @@
       LAYOUTS.forEach(([rot, slug, corpo, cat]) => {
         B.push([IC.plus + ' Layout', 'Slide: ' + rot, () => block('---\n\n<!-- layout: ' + slug + ' -->\n' + corpo), undefined, cat, slug]);
       });
-      B.push(['Capa', 'Marcar slide como capa/encerramento', () => ins('<!-- class: title -->\n')], ['Destaque', 'Marcar slide como destaque', () => ins('<!-- class: highlight -->\n')], [IC.note + ' Notas', 'Notas do apresentador', () => block('<!-- notas: texto para o apresentador -->')]);
+      B.push(['Capa', 'Marcar slide como capa/encerramento', () => ins('<!-- class: title -->\n'), undefined, 'Marcação do slide'], ['Destaque', 'Marcar slide como destaque', () => ins('<!-- class: highlight -->\n'), undefined, 'Marcação do slide'], [IC.note + ' Notas', 'Notas do apresentador', () => block('<!-- notas: texto para o apresentador -->'), undefined, 'Marcação do slide']);
     }
-    else B.push('|', [IC.hr, 'Separador', () => block('---')], [IC.ex + ' Exercício', 'Modelo de exercício', () => block('### Exercício N — Título\n\nEnunciado.')]);
+    else B.push('|', [IC.hr, 'Separador', () => block('---'), undefined, 'Apostila'], [IC.ex + ' Exercício', 'Modelo de exercício', () => block('### Exercício N — Título\n\nEnunciado.'), undefined, 'Apostila']);
     B.push('sp', [IC.edit, 'Somente editor', null, 'm:e'], [IC.split, 'Editor + prévia', null, 'm:s'], [IC.eye, 'Somente prévia', null, 'm:p'], [IC.full, 'Tela cheia (Esc para sair)', null, 'fs']);
     B.forEach(x => {
       if (x === '|') { const d = document.createElement('span'); d.className = 'sep'; tb.append(d); return; }

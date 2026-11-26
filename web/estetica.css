@@ -1,0 +1,29 @@
+/* =====================================================================================
+   Conteudista 1.130 - estetica mais limpa (SPEC-06)
+   Mantem as cores, o foco e as areas de toque do Design System gov.br; reduz o peso visual:
+   linhas de 1 px, menos negrito e menos botoes (acoes secundarias viram texto clicavel).
+   Carrega depois de govbr.css e ds-botoes.css.
+   ===================================================================================== */
+html body .card{border:1px solid #e6e6e6;border-radius:8px;box-shadow:none}
+html body h2,html body h3{font-weight:500}
+html body label{font-weight:500}
+html body :is(button,.btn):not(:where(.mde-tb *,.hb *,.tabs *,#abasApp *,[role=tab])){font-weight:500}
+html body .acao-gerar #go{box-shadow:none}
+html body :is(input[type=text],input[type=url],input[type=password],select,textarea){border-width:1px;border-color:#8c8c8c}
+html body :is(.drop,.imp-arquivos){border-width:1px}
+html body #barConteudo{border-bottom-color:#e6e6e6}
+html body details.sx>summary :is(.sxh,.sxr){font-weight:400}
+
+/* Acoes secundarias como texto: botao fica reservado a Importar e Gerar arquivos */
+html body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnCriarZero,#btnFecharImportar,#btnImpLink){
+  height:auto;min-height:32px;max-height:none;padding:0 8px;
+  border:0;background:transparent;color:#1351b4;
+  text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;
+}
+html body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnCriarZero,#btnFecharImportar,#btnImpLink):is(:hover,:focus-visible){
+  background:transparent;background-image:none;text-decoration-color:currentColor;
+}
+html.contraste body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnCriarZero,#btnFecharImportar,#btnImpLink){color:inherit}
+@media (max-width:700px){
+  html body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnCriarZero,#btnFecharImportar,#btnImpLink){min-height:44px}
+}

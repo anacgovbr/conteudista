@@ -258,6 +258,56 @@ class ModulosTest(unittest.TestCase):
                 with zipfile.ZipFile(Path(d) / nome) as z:
                     self.assertIsNone(z.testzip(), nome)
 
+    def test_formatos_abertos(self):
+        import json, re, zipfile, xml.dom.minidom as dom
+        gm = '# Guia de Teste\n\nTexto com **negrito**, *itálico* e [link](https://exemplo.gov.br).\n\n## Lista\n\n- um\n- dois\n  - filho\n\n1. a\n2. b\n\n| A | B |\n|---|---|\n| 1 | 2 |\n\n```python\nprint(1)\n```\n\n> [!info] Nota\n\n![Foto](foto.png)\n'
+        sm = '---\ntitle: Aula\n---\n\n# Slide 1\n\nTexto.\n\n<!-- notas: fale devagar -->\n\n---\n\n# Slide 2\n\n- ponto\n'
+        formatos = 'odt,odp,pdf,rtf,txt,wiki,yaml,json'
+        with tempfile.TemporaryDirectory() as d:
+            arqs, res = gerador.gerar(gm, sm, prefixo='teste-aberto', saida=d, formatos=formatos)
+            nomes = sorted(Path(a).name for a in arqs)
+            esperado = sorted(['Apostila_teste-aberto.' + e for e in ('odt', 'pdf', 'rtf', 'txt', 'wiki')]
+                              + ['Apresentacao_teste-aberto.' + e for e in ('odp', 'pdf', 'rtf', 'txt', 'wiki')]
+                              + ['Conteudo_teste-aberto.json', 'Conteudo_teste-aberto.yaml'])
+            self.assertEqual(nomes, esperado, res)
+            self.assertNotIn('ERRO', res)
+            for nome in ('Apostila_teste-aberto.odt', 'Apresentacao_teste-aberto.odp'):
+                with zipfile.ZipFile(Path(d) / nome) as z:
+                    self.assertIsNone(z.testzip())
+                    self.assertEqual(z.namelist()[0], 'mimetype')
+                    self.assertEqual(z.getinfo('mimetype').compress_type, zipfile.ZIP_STORED)
+                    for x in z.namelist():
+                        if x.endswith('.xml'):
+                            dom.parseString(z.read(x))
+            odt = zipfile.ZipFile(Path(d) / 'Apostila_teste-aberto.odt').read('content.xml').decode('utf-8')
+            self.assertIn('text:outline-level', odt)
+            self.assertIn('<table:table ', odt)
+            self.assertEqual(odt.count('<draw:page'), 0)
+            self.assertEqual(zipfile.ZipFile(Path(d) / 'Apresentacao_teste-aberto.odp').read('content.xml').decode('utf-8').count('<draw:page '), 2)
+            pdf = (Path(d) / 'Apostila_teste-aberto.pdf').read_bytes()
+            self.assertTrue(pdf.startswith(b'%PDF-1.4') and pdf.rstrip().endswith(b'%%EOF'))
+            inicio = int(re.search(rb'startxref\n(\d+)', pdf).group(1))
+            self.assertEqual(pdf[inicio:inicio + 4], b'xref')
+            self.assertIn(b'/Lang (pt-BR)', pdf)
+            rtf = (Path(d) / 'Apostila_teste-aberto.rtf').read_text(encoding='ascii')
+            self.assertEqual(rtf.count('{') - rtf.count('\\{'), rtf.count('}') - rtf.count('\\}'))
+            self.assertIn('{\\b negrito}', rtf)
+            wiki = (Path(d) / 'Apostila_teste-aberto.wiki').read_text(encoding='utf-8')
+            self.assertIn("'''negrito'''", wiki)
+            self.assertIn('{| class="wikitable"', wiki)
+            self.assertIn('[https://exemplo.gov.br link]', wiki)
+            txt = (Path(d) / 'Apresentacao_teste-aberto.txt').read_text(encoding='utf-8')
+            self.assertIn('Notas do apresentador: fale devagar', txt)
+            dados = json.loads((Path(d) / 'Conteudo_teste-aberto.json').read_text(encoding='utf-8'))
+            self.assertEqual(len(dados['apresentacao']['slides']), 2)
+            self.assertEqual(dados['apresentacao']['slides'][0]['notas'], 'fale devagar')
+            self.assertEqual(dados['apostila'][0], {'tipo': 'titulo', 'nivel': 1, 'texto': 'Guia de Teste'})
+            try:
+                import yaml as pyyaml
+            except ImportError:
+                pyyaml = None
+            if pyyaml:
+                self.assertEqual(pyyaml.safe_load((Path(d) / 'Conteudo_teste-aberto.yaml').read_text(encoding='utf-8')), dados)
     def test_estado_compartilhado(self):
         for texto in ['<!-- linguagem-acessivel: decorativa -->\n![Logo](logo.png)', '![Logo](logo.png)']:
             contexto.registrar_decorativas(texto)

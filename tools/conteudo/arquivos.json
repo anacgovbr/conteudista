@@ -1,5 +1,6 @@
 [
   "conteudo/__init__.py",
+  "conteudo/abertos.py",
   "conteudo/audio.py",
   "conteudo/contexto.py",
   "conteudo/docx.py",

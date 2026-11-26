@@ -1,4 +1,13 @@
 # Novidades do Conteudista
+## 1.131 - 27/11/2026
+- **Novos formatos de exportação:** ODT (apostila), ODP (apresentação), PDF, RTF, TXT, Wiki (MediaWiki), YAML e JSON entram na mesma lista de formatos. YAML e JSON levam a estrutura do conteúdo (apostila, slides e notas) em um só arquivo; TXT, Wiki, RTF e PDF saem para cada documento presente.
+- **Sem dependência nova:** os formatos são gerados no navegador com a biblioteca padrão do Python. Limites conhecidos: imagens saem como texto alternativo, o ODP não leva as notas e o PDF é texto simples, sem etiquetas de acessibilidade (a apostila acessível continua sendo o HTML, o DOCX e o EPUB).
+- **Validação:** testes de módulos geram os oito formatos e conferem XML dos ODT/ODP, estrutura do PDF, chaves do RTF e equivalência entre YAML e JSON.
+
+## 1.130 - 27/11/2026
+- **Gerar arquivos em seção própria:** fica entre Criar conteúdo e Arquivos gerados e só aparece quando há conteúdo; sem texto, o botão fica indisponível. No celular, o botão e Salvar ocupam a largura toda.
+- **Barra do editor:** inserção e formatação à esquerda; acessibilidade, compartilhar, versões, tela cheia e modos à direita. O menu Inserir separa os itens gerais (link, imagem, tabela, caixa, fluxo) dos de slide (modelos e marcações) e da apostila (separador e exercício).
+- **Visual mais limpo:** linhas de 1 px, menos negrito e menos botões — Compartilhar link, Histórico, Relatório de acessibilidade e Criar do zero viram texto clicável; botão fica para Importar e Gerar arquivos. Cores e foco do Design System gov.br mantidos.
 ## 1.129 - 26/11/2026
 - **Criar conteúdo:** a área passa a se chamar Criar conteúdo e, sem texto, orienta a importar o resultado de uma IA com o prompt de referência copiável, abrir um link (PrivateBin, autocontido ou .md) ou criar do zero. O editor e a barra de edição só aparecem depois que há conteúdo.
 - **Importação:** painel único para colar texto ou enviar arquivos Markdown e imagens.

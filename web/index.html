@@ -49,20 +49,23 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
 #btnAjudaLicenca{--btn-h:20px;position:relative;display:inline-flex;align-items:center;justify-content:center;height:20px;min-height:20px;max-height:20px;width:20px;min-width:20px;max-width:20px;margin:0;padding:0;border:0;background:none;color:var(--acc);font-size:15px;line-height:20px;cursor:pointer;border-radius:4px;flex-shrink:0}
 #btnAjudaLicenca::after{content:'';position:absolute;inset:-2px}
 #btnAjudaLicenca:hover{color:var(--pri)}#btnAjudaLicenca:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-#boasVindas[hidden],#editorArea[hidden],#painelImportar[hidden],#abasApp[hidden],#bcAcoesEdicao[hidden],.bc-nome[hidden]{display:none!important}
+#boasVindas[hidden],#editorArea[hidden],#secGerar[hidden],#painelImportar[hidden],#abasApp[hidden],#bcAcoesEdicao[hidden],.bc-nome[hidden]{display:none!important}
 #boasVindas h3{margin:0 0 6px}.bv-prompt{border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:10px 0}.bv-prompt summary{cursor:pointer;color:var(--acc)}
 #promptIA{white-space:pre-wrap;font:12.5px/1.5 Consolas,monospace;margin:8px 0}#painelImportar{border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px}#impTexto{height:160px}
-@media(max-width:700px){#boasVindas button,#boasVindas input,#painelImportar button{min-height:44px}.bv-acoes button,.bv-link input,.bv-link button{width:100%;margin:4px 0}}
+#go.indisponivel{opacity:.5;cursor:not-allowed}
+.acao-gerar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+@media(max-width:700px){.acao-gerar #go,.acao-gerar .jn-par,.acao-gerar .jn-par button{width:100%}#secGerar .fmt-lista label{min-height:44px}#boasVindas button,#boasVindas input,#painelImportar button{min-height:44px}.bv-acoes button,.bv-link input,.bv-link button{width:100%;margin:4px 0}}
 </style>
-<link rel="stylesheet" href="govbr.css?v=1.129">
-<link rel="stylesheet" href="ds-botoes.css?v=1.129">
-<script src="comum.js?v=1.129"></script>
-<script src="opcoes.js?v=1.129"></script>
-<script src="dialogo.js?v=1.129"></script>
-<script src="editor-linhas.js?v=1.129"></script>
-<script src="editor.js?v=1.129"></script>
-<script src="ajuda.js?v=1.129" defer></script>
-<script src="licencas-ajuda.js?v=1.129" defer></script>
+<link rel="stylesheet" href="govbr.css?v=1.131">
+<link rel="stylesheet" href="ds-botoes.css?v=1.131">
+<link rel="stylesheet" href="estetica.css?v=1.131">
+<script src="comum.js?v=1.131"></script>
+<script src="opcoes.js?v=1.131"></script>
+<script src="dialogo.js?v=1.131"></script>
+<script src="editor-linhas.js?v=1.131"></script>
+<script src="editor.js?v=1.131"></script>
+<script src="ajuda.js?v=1.131" defer></script>
+<script src="licencas-ajuda.js?v=1.131" defer></script>
 </head>
 <body>
 <a class="br-skiplink" href="#conteudo">Ir para o conteúdo</a>
@@ -148,6 +151,10 @@ Não use HTML. Não adicione explicações fora do Markdown.</pre>
     <textarea id="s" spellcheck="false" placeholder="---&#10;title: Título&#10;---&#10;&#10;# Slide 1"></textarea>
   </div>
   <div id="imgst" class="note">Imagens: nenhuma referência encontrada.</div>
+  </div>
+</section>
+<section class="card" id="secGerar" aria-labelledby="tGerar" hidden>
+  <h2 id="tGerar">Gerar arquivos</h2>
   <p class="acao-gerar">
     <button id="go">Gerar arquivos</button>
     <label class="inl" for="vlibrasGerar"><input id="vlibrasGerar" type="checkbox" checked> VLibras nos arquivos HTML</label>
@@ -162,11 +169,18 @@ Não use HTML. Não adicione explicações fora do Markdown.</pre>
       <label class="inl" for="fmtPptx"><input type="checkbox" id="fmtPptx"> PPTX (apresentação)</label>
       <label class="inl" for="fmtEpub"><input type="checkbox" id="fmtEpub"> EPUB (apostila)</label>
       <label class="inl" for="fmtEpubD"><input type="checkbox" id="fmtEpubD"> EPUB OpenDyslexic</label>
+      <label class="inl" for="fmtOdt"><input type="checkbox" id="fmtOdt"> ODT (apostila)</label>
+      <label class="inl" for="fmtOdp"><input type="checkbox" id="fmtOdp"> ODP (apresentação)</label>
+      <label class="inl" for="fmtPdf"><input type="checkbox" id="fmtPdf"> PDF (texto simples)</label>
+      <label class="inl" for="fmtRtf"><input type="checkbox" id="fmtRtf"> RTF</label>
+      <label class="inl" for="fmtTxt"><input type="checkbox" id="fmtTxt"> TXT</label>
+      <label class="inl" for="fmtWiki"><input type="checkbox" id="fmtWiki"> Wiki</label>
+      <label class="inl" for="fmtYaml"><input type="checkbox" id="fmtYaml"> YAML (estrutura)</label>
+      <label class="inl" for="fmtJson"><input type="checkbox" id="fmtJson"> JSON (estrutura)</label>
     </p>
     
   </details>
   <div id="log" role="log" aria-live="polite" aria-relevant="additions">Pronto.</div>
-  </div>
 </section>
 <section class="card" id="secRes" aria-labelledby="tRes">
 <div class="res-acoes"><button type="button" id="btnHistorico" class="sec mini" data-c="1" aria-haspopup="dialog" title="Histórico de arquivos gerados"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/></svg>Histórico</button></div>
@@ -261,6 +275,8 @@ const ED = {
   s: MDEditor.create($('s'), { tipo: 'slides', onFiles: f => receberArquivos(f, 's'), onInfo: m => log(m, 'ok') })
 };
 const refreshEditors = () => { ED.g.refresh(); ED.s.refresh(); };
+// Quem troca o texto por código (carregar rascunho, testes) chama refresh(): o estado de Criar/Gerar acompanha.
+['g', 's'].forEach(k => { const r = ED[k].refresh; ED[k].refresh = function () { const v = r.apply(this, arguments); if (typeof atualizarInicioCriacao === 'function') atualizarInicioCriacao(); return v; }; });
 function aba(t) { $('pg').hidden = t !== 'g'; $('ps').hidden = t !== 's'; [['g', 'tg'], ['s', 'ts']].forEach(([k, id]) => { const b = $(id), on = t === k; b.classList.toggle('off', !on); b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; }); ED[t].render(); }
 $('tg').onclick = () => aba('g'); $('ts').onclick = () => aba('s');
 /* 1.92 (WCAG 4.1.2): setas, Home e End trocam de aba (ativacao automatica) */
@@ -1036,7 +1052,7 @@ $('go').onclick = async () => {
     const sugestoes = resultados.reduce((n, r) => n + r.resumo.sugestoes, 0);
     log(res + '\nAcessibilidade: ' + corrigir + ' para corrigir · ' + sugestoes + (sugestoes === 1 ? ' sugestão' : ' sugestões'), res.includes('ERRO') ? 'err' : 'ok');
     limparDownloads();
-    const tipos = { md: 'text/markdown', html: 'text/html', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', epub: 'application/epub+zip', zip: 'application/zip' };
+    const tipos = { md: 'text/markdown', html: 'text/html', docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation', epub: 'application/epub+zip', zip: 'application/zip', odt: 'application/vnd.oasis.opendocument.text', odp: 'application/vnd.oasis.opendocument.presentation', pdf: 'application/pdf', rtf: 'application/rtf', txt: 'text/plain', wiki: 'text/plain', yaml: 'application/yaml', json: 'application/json' };
     let h = '';
     for (const f of files) {
       const nome = f.split('/').pop(), ext = nome.split('.').pop(), blob = new Blob([py.FS.readFile(f)], { type: tipos[ext] || 'application/octet-stream' });
@@ -1117,7 +1133,7 @@ addEventListener('hashchange', () => {
 });
 $('tema').value = (window.Opcoes ? Opcoes.ler('conteudista.tema', 'govbr') : localStorage.getItem('conteudista.tema')) || 'govbr';
 $('vlibrasGerar').checked = window.Opcoes ? Opcoes.ligado('acessibilidade_arquivos.vlibras') : true;
-const FORMATOS = [['html', 'geracao.html', 'fmtHtml'], ['md', 'geracao.md', 'fmtMd'], ['docx', 'geracao.docx', 'fmtDocx'], ['pptx', 'geracao.pptx', 'fmtPptx'], ['epub', 'geracao.epub', 'fmtEpub'], ['epub_opendyslexic', 'geracao.epub_opendyslexic', 'fmtEpubD']];
+const FORMATOS = [['html', 'geracao.html', 'fmtHtml'], ['md', 'geracao.md', 'fmtMd'], ['docx', 'geracao.docx', 'fmtDocx'], ['pptx', 'geracao.pptx', 'fmtPptx'], ['epub', 'geracao.epub', 'fmtEpub'], ['epub_opendyslexic', 'geracao.epub_opendyslexic', 'fmtEpubD'], ['odt', 'geracao.odt', 'fmtOdt'], ['odp', 'geracao.odp', 'fmtOdp'], ['pdf', 'geracao.pdf', 'fmtPdf'], ['rtf', 'geracao.rtf', 'fmtRtf'], ['txt', 'geracao.txt', 'fmtTxt'], ['wiki', 'geracao.wiki', 'fmtWiki'], ['yaml', 'geracao.yaml', 'fmtYaml'], ['json', 'geracao.json', 'fmtJson']];
 function formatosSelecionados() { return FORMATOS.filter(f => $(f[2]) && $(f[2]).checked).map(f => f[0]); }
 FORMATOS.forEach(f => {
   const cx = $(f[2]); if (!cx) return;
@@ -1164,6 +1180,10 @@ function atualizarInicioCriacao() {
   const mostrar = temConteudo || $('editorArea').dataset.criarZero === '1';
   $('boasVindas').hidden = !!mostrar;
   $('editorArea').hidden = !mostrar;
+  $('secGerar').hidden = !mostrar;
+  const go = $('go'), vazio = !temConteudo;
+  go.setAttribute('aria-disabled', vazio ? 'true' : 'false');
+  go.classList.toggle('indisponivel', vazio);
   // A barra de edição (abas, nome, exemplo/limpar) é movida para fora de #editorArea por layout-conteudo.js.
   ['abasApp', 'bcAcoesEdicao'].forEach(id => { const e = $(id); if (e) e.hidden = !mostrar; });
   document.querySelectorAll('.bc-nome').forEach(e => { e.hidden = !mostrar; });
@@ -1228,33 +1248,33 @@ refreshEditors(); statusImagens(); atualizarInicioCriacao();
 if (window.Temas) Temas.iniciar();
 // shortcut: os ~30 scripts abaixo carregam todos na abertura. Medido em 1.102 (CPU 4× mais lenta): ~3,5 s de abertura, quase tudo layout; temas, narração e ajuda somam ~150 ms. Carregar sob demanda só se esses módulos passarem de ~500 ms.
 </script>
-<script src="motor-python.js?v=1.129"></script>
-<script src="historico.js?v=1.129"></script>
-<script src="changelog.js?v=1.129"></script>
-<script src="gerados.js?v=1.129"></script>
-<script src="audio-codec.js?v=1.129"></script>
-<script src="locucao.js?v=1.129"></script>
-<script src="narracao.js?v=1.129"></script>
-<script src="ui-ajustes.js?v=1.129"></script>
-<script src="ux-feedback.js?v=1.129"></script>
-<script src="ux-expansiveis.js?v=1.129"></script>
-<script src="ux-arquivos.js?v=1.129"></script>
-<script src="metadados.js?v=1.129"></script>
-<script src="dicas.js?v=1.129"></script>
-<script src="janelas.js?v=1.129"></script>
-<script src="temas.js?v=1.129"></script>
-<script src="versoes.js?v=1.129"></script>
-<script src="colar.js?v=1.129"></script>
-<script src="notas-locucao.js?v=1.129"></script>
-<script src="celular.js?v=1.129"></script>
-<script src="acessibilidade.js?v=1.129"></script>
-<script src="acessibilidade-marcas.js?v=1.129"></script>
-<script src="acessibilidade-janelas.js?v=1.129"></script>
-<script src="acessibilidade-geracao.js?v=1.129"></script>
-<script src="imagens-a11y.js?v=1.129"></script>
-<script src="relatorio-acessibilidade.js?v=1.129"></script>
-<script src="acessibilidade-config.js?v=1.129"></script>
-<script src="vlibras.js?v=1.129"></script>
-<script src="layout-conteudo.js?v=1.129" defer></script>
+<script src="motor-python.js?v=1.131"></script>
+<script src="historico.js?v=1.131"></script>
+<script src="changelog.js?v=1.131"></script>
+<script src="gerados.js?v=1.131"></script>
+<script src="audio-codec.js?v=1.131"></script>
+<script src="locucao.js?v=1.131"></script>
+<script src="narracao.js?v=1.131"></script>
+<script src="ui-ajustes.js?v=1.131"></script>
+<script src="ux-feedback.js?v=1.131"></script>
+<script src="ux-expansiveis.js?v=1.131"></script>
+<script src="ux-arquivos.js?v=1.131"></script>
+<script src="metadados.js?v=1.131"></script>
+<script src="dicas.js?v=1.131"></script>
+<script src="janelas.js?v=1.131"></script>
+<script src="temas.js?v=1.131"></script>
+<script src="versoes.js?v=1.131"></script>
+<script src="colar.js?v=1.131"></script>
+<script src="notas-locucao.js?v=1.131"></script>
+<script src="celular.js?v=1.131"></script>
+<script src="acessibilidade.js?v=1.131"></script>
+<script src="acessibilidade-marcas.js?v=1.131"></script>
+<script src="acessibilidade-janelas.js?v=1.131"></script>
+<script src="acessibilidade-geracao.js?v=1.131"></script>
+<script src="imagens-a11y.js?v=1.131"></script>
+<script src="relatorio-acessibilidade.js?v=1.131"></script>
+<script src="acessibilidade-config.js?v=1.131"></script>
+<script src="vlibras.js?v=1.131"></script>
+<script src="layout-conteudo.js?v=1.131" defer></script>
 </body>
 </html>

@@ -566,6 +566,22 @@ def grupo26(amb, ctx, G):
               not extras['mais'] and len(extras['extras']) == 4 and all(e['vis'] for e in extras['extras'])
               and extras['grupos'][0] < extras['grupos'][1] < extras['extras'][0]['x']
               < extras['extras'][1]['x'] < extras['extras'][2]['x'] < extras['extras'][3]['x'] < extras['modo'], extras)
+        alin = pg.evaluate("""() => { const tb = document.querySelector('#pg .mde-tb'), r = tb.getBoundingClientRect(),
+            g = [...tb.querySelectorAll(':scope > .mv-grp')].map(e => e.getBoundingClientRect()), ex = [...tb.querySelectorAll('.mv-ext')].map(e => e.getBoundingClientRect());
+            return { esq: tb.querySelector('button').getBoundingClientRect().left - r.left, grupoFim: Math.max(...g.map(x => x.right)) - r.left,
+                     extraIni: Math.min(...ex.map(x => x.left)) - r.left, dir: r.right - Math.max(...ex.map(x => x.right)) }; }""")
+        G.chk('26.24', 'Computador: inserção e formatação à esquerda; acessibilidade, compartilhar, versões e modos à direita',
+              alin['esq'] < 40 and alin['extraIni'] > alin['grupoFim'] + 80 and alin['dir'] < 200, alin)
+        ordem = pg.evaluate("[...document.querySelectorAll('main > section')].map(s => s.id).filter(x => ['secCriar', 'secGerar', 'secRes'].includes(x))")
+        ant = pg.evaluate("[document.getElementById('g').value, document.getElementById('s').value]")
+        pg.evaluate("""() => { delete document.getElementById('editorArea').dataset.criarZero;
+            ['g', 's'].forEach(i => { const e = document.getElementById(i); e.value = ''; e.dispatchEvent(new Event('input', { bubbles: true })); }); }""")
+        vazio = pg.evaluate("({ gerar: document.getElementById('secGerar').offsetParent !== null, boas: document.getElementById('boasVindas').offsetParent !== null, ad: document.getElementById('go').getAttribute('aria-disabled') })")
+        pg.evaluate("""a => { ['g', 's'].forEach((i, k) => { const e = document.getElementById(i); e.value = a[k]; e.dispatchEvent(new Event('input', { bubbles: true })); }); ED.g.refresh(); ED.s.refresh(); }""", ant)
+        cheio = pg.evaluate("({ gerar: document.getElementById('secGerar').offsetParent !== null, ad: document.getElementById('go').getAttribute('aria-disabled') })")
+        G.chk('26.25', 'Gerar arquivos é uma seção própria entre Criar conteúdo e Arquivos gerados; só aparece com conteúdo e o botão fica indisponível sem texto',
+              ordem == ['secCriar', 'secGerar', 'secRes'] and not vazio['gerar'] and vazio['boas'] and vazio['ad'] == 'true'
+              and cheio['gerar'] and cheio['ad'] == 'false', {'ordem': ordem, 'vazio': vazio, 'cheio': cheio})
         pg.locator('#pg .mv-bt[data-g=fmt]').click(); pg.wait_for_timeout(150)
         itens = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [role=menuitem]')].map(x => x.textContent.trim())")
         antes_barra = pg.evaluate("document.querySelector('#pg .mde-ta').value")
@@ -578,7 +594,7 @@ def grupo26(amb, ctx, G):
         modelos = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [data-layout]')].map(x => x.dataset.layout)")
         categorias = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) .mv-cat')].map(x => x.textContent.trim())")
         G.chk('26.22', 'Computador: Inserir abre catálogo com os 25 modelos em grupos', len(modelos) == 25
-              and categorias == ['Básicos', 'Texto + imagem', 'Comparação', 'Cards', 'Matrizes', 'Processo', 'Indicadores'],
+              and categorias == ['Geral', 'Básicos', 'Texto + imagem', 'Comparação', 'Cards', 'Matrizes', 'Processo', 'Indicadores', 'Marcação do slide'],
               {'total': len(modelos), 'categorias': categorias})
         pg.keyboard.press('Escape')
         inseridos = []

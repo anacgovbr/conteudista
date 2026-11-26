@@ -27,6 +27,7 @@ from conteudo.epub import (
     EPUB_CSS, _EpubCtx, _ep_blocks, _ep_doc, _ep_inl, _ep_list,
     _ep_tabela, treinamento_epub
 )
+from conteudo import abertos
 from conteudo.fontes import (
     FACES, FONTES_DIR, LEITURAS, PILHA_LEITURA, _FONTES_CSS, _WOFF2_TAGS,
     fontes_css, fontes_faces, fontes_faces_unicas, woff2_tabelas, reiniciar_fontes
@@ -58,6 +59,14 @@ from conteudo.temas import (
     thex, trgb, nome_de
 )
 
+def _abertos(quer,prefixo,titulo,bl,T,P,arqs,falhas):
+    "TXT, Wiki, RTF e PDF de um documento; devolve o trecho do resumo."
+    msg=''
+    for fmt,(ext,_) in abertos.DOC.items():
+        if not quer(fmt):continue
+        try:Path(T(ext,prefixo)).write_bytes(abertos.gerar_doc(fmt,titulo,bl));arqs.append(P(ext,prefixo));msg+=' | %s: ok'%fmt
+        except Exception as e:falhas.append(P(ext,prefixo));msg+=' | %s: ERRO %s'%(fmt,e)
+    return msg
 def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narracao=None,fluxos=None,vlibras=True,licenca=None,formatos=None):
     """Gera os arquivos do que estiver preenchido: apostila (MD/HTML/DOCX/EPUB/EPUB OpenDyslexic) e/ou apresentação (MD/HTML/PPTX).
     formatos: lista separada por vírgula; None = todos (comportamento da linha de comando)."""
@@ -97,6 +106,10 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
                 try:registrar_decorativas(gm);treinamento_epub(gm_,T(suf,'Apostila_'),rodape or title_of(gm_,''),tema,fonte,licenca);arqs.append(P(suf,'Apostila_'));ne+=1
                 except Exception as e:falhas.append(P(suf,'Apostila_'));msg+=' | epub %s: ERRO %s'%(fonte,e)
             msg+=' | epub: %d'%ne
+            if quer('odt'):
+                try:Path(T('.odt','Apostila_')).write_bytes(abertos.odt(title_of(gm_,'Apostila'),blocks(gm_)));arqs.append(P('.odt','Apostila_'));msg+=' | odt: ok'
+                except Exception as e:falhas.append(P('.odt','Apostila_'));msg+=' | odt: ERRO %s'%e
+            msg+=_abertos(quer,'Apostila_',title_of(gm_,'Apostila'),blocks(gm_),T,P,arqs,falhas)
         else:msg+=' | apostila: vazia (não gerada)'
         if tem_s:
             sm=markdown_com_tema(sm,tema);t,sl=split_slides(sm);nr=_narr(narracao)
@@ -108,8 +121,18 @@ def gerar(gm,sm,prefixo='Conteudo',rodape='',barra='',saida='.',tema=None,narrac
             if quer('pptx'):
                 try:registrar_decorativas(sm);slides_pptx(t,sl,T('.pptx','Apresentacao_'),rodape,tema,nr['pptx'],nr['avancar'],nr['duracoes'],licenca,_fluxos_dict(fluxos));arqs.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ok'
                 except Exception as e:falhas.append(P('.pptx','Apresentacao_'));msg+=' | pptx: ERRO %s'%e
+            if quer('odp'):
+                try:Path(T('.odp','Apresentacao_')).write_bytes(abertos.odp(t,sl));arqs.append(P('.odp','Apresentacao_'));msg+=' | odp: ok'
+                except Exception as e:falhas.append(P('.odp','Apresentacao_'));msg+=' | odp: ERRO %s'%e
+            msg+=_abertos(quer,'Apresentacao_',t,abertos._doc_slides(sl),T,P,arqs,falhas)
             if nr['html'] or nr['pptx']:msg+=' | narração: %d slide(s)'%len(set(nr['html'])|set(nr['pptx']))
         else:msg+=' | apresentação: vazia (não gerada)'
+        for fmt,ext in (('json','.json'),('yaml','.yaml')):
+            if quer(fmt) and (tem_g or tem_s):
+                try:
+                    d=abertos.estrutura(title_of(gm,'') or title_of(sm,'') or 'Conteudo',gm if tem_g else '',sm if tem_s else '')
+                    Path(T(ext,'Conteudo_')).write_bytes(abertos.json_(d) if fmt=='json' else abertos.yaml(d));arqs.append(P(ext,'Conteudo_'));msg+=' | %s: ok'%fmt
+                except Exception as e:falhas.append(P(ext,'Conteudo_'));msg+=' | %s: ERRO %s'%(fmt,e)
         res='OK | slides: %d | checklists: %d | exercicios: %d%s | links: %d | imagens: %d'%(len(sl),g.count('class="task"'),len(re.findall(r'<h3 id="exercicio',g)),msg,g.count('<a href="http'),len(IMG.findall(CODIGO_RX.sub('',gm)))+len(IMG.findall(CODIGO_RX.sub('',sm))))+' | tema: '+nome_de(tema_t)
         if AVISOS:res+=' | avisos: '+' / '.join(AVISOS[:6])+(' (+%d)'%(len(AVISOS)-6) if len(AVISOS)>6 else '')
         for p in arqs:os.replace(os.path.join(tmp,os.path.basename(p)),p)
