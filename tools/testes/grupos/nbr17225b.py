@@ -47,7 +47,7 @@ def grupo23(amb, ctx, G):
         e = pg.evaluate("({ pg: document.getElementById('pg').hidden, foco: document.activeElement.id })")
         G.chk('23.3', 'End volta para Apostila (ultima aba)', (not e['pg']) and e['foco'] == 'tg', e)
         areas = pg.evaluate("[...document.querySelectorAll('.drop')].map(d => [d.getAttribute('role'), d.tabIndex])")
-        G.chk('23.4', 'Areas de arquivo sao botoes alcancaveis pelo teclado', len(areas) == 2 and all(a == ['button', 0] for a in areas), areas)
+        G.chk('23.4', 'Areas de arquivo sao botoes alcancaveis pelo teclado', len(areas) == 3 and all(a == ['button', 0] for a in areas), areas)
         pg.evaluate("window.__fmd = 0; document.getElementById('fmd').addEventListener('click', ev => { window.__fmd++; ev.preventDefault(); })")
         pg.focus('#pg .drop'); pg.keyboard.press('Enter'); n1 = pg.evaluate('window.__fmd')
         pg.keyboard.press('Space'); n2 = pg.evaluate('window.__fmd')

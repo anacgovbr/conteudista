@@ -214,6 +214,8 @@ def main():
             # 1.123: o app reabre na ultima aba usada; os testes partem da Apostila, como antes
             c = _novo_contexto_base(*a, **k)
             c.add_init_script("try { localStorage.setItem('conteudista.aba', 'apostila'); } catch (e) {}")
+            # 1.129: sem texto o app mostra as boas-vindas; os testes antigos precisam do editor, entao partem de "Criar do zero"
+            c.add_init_script("document.addEventListener('DOMContentLoaded', () => { const b = document.getElementById('btnCriarZero'), t = document.getElementById('g'); if (b && t && !t.value && !location.hash.startsWith('#cx=')) { b.click(); const g = document.getElementById('tg'); if (g) g.click(); } });")
             return c
         amb.novo_contexto = novo_contexto
 
