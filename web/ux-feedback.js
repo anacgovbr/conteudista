@@ -1,17 +1,8 @@
 /* =====================================================================================
    Conteudista - Ajustes globais de UX: feedback de acoes e links de arquivo compactos
 
-   REGRA GLOBAL - confirmacao de acao concluida em botao
-     1. O feedback e SOMENTE visual: o botao fica verde com um tick por 1,2 s (verde imediato no clique,
-        1 s em verde e 0,2 s de esmaecimento; sem esmaecer se o sistema pedir menos movimento).
-     2. Nenhum texto ou elemento e inserido na tela (nada de "Acao concluida." ao lado do botao).
-     3. A largura do botao nao muda: o tick (icone SVG de 14 x 14 px) fica na area de preenchimento
-        (padding) do botao, equidistante da borda externa e do inicio do texto, em qualquer fonte
-        (a posicao e medida, nao calculada). Em botoes estreitos o icone encolhe (minimo 10 px) e, se
-        ainda assim nao houver 3 px de cada lado, ele e colocado antes do rotulo durante a confirmacao.
-     4. Leitores de tela recebem a mensagem por uma regiao oculta (aria-live), sem mexer no layout.
-     5. Botoes de navegacao (abas, barras de ferramentas, fechar janelas) e de exclusao (.dan) nao
-        mostram confirmacao.
+   REGRA GLOBAL: tick somente na conclusao de carregamento ou geracao.
+   Acoes simples continuam usando seus estados nativos e avisos acessiveis.
    API: UXFeedback.confirmar(botao, mensagemParaLeitorDeTela)  |  UXFeedback.anunciar(mensagem)
    ===================================================================================== */
 (function () {
@@ -52,7 +43,8 @@
     estado.delete(b);
   }
   function confirmar(b, msg) {
-    if (!b || b.matches('.dan,[data-del],[data-a="excluir"],[data-a="rm"]')) return;
+    if (!b) return;
+    if (!b.matches('#ex,#btnImportar,#go,#locGerar')) { if (msg) anunciar(msg); return; }
     let e = estado.get(b);
     if (e) { clearTimeout(e.t1); clearTimeout(e.t2); b.classList.remove('action-saindo'); }
     else {
@@ -89,18 +81,11 @@
     e.t2 = setTimeout(() => limpar(b, e), total);
   }
 
-  /* Feedback padrao: confirma apos o clique. Acoes longas (gerar, criar link...) confirmam ao terminar. */
-  const SEM_CONFIRMACAO = '[data-c],summary *,#tg,#ts,#abasApp *,[data-aba],.tabs *,.mde-tb *,.hb *,[role=tab],#share,#go,#locCarregar,#locGerar,#narrHist,.jn-win *,[download],.file-link,.btn-exibir,.ger-top *,.ah-top *,.htop *,.md-hd *,.tr-pop *,.mde-dlg .ft *,.lj-jan *,.la-painel *,.la-balao *,#laAviso *';  // acessibilidade do texto: confirma pelo aviso próprio
-  document.addEventListener('click', e => {
-    const b = e.target.closest('button:not(.dan),a.btn:not(.dan)');
-    if (!b || b.matches(SEM_CONFIRMACAO)) return;
-    setTimeout(() => confirmar(b), 0);
-  }, true);
   function aoConcluir(id, msg) {
     const b = document.getElementById(id); if (!b) return;
     let esteve = false;
     new MutationObserver(() => { if (b.disabled) esteve = true; else if (esteve) { esteve = false; confirmar(b, msg); } }).observe(b, { attributes: true, attributeFilter: ['disabled'] });
   }
-  aoConcluir('go', 'Arquivos gerados.'); aoConcluir('share', 'Link criado.'); aoConcluir('locGerar', 'Locu\u00e7\u00e3o conclu\u00edda.');
+  aoConcluir('go', 'Arquivos gerados.'); aoConcluir('locGerar', 'Locu\u00e7\u00e3o conclu\u00edda.');
   window.UXFeedback = { confirmar, anunciar };
 })();

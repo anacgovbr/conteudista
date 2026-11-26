@@ -538,6 +538,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
       if (typeof aba === 'function') aba(alvo);
       itens.length = 0; renderLista();
       importar.fechar(true);
+      feedback($('btnImportar'), 'Arquivos importados.');
       const ed = $(alvo === 'g' ? 'pg' : 'ps'); if (ed && ed.scrollIntoView) ed.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (err) { importar.msg('Erro ao importar: ' + ((err && err.message) || err), false); botao.disabled = !itens.some(x => x.dest !== 'x'); }
   }

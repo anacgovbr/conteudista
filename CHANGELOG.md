@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.127 - 26/11/2026
+- **Ações por aba:** Carregar exemplo e Limpar ficam abaixo de Gerar conteúdo e afetam apenas a Apostila ou a Apresentação ativa. A importação continua disponível na barra principal.
+- **Rodapé opcional:** fica vazio quando não informado, sem reaproveitar o rodapé de outro trabalho.
+- **Interface:** campo Nome do conteúdo, botões e ícones alinhados; a engrenagem abre imediatamente, com um breve destaque verde, sem marca de confirmação.
+- **Validação:** 362 verificações locais na suíte completa do Chrome, sem falhas e sem ampliar o baseline do axe-core.
+
 ## 1.126 - 26/11/2026
 - **Configurações do conteúdo:** tema, licença, rodapé e salvamento automático ficam no painel lateral, acessível pela engrenagem. A barra principal mantém nome, importação e compartilhamento.
 - **Como funciona:** abre pelo cabeçalho, antes de Novidades, com início rápido, privacidade, acessibilidade, tutorial e ajuda.

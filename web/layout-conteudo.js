@@ -13,7 +13,7 @@
 
     const st = document.createElement('style');
     st.textContent = `
-#barConteudo{display:flex;flex-wrap:wrap;align-items:end;gap:8px 12px;box-sizing:border-box;width:calc(100% - 40px);max-width:1460px;margin:12px auto 0;padding:0 0 12px;border-bottom:1px solid var(--line,#ccc)}
+#barConteudo{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;box-sizing:border-box;width:calc(100% - 40px);max-width:1460px;margin:12px auto 0;padding:0 0 12px;border-bottom:1px solid var(--line,#ccc)}
 #barConteudo .bc-nome{flex:1 1 220px;min-width:0;max-width:420px}
 #barConteudo .acoes-meta,#bcCfgAcoes,.bc-com-acoes{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0}
 #barConteudo .acoes-meta button,#barConteudo .acoes-meta a,#bcCfgAcoes button,.bc-com-acoes button{margin:0}
@@ -38,6 +38,22 @@
 #bcComo ol{padding-inline-start:1.4rem}
 #bcComo li{margin-bottom:6px}
 #abasApp{margin-top:4px}
+#bcAcoesEdicao,.acao-gerar,.fmt-lista{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+#bcAcoesEdicao{margin:8px 0 12px}
+#bcAcoesEdicao button,.acao-gerar button,.acao-gerar label,.fmt-lista label{margin:0}
+#barConteudo .acoes-meta{min-width:0}
+#barConteudo .acoes-meta button{max-width:100%}
+header .hb #btnComoFunciona{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+#btnComoFunciona svg,#btnConfigConteudo svg{display:block;flex:none}
+#barConteudo #btnConfigConteudo.bc-clique{background:#168821;color:#fff}
+@media(min-width:1000px){
+  #barConteudo{display:grid;grid-template-columns:minmax(0,420px) max-content 44px;grid-template-rows:auto auto;justify-content:start;row-gap:4px}
+  #barConteudo .bc-nome{display:contents}
+  #barConteudo label[for=pref]{grid-column:1;grid-row:1;margin:0}
+  #barConteudo #pref{grid-column:1;grid-row:2;margin:0}
+  #barConteudo .acoes-meta{grid-column:2;grid-row:2}
+  #barConteudo #btnConfigConteudo{grid-column:3;grid-row:2}
+}
 .bc-vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 @media(max-width:700px){#barConteudo{width:calc(100% - 20px)}#barConteudo .bc-nome{flex-basis:100%;max-width:none}#bcConfig{padding:14px}}
 @media print{#barConteudo,#bcConfig,#bcComo{display:none!important}}`;
@@ -58,6 +74,7 @@
     const botao = document.createElement('button');
     botao.type = 'button';
     botao.id = 'btnConfigConteudo';
+    botao.setAttribute('data-c', '1');
     botao.setAttribute('aria-label', 'Configurações do conteúdo');
     botao.setAttribute('aria-expanded', 'false');
     botao.setAttribute('aria-controls', config.id);
@@ -70,7 +87,22 @@
     barra.append(campoNome, acoes, botao);
     const acoesConfig = $('bcCfgAcoes');
     acoesConfig.before(campos);
-    ['ex', 'clr'].forEach(id => { if ($(id)) acoesConfig.appendChild($(id)); });
+    const secao = $('pg').closest('section');
+    const titulo = secao.querySelector('h2');
+    const locais = document.createElement('div');
+    locais.id = 'bcAcoesEdicao';
+    locais.setAttribute('role', 'group');
+    locais.append($('ex'), $('clr'));
+    const cabecalho = titulo.closest('summary') || titulo;
+    cabecalho.after(locais);
+    const contexto = () => {
+      const area = $('ps').hidden ? 'Apostila' : 'Apresentação';
+      locais.setAttribute('aria-label', 'Ações de ' + area);
+      $('ex').setAttribute('aria-label', 'Carregar exemplo de ' + area);
+      $('clr').setAttribute('aria-label', 'Limpar ' + area);
+    };
+    new MutationObserver(contexto).observe($('ps'), { attributes: true, attributeFilter: ['hidden'] });
+    contexto();
 
     function fecharConfig() {
       if (!config.open) return;
@@ -78,9 +110,13 @@
       botao.setAttribute('aria-expanded', 'false');
       botao.focus();
     }
+    let retornoClique;
     botao.addEventListener('click', () => {
       if (config.open) { fecharConfig(); return; }
       config.show();
+      clearTimeout(retornoClique);
+      botao.classList.add('bc-clique');
+      retornoClique = setTimeout(() => botao.classList.remove('bc-clique'), 180);
       botao.setAttribute('aria-expanded', 'true');
       $('bcConfigFechar').focus();
     });
@@ -143,7 +179,7 @@
     abrirComo.id = 'btnComoFunciona';
     abrirComo.setAttribute('aria-haspopup', 'dialog');
     abrirComo.setAttribute('aria-controls', como.id);
-    abrirComo.innerHTML = informacao + ' Como funciona';
+    abrirComo.innerHTML = informacao + '<span>Como funciona</span>';
     novidades.before(abrirComo);
     abrirComo.addEventListener('click', () => {
       if (config.open) fecharConfig();

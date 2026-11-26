@@ -7,18 +7,13 @@
    - "Prefixo dos arquivos" -> "Nome do conteudo", com texto auxiliar ao vivo e
      normalizacao ao sair do campo (sem acentos; espaco e simbolos viram "_"). O id (#pref) e o
      argumento --prefixo do gerador nao mudam.
-   - "Rodape" -> "Rodape (opcional)", dentro do bloco recolhido "Mais opcoes". O titulo do bloco
-     mostra o valor atual. O valor fica lembrado neste navegador e e reaplicado quando o campo fica
-     vazio (ex.: Limpar tela, abrir um rascunho sem rodape).
+   - Rodape opcional: pertence ao documento e fica vazio quando nao informado.
    ===================================================================================== */
 (function () {
   'use strict';
   const pref = $('pref'), rod = $('rod'), bar = $('bar'), row = pref && pref.closest ? pref.closest('.row') : null;
   if (!pref || !rod || !row) return;
 
-  const CH = 'conteudista.rodape';
-  const lembrado = () => { try { return localStorage.getItem(CH) || ''; } catch (e) { return ''; } };
-  const lembrar = v => { try { if (v) localStorage.setItem(CH, v); else localStorage.removeItem(CH); } catch (e) { /* sem armazenamento */ } };
   const celula = el => (el && el.closest ? el.closest('.row > div') : null);
   const disparar = el => el.dispatchEvent(new Event('input', { bubbles: true }));
 
@@ -63,23 +58,14 @@ html.contraste .meta-aux{color:#fff!important}
   rod.after(auxR); rod.setAttribute('aria-describedby', 'rodAux');
   // Rodape sempre visivel: fica entre "Nome do conteudo" e "Layout" (no celular, abaixo de "Nome do conteudo")
   if (cr && cn) cn.insertAdjacentElement('afterend', cr);
-  const resumo = () => { /* sem resumo: o campo esta sempre visivel */ };
-  rod.addEventListener('input', () => { lembrar(rod.value.trim()); resumo(); });
+  const resumo = () => {};
 
-  function restaurarRodape() {
-    const v = lembrado();
-    if (!rod.value && v) { rod.value = v; disparar(rod); }
-  }
-  restaurarRodape();
-
-  /* aplicar(): usado por Limpar tela, rascunhos, links e exemplo. Reaplica o rodape lembrado, esvazia a
-     Barra superior (sem uso) e atualiza os textos auxiliares. */
   const original = window.aplicar;
   if (typeof original === 'function') {
     window.aplicar = function () {
       const r = original.apply(this, arguments);
       if (bar) bar.value = '';
-      restaurarRodape(); atualizarNome(); resumo();
+      atualizarNome(); resumo();
       return r;
     };
   }

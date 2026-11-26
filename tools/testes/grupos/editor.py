@@ -61,11 +61,14 @@ def grupo9(amb, ctx, G):
         # Este grupo testa o editor, nao o tutorial da primeira visita.
         pg.add_init_script("try { localStorage.setItem('conteudista.tour', '1'); } catch (e) {}")
         pg.goto(url); pg.wait_for_selector('#pg .mde-tb.mv-tb', state='attached', timeout=15000); pg.wait_for_timeout(500)
-        # As acoes secundarias so ficam visiveis com as configuracoes abertas.
-        pg.locator('#btnConfigConteudo').click()
-        pg.locator('#bcConfig').wait_for(state='visible')
-        pg.locator('#bcConfig #ex').wait_for(state='visible')
-        pg.locator('#bcConfig #clr').wait_for(state='visible')
+        pg.locator('#bcAcoesEdicao #ex').wait_for(state='visible')
+        pg.locator('#bcAcoesEdicao #clr').wait_for(state='visible')
+        posicao = pg.locator('#bcAcoesEdicao').evaluate("""el => ({
+            foraDoSummary: !el.closest('summary'),
+            abaixoDoTitulo: !!el.previousElementSibling?.matches('summary, h2')
+        })""")
+        G.chk('9.28', 'Carregar exemplo e Limpar ficam abaixo do titulo, fora do summary',
+              posicao['foraDoSummary'] and posicao['abaixoDoTitulo'], posicao)
         btns = pg.evaluate("""() => ['#btnImportar','#ex','#clr'].map(q => {
           const b = document.querySelector(q), s = getComputedStyle(b);
           return { id: q, display: s.display, align: s.alignItems, justify: s.justifyContent,
@@ -74,11 +77,8 @@ def grupo9(amb, ctx, G):
         G.chk('9.21', 'Ações principais: rótulos centralizados verticalmente nos botões', all(
             b['display'] == 'flex' and b['align'] == 'center' and b['justify'] == 'center' and
             b['lineHeight'] == 'normal' and b['height'] >= 32 for b in btns), btns)
-        pg.locator('#bcConfig #ex').click(); pg.wait_for_timeout(1200)
-        fechar = pg.locator('#bcConfigFechar')
-        if fechar.is_visible():
-            fechar.click()
-        pg.locator('#bcConfig').wait_for(state='hidden')
+        pg.locator('#bcAcoesEdicao #ex').click()
+        pg.wait_for_function("document.getElementById('g').value.includes('Conteudista na Prática')", timeout=15000)
         pg.evaluate("document.querySelector('#pg .mde').scrollIntoView()")
         e = pg.evaluate("""() => { const tb = document.querySelector('#pg .mde-tb');
             const v = [...tb.children].filter(x => x.offsetParent !== null && x.getBoundingClientRect().height > 0);
