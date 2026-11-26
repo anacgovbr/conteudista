@@ -184,19 +184,85 @@ def slides_pptx(t,sl,path,foot,tema=None,audios=None,avancar=False,duracoes=None
                 tb,tf=tbox(s,x,y,w,h);r=tf.paragraphs[0].add_run();r.text=b[2];r.font.name='Consolas';r.font.size=Pt(12);r.font.color.rgb=col;r.font.language_id=PT_BR
         return h
     def draw_lay(s,blocos,y,size,col,ly,x0=L,w0=CW):
-        "Modelos com imagem: duas colunas; os demais modelos usam os blocos nativos."
+        "Modelos com imagem: duas colunas; cards, etapas e linha do tempo viram formas; os demais usam os blocos nativos."
         frac={'imagem-direita':(2/3,1/3,False),'imagem-esquerda':(1/3,2/3,True),
               'meio-meio':(1/2,1/2,True),'imagem-destaque':(1/3,2/3,True)}
-        if ly not in frac or not any(b[0]=='img' for b in blocos):
-            for b in blocos:y+=draw(s,b,y,size,col,x0,w0)
-            return y
-        tw,iw,primeira=frac[ly]
-        tx=x0+(w0*tw if primeira else 0);ix=x0+(0 if primeira else w0*tw)
-        yt=yi=y
-        for b in blocos:
-            if b[0]=='img':yi+=draw(s,b,yi,size,col,ix,w0*iw)
-            else:yt+=draw(s,b,yt,size,col,tx,w0*tw)
-        return max(yt,yi)
+        def lista():
+            return next((b for b in blocos if b[0]=='list'),None)
+        def outros():
+            return [b for b in blocos if b[0]!='list']
+        def blocos_soltos(y0):
+            for b in outros():y0+=draw(s,b,y0,size,col,x0,w0)
+            return y0
+        def caixas(itens,cols,rotulo):
+            gap=0.16;rows=max(1,-(-len(itens)//cols));avail=max(1.0,6.75-y)
+            ch=max(1.05,min(2.5,(avail-gap*(rows-1))/rows));cw=(w0-gap*(cols-1))/cols
+            for k,(x,_,_,t) in enumerate(itens):
+                r,c=k//cols,k%cols;cx=x0+c*(cw+gap);cy=y+r*(ch+gap)
+                rect(s,cx,cy,cw,ch,SOFT);rect(s,cx,cy,cw,0.06,ACC)
+                tb,tf=tbox(s,cx+0.12,cy+0.16,cw-0.24,ch-0.24)
+                if rotulo:
+                    rr=tf.paragraphs[0].add_run();rr.text=rotulo(k+1);rr.font.size=Pt(max(MIN_CORPO,size-4));rr.font.bold=True;rr.font.color.rgb=ACC;rr.font.name=FONTE;rr.font.language_id=PT_BR
+                    p=tf.add_paragraph()
+                else:p=tf.paragraphs[0]
+                esp(p,1.2,0);addruns(p,t,max(MIN_CORPO,size-4),col)
+            return y+rows*(ch+gap)
+        def colunas(tab):
+            gap=0.16;n=max(1,len(tab[1][0]));cw=(w0-gap*(n-1))/n;ch=max(0.8,min(4.8,6.55-y))
+            for ci in range(n):
+                cx=x0+ci*(cw+gap);rect(s,cx,y,cw,ch,SOFT);rect(s,cx,y,cw,0.06,ACC)
+                tb,tf=tbox(s,cx+0.14,y+0.16,cw-0.28,ch-0.28);n0=0
+                for ri,row in enumerate(tab[1]):
+                    if ri==0 and not any(x.strip() for x in row):continue
+                    p=tf.paragraphs[0] if n0==0 else tf.add_paragraph();n0+=1;esp(p,1.2,6)
+                    addruns(p,row[ci] if ci<len(row) else '',max(MIN_CORPO,size-(0 if ri==0 else 3)),ACC if ri==0 else col,ri==0)
+            return y+ch+0.1
+        def etapas(itens):
+            gap=0.18;n=max(1,len(itens));cw=(w0-gap*(n-1))/n;ch=max(1.2,min(2.8,6.6-y))
+            for k,(x,_,_,t) in enumerate(itens):
+                cx=x0+k*(cw+gap);rect(s,cx,y,cw,ch,SOFT);rect(s,cx,y,cw,0.06,ACC)
+                circ=s.shapes.add_shape(MSO_SHAPE.OVAL,Inches(cx+0.12),Inches(y+0.16),Inches(0.42),Inches(0.42))
+                circ.fill.solid();circ.fill.fore_color.rgb=ACC;circ.line.fill.background();circ.shadow.inherit=False
+                tf=circ.text_frame;tf.word_wrap=False;tf.margin_left=tf.margin_right=tf.margin_top=tf.margin_bottom=0
+                p=tf.paragraphs[0];p.alignment=2;r=p.add_run();r.text=str(k+1);r.font.size=Pt(18);r.font.bold=True;r.font.color.rgb=WH;r.font.name=FONTE
+                tb,tf=tbox(s,cx+0.14,y+0.68,cw-0.28,ch-0.76);esp(tf.paragraphs[0],1.2,0);addruns(tf.paragraphs[0],t,max(MIN_CORPO,size-4),col)
+                if k:
+                    ar=s.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW,Inches(cx-gap+0.02),Inches(y+ch/2-0.09),Inches(max(0.12,gap-0.04)),Inches(0.18))
+                    ar.fill.solid();ar.fill.fore_color.rgb=ACC;ar.line.fill.background();ar.shadow.inherit=False
+            return y+ch+0.1
+        def linha_tempo(itens):
+            h=max(1.6,min(3.2,6.5-y));n=max(1,len(itens));rect(s,x0+0.3,y+0.62,w0-0.6,0.04,ACC)
+            for k,(x,_,_,t) in enumerate(itens):
+                cx=x0+(k+0.5)*w0/n
+                dot=s.shapes.add_shape(MSO_SHAPE.OVAL,Inches(cx-0.12),Inches(y+0.52),Inches(0.24),Inches(0.24))
+                dot.fill.solid();dot.fill.fore_color.rgb=ACC;dot.line.fill.background();dot.shadow.inherit=False
+                tb,tf=tbox(s,x0+k*w0/n+0.1,y+0.86,w0/n-0.2,h-0.9);tf.paragraphs[0].alignment=2
+                esp(tf.paragraphs[0],1.2,0);addruns(tf.paragraphs[0],t,max(MIN_CORPO,size-3),col)
+            return y+h
+        if ly in frac and any(b[0]=='img' for b in blocos):
+            tw,iw,primeira=frac[ly]
+            tx=x0+(w0*tw if primeira else 0);ix=x0+(0 if primeira else w0*tw)
+            yt=yi=y
+            for b in blocos:
+                if b[0]=='img':yi+=draw(s,b,yi,size,col,ix,w0*iw)
+                else:yt+=draw(s,b,yt,size,col,tx,w0*tw)
+            return max(yt,yi)
+        l=lista()
+        if ly.startswith('cards-') and l:
+            y=blocos_soltos(y);cols=4 if ly=='cards-4' else 3 if ly=='cards-6' else 4
+            return caixas(l[1],cols,None)
+        if ly in('etapas-3','etapas-5') and l:
+            y=blocos_soltos(y);return etapas(l[1])
+        if ly=='linha-tempo' and l:
+            y=blocos_soltos(y);return linha_tempo(l[1])
+        if ly in('colunas-2','colunas-3'):
+            tab=next((b for b in blocos if b[0]=='table'),None)
+            if tab and not [b for b in blocos if b[0] not in('h','table')]:
+                for b in blocos:
+                    if b[0]=='h':y+=draw(s,b,y,size,col,x0,w0)
+                return colunas(tab)
+        for b in blocos:y+=draw(s,b,y,size,col,x0,w0)
+        return y
     for idx,(cls,bl,notes,*extra) in enumerate(sl):
         ly=extra[0] if extra else ''
         s=P.slides.add_slide(P.slide_layouts[6])

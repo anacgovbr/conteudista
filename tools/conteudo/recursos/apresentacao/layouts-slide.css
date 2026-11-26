@@ -2,9 +2,43 @@
 .s.lay-imagem-direita .conteudo,.s.lay-imagem-esquerda .conteudo,.s.lay-meio-meio .conteudo,.s.lay-imagem-destaque .conteudo{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;align-items:start}
 .s.lay-imagem-direita .conteudo{grid-template-columns:2fr 1fr}
 .s.lay-imagem-esquerda .conteudo,.s.lay-imagem-destaque .conteudo{grid-template-columns:1fr 2fr}
-.s.lay-imagem-direita .conteudo>h1,.s.lay-imagem-esquerda .conteudo>h1,.s.lay-meio-meio .conteudo>h1,.s.lay-imagem-destaque .conteudo>h1{grid-column:1/-1}
-.s.lay-etapas-3 .conteudo>ol,.s.lay-etapas-5 .conteudo>ol,.s.lay-linha-tempo .conteudo>ol{display:grid;gap:.8rem}
+.s.lay-imagem-direita .conteudo>h1,.s.lay-imagem-esquerda .conteudo>h1,.s.lay-meio-meio .conteudo>h1,.s.lay-imagem-destaque .conteudo>h1{grid-column:1/-1;grid-row:1}
+.s.lay-imagem-direita .conteudo>figure,.s.lay-meio-meio .conteudo>figure,.s.lay-imagem-destaque .conteudo>figure{grid-column:2;grid-row:2/span 12;margin:0;align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.s.lay-imagem-esquerda .conteudo>figure{grid-column:1;grid-row:2/span 12;margin:0;align-self:stretch;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.s.lay-imagem-direita .conteudo>:not(h1):not(figure),.s.lay-meio-meio .conteudo>:not(h1):not(figure),.s.lay-imagem-destaque .conteudo>:not(h1):not(figure){grid-column:1}
+.s.lay-imagem-esquerda .conteudo>:not(h1):not(figure){grid-column:2}
+/* Sem imagem, a coluna reservada aparece para orientar a substituição. */
+.s.lay-imagem-direita .conteudo:not(:has(>figure))::after,.s.lay-meio-meio .conteudo:not(:has(>figure))::after,.s.lay-imagem-destaque .conteudo:not(:has(>figure))::after,.s.lay-imagem-esquerda .conteudo:not(:has(>figure))::after{content:"";grid-column:2;grid-row:2/span 12;min-height:220px;border:2px dashed var(--line);border-radius:8px;background:var(--soft)}
+.s.lay-imagem-esquerda .conteudo:not(:has(>figure))::after{grid-column:1}
+.s.lay-imagem-direita .conteudo>figure img,.s.lay-imagem-esquerda .conteudo>figure img,.s.lay-meio-meio .conteudo>figure img,.s.lay-imagem-destaque .conteudo>figure img{max-height:380px;object-fit:contain}
+.s.lay-branco .conteudo,.s.lay-somente-titulo .conteudo{justify-content:center}
+.s.lay-titulo-conteudo .conteudo{justify-content:flex-start;gap:0.5rem}
+/* Cards: cada item da lista vira uma caixa GOV.BR. */
+.s.lay-cards-4 .conteudo>ul,.s.lay-cards-6 .conteudo>ul,.s.lay-cards-8 .conteudo>ul{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:14px}
+.s.lay-cards-4 .conteudo>ul{grid-template-columns:repeat(4,1fr)}
+.s.lay-cards-6 .conteudo>ul{grid-template-columns:repeat(3,1fr)}
+.s.lay-cards-8 .conteudo>ul{grid-template-columns:repeat(4,1fr)}
+.s.lay-cards-4 .conteudo>ul>li,.s.lay-cards-6 .conteudo>ul>li,.s.lay-cards-8 .conteudo>ul>li{margin:0;padding:14px 16px;background:var(--soft);border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:8px;font-size:20px;line-height:1.35}
+.s.lay-cards-4 .conteudo>ul>li::marker,.s.lay-cards-6 .conteudo>ul>li::marker,.s.lay-cards-8 .conteudo>ul>li::marker{content:""}
+/* Etapas: caixas numeradas ligadas por setas. */
+.s.lay-etapas-3 .conteudo>ol,.s.lay-etapas-5 .conteudo>ol{list-style:none;counter-reset:etapa;padding:0;margin:6px 0 0;display:grid;gap:20px}
 .s.lay-etapas-3 .conteudo>ol{grid-template-columns:repeat(3,1fr)}
 .s.lay-etapas-5 .conteudo>ol{grid-template-columns:repeat(5,1fr)}
-.s.lay-linha-tempo .conteudo>ol{grid-template-columns:repeat(3,1fr)}
-.s.lay-branco .conteudo,.s.lay-somente-titulo .conteudo{justify-content:center}
+.s.lay-etapas-3 .conteudo>ol>li,.s.lay-etapas-5 .conteudo>ol>li{position:relative;margin:0;padding:48px 14px 14px;background:var(--soft);border:1px solid var(--line);border-radius:8px;font-size:18px;line-height:1.35}
+.s.lay-etapas-3 .conteudo>ol>li::before,.s.lay-etapas-5 .conteudo>ol>li::before{counter-increment:etapa;content:counter(etapa);position:absolute;left:14px;top:10px;width:30px;height:30px;border-radius:50%;background:var(--pri);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700}
+.s.lay-etapas-3 .conteudo>ol>li+li::after,.s.lay-etapas-5 .conteudo>ol>li+li::after{content:"→";position:absolute;left:-18px;top:50%;transform:translateY(-50%);color:var(--acc);font-weight:700}
+.s.lay-etapas-5 .conteudo>ol>li{font-size:16px;padding-top:44px}
+/* Linha do tempo: trilho, marcos e anos. */
+.s.lay-linha-tempo .conteudo>ol{list-style:none;padding:0;margin:34px 0 0;display:grid;grid-template-columns:repeat(3,1fr);position:relative}
+.s.lay-linha-tempo .conteudo>ol::before{content:"";position:absolute;left:8%;right:8%;top:9px;height:2px;background:var(--acc)}
+.s.lay-linha-tempo .conteudo>ol>li{position:relative;margin:0;padding:30px 10px 0;text-align:center;font-size:20px;line-height:1.35}
+.s.lay-linha-tempo .conteudo>ol>li::before{content:"●";position:absolute;left:50%;top:-9px;transform:translateX(-50%);color:var(--acc);font-size:24px;line-height:1}
+/* Matrizes e comparações: cabeçalhos e células alinhados. */
+.s.lay-matriz-2x2 .conteudo table,.s.lay-plano-cartesiano .conteudo table,.s.lay-swot .conteudo table,.s.lay-priorizacao .conteudo table,.s.lay-colunas-2 .conteudo table,.s.lay-colunas-3 .conteudo table,.s.lay-pros-contras .conteudo table,.s.lay-antes-depois .conteudo table{table-layout:fixed}
+.s.lay-matriz-2x2 .conteudo table td,.s.lay-plano-cartesiano .conteudo table td,.s.lay-swot .conteudo table td,.s.lay-priorizacao .conteudo table td{height:52px;font-size:20px}
+.s.lay-matriz-2x2 .conteudo table th:first-child,.s.lay-matriz-2x2 .conteudo table td:first-child{width:18%}
+/* Indicadores: o valor ganha destaque sem criar cor nova. */
+.s.lay-indicadores-2 .conteudo table td,.s.lay-indicadores-4 .conteudo table td{font-size:22px}
+.s.lay-indicadores-2 .conteudo table tbody tr:last-child td,.s.lay-indicadores-4 .conteudo table tbody tr:last-child td{font-size:38px;font-weight:700;color:var(--pri)}
+.s.lay-dashboard .conteudo table td{font-size:20px}
+@media(forced-colors:active){.s.lay-cards-4 .conteudo>ul>li,.s.lay-cards-6 .conteudo>ul>li,.s.lay-cards-8 .conteudo>ul>li,.s.lay-etapas-3 .conteudo>ol>li,.s.lay-etapas-5 .conteudo>ol>li{border:1px solid CanvasText}}

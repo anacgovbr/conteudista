@@ -115,7 +115,7 @@ def grupo9(amb, ctx, G):
               and badge['altura'] == '11px' and badge['vertical'] == 'middle', badge)
         pg.click('#ts'); pg.wait_for_timeout(120)
         pg.locator('#ps .mv-bt[data-g=ins]').click(); pg.wait_for_timeout(150)
-        modelos = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [role=menuitem]')].map(x => x.textContent.trim()).filter(x => x.startsWith('Slide:'))")
+        modelos = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [data-layout]')].map(x => x.dataset.layout)")
         G.chk('9.26', 'Celular: Inserir oferece os 25 modelos de slide', len(modelos) == 25, {'total': len(modelos), 'exemplos': modelos[:3]})
         pg.locator('.mv-menu:not([hidden]) [role=menuitem]', has_text='4 cards').click(); pg.wait_for_timeout(200)
         G.chk('9.27', 'Celular: modelo insere a diretiva de layout no slide', '<!-- layout: cards-4 -->' in pg.evaluate("document.querySelector('#ps .mde-ta').value"))
@@ -484,8 +484,21 @@ def grupo26(amb, ctx, G):
         pg.keyboard.press('Control+z'); pg.wait_for_timeout(100)
         pg.click('#ts'); pg.wait_for_timeout(120)
         pg.locator('#ps .mv-bt[data-g=ins]').click(); pg.wait_for_timeout(150)
-        modelos = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [role=menuitem]')].map(x => x.textContent.trim()).filter(x => x.startsWith('Slide:'))")
-        G.chk('26.22', 'Computador: Inserir lista os 25 modelos de slide', len(modelos) == 25, {'total': len(modelos), 'exemplos': modelos[:3]})
+        modelos = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [data-layout]')].map(x => x.dataset.layout)")
+        categorias = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) .mv-cat')].map(x => x.textContent.trim())")
+        G.chk('26.22', 'Computador: Inserir abre catálogo com os 25 modelos em grupos', len(modelos) == 25
+              and categorias == ['Básicos', 'Texto + imagem', 'Comparação', 'Cards', 'Matrizes', 'Processo', 'Indicadores'],
+              {'total': len(modelos), 'categorias': categorias})
+        pg.keyboard.press('Escape')
+        inseridos = []
+        for slug in modelos:
+            pg.locator('#ps .mv-bt[data-g=ins]').click()
+            pg.locator('.mv-menu:not([hidden]) [data-layout="' + slug + '"]').click()
+            pg.wait_for_timeout(30)
+            if '<!-- layout: ' + slug + ' -->' not in pg.evaluate("document.querySelector('#ps .mde-ta').value"):
+                inseridos.append(slug)
+            pg.keyboard.press('Control+z')
+        G.chk('26.23', 'Computador: cada um dos 25 modelos insere a diretiva do layout no slide', not inseridos, inseridos)
         pg.keyboard.press('Escape'); pg.click('#tg'); pg.wait_for_timeout(120)
         status_barra = pg.evaluate("(() => ({ mvOn: document.querySelector('#pg .mde').classList.contains('mv-on'), galVis: document.querySelector('#pg .mde-gal').offsetParent !== null }))()")
         G.chk('26.20', 'Computador: contagem do texto e Imagens do texto continuam visíveis (só o celular recolhe)',

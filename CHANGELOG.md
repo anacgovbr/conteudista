@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.121 - 25/11/2026
+- **Catálogo de slides:** o Inserir vira um catálogo com 25 modelos em grupos (Básicos, Texto + imagem, Comparação, Cards, Matrizes, Processo e Indicadores). Cada opção insere só o Markdown do modelo, sem pedir configuração.
+- **PPTX dos modelos:** cards viram caixas, etapas viram círculos numerados com setas e a linha do tempo vira trilho com marcos — tudo com os tokens do tema e sem motor de layout novo.
+- **Ajustes nos modelos (P1–P6):** os quatro layouts com imagem passam a inserir uma imagem de exemplo em data URI (visível no HTML, PPTX, DOCX e EPUB, sem link quebrado); sem imagem, a coluna é reservada por CSS. Plano cartesiano rotula os eixos dentro da tabela, indicadores usam Meta/Realizado/Cobertura/Prazo, a matriz 2×2 tem primeira coluna estreita e “Título e conteúdo” começa no topo.
+- **Validação:** 13 testes de módulos e 104 verificações dos grupos 6, 9 e 26 aprovadas; os sete formatos do gerador passaram. PPTX validado como arquivo, não aberto no PowerPoint neste ambiente.
+
 ## 1.120 - 25/11/2026
 - **Inserir slide:** o menu passa a oferecer 25 modelos semânticos — em branco, título e conteúdo, imagem em 1/3, 1/2 ou 2/3, duas e três colunas, prós e contras, antes e depois, 4/6/8 cards, matrizes 2×2, plano cartesiano, SWOT, priorização, 3/5 etapas, linha do tempo, fluxo horizontal, 2/4 indicadores e dashboard.
 - **Modelos sem motor novo:** cada opção insere uma diretiva `<!-- layout: ... -->` no Markdown; os blocos continuam sendo os de sempre, então HTML, PPTX, DOCX e EPUB seguem gerando sem quebrar.

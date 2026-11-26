@@ -109,7 +109,8 @@
     return '<div class="slides">' + parts.map((p, n) => {
       const c = (p.match(/<!--\s*class:\s*(\w+)\s*-->/) || [])[1] || '';
       const nt = (p.match(/<!--\s*notas:\s*([\s\S]*?)-->/) || [])[1] || '';
-      return '<div class="sl ' + c + '"><span class="sn">' + (n + 1) + '</span>' + render(p) + (nt ? '<div class="nt">Notas: ' + esc(nt.trim()) + '</div>' : '') + '</div>';
+      const ly = (p.match(/<!--\s*layout:\s*([\w-]+)\s*-->/) || [])[1] || '';
+      return '<div class="sl ' + c + (ly ? ' lay-' + ly : '') + '"><span class="sn">' + (n + 1) + '</span>' + render(p) + (nt ? '<div class="nt">Notas: ' + esc(nt.trim()) + '</div>' : '') + '</div>';
     }).join('') + '</div>';
   }
   let mermaidP = null;
@@ -190,6 +191,19 @@
 .mde-pv .sl .sn{position:absolute;right:8px;bottom:4px;font-size:11px;color:#888888}.mde-pv .sl.title .sn{color:#dbe8fb}.mde-pv .sl.title .nt{color:#ffe08a}
 .mde-pv .sl .nt{position:absolute;left:22px;right:40px;bottom:4px;font-size:11px;color:#7a6400;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mde-pv .sl figure img{max-height:180px}
+.mde-pv .sl.lay-imagem-direita,.mde-pv .sl.lay-imagem-esquerda,.mde-pv .sl.lay-meio-meio,.mde-pv .sl.lay-imagem-destaque{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start}
+.mde-pv .sl.lay-imagem-direita{grid-template-columns:2fr 1fr}.mde-pv .sl.lay-imagem-esquerda,.mde-pv .sl.lay-imagem-destaque{grid-template-columns:1fr 2fr}
+.mde-pv .sl.lay-imagem-direita h1,.mde-pv .sl.lay-imagem-esquerda h1,.mde-pv .sl.lay-meio-meio h1,.mde-pv .sl.lay-imagem-destaque h1{grid-column:1/-1;grid-row:1}
+.mde-pv .sl.lay-imagem-direita figure,.mde-pv .sl.lay-meio-meio figure,.mde-pv .sl.lay-imagem-destaque figure{grid-column:2;grid-row:2}
+.mde-pv .sl.lay-imagem-esquerda figure{grid-column:1;grid-row:2}
+.mde-pv .sl.lay-imagem-direita>:not(h1):not(figure),.mde-pv .sl.lay-meio-meio>:not(h1):not(figure),.mde-pv .sl.lay-imagem-destaque>:not(h1):not(figure){grid-column:1}
+.mde-pv .sl.lay-imagem-esquerda>:not(h1):not(figure){grid-column:2}
+.mde-pv .sl.lay-cards-4 ul,.mde-pv .sl.lay-cards-6 ul,.mde-pv .sl.lay-cards-8 ul{list-style:none;padding:0;display:grid;gap:4px}
+.mde-pv .sl.lay-cards-4 ul{grid-template-columns:repeat(4,1fr)}.mde-pv .sl.lay-cards-6 ul{grid-template-columns:repeat(3,1fr)}.mde-pv .sl.lay-cards-8 ul{grid-template-columns:repeat(4,1fr)}
+.mde-pv .sl.lay-cards-4 li,.mde-pv .sl.lay-cards-6 li,.mde-pv .sl.lay-cards-8 li{background:#eef4fa;border-left:3px solid #1351b4;padding:3px 5px;font-size:11px}
+.mde-pv .sl.lay-etapas-3 ol,.mde-pv .sl.lay-etapas-5 ol,.mde-pv .sl.lay-linha-tempo ol{list-style:none;padding:0;display:grid;gap:6px}
+.mde-pv .sl.lay-etapas-3 ol{grid-template-columns:repeat(3,1fr)}.mde-pv .sl.lay-etapas-5 ol{grid-template-columns:repeat(5,1fr)}.mde-pv .sl.lay-linha-tempo ol{grid-template-columns:repeat(3,1fr)}
+.mde-pv .sl.lay-etapas-3 li,.mde-pv .sl.lay-etapas-5 li,.mde-pv .sl.lay-linha-tempo li{background:#eef4fa;border-top:2px solid #1351b4;padding:4px;font-size:11px}
 .mde{position:relative}
 .mde.drag::after{content:'Solte as imagens para inserir no texto';position:absolute;inset:38px 0 24px 0;display:flex;align-items:center;justify-content:center;background:rgba(19,81,180,.12);border:3px dashed #1351b4;color:#0c326f;font:600 16px "Segoe UI",Arial,sans-serif;z-index:5;pointer-events:none}
 .mde-gal{border-top:1px solid #cccccc;background:#f8f8f8}
@@ -712,35 +726,42 @@
     if (tipo === 'slides') {
       const tab = (n, r = 1) => Array.from({ length: r }, (_, j) => '| ' + Array.from({ length: n }, (_, i) => j ? 'Texto ' + (j + 1) + '.' + (i + 1) : 'Coluna ' + (i + 1)).join(' | ') + ' |').join('\n');
       const passos = n => Array.from({ length: n }, (_, i) => (i + 1) + '. Etapa ' + (i + 1) + ' — descreva a ação').join('\n');
+      const cards = n => Array.from({ length: n }, (_, i) => '- **Card ' + (i + 1) + '** — Texto do card').join('\n');
+      // Imagem de exemplo em data URI: o editor a recolhe como (img:N) e todos os formatos a exportam sem link quebrado.
+      const imgph = '![Imagem (substitua pelo conteúdo desejado)](data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAC0CAIAAABqhmJGAAAB9klEQVR42u3csQ2CQBSA4Ye5OexYw9ItGIMpGMMtKFmDzgGoqKjsaEiuUFDA76uMJBYv+fMOiyuGcQrgmC5GAAIGBAwIGAQM7F1aflVWrbnADvWPuw0MjtCAgIGV34HzZ27gm/L/SdnA4AgNCBgQMAgYEDAgYEDAIGBAwICAQcCAgAEBAwIGAQMCBgQMCBgEDAgYEDAIGBAwIGBAwCBgQMCAgAEBg4ABAQMCBgEDAgYEDAgYBAwIGBAwCBgQMCBgQMAgYEDAgIABAYOAAQEDAgYBAwIGBAwIGAQMCBhYXTKCE7ve6vnzs2sMxAYGBAwIGAQMCBgQMCBgEDAgYEDAgIBBwICAAQGDgAEBAwIGBAwCBgQMhEvt4k9vpfvhT7kQzwYGBAwIGLwDs7kPXz5d7G4DAwIGBAwIGAQMCBgQMAgYEDAgYEDAIGBAwICAAQGDgAEBAwIGAQPhTizi0FdqYQMDAgYEDAIGBAwIGAQMCBgQMCBgEDAgYEDAgIBBwICAAQGDgAEBAwIGBAwCBgQMCBgQMAgYEDAgYBAwIGBAwICAQcCAgAEBg4CNAAQMCBgQMAgYEDAgYEDAIGBAwICAQcCAgAEBAwIGAQMCBgQMCBgEDAgYeFfKPy6r1ozABgYEDAgYzqEYxskUwAYGBAwIGAQMCBjYxgvfuByYOmdpoAAAAABJRU5ErkJggg==)';
+      const indicadores = n => n === 2
+        ? '| Meta | Realizado |\n|---|---|\n| — | — |'
+        : '| Meta | Realizado | Cobertura | Prazo |\n|---|---|---|---|\n| — | — | — | — |';
       const LAYOUTS = [
-        ['Slide em branco', 'branco', ''],
-        ['Título e conteúdo', 'titulo-conteudo', '# Título do slide\n\nTexto de apoio.'],
-        ['Somente título', 'somente-titulo', '# Título do slide'],
-        ['Imagem à direita (2/3 + 1/3)', 'imagem-direita', '# Título do slide\n\nTexto do slide.\n\n<!-- insira a imagem aqui -->'],
-        ['Imagem à esquerda (1/3 + 2/3)', 'imagem-esquerda', '# Título do slide\n\n<!-- insira a imagem aqui -->\n\nTexto do slide.'],
-        ['Imagem e texto 50/50', 'meio-meio', '# Título do slide\n\n<!-- insira a imagem aqui -->\n\nTexto do slide.'],
-        ['Imagem destaque (2/3 da página)', 'imagem-destaque', '# Título do slide\n\n<!-- insira a imagem aqui -->\n\nLegenda curta.'],
-        ['Duas colunas', 'colunas-2', '# Título do slide\n\n' + tab(2)],
-        ['Três colunas', 'colunas-3', '# Título do slide\n\n' + tab(3)],
-        ['Prós e contras', 'pros-contras', '# Título do slide\n\n| Prós | Contras |\n|---|---|\n| Vantagem | Desvantagem |'],
-        ['Antes e depois', 'antes-depois', '# Título do slide\n\n| Antes | Depois |\n|---|---|\n| Situação atual | Situação desejada |'],
-        ['4 cards', 'cards-4', '# Título do slide\n\n' + tab(4)],
-        ['6 cards', 'cards-6', '# Título do slide\n\n' + tab(3, 2)],
-        ['8 cards', 'cards-8', '# Título do slide\n\n' + tab(4, 2)],
-        ['Matriz 2x2', 'matriz-2x2', '# Título do slide\n\n| | Coluna A | Coluna B |\n|---|---|---|\n| Linha A | Um | Dois |\n| Linha B | Três | Quatro |'],
-        ['Plano cartesiano', 'plano-cartesiano', '# Título do slide\n\n| | Negativo | Positivo |\n|---|---|---|\n| Vertical | Q2 | Q1 |\n| Horizontal | Q3 | Q4 |'],
-        ['SWOT', 'swot', '# Título do slide\n\n| | Positivo | Negativo |\n|---|---|---|\n| Interno | Forças | Fraquezas |\n| Externo | Oportunidades | Ameaças |'],
-        ['Priorização impacto × esforço', 'priorizacao', '# Título do slide\n\n| | Baixo esforço | Alto esforço |\n|---|---|---|\n| Alto impacto | Fazer agora | Planejar |\n| Baixo impacto | Delegar | Evitar |'],
-        ['3 etapas', 'etapas-3', '# Título do slide\n\n' + passos(3)],
-        ['5 etapas', 'etapas-5', '# Título do slide\n\n' + passos(5)],
-        ['Linha do tempo', 'linha-tempo', '# Título do slide\n\n1. 2024 — Início\n2. 2025 — Desenvolvimento\n3. 2026 — Entrega'],
-        ['Fluxo horizontal', 'fluxo-horizontal', '# Título do slide\n\n```mermaid\nflowchart LR\n    A[Início] --> B[Etapa] --> C[Fim]\n```'],
-        ['2 indicadores', 'indicadores-2', '# Título do slide\n\n| Indicador | Valor |\n|---|---|\n| Meta | 0 |\n| Realizado | 0 |'],
-        ['4 indicadores', 'indicadores-4', '# Título do slide\n\n' + tab(4)],
-        ['Dashboard simples', 'dashboard', '# Título do slide\n\n| Métrica | Valor | Tendência | Situação |\n|---|---|---|---|\n| Meta | 0 | — | — |\n| Realizado | 0 | — | — |'],
+        ['Slide em branco', 'branco', '', 'Básicos'],
+        ['Título e conteúdo', 'titulo-conteudo', '# Título do slide\n\nTexto de apoio.', 'Básicos'],
+        ['Somente título', 'somente-titulo', '# Título do slide', 'Básicos'],
+        ['Imagem à direita (2/3 + 1/3)', 'imagem-direita', '# Título do slide\n\n' + imgph + '\n\n## Título\n\nTexto aqui.', 'Texto + imagem'],
+        ['Imagem à esquerda (1/3 + 2/3)', 'imagem-esquerda', '# Título do slide\n\n' + imgph + '\n\n## Título\n\nTexto aqui.', 'Texto + imagem'],
+        ['Metade e metade (50/50)', 'meio-meio', '# Título do slide\n\n' + imgph + '\n\n## Título\n\nTexto aqui.', 'Texto + imagem'],
+        ['Imagem destaque (1/3 texto + 2/3 imagem)', 'imagem-destaque', '# Título do slide\n\n' + imgph + '\n\n## Título\n\nLegenda curta.', 'Texto + imagem'],
+        ['2 colunas', 'colunas-2', '# Título do slide\n\n' + tab(2), 'Comparação'],
+        ['3 colunas', 'colunas-3', '# Título do slide\n\n' + tab(3), 'Comparação'],
+        ['Prós e contras', 'pros-contras', '# Título do slide\n\n| Prós | Contras |\n|---|---|\n| Vantagem | Desvantagem |', 'Comparação'],
+        ['Antes e depois', 'antes-depois', '# Título do slide\n\n| Antes | Depois |\n|---|---|\n| Situação atual | Situação desejada |', 'Comparação'],
+        ['4 cards', 'cards-4', '# Destaques\n\n' + cards(4), 'Cards'],
+        ['6 cards (3x2)', 'cards-6', '# Destaques\n\n' + cards(6), 'Cards'],
+        ['8 cards', 'cards-8', '# Destaques\n\n' + cards(8), 'Cards'],
+        ['Matriz 2x2', 'matriz-2x2', '# Matriz\n\n| | A | B |\n|---|---|---|\n| A | Quadrante A | Quadrante B |\n| B | Quadrante C | Quadrante D |', 'Matrizes'],
+        ['Plano cartesiano', 'plano-cartesiano', '# Plano cartesiano\n\n| Eixo Y / Eixo X | Negativo | Positivo |\n|---|---|---|\n| Vertical (acima) | Q2 | Q1 |\n| Horizontal (abaixo) | Q3 | Q4 |', 'Matrizes'],
+        ['SWOT', 'swot', '# Matriz\n\n| | Positivo | Negativo |\n|---|---|---|\n| Interno | Forças | Fraquezas |\n| Externo | Oportunidades | Ameaças |', 'Matrizes'],
+        ['Impacto x esforço', 'priorizacao', '# Matriz\n\n| | Baixo esforço | Alto esforço |\n|---|---|---|\n| Alto impacto | Fazer agora | Planejar |\n| Baixo impacto | Delegar | Evitar |', 'Matrizes'],
+        ['3 etapas', 'etapas-3', '# Processo\n\n' + passos(3), 'Processo'],
+        ['5 etapas', 'etapas-5', '# Processo\n\n' + passos(5), 'Processo'],
+        ['Linha do tempo', 'linha-tempo', '# Linha do tempo\n\n1. **2024** — Marco 1\n2. **2025** — Marco 2\n3. **2026** — Marco 3', 'Processo'],
+        ['Fluxo horizontal', 'fluxo-horizontal', '# Processo\n\n```mermaid\nflowchart LR\n    A[Início] --> B[Etapa] --> C[Fim]\n```', 'Processo'],
+        ['2 indicadores', 'indicadores-2', '# Indicadores\n\n' + indicadores(2), 'Indicadores'],
+        ['4 indicadores', 'indicadores-4', '# Indicadores\n\n' + indicadores(4), 'Indicadores'],
+        ['Dashboard simples', 'dashboard', '# Indicadores\n\n| Métrica | Valor | Tendência | Situação |\n|---|---|---|---|\n| Meta | 0 | — | — |\n| Realizado | 0 | — | — |', 'Indicadores'],
       ];
-      B.push('|', [IC.plus + ' Slide', 'Novo slide', () => block('---\n\n# Título do slide\n\n- Tópico')]);
-      LAYOUTS.forEach(([rot, slug, corpo]) => B.push([IC.plus + ' Layout', 'Slide: ' + rot, () => block('---\n\n<!-- layout: ' + slug + ' -->\n' + corpo)]));
+      LAYOUTS.forEach(([rot, slug, corpo, cat]) => {
+        B.push([IC.plus + ' Layout', 'Slide: ' + rot, () => block('---\n\n<!-- layout: ' + slug + ' -->\n' + corpo), undefined, cat, slug]);
+      });
       B.push(['Capa', 'Marcar slide como capa/encerramento', () => ins('<!-- class: title -->\n')], ['Destaque', 'Marcar slide como destaque', () => ins('<!-- class: highlight -->\n')], [IC.note + ' Notas', 'Notas do apresentador', () => block('<!-- notas: texto para o apresentador -->')]);
     }
     else B.push('|', [IC.hr, 'Separador', () => block('---')], [IC.ex + ' Exercício', 'Modelo de exercício', () => block('### Exercício N — Título\n\nEnunciado.')]);
@@ -755,6 +776,8 @@
         tb.append(sel); return;
       }
       const b = document.createElement('button'); b.type = 'button'; b.innerHTML = x[0]; b.title = x[1];
+      if (x[4]) b.dataset.cat = x[4];
+      if (x[5]) b.dataset.layout = x[5];
       if (x[3] && x[3].startsWith('m:')) { b.dataset.m = x[3].slice(2); b.onclick = () => { box.dataset.m = b.dataset.m; localStorage.setItem('mde.modo', b.dataset.m); marcar(); preview(); }; }
       else if (x[3] === 'fs') b.onclick = () => { box.classList.toggle('fs'); document.body.style.overflow = box.classList.contains('fs') ? 'hidden' : ''; ta.focus(); };
       else { b.onclick = x[2]; if (x[3] === 'u' || x[3] === 'r') b.dataset.ur = x[3]; }

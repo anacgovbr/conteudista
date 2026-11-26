@@ -25,6 +25,7 @@
 .mde-tb.mv-tb>.mv-grp{display:inline-flex;flex:0 0 auto}
 .mde-tb.mv-tb .mv-bt{display:inline-flex;align-items:center;justify-content:center;gap:2px;margin:0;padding:0 7px;min-height:28px;font:700 13px "Segoe UI",Arial,sans-serif}
 .mde-tb.mv-tb .mv-bt .mv-car{width:10px;height:10px;stroke-width:2.5}
+.mde-tb.mv-tb .mv-bt .mv-rot{font-size:13px}
 .mde-tb.mv-tb .mv-bt[aria-expanded="true"]{background:#dbe8fb!important;border-color:#1351b4!important}
 @media (max-width:700px){
 .mde-tb.mv-tb{padding:4px}
@@ -33,6 +34,7 @@
 .mde-tb.mv-tb>.mv-keep,.mde-tb.mv-tb .mv-bt{min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:2px;margin:0;padding:0 2px}
 .mde-tb.mv-tb .mv-bt{width:100%;font:700 14px "Segoe UI",Arial,sans-serif}
 .mde-tb.mv-tb .la-rot{display:none}
+.mde-tb.mv-tb .mv-rot{display:none}
 .mde-tb.mv-tb .mv-quebra{flex-basis:100%;height:0}
 .mde-tb.mv-tb>[data-m]{max-width:none;min-height:40px}
 .mde-tb.mv-tb [data-m]::after{content:attr(data-mv-rot);font:600 13px "Segoe UI",Arial,sans-serif;margin-left:6px}
@@ -55,6 +57,8 @@
 .mv-menu .mv-it .mv-ic{flex:0 0 24px;display:inline-flex;justify-content:center;color:#333333;font-weight:700}
 .mv-menu .mv-it svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .mv-menu .mv-it .mv-at{margin-left:auto;padding-left:12px;color:#636363;font-weight:400;font-size:12.5px;white-space:nowrap}
+.mv-menu .mv-cat{margin:8px 8px 2px;padding:5px 4px 3px;border-top:1px solid #cccccc;color:#333333;font:700 12px "Segoe UI",Arial,sans-serif;text-transform:uppercase;letter-spacing:.04em}
+.mv-menu .mv-cat:first-child{border-top:0;margin-top:2px}
 .mv-menu .mv-sep{height:1px;margin:4px 6px;background:#cccccc}
 .mv-fundo{position:fixed;inset:0;z-index:1490;background:rgba(0,0,0,.5)}
 .mde-gal.mv-folha{position:fixed;left:0;right:0;bottom:0;z-index:1500;max-height:82vh;overflow:auto;border-radius:16px 16px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.3);padding-bottom:env(safe-area-inset-bottom)}
@@ -99,6 +103,7 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
   let aberto = null;
   function itensDe(tb, gid) {
     const l = [];
+    let cat = '';
     [...tb.children].forEach(el => {
       const g = grupoDe(el);
       if (g !== gid) return;
@@ -106,10 +111,12 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
         [...el.options].forEach((o, k) => { if (k > 0) l.push({ nome: 'Caixa: ' + o.text, ic: '❝', fazer: () => { el.selectedIndex = k; el.dispatchEvent(new Event('change', { bubbles: true })); } }); });
         return;
       }
-      const t = rot(el), svg = el.querySelector('svg');
+      const t = rot(el), svg = el.querySelector('svg'), c = el.dataset.cat || '';
+      if (c && c !== cat) { l.push({ cat: c }); cat = c; }
       let ic = svg ? svg.outerHTML : (el.textContent || '').trim().slice(0, 2);
       if (/^T[ií]tulo ([123])/.test(t)) ic = 'H' + t.match(/^T[ií]tulo ([123])/)[1];
-      l.push({ nome: nomeCurto(t), at: atalho(t), ic, des: el.disabled, fazer: () => el.click() });
+      const nome = t.startsWith('Slide: ') ? t.slice(7) : nomeCurto(t);
+      l.push({ nome, at: atalho(t), ic, des: el.disabled, layout: el.dataset.layout || '', fazer: () => el.click() });
     });
     if (gid === 'ins' && IMAGENS) {
       const box = tb.closest('.mde'), gal = box && box.querySelector('.mde-gal');
@@ -123,7 +130,9 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
     menu.innerHTML = ''; const els = [];
     itens.forEach(it => {
       if (it === 'sep') { const s = document.createElement('div'); s.className = 'mv-sep'; s.setAttribute('role', 'separator'); menu.append(s); return; }
+      if (it.cat) { const h = document.createElement('div'); h.className = 'mv-cat'; h.setAttribute('role', 'presentation'); h.textContent = it.cat; menu.append(h); return; }
       const b = document.createElement('button'); b.type = 'button'; b.className = 'mv-it'; b.setAttribute('role', 'menuitem'); b.tabIndex = -1;
+      if (it.layout) b.dataset.layout = it.layout;
       b.innerHTML = '<span class="mv-ic" aria-hidden="true">' + it.ic + '</span><span>' + it.nome.replace(/[<&]/g, c => c === '<' ? '&lt;' : '&amp;') + '</span>' + (it.at ? '<span class="mv-at" aria-hidden="true">' + it.at + '</span>' : '');
       if (it.des) b.setAttribute('aria-disabled', 'true');
       b.addEventListener('click', () => { if (it.des) return; fecharMenu(false); it.fazer(); });
@@ -175,7 +184,7 @@ html.contraste .mv-menu .mv-it .mv-ic{color:#fff}
         const bt = document.createElement('button'); bt.type = 'button'; bt.className = 'mv-bt'; bt.dataset.g = g.id;
         bt.setAttribute('aria-haspopup', 'menu'); bt.setAttribute('aria-expanded', 'false'); bt.setAttribute('aria-label', g.rotulo);
         const id = 'mvM-' + g.id + '-' + Math.random().toString(36).slice(2, 7); bt.setAttribute('aria-controls', id);
-        bt.innerHTML = (g.icone ? SVG[g.icone] : '') + (g.curto ? '<span aria-hidden="true">' + g.curto + '</span>' : '') + SVG.car;
+        bt.innerHTML = (g.icone ? SVG[g.icone] : '') + (g.id === 'ins' ? '<span class="mv-rot">' + g.rotulo + '</span>' : g.curto ? '<span aria-hidden="true">' + g.curto + '</span>' : '') + SVG.car;
         const m = document.createElement('div'); m.className = 'mv-menu'; m.id = id; m.setAttribute('role', 'menu'); m.setAttribute('aria-label', g.rotulo); m.hidden = true;
         m.addEventListener('keydown', teclasMenu);
         bt.addEventListener('click', () => (aberto && aberto.bt === bt) ? fecharMenu(true) : abrirMenu(bt));

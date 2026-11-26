@@ -125,25 +125,122 @@ class ModulosTest(unittest.TestCase):
                  'matriz-2x2 plano-cartesiano swot priorizacao etapas-3 etapas-5 linha-tempo '
                  'fluxo-horizontal indicadores-2 indicadores-4 dashboard').split()
         self.assertEqual(len(slugs), 25)
+        self.assertEqual(set(slugs), set(markdown.LAYOUTS))
         ed = (RAIZ / 'web/editor.js').read_text(encoding='utf-8')
         cel = (RAIZ / 'web/celular.js').read_text(encoding='utf-8')
         for s in slugs:
             with self.subTest(slug=s):
                 self.assertIn("'%s'" % s, ed, s)
-        self.assertIn('Slide:', cel)
+                self.assertIn("'Slide: ' + rot", ed)
+        self.assertIn('dataset.layout', ed)
+        self.assertIn('mv-cat', cel)
+        self.assertIn('dataset.layout', cel)
+        # P1/P3/P5: os modelos trazem imagem de exemplo, eixos na tabela e rótulos de indicadores.
+        self.assertIn('const imgph = ', ed)
+        self.assertIn('data:image/png;base64,', ed)
+        self.assertIn('| Meta | Realizado |', ed)
+        self.assertIn('| Eixo Y / Eixo X |', ed)
+        self.assertNotIn('Eixo X: Impacto', ed)
         _, sl = markdown.split_slides('# Slide\n\n<!-- layout: cards-4 -->\n\n| A | B |\n|---|---|\n| 1 | 2 |')
         self.assertEqual(sl[0][3], 'cards-4')
         _, ruim = markdown.split_slides('# Slide\n\n<!-- layout: inexistente -->')
         self.assertEqual(ruim[0][3], '')
         css = (RAIZ / 'tools/conteudo/recursos/apresentacao/layouts-slide.css').read_text(encoding='utf-8')
-        self.assertIn('.s.lay-imagem-direita', css)
-        self.assertIn('lay-cards-4', gerador.slides_html('Apresentação', sl, 'Rodapé'))
+        for s in ('imagem-direita', 'cards-4', 'cards-6', 'cards-8', 'etapas-3', 'etapas-5', 'linha-tempo'):
+            self.assertIn('lay-' + s, css)
+        # P2/P4/P6: coluna reservada sem imagem, primeira coluna estreita e conteúdo no topo.
+        self.assertIn(':has(>figure)', css)
+        self.assertIn('td:first-child{width:18%}', css)
+        self.assertIn('lay-titulo-conteudo .conteudo{justify-content:flex-start;gap:0.5rem}', css)
+        png = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl2nKkAAAAASUVORK5CYII='
+        cards = lambda n: '\n'.join('- **Card %d** — Texto do card' % i for i in range(1, n + 1))
+        etapas = lambda n: '\n'.join('%d. **Etapa %d** — descreva a ação' % (i, i) for i in range(1, n + 1))
+        corpo = {
+            'branco': '', 'titulo-conteudo': '# Título\n\nTexto de apoio.', 'somente-titulo': '# Título',
+            'imagem-direita': '# Título\n\n## Título\n\nTexto.\n\n![Descrição](%s)' % png,
+            'imagem-esquerda': '# Título\n\n![Descrição](%s)\n\n## Título\n\nTexto.' % png,
+            'meio-meio': '# Título\n\n![Descrição](%s)\n\n## Título\n\nTexto.' % png,
+            'imagem-destaque': '# Título\n\n## Título\n\nLegenda.\n\n![Descrição](%s)' % png,
+            'colunas-2': '# Título\n\n| Coluna 1 | Coluna 2 |\n|---|---|\n| Texto 1.1 | Texto 1.2 |',
+            'colunas-3': '# Título\n\n| Coluna 1 | Coluna 2 | Coluna 3 |\n|---|---|---|\n| Texto 1.1 | Texto 1.2 | Texto 1.3 |',
+            'pros-contras': '# Título\n\n| Prós | Contras |\n|---|---|\n| Vantagem | Desvantagem |',
+            'antes-depois': '# Título\n\n| Antes | Depois |\n|---|---|\n| Atual | Desejada |',
+            'cards-4': '# Destaques\n\n' + cards(4), 'cards-6': '# Destaques\n\n' + cards(6),
+            'cards-8': '# Destaques\n\n' + cards(8),
+            'matriz-2x2': '# Matriz\n\n| | A | B |\n|---|---|---|\n| A | Quadrante A | Quadrante B |\n| B | Quadrante C | Quadrante D |',
+            'plano-cartesiano': '# Plano cartesiano\n\n| Eixo Y / Eixo X | Negativo | Positivo |\n|---|---|---|\n| Vertical (acima) | Q2 | Q1 |\n| Horizontal (abaixo) | Q3 | Q4 |',
+            'swot': '# Matriz\n\n| | Positivo | Negativo |\n|---|---|---|\n| Interno | Forças | Fraquezas |\n| Externo | Oportunidades | Ameaças |',
+            'priorizacao': '# Matriz\n\n| | Baixo esforço | Alto esforço |\n|---|---|---|\n| Alto impacto | Fazer agora | Planejar |\n| Baixo impacto | Delegar | Evitar |',
+            'etapas-3': '# Processo\n\n' + etapas(3), 'etapas-5': '# Processo\n\n' + etapas(5),
+            'linha-tempo': '# Linha do tempo\n\n1. **2024** — Marco 1\n2. **2025** — Marco 2\n3. **2026** — Marco 3',
+            'fluxo-horizontal': '# Processo\n\n```mermaid\nflowchart LR\n    A[Início] --> B[Etapa] --> C[Fim]\n```',
+            'indicadores-2': '# Indicadores\n\n| Meta | Realizado |\n|---|---|\n| — | — |',
+            'indicadores-4': '# Indicadores\n\n| Meta | Realizado | Cobertura | Prazo |\n|---|---|---|---|\n| — | — | — | — |',
+            'dashboard': '# Indicadores\n\n| Métrica | Valor | Tendência | Situação |\n|---|---|---|---|\n| Meta | 0 | — | — |\n| Realizado | 0 | — | — |',
+        }
+        slides = [('', markdown.blocks(corpo[s]), '', s) for s in slugs]
+        for tema in ('govbr', 'classico', 'anac20-claro', 'anac20-escuro'):
+            with self.subTest(tema=tema):
+                h = gerador.slides_html('Apresentação', slides, 'Rodapé', tema)
+                for s in slugs:
+                    self.assertIn('lay-' + s, h, s)
+                self.assertIn('Card 1', h)
+                self.assertIn('Quadrante A', h)
+                self.assertIn('2024', h)
+                self.assertIn('Eixo Y / Eixo X', h)
+                self.assertIn('Cobertura', h)
+                self.assertNotIn('<!-- layout:', h)
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / 'slides.pptx'
-            gerador.slides_pptx('Apresentação', sl, str(p), 'Rodapé')
+            gerador.slides_pptx('Apresentação', slides, str(p), 'Rodapé', 'govbr')
             with zipfile.ZipFile(p) as z:
                 self.assertIsNone(z.testzip())
-                self.assertIn('ppt/slides/slide1.xml', z.namelist())
+                xml = ''.join(z.read(n).decode('utf-8') for n in z.namelist() if n.startswith('ppt/slides/slide'))
+                self.assertIn('Card 1', xml)
+                self.assertIn('Etapa 5', xml)
+                self.assertIn('2024', xml)
+                self.assertIn('Quadrante A', xml)
+                self.assertIn('prst="ellipse"', xml)   # marcos da linha do tempo
+        with tempfile.TemporaryDirectory() as d:
+            md = '\n\n'.join('## %s\n\n%s' % (s, corpo[s]) for s in slugs if corpo[s])
+            dp = Path(d) / 'apostila.docx'
+            gerador.treinamento_docx(md, str(dp), 'Rodapé', 'govbr')
+            with zipfile.ZipFile(dp) as z:
+                doc = z.read('word/document.xml').decode('utf-8')
+                for txt in ('Card 1', 'Etapa 3', '2024', 'Quadrante A', 'Forças'):
+                    self.assertIn(txt, doc)
+            ep = Path(d) / 'apostila.epub'
+            gerador.treinamento_epub(md, str(ep), 'Rodapé', 'govbr')
+            with zipfile.ZipFile(ep) as z:
+                self.assertIsNone(z.testzip())
+                xhtml = ''.join(z.read(n).decode('utf-8') for n in z.namelist() if n.endswith('.xhtml'))
+                for txt in ('Card 1', 'Etapa 3', '2024', 'Quadrante A', 'Forças'):
+                    self.assertIn(txt, xhtml)
+
+    def test_placeholder_imagem_dos_modelos(self):
+        import zipfile
+        ed = (RAIZ / 'web/editor.js').read_text(encoding='utf-8')
+        ini = ed.index("const imgph = '") + len("const imgph = '")
+        ph = ed[ini:ed.index("';", ini)]
+        self.assertTrue(ph.startswith('![Imagem'))
+        sl = [('', markdown.blocks(ph), '', 'imagem-direita')]
+        h = gerador.slides_html('Prova', sl, 'Rodapé', 'govbr')
+        self.assertIn('<figure><img src="data:image/png;base64,', h)
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / 'prova.pptx'
+            gerador.slides_pptx('Prova', sl, str(p), 'Rodapé', 'govbr')
+            with zipfile.ZipFile(p) as z:
+                self.assertIsNone(z.testzip())
+                self.assertIn('ppt/media/image1.png', z.namelist())
+            doc = Path(d) / 'prova.docx'
+            gerador.treinamento_docx(ph, str(doc), 'Rodapé', 'govbr')
+            with zipfile.ZipFile(doc) as z:
+                self.assertTrue(any(n.startswith('word/media/') for n in z.namelist()))
+            ep = Path(d) / 'prova.epub'
+            gerador.treinamento_epub(ph, str(ep), 'Rodapé', 'govbr')
+            with zipfile.ZipFile(ep) as z:
+                self.assertIsNone(z.testzip())
+                self.assertTrue(any(n.startswith('OEBPS/img/') for n in z.namelist()))
 
     def test_estado_compartilhado(self):
         for texto in ['<!-- linguagem-acessivel: decorativa -->\n![Logo](logo.png)', '![Logo](logo.png)']:
