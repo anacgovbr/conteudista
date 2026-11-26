@@ -245,6 +245,40 @@ def grupo20(amb, ctx, G):
              if not (v['id'] == 'nested-interactive' and tuple(alvo) in conhecidos)]
         G.chk('20.4', 'Aplicativo não adiciona violações axe-core WCAG 2.2 A/AA além do baseline documentado', not novos,
               {'novas': novos, 'baseline': axe_app})
+        import re
+        from playwright.sync_api import expect
+
+        barra = app.locator('#barConteudo')
+        expect(barra).to_be_visible(timeout=15000)
+        barra.locator('#btnConfigConteudo').click()
+        painel = app.locator('#bcConfig')
+        expect(painel).to_be_visible()
+        sw = painel.get_by_role('switch', name=re.compile(r'^Salvar autom\u00e1tico$', re.IGNORECASE))
+        expect(sw).to_have_count(1)
+        estado = painel.locator('.bc-est')
+        inicial = sw.is_checked()
+        resultados = {}
+        for ligado in (inicial, not inicial):
+            expect(sw).to_be_checked(checked=ligado)
+            expect(estado).to_have_text('Ligado' if ligado else 'Desligado')
+            resultados['ligado' if ligado else 'desligado'] = app.evaluate("""async () => {
+                const r = await axe.run({include: [['#barConteudo'], ['#bcConfig']]}, { runOnly: { type: 'tag',
+                    values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } });
+                return r.violations.map(v => ({id: v.id, nodes: v.nodes.map(n => n.target)}));
+            }""")
+            sw.press('Space')
+        G.chk('20.5', 'Barra do conteudo passa no axe-core nos dois estados do interruptor',
+              not any(resultados.values()), resultados)
+        painel.get_by_role('button', name='Fechar').click()
+        app.locator('#btnComoFunciona').click()
+        expect(app.locator('#bcComo')).to_be_visible()
+        viola = app.evaluate("""async () => {
+            const r = await axe.run('#bcComo', { runOnly: { type: 'tag',
+                values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } });
+            return r.violations.map(v => ({id: v.id, nodes: v.nodes.map(n => n.target)}));
+        }""")
+        G.chk('20.6', 'Janela Como funciona passa no axe-core', not viola, viola)
+
         app.close()
     finally:
         srv.shutdown()

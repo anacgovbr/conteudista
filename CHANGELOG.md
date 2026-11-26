@@ -1,4 +1,9 @@
 # Novidades do Conteudista
+## 1.126 - 26/11/2026
+- **Configurações do conteúdo:** tema, licença, rodapé e salvamento automático ficam no painel lateral, acessível pela engrenagem. A barra principal mantém nome, importação e compartilhamento.
+- **Como funciona:** abre pelo cabeçalho, antes de Novidades, com início rápido, privacidade, acessibilidade, tutorial e ajuda.
+- **Validação:** 358 verificações na suíte completa do Chrome, sem falhas. Os testes cobrem teclado, retorno de foco, painel em telas estreitas, licenciamento e auditoria axe-core.
+
 ## 1.125 - 26/11/2026
 - **Barra do conteúdo:** nome, Importar, Compartilhar link e Salvar automático ficam acima das abas e valem para o conteúdo todo.
 - **Gerar arquivos:** tema, licença e rodapé ficam junto do botão que os usa.

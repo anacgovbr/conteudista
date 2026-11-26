@@ -58,7 +58,14 @@ def grupo9(amb, ctx, G):
     try:
         pg = ctx.new_page(); erros = []
         pg.on('pageerror', lambda e: erros.append(str(e)))
+        # Este grupo testa o editor, nao o tutorial da primeira visita.
+        pg.add_init_script("try { localStorage.setItem('conteudista.tour', '1'); } catch (e) {}")
         pg.goto(url); pg.wait_for_selector('#pg .mde-tb.mv-tb', state='attached', timeout=15000); pg.wait_for_timeout(500)
+        # As acoes secundarias so ficam visiveis com as configuracoes abertas.
+        pg.locator('#btnConfigConteudo').click()
+        pg.locator('#bcConfig').wait_for(state='visible')
+        pg.locator('#bcConfig #ex').wait_for(state='visible')
+        pg.locator('#bcConfig #clr').wait_for(state='visible')
         btns = pg.evaluate("""() => ['#btnImportar','#ex','#clr'].map(q => {
           const b = document.querySelector(q), s = getComputedStyle(b);
           return { id: q, display: s.display, align: s.alignItems, justify: s.justifyContent,
@@ -67,8 +74,11 @@ def grupo9(amb, ctx, G):
         G.chk('9.21', 'Ações principais: rótulos centralizados verticalmente nos botões', all(
             b['display'] == 'flex' and b['align'] == 'center' and b['justify'] == 'center' and
             b['lineHeight'] == 'normal' and b['height'] >= 32 for b in btns), btns)
-        pg.keyboard.press('Escape')                                   # fecha o tutorial da primeira visita
-        pg.click('#ex'); pg.wait_for_timeout(1200)
+        pg.locator('#bcConfig #ex').click(); pg.wait_for_timeout(1200)
+        fechar = pg.locator('#bcConfigFechar')
+        if fechar.is_visible():
+            fechar.click()
+        pg.locator('#bcConfig').wait_for(state='hidden')
         pg.evaluate("document.querySelector('#pg .mde').scrollIntoView()")
         e = pg.evaluate("""() => { const tb = document.querySelector('#pg .mde-tb');
             const v = [...tb.children].filter(x => x.offsetParent !== null && x.getBoundingClientRect().height > 0);
@@ -143,12 +153,20 @@ def grupo9(amb, ctx, G):
         msg = pg.evaluate("document.querySelector('#jnImpBack .jn-msg').textContent")
         G.chk('9.13', 'Erro do link em linguagem simples (sem nome técnico) e foco no campo do endereço', 'não funciona mais' in msg and 'PrivateBin' not in msg and pg.evaluate("document.activeElement.id") == 'clUrl', msg)
         G.chk('9.14', 'Nenhum erro de JavaScript no celular', not erros, erros)
+        # Painel lateral B1: licenciamento fica nas configuracoes do conteudo.
+        pg.keyboard.press('Escape')
+        pg.locator('#jnImpBack').wait_for(state='hidden')
+        pg.locator('#btnConfigConteudo').click()
+        pg.locator('#bcConfig #licenca').wait_for(state='visible')
         licenca = pg.evaluate("() => { const t = document.querySelector('#tema').getBoundingClientRect(), l = document.querySelector('#licenca').getBoundingClientRect(); return { valor: document.querySelector('#licenca').value, nome: document.querySelector('label[for=licenca]').textContent.trim(), descricao: document.querySelector('#licenca').getAttribute('aria-describedby'), opcoes: document.querySelectorAll('#licenca option').length, altura: l.height, empilhado: l.top >= t.bottom - 1, larguraPagina: document.documentElement.scrollWidth <= innerWidth }; }")
         G.chk('9.15', 'Licenciamento começa vazio, tem rótulo associado, sete opções CC/CC0 e cabe no celular', licenca['valor'] == '' and licenca['nome'] == 'Licenciamento' and licenca['descricao'] == 'licAux' and licenca['opcoes'] == 8 and licenca['altura'] >= 48 and licenca['empilhado'] and licenca['larguraPagina'], licenca)
         pg.locator('#licenca').select_option('cc-by-4.0'); pg.wait_for_timeout(1800)
         salvo = pg.evaluate("async () => { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); return r && r.licenca; }")
         G.chk('9.16', 'Autossalvamento preserva o código da licença no trabalho', salvo == 'cc-by-4.0', salvo)
-        pg.reload(); pg.wait_for_selector('#licenca', timeout=15000); pg.wait_for_timeout(300)
+        pg.reload()
+        pg.locator('#btnConfigConteudo').click()
+        pg.locator('#bcConfig #licenca').wait_for(state='visible')
+        pg.wait_for_function("document.getElementById('licenca').value === 'cc-by-4.0'", timeout=15000)
         restaurada = pg.locator('#licenca').input_value()
         G.chk('9.17', 'Reabrir o Conteudista restaura a licença do último trabalho', restaurada == 'cc-by-4.0', restaurada)
         hashes = pg.evaluate("async () => { const base = { g: '# Teste de identidade 9.18', s: '', p: 'Teste', r: '', b: '' }; const by = await Hist.registrar('marco', 'Licença BY', { ...base, licenca: 'cc-by-4.0' }); const sa = await Hist.registrar('gerado', 'Licença BY-SA', { ...base, licenca: 'cc-by-sa-4.0' }); const repetida = await Hist.registrar('gerado', 'Licença BY-SA repetida', { ...base, licenca: 'cc-by-sa-4.0' }); return { by: !!by, sa: !!sa, distintas: !!by && !!sa && by.h !== sa.h, repetida: repetida === null }; }")
@@ -174,9 +192,29 @@ def grupo9(amb, ctx, G):
         G.chk('9.20', 'Histórico poda por quantidade (240) e por tamanho (200 MB), sem apagar salvas nem a mais nova',
               poda == {'quantidade': 240, 'salvaFicou': True, 'maisNova': 'q244', 'tamanho': ['grande2', 'grande3', 'nova', 'salva']}, poda)
         desktop = amb.novo_contexto(viewport={'width': 1280, 'height': 820})
-        pgd = desktop.new_page(); pgd.goto(url); pgd.wait_for_selector('#licenca', timeout=15000)
-        alinhamento = pgd.evaluate("() => { const t = document.querySelector('#tema').getBoundingClientRect(), l = document.querySelector('#licenca').getBoundingClientRect(), s = document.querySelector('#licenca'); return { mesmaLinha: Math.abs(t.top - l.top) < 3, largura: l.width, altura: l.height, semRolagem: document.documentElement.scrollWidth <= innerWidth, linha: s.closest('.row') === document.querySelector('#tema').closest('.row') }; }")
-        G.chk('9.19', 'Layout e Licenciamento ficam lado a lado em desktop sem rolagem horizontal', alinhamento['mesmaLinha'] and alinhamento['largura'] >= 220 and alinhamento['altura'] >= 48 and alinhamento['semRolagem'] and alinhamento['linha'], alinhamento)
+        pgd = desktop.new_page()
+        pgd.add_init_script("localStorage.setItem('conteudista.tour', '1')")
+        pgd.goto(url)
+        pgd.locator('#btnConfigConteudo').click()
+        pgd.locator('#bcConfig #licenca').wait_for(state='visible')
+        alinhamento = pgd.evaluate("""() => {
+            const painel = document.getElementById('bcConfig');
+            const tema = painel.querySelector('#tema').getBoundingClientRect();
+            const licenca = painel.querySelector('#licenca').getBoundingClientRect();
+            const p = painel.getBoundingClientRect();
+            return {
+                empilhados: tema.height > 0 && licenca.top >= tema.bottom - 1,
+                largura: licenca.width, altura: licenca.height,
+                dentro: p.left >= 0 && p.right <= innerWidth + 1 &&
+                    licenca.left >= p.left && licenca.right <= p.right + 1,
+                semRolagem: painel.scrollWidth <= painel.clientWidth + 1 &&
+                    document.documentElement.scrollWidth <= innerWidth + 1
+            };
+        }""")
+        G.chk('9.19', 'Layout e Licenciamento ficam empilhados no painel lateral, sem rolagem horizontal',
+              alinhamento['empilhados'] and alinhamento['largura'] >= 220 and
+              alinhamento['altura'] >= 48 and alinhamento['dentro'] and
+              alinhamento['semRolagem'], alinhamento)
         desktop.close()
         pg.close()
     finally:
