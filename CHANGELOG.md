@@ -1,4 +1,8 @@
 # Novidades do Conteudista
+## 1.122 - 26/11/2026
+- **Temas HTML:** “Usar” em um dos 12 temas do frontend-slides agora aplica o tema à apresentação web — antes a escolha voltava para o padrão gov.br. O seletor mostra o tema escolhido como “Tema HTML”, e os arquivos gerados mantêm as cores, as fontes e as animações do tema.
+- **Validação:** 14 testes de módulos e as verificações dos grupos 5, 6 e 25 aprovadas.
+
 ## 1.121 - 25/11/2026
 - **Catálogo de slides:** o Inserir vira um catálogo com 25 modelos em grupos (Básicos, Texto + imagem, Comparação, Cards, Matrizes, Processo e Indicadores). Cada opção insere só o Markdown do modelo, sem pedir configuração.
 - **PPTX dos modelos:** cards viram caixas, etapas viram círculos numerados com setas e a linha do tempo vira trilho com marcos — tudo com os tokens do tema e sem motor de layout novo.

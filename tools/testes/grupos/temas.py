@@ -290,6 +290,21 @@ def grupo25(amb, ctx, G):
               cmp['opcoes'] >= 16 and cmp['html'] and cmp['linhas'] > 0
               and set(cmp['selector']) == {'govbr', 'classico', 'anac20-claro', 'anac20-escuro'}, cmp)
 
+        pg.evaluate("Temas.abrir('meus')")
+        pg.wait_for_selector('#tmLista [data-valor="bold-signal"] [data-a="usar"]', timeout=10000)
+        pg.locator('#tmLista [data-valor="bold-signal"] [data-a="usar"]').click()
+        pg.wait_for_timeout(300)
+        uso = pg.evaluate("""() => ({
+            sel: document.getElementById('tema').value,
+            opcao: !!document.querySelector('#tema option[value="bold-signal"]'),
+            aux: document.getElementById('temaAux').textContent,
+            salvo: localStorage.getItem('conteudista.tema')
+        })""")
+        G.chk('25.23', 'Usar um tema HTML aplica ao seletor e fica lembrado',
+              uso['sel'] == 'bold-signal' and uso['opcao'] and 'frontend-slides' in uso['aux']
+              and uso['salvo'] == 'bold-signal', uso)
+        pg.evaluate("Temas.atualizarSeletor('govbr')")
+
         G.chk('25.18', 'Nenhum erro de JavaScript durante o fluxo de temas', not erros, erros)
         pg.close()
     finally:

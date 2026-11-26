@@ -135,6 +135,11 @@
       });
   }
 
+  function temaSoHtml(id) {
+    const r = (catalogo && catalogo.temas && catalogo.temas[id] && catalogo.temas[id].renderer_support) || [];
+    return r.includes('html') && !r.includes('pptx');
+  }
+
   function modeloEmbutido(id) {
     const c = catalogo && catalogo.temas ? catalogo.temas[id] : null;
     const base = c || (catalogo && catalogo.temas ? catalogo.temas.govbr : null) || {};
@@ -671,6 +676,8 @@
     if (String(valor).startsWith('custom:')) {
       const nome = (cacheNomes[id] || (temaAvulso && temaAvulso.id === id ? temaAvulso.nome : '') || 'personalizado');
       el.textContent = 'Tema personalizado “' + nome + '”. ' + base;
+    } else if (temaSoHtml(valor)) {
+      el.textContent = 'Tema HTML “' + ((catalogo.temas[valor] || {}).nome || valor) + '”: a apresentação web usa os layouts do frontend-slides; DOCX, EPUB e PPTX usam as cores e fontes do tema.';
     } else el.textContent = base;
   }
 
@@ -686,12 +693,14 @@
     let html = '<optgroup label="Embutidos">';
     Object.keys(catalogo.temas).forEach(k => {
       const t = catalogo.temas[k];
-      // Temas exclusivos do renderer HTML nao entram no seletor do gerador (PPTX/DOCX).
-      const r = t.renderer_support || [];
-      if (r.includes('html') && !r.includes('pptx')) return;
+      // Temas exclusivos do renderer HTML ficam fora do seletor até serem escolhidos em Temas.
+      if (temaSoHtml(k)) return;
       html += '<option value="' + esc(k) + '">' + esc(t.nome || k) + '</option>';
     });
     html += '</optgroup>';
+    if (temaSoHtml(atual)) {
+      html += '<optgroup label="Tema HTML"><option value="' + esc(atual) + '">' + esc((catalogo.temas[atual] || {}).nome || atual) + ' (web)</option></optgroup>';
+    }
     if (customs.length) {
       html += '<optgroup label="Meus temas">';
       customs.forEach(t => { html += '<option value="custom:' + esc(t.id) + '">' + esc(t.nome) + '</option>'; });

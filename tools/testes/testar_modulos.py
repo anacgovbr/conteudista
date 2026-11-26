@@ -242,6 +242,22 @@ class ModulosTest(unittest.TestCase):
                 self.assertIsNone(z.testzip())
                 self.assertTrue(any(n.startswith('OEBPS/img/') for n in z.namelist()))
 
+    def test_tema_html_frontend_slides(self):
+        import zipfile
+        with tempfile.TemporaryDirectory() as d:
+            arqs, res = gerador.gerar('# Apostila\n\nTexto.', '# Slide\n\nTexto do slide.',
+                                      prefixo='Prova', saida=d, tema='bold-signal',
+                                      formatos='html,md,docx,pptx')
+            self.assertIn('tema: Bold Signal', res)
+            h = (Path(d) / 'Apresentacao_Prova.html').read_text(encoding='utf-8')
+            self.assertIn('fs-slide-in', h)
+            self.assertIn('data-fs-reveal', h)
+            md = (Path(d) / 'Apresentacao_Prova.md').read_text(encoding='utf-8')
+            self.assertIn('theme: bold-signal', md)
+            for nome in ('Apresentacao_Prova.pptx', 'Apostila_Prova.docx'):
+                with zipfile.ZipFile(Path(d) / nome) as z:
+                    self.assertIsNone(z.testzip(), nome)
+
     def test_estado_compartilhado(self):
         for texto in ['<!-- linguagem-acessivel: decorativa -->\n![Logo](logo.png)', '![Logo](logo.png)']:
             contexto.registrar_decorativas(texto)

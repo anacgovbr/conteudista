@@ -153,6 +153,9 @@ def normalizar_tema(dados):
     T['docx_font']=T['fontes']['texto'].split(',')[0].strip("'\" ") or 'Verdana'
     T['pptx_font']=T['fontes']['texto'].split(',')[0].strip("'\" ") or 'Arial'
     T['pptx_destaque']=T['paleta']['destaque'][1:].upper()
+    # Preserva o renderer dos temas HTML quando um tema já normalizado é revalidado (slides_html_fs).
+    for k in ('source','tone','renderer_support','layout_tokens','motion','fonts_web'):
+        if k in dados:T[k]=_copia(dados[k])
     return T
 
 def eh_html(T):
