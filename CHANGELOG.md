@@ -1,4 +1,9 @@
 # Novidades do Conteudista
+## 1.129 - 26/11/2026
+- **Criar conteúdo:** a área passa a se chamar Criar conteúdo e, sem texto, orienta a importar o resultado de uma IA com o prompt de referência copiável, abrir um link (PrivateBin, autocontido ou .md) ou criar do zero. O editor e a barra de edição só aparecem depois que há conteúdo.
+- **Importação:** painel único para colar texto ou enviar arquivos Markdown e imagens.
+- **Nome dos arquivos:** começa vazio e usa o título do conteúdo em formato slug (minúsculas, sem acentos, com hífens); o que você digita não é sobrescrito.
+
 ## 1.128 - 26/11/2026
 - **Controles secundários mais leves:** Carregar exemplo, Limpar tela e as ações da galeria de imagens aparecem como texto, sem perder a operação por teclado.
 - **Galeria:** a ordenação mantém o seletor nativo, e Editar selecionadas só aparece quando há imagens selecionadas.

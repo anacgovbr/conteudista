@@ -37,12 +37,12 @@ html.contraste .meta-aux{color:#fff!important}
 
   /* 2. Nome do conteudo */
   const cn = celula(pref), ln = cn ? cn.querySelector('label') : null;
-  if (ln) ln.textContent = 'Nome do conte\u00fado';
+  if (ln) ln.textContent = 'Nome dos arquivos';
   const auxN = document.createElement('small');
   auxN.className = 'meta-aux'; auxN.id = 'prefAux';
   pref.after(auxN); pref.setAttribute('aria-describedby', 'prefAux');
-  const norm = v => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^\w.-]+/g, '_').replace(/^_+|_+$/g, '').slice(0, 60);
-  const atualizarNome = () => { auxN.textContent = 'Usado nos nomes dos arquivos, ex.: Apostila_' + (norm(pref.value) || 'Conteudo') + '.docx'; };
+  const norm = v => String(v || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60).replace(/-+$/g, '');
+  const atualizarNome = () => { auxN.textContent = 'Usado nos nomes dos arquivos, ex.: Apostila_' + (norm(pref.value) || 'conteudo') + '.docx'; };
   pref.addEventListener('input', atualizarNome);
   pref.addEventListener('change', () => {
     const n = norm(pref.value);

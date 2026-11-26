@@ -196,7 +196,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
     const assin = arqs.map(f => f.nome + ':' + f.blob.size).join('|');
     if (assin === ultimaAssin && arqs.some(f => salvos.has(f.blob))) return; ultimaAssin = assin;
     arqs.forEach(f => salvos.add(f.blob));
-    const tam = arqs.reduce((a, f) => a + f.blob.size, 0), pref = ($('pref') && $('pref').value) || 'Conteudo';
+    const tam = arqs.reduce((a, f) => a + f.blob.size, 0), pref = ($('pref') && $('pref').value) || 'conteudo';
     try {
       const gm = window.GeracaoMeta || {};
       await tx('readwrite', s => s.add({ data: gm.data || Date.now(), prefixo: gm.prefixo || pref, tema: gm.tema || ($('tema') ? $('tema').value : ''), rodape: gm.rodape || ($('rod') ? $('rod').value.trim() : ''), narracao: gm.narracao || null, resumo: resumoDoLog(), tam, arquivos: arqs }));
