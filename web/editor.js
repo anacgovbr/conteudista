@@ -271,7 +271,7 @@
     const st = document.createElement('div'); st.className = 'mde-st';
     body.append(ta, pv);
     const gal = document.createElement('details'); gal.className = 'mde-gal';
-    gal.innerHTML = '<summary>Imagens do texto <span class="gc">(0)</span><span class="gtools"><select class="gord" title="Reordenar as imagens no texto"><option value="">Ordenar…</option><option value="inv">Inverter a ordem</option><option value="alt">Por legenda (A → Z)</option><option value="tam">Por tamanho do arquivo (menor → maior)</option><option value="larg">Por largura (menor → maior)</option></select><button type="button" class="mde-gb sec2 gall" title="Selecionar/limpar todas">Selecionar todas</button><button type="button" class="mde-gb gbs" disabled title="Cortar, girar, redimensionar ou converter várias imagens de uma vez">Editar selecionadas (0)</button><button type="button" class="mde-gb gb2" title="Reduzir as imagens grandes de uma vez">Reduzir todas…</button><button type="button" class="mde-gb gb">+ Adicionar imagens</button></span></summary><div class="mde-gh">Arraste os cartões (ou use ◀ ▶) para mudar a ordem das imagens no texto. “Editar” corta, gira, espelha, redimensiona e converte a imagem (muda pixels e peso, inclusive no DOCX e PPTX). Marque várias caixas para editar em lote.</div><div class="mde-gl"></div>';
+    gal.innerHTML = '<summary>Imagens do texto <span class="gc">(0)</span><span class="gtools"><select class="gord acao-texto" aria-label="Ordenar imagens" title="Reordenar as imagens no texto"><option value="">Ordenar…</option><option value="inv">Inverter a ordem</option><option value="alt">Por legenda (A → Z)</option><option value="tam">Por tamanho do arquivo (menor → maior)</option><option value="larg">Por largura (menor → maior)</option></select><button type="button" class="mde-gb sec2 gall acao-texto" title="Selecionar/limpar todas">Selecionar todas</button><button type="button" class="mde-gb gbs acao-texto" disabled hidden title="Cortar, girar, redimensionar ou converter várias imagens de uma vez">Editar selecionadas (0)</button><button type="button" class="mde-gb gb2 acao-texto" title="Reduzir as imagens grandes de uma vez">Reduzir todas…</button><button type="button" class="mde-gb gb acao-texto">+ Adicionar imagens</button></span></summary><div class="mde-gh">Arraste os cartões (ou use ◀ ▶) para mudar a ordem das imagens no texto. “Editar” corta, gira, espelha, redimensiona e converte a imagem (muda pixels e peso, inclusive no DOCX e PPTX). Marque várias caixas para editar em lote.</div><div class="mde-gl"></div>';
     box.append(tb, body, st, gal);
     real.hidden = true; real.after(box);
     /* ---------- régua de linhas (números, linha atual, marcadores e recolhimento) ---------- */
@@ -656,7 +656,7 @@
     const selecao = new Set();
     function atualizaSel() {
       const vis = imagensNoTexto().map(x => x.n); [...selecao].forEach(n => { if (!vis.includes(n)) selecao.delete(n); });
-      const b = gal.querySelector('.gbs'); b.textContent = 'Editar selecionadas (' + selecao.size + ')'; b.disabled = !selecao.size;
+      const b = gal.querySelector('.gbs'); b.textContent = 'Editar selecionadas (' + selecao.size + ')'; b.disabled = !selecao.size; b.hidden = b.disabled;
       gal.querySelector('.gall').textContent = selecao.size && selecao.size === vis.length ? 'Limpar seleção' : 'Selecionar todas';
     }
     function galeria() {

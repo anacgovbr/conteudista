@@ -63,6 +63,15 @@ def grupo9(amb, ctx, G):
         pg.goto(url); pg.wait_for_selector('#pg .mde-tb.mv-tb', state='attached', timeout=15000); pg.wait_for_timeout(500)
         pg.locator('#bcAcoesEdicao #ex').wait_for(state='visible')
         pg.locator('#bcAcoesEdicao #clr').wait_for(state='visible')
+        acoes_texto = pg.locator('#bcAcoesEdicao button').evaluate_all("""bs => bs.map(b => {
+            const s = getComputedStyle(b);
+            return { borda: s.borderTopWidth, fundo: s.backgroundColor,
+                altura: b.getBoundingClientRect().height };
+        })""")
+        G.chk('9.29', 'Ações contextuais sem borda nem fundo e com alvo de 44 px no celular',
+              len(acoes_texto) == 2 and all(b['borda'] == '0px' and
+              b['fundo'] in ('transparent', 'rgba(0, 0, 0, 0)') and
+              b['altura'] >= 44 for b in acoes_texto), acoes_texto)
         posicao = pg.locator('#bcAcoesEdicao').evaluate("""el => ({
             foraDoSummary: !el.closest('summary'),
             abaixoDoTitulo: !!el.previousElementSibling?.matches('summary, h2')
@@ -75,7 +84,7 @@ def grupo9(amb, ctx, G):
             lineHeight: s.lineHeight, height: b.getBoundingClientRect().height };
         })""")
         G.chk('9.21', 'Ações principais: rótulos centralizados verticalmente nos botões', all(
-            b['display'] == 'flex' and b['align'] == 'center' and b['justify'] == 'center' and
+            b['display'] in ('flex', 'inline-flex') and b['align'] == 'center' and b['justify'] == 'center' and
             b['lineHeight'] == 'normal' and b['height'] >= 32 for b in btns), btns)
         pg.locator('#bcAcoesEdicao #ex').click()
         pg.wait_for_function("document.getElementById('g').value.includes('Conteudista na Prática')", timeout=15000)
@@ -141,6 +150,50 @@ def grupo9(amb, ctx, G):
         bt.click(); pg.locator('.mv-menu:not([hidden]) [role=menuitem]', has_text='Imagens do texto').click(); pg.wait_for_timeout(200)
         f = pg.evaluate("(() => { const g = document.querySelector('#pg .mde-gal'); return { folha: g.classList.contains('mv-folha'), role: g.getAttribute('role'), modal: g.getAttribute('aria-modal'), foco: g.contains(document.activeElement) }; })()")
         G.chk('9.9', 'Inserir › Imagens do texto abre folha inferior modal com o foco dentro', f['folha'] and f['role'] == 'dialog' and f['modal'] == 'true' and f['foco'], f)
+        gal = pg.locator('#pg .mde-gal')
+        controles = gal.locator('.gtools .acao-texto').evaluate_all("""els => els.map(el => {
+            const s = getComputedStyle(el);
+            const r = el.getBoundingClientRect();
+            return { borda: s.borderTopWidth, fundo: s.backgroundColor,
+                     visivel: r.height > 0, altura: r.height };
+        })""")
+        ordenar = gal.get_by_role('combobox', name='Ordenar imagens')
+        editar = gal.locator('.gbs')
+        G.chk('9.30', 'Galeria com controles leves, ordenação nomeada e edição em lote oculta sem seleção',
+              len(controles) == 5 and sum(c['visivel'] for c in controles) == 4 and
+              all(c['borda'] == '0px' and
+                  c['fundo'] in ('transparent', 'rgba(0, 0, 0, 0)') and c['altura'] >= 44
+                  for c in controles if c['visivel']) and
+              ordenar.is_visible() and editar.is_hidden() and editar.is_disabled(), controles)
+        contraste = pg.evaluate("""() => {
+            const raiz = document.documentElement;
+            const gal = document.querySelector('#pg .mde-gal');
+            const alvos = [...document.querySelectorAll('#bcAcoesEdicao .acao-texto'),
+                           ...gal.querySelectorAll('.acao-texto:not([hidden])')];
+            const rgb = cor => (cor.match(/[\\d.]+/g) || []).map(Number);
+            const L = valores => valores.slice(0, 3).map(v => {
+                const c = v / 255;
+                return c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4;
+            }).reduce((n, c, i) => n + c * [.2126, .7152, .0722][i], 0);
+            const coef = el => {
+                const fg = L(rgb(getComputedStyle(el).color));
+                let bg = 1;
+                for (let no = el; no; no = no.parentElement) {
+                    const c = rgb(getComputedStyle(no).backgroundColor);
+                    if (c.length === 3 || c[3] === 1) { bg = L(c); break; }
+                }
+                return (Math.max(fg, bg) + .05) / (Math.min(fg, bg) + .05);
+            };
+            const original = raiz.classList.contains('contraste');
+            try {
+                raiz.classList.remove('contraste');
+                const normal = alvos.map(coef);
+                raiz.classList.add('contraste');
+                return { normal, alto: alvos.map(coef) };
+            } finally { raiz.classList.toggle('contraste', original); }
+        }""")
+        G.chk('9.31', 'Ações de texto têm contraste mínimo de 4,5:1 no modo normal e no alto contraste',
+              all(v >= 4.5 for lista in contraste.values() for v in lista), contraste)
         pg.keyboard.press('Escape'); pg.wait_for_timeout(150)
         G.chk('9.10', 'Esc fecha a folha de imagens', pg.evaluate("!document.querySelector('#pg .mde-gal').classList.contains('mv-folha')"))
         pg.click('#btnImportar'); pg.wait_for_timeout(300)

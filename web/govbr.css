@@ -100,3 +100,82 @@ html.contraste body :is(#abasApp button.on,.tabs button:not(.off)){border-bottom
   body > header .gb-sign{border-right:0;margin-right:4px;padding-right:0}
   body > header .hb{width:100%;justify-content:space-between}
 }
+
+/* Ações secundárias com aparência de texto, sem mudar sua função nativa. */
+html body #bcAcoesEdicao button.acao-texto,
+html body .mde-gal > summary .gtools .acao-texto {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: #1351b4 !important;
+  padding: 0 4px !important;
+  min-height: 32px !important;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+html body #bcAcoesEdicao button.acao-texto,
+html body .mde-gal > summary .gtools button.acao-texto {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  line-height: normal !important;
+}
+html body #bcAcoesEdicao button.acao-texto[hidden],
+html body .mde-gal > summary .gtools .acao-texto[hidden] {
+  display: none !important;
+}
+html body .mde-gal > summary .gtools select.acao-texto {
+  appearance: auto;
+  -webkit-appearance: menulist;
+  width: auto !important;
+  max-width: min(210px, 100%);
+}
+html body #bcAcoesEdicao button.acao-texto:is(:hover, :focus-visible),
+html body .mde-gal > summary .gtools .acao-texto:is(:hover, :focus-visible) {
+  text-decoration-color: currentColor;
+}
+html body #bcAcoesEdicao button.acao-texto:focus-visible,
+html body .mde-gal > summary .gtools .acao-texto:focus-visible {
+  outline: 2px solid currentColor !important;
+  outline-offset: 2px;
+}
+html body #bcAcoesEdicao button.acao-texto:disabled,
+html body .mde-gal > summary .gtools .acao-texto:disabled {
+  color: #636363 !important;
+  cursor: default;
+}
+html body #bcAcoesEdicao button.acao-texto.action-ok {
+  background: #146c2e !important;
+  color: #fff !important;
+}
+html.contraste body #bcAcoesEdicao button.acao-texto,
+html.contraste body .mde-gal > summary .gtools .acao-texto {
+  color: #ff0 !important;
+}
+/* Evita que o fundo claro dos botoes do tema reduza o contraste do texto amarelo. */
+html.contraste body .mde-gal > summary .gtools .acao-texto {
+  background: #000 !important;
+}
+@media (forced-colors: active) {
+  html.contraste body .mde-gal > summary .gtools .acao-texto {
+    color: LinkText !important;
+    background: Canvas !important;
+  }
+}
+@media (forced-colors: active) {
+  html body #bcAcoesEdicao button.acao-texto,
+  html body .mde-gal > summary .gtools .acao-texto {
+    color: LinkText !important;
+  }
+}
+@media (max-width: 700px) {
+  html body #bcAcoesEdicao button.acao-texto,
+  html body .mde-gal > summary .gtools .acao-texto {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  html body .mde-gal > summary { flex-wrap: wrap; }
+  html body .mde-gal > summary .gtools { flex-wrap: wrap; min-width: 0; max-width: 100%; }
+}

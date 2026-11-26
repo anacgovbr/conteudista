@@ -1,4 +1,9 @@
 # Novidades do Conteudista
+## 1.128 - 26/11/2026
+- **Controles secundários mais leves:** Carregar exemplo, Limpar tela e as ações da galeria de imagens aparecem como texto, sem perder a operação por teclado.
+- **Galeria:** a ordenação mantém o seletor nativo, e Editar selecionadas só aparece quando há imagens selecionadas.
+- **Acessibilidade:** áreas de toque de 44 px no celular e contraste mínimo de 4,5:1 nos modos normal e alto contraste.
+
 ## 1.127 - 26/11/2026
 - **Ações por aba:** Carregar exemplo e Limpar ficam abaixo de Gerar conteúdo e afetam apenas a Apostila ou a Apresentação ativa. A importação continua disponível na barra principal.
 - **Rodapé opcional:** fica vazio quando não informado, sem reaproveitar o rodapé de outro trabalho.
