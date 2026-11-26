@@ -57,7 +57,7 @@
   /* ---------------------------- Tutorial guiado ---------------------------- */
   const PASSOS = [
     { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em poucos passos você verá como <b>escrever</b>, <b>gerar</b>, <b>guardar</b> e <b>recuperar</b> um conteúdo. A conversão acontece no seu navegador; nada é enviado sem você pedir.' },
-    { alvo: 'abas', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apostila</b> e <b>Apresentação</b>. Cole o texto gerado por uma IA (use o prompt padrão do exemplo), arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
+    { alvo: 'abasApp', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apresentação</b> e <b>Apostila</b>. Cole o texto gerado por uma IA (use o prompt padrão do exemplo), arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. No fim da barra ficam o ícone <b>Compartilhar link</b> e o botão <b>Versões</b>, que guarda, compara, restaura e <b>importa um link</b> para comparar.' },
     { alvo: () => document.querySelector('#pg .la-btn'), antes: () => abrirAba('g'), t: '3. Confira a acessibilidade', d: 'O botão <b>Acessibilidade</b> encontra barreiras no texto. Corrija os itens <b>para corrigir</b> e revise as <b>sugestões</b>. Clique num trecho sublinhado para ver a correção (<kbd>' + MOD + ' + C</kbd> abre o painel). A conferência automática não substitui a revisão dos arquivos finais.' },
     { alvo: 'licenca', t: '4. Gere os arquivos', d: 'O licenciamento é opcional e começa em <b>Sem licenciamento</b>. Se tiver autorização, escolha uma licença Creative Commons; o aviso aparece no final da apostila e em um slide final da apresentação. Depois, clique em <b>Gerar arquivos</b> para criar os documentos e o ZIP.' },
@@ -65,7 +65,7 @@
     { alvo: 'btnSalvar', t: '6. Guarde neste computador', d: 'O botão <b>Salvar ▾</b>, ao lado de <b>Gerar arquivos</b>, reúne <b>Guardar no navegador</b> (versão), <b>Baixar tudo (.zip)</b>, <b>Salvar na pasta</b> e <b>Baixar .md</b>. O <b>salvamento automático</b> recupera o último trabalho ao reabrir a página.' },
     { alvo: 'btnCompartilharAcao', t: '7. Guarde em um link', d: 'O botão <b>Compartilhar link</b> leva o texto-fonte, com as imagens, para um endereço que abre em qualquer computador. Ele também está ao lado de <b>Importar</b> e na barra do editor; os três abrem a mesma janela (<kbd>' + MOD + ' + L</kbd>).' },
     { alvo: 'btnImportar', t: '8. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. Use o campo <b>Buscar</b> para achar um item pelo nome, data, layout ou tipo de arquivo. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
-    { alvo: 'abasApp', t: '9. Revise a narração slide a slide', d: 'Na aba <b>Locução › Notas dos slides</b>, <b>Importar notas</b> traz a nota de cada slide para um rascunho. Edite, ouça e clique em <b>Aplicar à apresentação</b>. Os botões <b>Versões</b> e <b>Compartilhar link</b> da própria aba comparam as notas e as levam para outro computador.' },
+    { alvo: 'abasApp', t: '9. Revise a narração slide a slide', d: 'Na aba <b>Narração › Notas dos slides</b>, <b>Importar notas</b> traz a nota de cada slide para um rascunho. Edite, ouça e clique em <b>Aplicar à apresentação</b>. Os botões <b>Versões</b> e <b>Compartilhar link</b> da própria aba comparam as notas e as levam para outro computador.' },
     { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
@@ -116,13 +116,13 @@
   /* ---------------------------- Ajuda ---------------------------- */
   const AJUDA = `
 <h4>O que é</h4>
-<p>O Conteudista transforma dois textos em Markdown — a <b>apostila</b> e a <b>apresentação</b> — em um <b>conteúdo</b> completo: apostila (HTML, DOCX, EPUB, MD) e apresentação (HTML, PPTX, MD), com locução opcional. A conversão roda <b>no seu navegador</b>; o site não guarda nenhum conteúdo.</p>
+<p>O Conteudista transforma dois textos em Markdown — a <b>apostila</b> e a <b>apresentação</b> — em um <b>conteúdo</b> completo: apostila (HTML, DOCX, EPUB, MD) e apresentação (HTML, PPTX, MD), com narração opcional. A conversão roda <b>no seu navegador</b>; o site não guarda nenhum conteúdo.</p>
 <h4>Termos usados</h4>
 <table><tr><th>Termo</th><th>O que é</th></tr>
 <tr><td><b>Conteúdo</b></td><td>O material que você produz: apostila e apresentação, com um <b>nome</b>, um <b>layout</b>, um <b>rodapé</b> e um <b>licenciamento opcional</b>.</td></tr>
 <tr><td><b>Apostila</b></td><td>O documento de estudo, em HTML, DOCX, EPUB (duas versões) e MD.</td></tr>
 <tr><td><b>Apresentação</b></td><td>Os slides, em HTML, PPTX e MD, com narração opcional.</td></tr>
-<tr><td><b>Locução</b></td><td>Áudio gerado a partir de um texto (aba <b>Locução</b>).</td></tr>
+<tr><td><b>Narração</b></td><td>Áudio gerado a partir de um texto (aba <b>Narração</b>).</td></tr>
 <tr><td><b>Arquivos</b></td><td>O conteúdo <b>pronto</b>, para entregar (.DOCX, .PPTX, .HTML, .EPUB, .ZIP).</td></tr>
 <tr><td><b>Texto-fonte</b></td><td>Os textos em Markdown e as imagens, para continuar editando.</td></tr>
 <tr><td><b>Link</b></td><td>O texto-fonte em um endereço, para guardar ou enviar.</td></tr>
@@ -146,7 +146,7 @@
 <li>o <b>prompt padrão para IA</b> (versão 1.1, com regras de acessibilidade e linguagem simples), na seção 11.3 da apostila;</li>
 <li>as seções <b>5.6 Acessibilidade do texto</b> e <b>10.6 Escrever conteúdo acessível</b>, e 5 slides sobre o assunto.</li>
 </ul>
-<p>Para criar o seu conteúdo, substitua os textos e mantenha a estrutura. Para gerar a aula narrada, marque <b>Narração dos slides</b> na aba <b>Apresentação</b> antes de <b>Gerar arquivos</b>. Para ouvir apenas as notas, importe-as na aba <b>Locução</b>.</p>
+<p>Para criar o seu conteúdo, substitua os textos e mantenha a estrutura. Para gerar a aula narrada, marque <b>Narração dos slides</b> na aba <b>Apresentação</b> antes de <b>Gerar arquivos</b>. Para ouvir apenas as notas, importe-as na aba <b>Narração</b>.</p>
 <h4>Produzir os textos com uma IA</h4>
 <ul>
 <li>Na seção <b>11.3</b> da apostila de exemplo está o <b>prompt padrão 1.1</b>: um bloco único, para copiar e colar em uma IA autorizada pela instituição. Ele já pede frases curtas, siglas explicadas, títulos em ordem, legendas descritivas e links claros, para que o texto chegue com menos itens a corrigir.</li>
@@ -188,7 +188,7 @@
 <li><b>HTML</b>: escolha <b>Iniciar com narração</b> ou <b>Iniciar sem som</b>. <b>Som da narração</b> (<kbd>S</kbd>) liga ou desliga o áudio. <b>Reproduzir</b> (<kbd>Espaço</kbd>) inicia a reprodução; o mesmo botão vira <b>Pausar</b> e permite continuar do ponto parado. <b>Mais opções › Avanço automático</b> controla a troca de slides após a narração. Se pausar e mudar de slide, a narração só começa quando você apertar <b>Reproduzir</b> ou religar o som.</li>
 <li><b>PPTX</b>: o áudio de cada slide começa sozinho na apresentação de slides. Com “Avançar os slides sozinho”, dá para usar <b>Arquivo → Exportar → Criar um vídeo</b> no PowerPoint.</li>
 <li>Para falar um texto diferente da nota, use <code>&lt;!-- narracao: texto --&gt;</code>; para um slide sem som, <code>&lt;!-- narracao: nao --&gt;</code>.</li>
-<li>Para revisar as notas slide a slide, use a aba <b>Locução › Notas dos slides</b>: importe, edite, ouça e <b>aplique à apresentação</b>. Os comentários acima são escritos por ela.</li>
+<li>Para revisar as notas slide a slide, use a aba <b>Narração › Notas dos slides</b>: importe, edite, ouça e <b>aplique à apresentação</b>. Os comentários acima são escritos por ela.</li>
 </ul>
 <h4>Controle remoto e webcam (apresentação HTML)</h4>
 <ul>
@@ -236,13 +236,13 @@
 <li>Escolha a <b>Versão A</b> (antes) e a <b>Versão B</b> (depois) — de qualquer sessão, arquivo ou link, ou “Atual” — e clique em <b>Comparar</b>. Use ⇄ para inverter.</li>
 <li><b>Importar link</b> traz o texto-fonte de um link do Conteudista (direto ou PrivateBin) como uma versão marcada <b>via link</b>, sem alterar os editores. Se o link tiver senha, ela é pedida antes de adicionar. A versão importada fica selecionada como A e é comparada com o texto atual; para comparar dois links, importe os dois e escolha A e B. Um conteúdo que já está nas versões não é duplicado.</li>
 <li>Leitura do resultado: linhas <span style="background:#fde0db">removidas</span> e <span style="background:#e8f5ec">incluídas</span>, com as palavras alteradas destacadas; imagens aparecem como miniaturas e as que mudaram são listadas em “Antes” e “Depois”.</li>
-<li><b>Notas dos slides</b> (em Documento) compara só as notas e a narração de cada slide. Aberta pela aba <b>Locução</b> com alterações não aplicadas, a janela já compara o texto atual com o <b>Rascunho da Locução</b>.</li>
+<li><b>Notas dos slides</b> (em Documento) compara só as notas e a narração de cada slide. Aberta pela aba <b>Narração</b> com alterações não aplicadas, a janela já compara o texto atual com o <b>Rascunho da Narração</b>.</li>
 <li>Opções: Apostila, Apresentação, Notas dos slides ou ambos; lado a lado ou unificado; só alterações (com contexto) ou texto completo. Trechos iguais recolhidos abrem com um clique.</li>
 <li><b>Restaurar A/B</b> coloca a versão nos editores; <b>.MD A/B</b> salva os .md; <b>★ Salvar versão</b> cria um ponto nomeado (não é apagado automaticamente). O limite é de 120 versões.</li>
 </ul>
 <h4>Criar um link</h4>
 <ol>
-<li>Clique em <b>Compartilhar link</b>: ao lado de <b>Salvar ▾</b>, ao lado de <b>Importar</b>, no ícone da barra do editor ou na aba <b>Locução › Notas dos slides</b>. Todos abrem a mesma janela (<kbd>Alt+Shift+L</kbd>). As notas dos slides vão no link; se houver notas editadas na Locução e ainda não aplicadas, você escolhe aplicá-las antes.</li>
+<li>Clique em <b>Compartilhar link</b>: ao lado de <b>Salvar ▾</b>, ao lado de <b>Importar</b>, no ícone da barra do editor ou na aba <b>Narração › Notas dos slides</b>. Todos abrem a mesma janela (<kbd>Alt+Shift+L</kbd>). As notas dos slides vão no link; se houver notas editadas na Narração e ainda não aplicadas, você escolhe aplicá-las antes.</li>
 <li>Confira a opção sugerida para o tamanho do seu conteúdo. Você pode trocá-la.</li>
 <li>Se quiser, defina uma <b>senha</b> e envie-a por outro canal.</li>
 <li>Clique em <b>Criar link</b>. Ele é copiado automaticamente e aparece na janela, com o QR Code.</li>
@@ -379,8 +379,9 @@
     { g: 'Salvar e recuperar', k: 'A', d: 'Ligar/desligar salvamento automático', f: () => { const c = $('auto'); c.checked = !c.checked; c.dispatchEvent(new Event('change')); toast('Salvamento automático ' + (c.checked ? 'ligado' : 'desligado')); } },
     { g: 'Salvar e recuperar', k: 'L', d: 'Compartilhar link (guardar ou enviar)', f: () => { if (window.Compartilhar) Compartilhar.abrir(); } },
     { g: 'Salvar e recuperar', k: 'O', d: 'Importar', f: () => { if (window.Importar) Importar.abrir(); } },
-    { g: 'Navegação', k: '1', d: 'Aba Apostila (foca o editor)', f: () => focarEditor('g') },
-    { g: 'Navegação', k: '2', d: 'Aba Apresentação (foca o editor)', f: () => focarEditor('s') },
+    { g: 'Navegação', k: '1', d: 'Aba Apresentação (foca o editor)', f: () => focarEditor('s') },
+    { g: 'Navegação', k: '2', d: 'Aba Narração', f: () => { if (window.Locucao) Locucao.mostrarAba('locucao'); const t = document.getElementById('locTexto'), b = document.querySelector('#abasApp [data-aba="locucao"]'); const alvo = t && t.offsetParent ? t : b; if (alvo) alvo.focus(); } },
+    { g: 'Navegação', k: '3', d: 'Aba Apostila (foca o editor)', f: () => focarEditor('g') },
     { g: 'Navegação', k: 'M', d: 'Alternar modo do editor (Editar → Dividido → Prévia)', f: () => { const vis = document.querySelector('#pg:not([hidden]) .mde, #ps:not([hidden]) .mde'); if (!vis) return; const ordem = ['e', 's', 'p'], i = (ordem.indexOf(vis.dataset.m) + 1) % 3; const b = vis.querySelector('.mde-tb [data-m="' + ordem[i] + '"]'); if (b) b.click(); toast(['Somente editor', 'Editor + prévia', 'Somente prévia'][i]); } },
     { g: 'Navegação', k: 'V', d: 'Versões do texto (comparar antes e depois)', f: () => { const ln = document.getElementById('locNotas'), sl = document.getElementById('secLoc'); if (ln && !ln.hidden && sl && !sl.hidden) { const b = document.getElementById('lnVer'); if (b) { b.click(); return; } } if (window.Hist) Hist.abrir(); } },
     

@@ -1,10 +1,10 @@
 /* =====================================================================================
-   Conteudista — Aba "Locução" (texto em fala, 100% no navegador)
+   Conteudista — Aba "Narração" (antiga Locução) (texto em fala, 100% no navegador)
    Interface simples: Idioma → Voz → Velocidade → Pausa. O motor de cada voz fica escondido:
      · Piper (locucao-piper-worker.js) — voz padrão Faber (português do Brasil) e catálogo do Piper
      · Kokoro-82M v1.0 (locucao-worker.js) — inglês, espanhol, francês, hindi, italiano e português
    Recursos de áudio SOB DEMANDA: nada é baixado ao abrir a página. Os recursos (catálogo de vozes e
-   modelo da voz) só são carregados pelo botão "Carregar recursos de áudio" (aba Locução) ou ao ligar
+   modelo da voz) só são carregados pelo botão "Carregar recursos de áudio" (aba Narração) ou ao ligar
    "Narração dos slides" (Locucao.carregarRecursos()).
    Se a voz escolhida não puder ser preparada, usa automaticamente uma voz alternativa do mesmo idioma.
    - Histórico/cache: IndexedDB "KokoroTTS_DB" / "audio_history" (índice text+voice+speed)
@@ -105,11 +105,13 @@
 .tts-loading-container{width:100%;background-color:rgba(51,65,85,.15);border-radius:9999px;height:10px;overflow:hidden;margin:6px 0 8px;display:none}
 .tts-progress-bar{background:linear-gradient(90deg,#1351b4 0%,#168821 100%);height:100%;width:0%;transition:width .3s ease-out}
 .tts-status-text{font-size:13px;color:#636363;display:block;margin-bottom:6px;min-height:1.2em}
-#abasApp{display:flex;gap:4px;max-width:1500px;margin:14px auto 0;padding:0 20px}
-#abasApp button{margin:0;border-radius:8px 8px 0 0;padding:9px 18px;font-weight:600;background:#fff;color:#1351b4;border:1px solid #cccccc;border-bottom:0;cursor:pointer}
-#abasApp button.on{background:#0c326f;color:#fff;border-color:#0c326f}
-#abasApp .ch{display:inline-block;width:8px;height:8px;border-radius:50%;background:#cccccc;margin-left:8px;vertical-align:1px}
-#abasApp .ch.ok{background:#168821}#abasApp .ch.ld{background:#ffcd07;animation:locPisca 1s infinite}
+#abasApp{display:flex;align-items:stretch;max-width:1500px;margin:14px auto 0;padding:0 20px;border-bottom:1px solid #cccccc;overflow-x:auto}
+#abasApp button{margin:0;background:transparent;border:0;border-bottom:4px solid transparent;border-radius:0;color:#333333;font-size:16px;font-weight:500;padding:10px 16px 8px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+#abasApp button.g{background:rgba(19,81,180,.06)}#abasApp button:hover{background:rgba(19,81,180,.16)}
+#abasApp button.on{color:#1351b4;border-bottom-color:#1351b4;font-weight:700}#abasApp button:focus-visible{outline:4px dashed #c2850c;outline-offset:-4px}
+#abasApp svg{width:20px;height:20px;fill:currentColor;flex:0 0 auto}#abasApp .sep{flex:0 0 1px;background:#cccccc;margin:8px 6px}
+#abasApp .cnt{font-size:12px;font-weight:700;background:#1351b4;color:#fff;border-radius:10px;padding:0 7px;line-height:18px}#abasApp .cnt[hidden]{display:none}
+#abas{display:none!important}
 @keyframes locPisca{50%{opacity:.3}}
 #secLoc .loc-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:20px}
 #secLoc .loc-box{border:1px solid #cccccc;border-radius:10px;padding:14px 16px;background:#f8f8f8;margin-bottom:14px}
@@ -157,12 +159,15 @@
 
   /* ---------------------------- Estrutura: abas + seção ---------------------------- */
   const main = document.querySelector('main');
-  const abas = document.createElement('nav'); abas.id = 'abasApp'; abas.setAttribute('aria-label', 'Áreas da aplicação');
-  abas.innerHTML = '<button type="button" data-aba="curso" class="on" title="Apostila, apresentação e arquivos">Conteúdo</button>' +
-    '<button type="button" data-aba="locucao" title="Texto em fala (Alt+Shift+3)">Locução <span class="ch" id="locChip" title="Recursos de áudio não carregados"></span></button>';
+  const abas = document.createElement('div'); abas.id = 'abasApp'; abas.setAttribute('role', 'tablist'); abas.setAttribute('aria-label', 'Áreas da aplicação');
+  const icoAba = d => '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill-rule="evenodd" d="' + d + '"/></svg>';
+  abas.innerHTML = '<button type="button" role="tab" class="g on" data-aba="apresentacao" aria-selected="true" aria-controls="ps" title="Slides (Alt+Shift+1)">' + icoAba('M2 3h20v2h-1v11H3V5H2V3zm3 2v9h14V5H5zm6 12h2v2.6l2.7 2.4h-3L12 20.2 9.3 21h-3L11 19.6V17z') + '<span>Apresentação</span></button>' +
+    '<button type="button" role="tab" class="g" data-aba="locucao" aria-selected="false" tabindex="-1" aria-controls="secLoc" title="Texto em fala (Alt+Shift+2)">' + icoAba('M12 2a3 3 0 0 1 3 3v6a3 3 0 0 1-6 0V5a3 3 0 0 1 3-3zM5 11h2a5 5 0 0 0 10 0h2a7 7 0 0 1-6 6.9V21h-2v-3.1A7 7 0 0 1 5 11z') + '<span>Narração</span><span class="cnt" id="locCnt" hidden></span></button>' +
+    '<span class="sep" aria-hidden="true"></span>' +
+    '<button type="button" role="tab" data-aba="apostila" aria-selected="false" tabindex="-1" aria-controls="pg" title="Apostila (Alt+Shift+3)">' + icoAba('M4 3h6a3 3 0 0 1 2 .8A3 3 0 0 1 14 3h6v16h-6a2 2 0 0 0-1 .3V21h-2v-1.7a2 2 0 0 0-1-.3H4V3zm2 2v12h4a4 4 0 0 1 1 .1V6a1 1 0 0 0-1-1H6zm8 0a1 1 0 0 0-1 1v11.1a4 4 0 0 1 1-.1h4V5h-4z') + '<span>Apostila</span></button>';
   main.parentNode.insertBefore(abas, main);
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secLoc'; sec.hidden = true;
-  sec.innerHTML = '<h2>Locução</h2>' +
+  sec.innerHTML = '<h2>Narração</h2>' +
     '<p class="note">Transforme texto em fala. O áudio é gerado <b>no seu computador</b>; o texto não é enviado a nenhum servidor.</p>' +
     '<div class="loc-grid"><div>' +
     '<div class="loc-box"><h3>1. Texto</h3>' +
@@ -179,7 +184,7 @@
       '<div class="lin" style="margin-top:8px">' +
       '<div><label for="locVel">Velocidade: <span id="locVelV">1,00</span>×</label><input type="range" id="locVel" min="0.5" max="2" step="0.05" value="1"></div>' +
       '<div><label for="locPausa">Pausa entre frases</label><select id="locPausa"><option value="0">Sem pausa extra</option><option value="150">Curta</option><option value="300" selected>Média</option><option value="600">Longa</option></select></div></div>' +
-      '<p class="acoes"><button type="button" id="locGerar" title="Alt+Shift+N">Gerar locução</button><button type="button" class="sec" id="locCancelar" disabled>Cancelar</button><button type="button" class="sec" id="locLimpar">Limpar texto</button></p>' +
+      '<p class="acoes"><button type="button" id="locGerar" title="Alt+Shift+N">Gerar narração</button><button type="button" class="sec" id="locCancelar" disabled>Cancelar</button><button type="button" class="sec" id="locLimpar">Limpar texto</button></p>' +
       '<div id="locBarC" class="tts-loading-container"><div id="locBar" class="tts-progress-bar"></div></div><span id="locSt" class="tts-status-text" role="status" aria-live="polite"></span>' +
     '</div>' +
     '<div class="loc-box"><h3>3. Ouvir e baixar</h3>' +
@@ -237,13 +242,29 @@
   d.open = false;
   d.style.marginTop = '20px';
   }
-  function mostrarAba(nome) {
-    abas.querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.aba === nome));
+  function exibirAba(nome) {
+    abas.querySelectorAll('button[data-aba]').forEach(b => { const on = b.dataset.aba === nome; b.classList.toggle('on', on); b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; });
     [...main.children].forEach(el => { if (el.tagName === 'SECTION') el.hidden = nome === 'locucao' ? el !== sec : el === sec; });
+    contarNarracao();
     if (nome === 'locucao') carregarHistorico();
   }
+  function mostrarAba(nome) {  // 'apresentacao' | 'locucao' | 'apostila' ('curso' = volta ao texto aberto)
+    if (nome === 'curso') nome = $('ps') && !$('ps').hidden ? 'apresentacao' : 'apostila';
+    const t = nome === 'locucao' ? null : $(nome === 'apresentacao' ? 'ts' : 'tg');
+    if (t) t.click(); else exibirAba(nome);
+  }
+  function contarNarracao() {
+    const c = $('locCnt'); if (!c) return;
+    const sl = slidesDe(($('s') && $('s').value) || ''), n = sl.filter(p => /<!--\s*notas:\s*[^\s-]/.test(p)).length;
+    c.hidden = !sl.length; c.textContent = n + '/' + sl.length; c.setAttribute('aria-label', n + ' de ' + sl.length + ' slides com notas para narração');
+  }
   abas.addEventListener('click', e => { const b = e.target.closest('button[data-aba]'); if (b) mostrarAba(b.dataset.aba); });
-  document.addEventListener('click', e => { if (e.target.closest('#tg,#ts,#btnTour') && !sec.hidden) mostrarAba('curso'); }, true);
+  abas.addEventListener('keydown', e => {
+    const bs = [...abas.querySelectorAll('button[data-aba]')], i = bs.indexOf(document.activeElement); if (i < 0) return;
+    const j = { ArrowRight: (i + 1) % bs.length, ArrowLeft: (i - 1 + bs.length) % bs.length, Home: 0, End: bs.length - 1 }[e.key];
+    if (j === undefined) return; e.preventDefault(); mostrarAba(bs[j].dataset.aba); bs[j].focus();
+  });
+  document.addEventListener('click', e => { const t = e.target.closest('#tg,#ts'); if (t) exibirAba(t.id === 'ts' ? 'apresentacao' : 'apostila'); else if (e.target.closest('#btnTour') && !sec.hidden) mostrarAba('curso'); }, true);
 
   /* ---------------------------- Preferências ---------------------------- */
   const pref = (k, d) => { const v = window.Opcoes ? Opcoes.ler(PREF[k], d) : localStorage.getItem(PREF[k]); return v === null ? d : v; };
@@ -273,7 +294,7 @@
   function status(t) { $('locSt').textContent = t || ''; }
   function tec(t) { $('locTec').textContent = t; }
   function progresso(pct) { const c = $('locBarC'); if (pct === null) { c.style.display = 'none'; return; } c.style.display = 'block'; $('locBar').style.width = Math.max(0, Math.min(100, pct)) + '%'; }
-  function chip(estado) { const c = $('locChip'); c.className = 'ch' + (estado === 'ok' ? ' ok' : estado === 'ld' ? ' ld' : ''); c.title = estado === 'ok' ? 'Voz pronta' : estado === 'ld' ? 'Preparando a voz' : recursos ? 'Voz não preparada' : 'Recursos de áudio não carregados'; }
+  function chip(estado) { const c = abas.querySelector('[data-aba="locucao"]'); if (c) c.title = 'Texto em fala (Alt+Shift+2) · ' + (estado === 'ok' ? 'Voz pronta' : estado === 'ld' ? 'Preparando a voz' : recursos ? 'Voz não preparada' : 'Recursos de áudio não carregados'); }
   function ocupado(sim) {
     ['locImportar', 'locRemModelo', 'locAtivar', 'locDtype', 'locDevice'].forEach(id => { $(id).disabled = sim; });
     $('locGerar').disabled = sim || !recursos;
@@ -316,14 +337,14 @@
       pip.worker.onerror = e => { e.preventDefault && e.preventDefault(); pip.ouvintes.forEach(f => f({ tipo: 'erro', etapa: 'init', msg: (e && e.message) || 'Falha ao iniciar.' })); };
       const ouvir = m => {
         if (m.tipo === 'progresso') { const pc = Math.round((m.loaded / m.total) * 100); progresso(pc); status('Preparando a voz… ' + pc + '%'); }
-        else if (m.tipo === 'aviso') logApp('Locução: ' + m.msg, 'wa');
+        else if (m.tipo === 'aviso') logApp('Narração: ' + m.msg, 'wa');
         else if (m.tipo === 'pronto') {
           pip.ouvintes.delete(ouvir); pip.pronto = true; pip.carregando = null; pip.falhou = false; pip.info = m; pip.velInit = m.velocidade || vel;
-          progresso(null); status('Voz pronta.'); atualizarMotorUI(); logApp('Locução: voz pronta (Piper, ' + m.voz + ').', 'ok'); avisarEstado(); ok(true);
+          progresso(null); status('Voz pronta.'); atualizarMotorUI(); logApp('Narração: voz pronta (Piper, ' + m.voz + ').', 'ok'); avisarEstado(); ok(true);
         } else if (m.tipo === 'erro' && (m.etapa === 'init' || m.etapa === 'worker')) {
           pip.ouvintes.delete(ouvir); progresso(null);
           if (pip.worker) pip.worker.terminate(); pip.worker = null; pip.pronto = false; pip.carregando = null; pip.falhou = true;
-          logApp('Locução: Piper indisponível — ' + m.msg, 'wa'); console.warn('Piper:', m.msg); atualizarMotorUI(); avisarEstado(); falha(new Error(m.msg));
+          logApp('Narração: Piper indisponível — ' + m.msg, 'wa'); console.warn('Piper:', m.msg); atualizarMotorUI(); avisarEstado(); falha(new Error(m.msg));
         }
       };
       pip.ouvintes.add(ouvir);
@@ -343,13 +364,13 @@
       tts.worker.onerror = e => { e.preventDefault && e.preventDefault(); tts.ouvintes.forEach(f => f({ tipo: 'erro', etapa: 'init', msg: (e && e.message) || 'Falha ao iniciar.' })); };
       const ouvir = m => {
         if (m.tipo === 'progresso') { const pc = Math.round((m.loaded / m.total) * 100); progresso(pc); status('Preparando a voz… ' + pc + '%'); }
-        else if (m.tipo === 'aviso' && !m.fon) logApp('Locução: ' + m.msg, 'wa');
+        else if (m.tipo === 'aviso' && !m.fon) logApp('Narração: ' + m.msg, 'wa');
         else if (m.tipo === 'pronto') {
           tts.ouvintes.delete(ouvir); tts.pronto = true; tts.carregando = null; tts.falhou = false; tts.info = m;
-          progresso(null); status('Voz pronta.'); atualizarMotorUI(); logApp('Locução: voz pronta (Kokoro, ' + m.device + ', ' + m.dtype + ').', 'ok'); avisarEstado(); ok(true);
+          progresso(null); status('Voz pronta.'); atualizarMotorUI(); logApp('Narração: voz pronta (Kokoro, ' + m.device + ', ' + m.dtype + ').', 'ok'); avisarEstado(); ok(true);
         } else if (m.tipo === 'erro' && (m.etapa === 'init' || m.etapa === 'worker')) {
           tts.ouvintes.delete(ouvir); progresso(null);
-          logApp('Locução: Kokoro indisponível — ' + m.msg, 'wa'); console.warn('Kokoro:', m.msg);
+          logApp('Narração: Kokoro indisponível — ' + m.msg, 'wa'); console.warn('Kokoro:', m.msg);
           encerrarMotor(); tts.falhou = true; atualizarMotorUI(); avisarEstado(); falha(new Error(m.msg));
         }
       };
@@ -372,7 +393,7 @@
     fetch(new URL('modelos/manifest.json', scriptSrc).href, { cache: 'no-cache' }).then(r => r.ok ? r.json() : null).then(m => {
       $('locLocalInfo').textContent = m && m.arquivos ? 'Vozes hospedadas neste site: ' + ((m.perfis || []).join(', ') || Object.keys(m.arquivos).length + ' arquivo(s)') + (m.vendor && Object.keys(m.vendor).length ? ' · bibliotecas: ' + Object.keys(m.vendor).join(', ') : '') + '.' : 'Vozes baixadas da internet (Hugging Face/jsDelivr).';
     }).catch(() => {});
-    logApp('Locução: recursos de áudio carregados sob demanda.', 'ok');
+    logApp('Narração: recursos de áudio carregados sob demanda.', 'ok');
     atualizarMotorUI(); avisarEstado();
   }
   /** Carrega os recursos de áudio (catálogo de vozes) e prepara a voz. op.semVoz: só marca os recursos. op.voz/op.vel: voz a preparar. */
@@ -535,7 +556,7 @@
     const buffer = mergePcmWithWebAudio(partes, sr, pausaMs), blob = audioBufferToWavBlob(buffer), duracao = buffer.length / sr;
     let novoId = null;
     try { novoId = await saveAudioToHistory(texto, voz, vel, blob, { pausa: pausaMs, duracao, motor: eng.nome, trechos: textChunks.length }); }
-    catch (e) { logApp('Locução: não foi possível salvar no histórico (' + e.message + ').', 'wa'); }
+    catch (e) { logApp('Narração: não foi possível salvar no histórico (' + e.message + ').', 'wa'); }
     return { blob, duracao, voz, doHistorico: false, id: novoId };
   }
   function cancelar() { if (geracao && geracao.eng && geracao.eng.worker) { geracao.eng.worker.postMessage({ tipo: 'cancelar', id: geracao.id }); return true; } return false; }
@@ -565,13 +586,13 @@
       definirAudio(r.blob, nomeArquivo(r.voz, textInput), infoAudio({ duracao: r.duracao, voice: r.voz, speed: speedRate, createdAt: new Date().toISOString() }),
         aviso || (r.doHistorico ? 'Carregado do histórico (nenhum processamento necessário).' : 'Pronto em ' + fmtDur((performance.now() - t0) / 1000) + '.'), aviso ? 'wa' : '');
       status('Pronto: ' + fmtDur(r.duracao) + ' de áudio.');
-      logApp('Locução gerada: ' + fmtDur(r.duracao) + '.', 'ok');
+      logApp('Narração gerada: ' + fmtDur(r.duracao) + '.', 'ok');
       carregarHistorico();
       return currentAudioUrl;
     } catch (error) {
       const c = /cancelad/i.test(error.message);
       status(c ? 'Cancelado.' : 'Não foi possível gerar o áudio.');
-      if (!c) { $('locAviso').innerHTML = '<div class="aviso er">' + esc(/preparar esta voz/.test(error.message) ? error.message : 'Não foi possível gerar o áudio. Tente de novo ou escolha outra voz.') + '</div>'; console.error('Locução:', error); logApp('Locução: ' + error.message, 'err'); }
+      if (!c) { $('locAviso').innerHTML = '<div class="aviso er">' + esc(/preparar esta voz/.test(error.message) ? error.message : 'Não foi possível gerar o áudio. Tente de novo ou escolha outra voz.') + '</div>'; console.error('Locução:', error); logApp('Narração: ' + error.message, 'err'); }
       throw error;
     } finally { ocupado(false); setTimeout(() => progresso(null), 800); }
   }
@@ -631,7 +652,7 @@
   }
   $('locImportar').onclick = async () => {
     const f = $('locFonte').value, t = textoDoCurso(f);
-    if (!t) { $('locAviso').innerHTML = '<div class="aviso wa">Nada para importar: ' + (f === 'notas' ? 'a apresentação não tem notas do apresentador' : f === 'slides' ? 'a apresentação está vazia' : 'a apostila está vazia') + ' na aba Conteúdo.</div>'; return; }
+    if (!t) { $('locAviso').innerHTML = '<div class="aviso wa">Nada para importar: ' + (f === 'notas' ? 'a apresentação não tem notas do apresentador' : f === 'slides' ? 'a apresentação está vazia' : 'a apostila está vazia') + (f === 'treinamento' ? ' na aba Apostila.' : ' na aba Apresentação.') + '</div>'; return; }
     if ($('locTexto').value.trim() && !await Dialogo.perguntar('Substituir o texto atual pelo conteúdo importado?')) return;
     $('locTexto').value = t; contar(); $('locAviso').innerHTML = ''; if (window.UXFeedback) UXFeedback.anunciar('Texto importado. Revise antes de gerar.');
   };
@@ -696,24 +717,22 @@
   /* ---------------------------- Integração: atalhos, ajuda, limpeza ---------------------------- */
   addEventListener('keydown', e => {
     if (!(e.altKey && e.shiftKey) || e.ctrlKey || e.metaKey) return;
-    if (e.code === 'Digit3') { e.preventDefault(); mostrarAba('locucao'); $('locTexto').focus(); }
-    else if (e.code === 'Digit1' || e.code === 'Digit2') { if (!sec.hidden) mostrarAba('curso'); }
     else if (e.code === 'KeyN' && !sec.hidden) { e.preventDefault(); if (sec.classList.contains('ln-ativo')) return; if (!$('locGerar').disabled) $('locGerar').click(); }
   }, true);
-  const AJUDA = '<h4>Locução (texto em fala)</h4><ul>' +
-    '<li>Aba <b>Locução</b> (<kbd>Alt+Shift+3</kbd>): transforma texto em fala <b>no seu navegador</b>. O texto não sai do computador.</li>' +
-    '<li>Para deixar a página leve, os <b>recursos de áudio</b> (vozes) só são baixados quando você clica em <b>Carregar áudio</b> (aba Locução) ou liga a <b>Narração dos slides</b>. Na primeira vez pode levar alguns minutos; depois ficam guardados no navegador.</li>' +
+  const AJUDA = '<h4>Narração (texto em fala)</h4><ul>' +
+    '<li>Aba <b>Narração</b> (<kbd>Alt+Shift+2</kbd>): transforma texto em fala <b>no seu navegador</b>. O texto não sai do computador.</li>' +
+    '<li>Para deixar a página leve, os <b>recursos de áudio</b> (vozes) só são baixados quando você clica em <b>Carregar áudio</b> (aba Narração) ou liga a <b>Narração dos slides</b>. Na primeira vez pode levar alguns minutos; depois ficam guardados no navegador.</li>' +
     '<li>A aba tem dois modos. <b>Notas dos slides</b> edita a narração de cada slide, ligada ao texto da aba Apresentação. <b>Texto livre</b> transforma qualquer texto em fala.</li>' +
     '<li><b>Notas dos slides</b>: <b>Importar notas</b> cria um rascunho com um campo por slide. Edite, ouça cada slide (<b>▶ Ouvir</b>) e escolha onde gravar: <b>Nota do apresentador</b> (aparece no slide e é narrada), <b>Só narração</b> (fala diferente da nota) ou <b>Sem narração</b>. Nada muda nos slides até <b>Aplicar à apresentação</b>; antes de aplicar, uma versão é guardada.</li>' +
     '<li>Se a nota mudar na aba Apresentação enquanto você edita, o slide mostra <b>Conflito</b>: escolha <b>Manter a minha</b> ou <b>Usar a da apresentação</b>. Slides que você não editou acompanham a apresentação sozinhos. O rascunho fica guardado neste navegador.</li>' +
-    '<li><b>Versões</b> abre a comparação no documento <b>Notas dos slides</b>; com alterações pendentes, compara o texto atual com o <b>Rascunho da Locução</b>. <b>Compartilhar link</b> leva as notas para outro computador; se houver alterações não aplicadas, pergunta antes se deve aplicá-las.</li>' +
+    '<li><b>Versões</b> abre a comparação no documento <b>Notas dos slides</b>; com alterações pendentes, compara o texto atual com o <b>Rascunho da Narração</b>. <b>Compartilhar link</b> leva as notas para outro computador; se houver alterações não aplicadas, pergunta antes se deve aplicá-las.</li>' +
     '<li><b>Texto livre › 1. Texto</b>: digite, cole ou <b>importe</b> do conteúdo (notas do apresentador, texto dos slides ou apostila).</li>' +
     '<li><b>2. Voz</b>: escolha o <b>idioma</b>, a <b>voz</b> (as <b>Recomendadas</b> aparecem primeiro), a <b>velocidade</b> e a <b>pausa entre frases</b>. <kbd>Alt+Shift+N</kbd> gera.</li>' +
     '<li>Se uma voz não puder ser usada no momento, outra voz do mesmo idioma é usada automaticamente.</li>' +
     '<li><b>3. Ouvir e baixar</b>: escolha o formato do arquivo — <b>MP3</b> (padrão), <b>OGG</b> (menor) ou <b>WAV</b> (sem compressão).</li>' +
     '<li><b>Histórico</b>: cada áudio fica guardado neste navegador e pode ser ouvido e baixado sem carregar os recursos de áudio.</li>' +
     '<li><b>Opções avançadas</b> (recolhidas): preparar a voz, remover vozes baixadas, carregar os recursos automaticamente e ajustes técnicos. Em <b>Processamento</b>, o modo Automático usa <b>WASM</b>, mais compatível. WebGPU é experimental e só é usado quando escolhido.</li></ul>';
-  const KB = '<div class="kbG"><h4>Locução</h4><table class="kbT"><tr><td style="width:46%"><kbd>Alt + Shift + 3</kbd></td><td>Abrir a aba Locução</td></tr><tr><td><kbd>Alt + Shift + N</kbd></td><td>Gerar locução (na aba Locução)</td></tr><tr><td><kbd>Alt + Shift + 1 / 2</kbd></td><td>Voltar à aba Conteúdo (Apostila / Apresentação)</td></tr></table></div>';
+  const KB = '<div class="kbG"><h4>Narração</h4><table class="kbT"><tr><td style="width:46%"><kbd>Alt + Shift + N</kbd></td><td>Gerar narração (na aba Narração)</td></tr></table></div>';
   new MutationObserver(() => {
     const c = document.getElementById('hlpC');
     if (c && !c.querySelector('[data-loc]')) { const d = document.createElement('div'); d.className = 'hs'; d.dataset.loc = '1'; d.innerHTML = AJUDA; c.appendChild(d); }
@@ -728,6 +747,9 @@
 
   /* ---------------------------- Montagem (sem carregar recursos de áudio) ---------------------------- */
   contar(); carregarHistorico(); atualizarMotorUI();
+  const sTxt = $('s'); let tCnt = null; if (sTxt) sTxt.addEventListener('input', () => { clearTimeout(tCnt); tCnt = setTimeout(contarNarracao, 300); });
+  const abaInicial = () => mostrarAba('apresentacao');  // Apresentação é a aba inicial
+  if (document.readyState === 'loading') addEventListener('DOMContentLoaded', abaInicial); else setTimeout(abaInicial);
   if ($('locPreload').checked && !location.hash.startsWith('#cx=')) {
     const go = () => carregarRecursos().catch(() => {});
     if (document.readyState === 'complete') setTimeout(go, 800); else addEventListener('load', () => setTimeout(go, 800));

@@ -6,7 +6,7 @@
    - Ao ligar: mostra um resumo da voz; as opções (idioma, voz, velocidade, formato, avanço) ficam em
      "Opções avançadas de voz", sempre recolhidas ao abrir a página
    - Botão "Histórico de áudio": janela sobreposta (como o Histórico do texto) com busca, Ouvir, Baixar,
-     Usar esta voz e Excluir — os mesmos áudios da aba Locução (IndexedDB KokoroTTS_DB)
+     Usar esta voz e Excluir — os mesmos áudios da aba Narração (IndexedDB KokoroTTS_DB)
    - Ao gerar os arquivos: lê as notas de cada slide (gerador.notas_para_narracao), gera o áudio com a voz
      escolhida (reaproveita o histórico), converte (MP3 padrão, OGG ou WAV) e entrega ao gerador
    - <!-- narracao: texto --> substitui a nota no áudio; <!-- narracao: nao --> deixa o slide sem som
@@ -53,7 +53,7 @@
   const box = document.createElement('div'); box.id = 'narrBox'; box.className = 'panel';
   box.innerHTML = '<label class="inl tit"><input type="checkbox" id="narrOn"> Narração dos slides — gerar áudio a partir das notas do apresentador</label>' +
     '<div id="narrOp" hidden>' +
-      '<div class="nres"><span id="narrResumo"></span><span id="narrSt" class="note" style="margin:0"></span><button type="button" class="sec mini" id="narrHist" title="Áudios já gerados neste navegador (Locução e narração)">' + ICO + ' Áudios gerados</button></div>' +
+      '<div class="nres"><span id="narrResumo"></span><span id="narrSt" class="note" style="margin:0"></span><button type="button" class="sec mini" id="narrHist" title="Áudios já gerados neste navegador (aba Narração e narração dos slides)">' + ICO + ' Áudios gerados</button></div>' +
       '<details class="nav" id="narrAv"><summary>Opções avançadas de voz</summary>' +
         '<div class="lin"><div><label for="narrIdioma">Idioma</label><select id="narrIdioma"></select></div><div><label for="narrVoz">Voz</label><select id="narrVoz"></select></div>' +
         '<div><label for="narrVel">Velocidade: <span id="narrVelV">1,00</span>×</label><input type="range" id="narrVel" min="0.5" max="2" step="0.05" value="1"></div>' +
@@ -150,7 +150,7 @@
     const vis = q ? l.filter(x => (x.text || '').toLowerCase().includes(q) || nome(x.voice).toLowerCase().includes(q)) : l;
     const dur = l.reduce((a, x) => a + (x.duracao || 0), 0);
     $('ahInfo').textContent = l.length ? l.length + ' áudio(s) · ' + fmtDur(dur) + ' no total · guardados somente neste navegador. Gerar de novo o mesmo texto com a mesma voz e velocidade usa o áudio guardado.' : '';
-    if (!vis.length) { $('ahLista').innerHTML = '<div class="ah-vazio">' + (l.length ? 'Nada encontrado.' : 'Nenhum áudio gerado ainda. Os áudios da Locução e da narração dos slides aparecem aqui.') + '</div>'; return; }
+    if (!vis.length) { $('ahLista').innerHTML = '<div class="ah-vazio">' + (l.length ? 'Nada encontrado.' : 'Nenhum áudio gerado ainda. Os áudios da aba Narração e da narração dos slides aparecem aqui.') + '</div>'; return; }
     $('ahLista').innerHTML = vis.map(x => '<div class="ah-it' + (x.id === ahAtual ? ' on' : '') + '" data-id="' + x.id + '"><p title="' + esc((x.text || '').slice(0, 600)) + '">' + esc((x.text || '').slice(0, 260)) + ((x.text || '').length > 260 ? '…' : '') + '</p>' +
       '<small>' + esc(nome(x.voice)) + ' · ' + String(x.speed).replace('.', ',') + '× · ' + fmtDur(x.duracao || 0) + ' · ' + new Date(x.createdAt).toLocaleString('pt-BR') + '</small>' +
       '<div class="b"><button type="button" data-a="ouvir">▶ Ouvir</button><button type="button" class="file-link download" data-a="baixar">.ÁUDIO</button>' +

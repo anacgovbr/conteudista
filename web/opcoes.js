@@ -122,11 +122,11 @@
       chave: 'narr.fmt', controles: ['narrFmt'], rotulo: 'Formato do áudio da narração' },
 
     { caminho: 'locucao.carregar_audio_ao_abrir', tipo: 'chave', padrao: 'desligado', valores: LIG,
-      chave: 'loc.preload', controles: ['locPreload'], rotulo: 'Locução: carregar os recursos de áudio ao abrir a página' },
+      chave: 'loc.preload', controles: ['locPreload'], rotulo: 'Narração: carregar os recursos de áudio ao abrir a página' },
     { caminho: 'locucao.formato_audio', tipo: 'escolha', padrao: 'mp3', valores: { mp3: 'mp3', ogg: 'ogg', wav: 'wav' },
-      chave: 'loc.fmt', controles: ['locFmt'], rotulo: 'Locução: formato do arquivo' },
+      chave: 'loc.fmt', controles: ['locFmt'], rotulo: 'Narração: formato do arquivo' },
     { caminho: 'locucao.notas_dos_slides', tipo: 'chave', padrao: 'ligado', valores: { ligado: 'notas', desligado: 'livre' },
-      chave: 'conteudista.locucao.modo', controles: [], rotulo: 'Locução: começar em "Notas dos slides" (desligado: texto livre)' },
+      chave: 'conteudista.locucao.modo', controles: [], rotulo: 'Narração: começar em "Notas dos slides" (desligado: texto livre)' },
   ];
   const REGRAS_ACESS = [['i1', 'corrigir'], ['i2', 'corrigir'], ['e1', 'corrigir'], ['e2', 'corrigir'], ['e3', 'corrigir'], ['k1', 'corrigir'],
     ['f1', 'sugestao'], ['f2', 'sugestao'], ['f3', 'sugestao'], ['s1', 'sugestao'], ['n1', 'sugestao']];

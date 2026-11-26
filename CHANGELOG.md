@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.123 - 26/11/2026
+- **Abas no padrão gov.br:** uma barra única no modelo Tab do Design System — **Apresentação · Narração │ Apostila**. A página abre na Apresentação, a aba ativa ganha o indicador inferior e a Narração mostra quantos slides têm notas (por exemplo, 8/12).
+- **Locução agora é Narração:** ajuda, tutorial, opções, versões e mensagens usam o novo nome. Preferências, rascunhos e histórico de áudios são mantidos.
+- **Atalhos por posição:** Alt+Shift+1 abre a Apresentação, Alt+Shift+2 a Narração e Alt+Shift+3 a Apostila. As setas, Home e End navegam entre as abas.
+- **Validação:** checagem de sintaxe (node --check) dos arquivos alterados.
+
 ## 1.122 - 26/11/2026
 - **Temas HTML:** “Usar” em um dos 12 temas do frontend-slides agora aplica o tema à apresentação web — antes a escolha voltava para o padrão gov.br. O seletor mostra o tema escolhido como “Tema HTML”, e os arquivos gerados mantêm as cores, as fontes e as animações do tema.
 - **Validação:** 14 testes de módulos e as verificações dos grupos 5, 6 e 25 aprovadas.

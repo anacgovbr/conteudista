@@ -1,7 +1,7 @@
 /* =====================================================================================
    Conteudista - Locução › Notas dos slides (1.74)
 
-   A aba Locução passa a ter dois modos:
+   A aba Narração (antiga Locução) passa a ter dois modos:
      - "Notas dos slides": edita a narração slide a slide, ligada ao Markdown da aba Apresentação;
      - "Texto livre": o modo anterior (qualquer texto em fala), sem mudanças.
 
@@ -16,7 +16,7 @@
    4. Cada slide grava em "Nota do apresentador" (aparece no slide e é narrada), em "Só narração"
       (<!-- narracao: texto -->, fala diferente da nota) ou fica "Sem narração" (<!-- narracao: nao -->).
    5. Versões: abre a MESMA janela de comparação, no documento "Notas dos slides"; com alterações
-      pendentes, compara o texto atual com "Rascunho da Locução (não aplicado)".
+      pendentes, compara o texto atual com "Rascunho da Narração (não aplicado)".
    6. Compartilhar link: abre a MESMA janela de link. O link leva o Markdown; se houver alterações
       não aplicadas, pergunta antes se deve aplicá-las (senão elas não vão no link).
    Regras de leitura dos slides: as mesmas de tools/gerador.py (split_slides e notas_para_narracao).
@@ -288,12 +288,12 @@
     if (r.cf) { msg('er', 'Resolva os ' + r.cf + ' conflito(s) antes de aplicar.'); return; }
     const mud = new Map();
     R.itens.forEach((it, k) => { const e = estado(it, r.cur[k]); if (e === 'ed' || e === 'nv') mud.set(k, { n: it.dn, x: it.dx }); });
-    try { if (window.Hist && Hist.registrar) await Hist.registrar('antes', 'Antes de aplicar as notas da Locução'); } catch (e) { /* segue */ }
+    try { if (window.Hist && Hist.registrar) await Hist.registrar('antes', 'Antes de aplicar as notas da Narração'); } catch (e) { /* segue */ }
     sTa.value = montar(sTa.value, mud);
     sTa.dispatchEvent(new Event('input', { bubbles: true }));       // prévia, autossalvamento e desfazer (Ctrl+Z) do editor
     R.itens.forEach(it => { it.bn = it.dn; it.bx = it.dx; it.mk = false; }); gravar();
     msg('ok', mud.size + ' slide(s) atualizados na apresentação. Para desfazer, use Versões ou Ctrl+Z no editor da Apresentação.');
-    logApp('Locução: notas de ' + mud.size + ' slide(s) aplicadas à apresentação.', 'ok');
+    logApp('Narração: notas de ' + mud.size + ' slide(s) aplicadas à apresentação.', 'ok');
     desenhar(); const b = $('lnApl'); confirmar(b || btn, 'Notas aplicadas à apresentação.'); if (b) b.focus();
     return mud.size;
   }

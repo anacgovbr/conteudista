@@ -311,7 +311,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     const l = await lista(), selA = $('hA'), selB = $('hB'), va = selA.value, vb = selB.value;
     const opt = v => '<option value="' + v.id + '">' + dataCurta(v.data) + ' — ' + esc(v.rotulo) + (v.p ? ' · ' + esc(v.p) : '') + ' · ' + fmtTam(v.tam) + (v.origem === 'link' ? ' · via link' : '') + '</option>';
     let h = '<option value="atual">★ Atual (conteúdo dos editores)</option>';
-    try { if (window.NotasSlides && NotasSlides.temRascunho()) h += '<option value="rasc">✎ Rascunho da Locução (notas não aplicadas)</option>'; } catch (e) { /* sem rascunho */ }
+    try { if (window.NotasSlides && NotasSlides.temRascunho()) h += '<option value="rasc">✎ Rascunho da Narração (notas não aplicadas)</option>'; } catch (e) { /* sem rascunho */ }
     for (const [g, nome] of GRUPOS) { const it = l.filter(v => grupoDe(v) === g); if (it.length) h += '<optgroup label="' + esc(nome) + ' (' + it.length + ')">' + it.map(opt).join('') + '</optgroup>'; }
     selA.innerHTML = h; selB.innerHTML = h;
     const existe = (s, v) => v && [...s.options].some(o => o.value === v);
@@ -322,7 +322,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   }
   async function obter(id) {
     if (id === 'atual') { const d = pacote(); return { rotulo: 'Atual (editores)', data: Date.now(), g: d.g, s: d.s, p: d.p, r: d.r, b: d.b, licenca: d.licenca, atual: true }; }
-    if (id === 'rasc') { const d = pacote(); return { rotulo: 'Rascunho da Locução (não aplicado)', data: Date.now(), g: d.g, s: window.NotasSlides ? NotasSlides.sComRascunho() : d.s, p: d.p, r: d.r, b: d.b, licenca: d.licenca, atual: true, rasc: true }; }
+    if (id === 'rasc') { const d = pacote(); return { rotulo: 'Rascunho da Narração (não aplicado)', data: Date.now(), g: d.g, s: window.NotasSlides ? NotasSlides.sComRascunho() : d.s, p: d.p, r: d.r, b: d.b, licenca: d.licenca, atual: true, rasc: true }; }
     return (await lista()).find(v => String(v.id) === String(id));
   }
   async function executar() {
@@ -341,7 +341,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     });
   }
   async function restaurar(id) {
-    const v = await obter(id); if (v && v.rasc) { log('Para levar o rascunho das notas à apresentação, use Aplicar à apresentação na aba Locução.', 'wa'); return; } if (!v || v.atual) { log('Escolha uma versão guardada para restaurar.', 'wa'); return; }
+    const v = await obter(id); if (v && v.rasc) { log('Para levar o rascunho das notas à apresentação, use Aplicar à apresentação na aba Narração.', 'wa'); return; } if (!v || v.atual) { log('Escolha uma versão guardada para restaurar.', 'wa'); return; }
     if (!await Dialogo.perguntar('Substituir o conteúdo dos editores pela versão:\n' + v.rotulo + ' (' + dataCurta(v.data) + ')?\n\nO conteúdo atual será guardado no histórico antes.')) return;
     await registrar('antes', 'Antes de restaurar');
     aplicar(v); fecharHist(); log('Versão restaurada: ' + v.rotulo + ' (' + dataCurta(v.data) + '). Ctrl+Z no editor também desfaz.', 'ok');
