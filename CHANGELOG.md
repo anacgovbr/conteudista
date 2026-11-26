@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.125 - 26/11/2026
+- **Barra do conteúdo:** nome, Importar, Compartilhar link e Salvar automático ficam acima das abas e valem para o conteúdo todo.
+- **Gerar arquivos:** tema, licença e rodapé ficam junto do botão que os usa.
+- **Salvar automático:** interruptor do Design System com o estado escrito (Ligado/Desligado), sem texto de ajuda na tela.
+- **Validação:** testes de navegador completos no Chrome.
+
 ## 1.124 - 26/11/2026
 - **Narração no padrão gov.br:** botões, seletores, interruptor e blocos recolhíveis seguem o Design System. As opções avançadas ficam em **Voz › Mais opções**.
 - **Menos texto na tela:** rótulos e avisos mais curtos em todas as abas; fica só o essencial, como a privacidade.
