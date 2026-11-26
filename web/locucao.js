@@ -154,7 +154,37 @@
 #secLoc .hc .b button{margin:0}
 #secLoc .vazio{color:#636363;font-size:13px;padding:10px}
 #secLoc .tec{font-size:12px;color:#636363;margin:4px 0}
-@media(max-width:1000px){#secLoc .loc-grid{grid-template-columns:1fr}}`;
+@media(max-width:1000px){#secLoc .loc-grid{grid-template-columns:1fr}}
+/* 1.124: padrão DS gov.br (br-button, br-select, br-switch, br-collapse) */
+#secLoc>p.note{margin:0 0 12px}
+#secLoc label{font-size:14px;color:#333333;font-weight:600}#secLoc label.inl{font-weight:400}
+#secLoc select,#secLoc input[type=search]{height:40px;padding:0 12px;border:1px solid #888888;border-radius:6px;font-size:15px;background:#fff;color:#333333}
+#secLoc textarea{border-color:#888888;border-radius:6px}
+#secLoc select:focus-visible,#secLoc input:focus-visible,#secLoc textarea:focus-visible,#secLoc button:focus-visible,#secLoc summary:focus-visible{outline:4px dashed #c2850c;outline-offset:2px}
+#secLoc button:not(.file-link){min-height:40px;padding:0 20px;border-radius:100em;font-weight:600;font-size:15px;line-height:1}
+#secLoc button.mini{min-height:32px;padding:0 14px;font-size:14px}
+#secLoc button.ter{background:transparent!important;color:#1351b4!important;border:1px solid transparent!important}
+#secLoc button.ter:hover:not(:disabled){background:rgba(19,81,180,.12)!important}
+#secLoc .acoes{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 4px}#secLoc .acoes button{margin:0}
+#secLoc .loc-box{background:#fff;border-radius:8px}
+#secLoc details.loc-subsecao,#secLoc details#locAvancado{overflow:visible}
+#secLoc details.loc-subsecao[open]{padding-bottom:14px}
+#secLoc details.loc-subsecao>summary h3{color:#333333;font-size:17px;font-weight:600}
+#secLoc .loc-mostrar,#secLoc .loc-recolher{display:none!important}
+#secLoc details.loc-subsecao>summary::after,#secLoc details#locAvancado>summary::after{content:'';flex:none;width:9px;height:9px;margin:0 4px 4px auto;border-right:2px solid #1351b4;border-bottom:2px solid #1351b4;transform:rotate(45deg);transition:transform .2s}
+#secLoc details.loc-subsecao[open]>summary::after,#secLoc details#locAvancado[open]>summary::after{transform:rotate(-135deg);margin-bottom:-4px}
+#secLoc details#locAvancado{background:#fff;border:1px solid #cccccc;border-radius:6px;margin:14px 0 0!important;padding:0}
+#secLoc details#locAvancado>summary{padding:8px 12px!important}
+#secLoc details#locAvancado>summary .summary-title{color:#1351b4!important;font-size:14px!important;font-weight:600}
+#secLoc details#locAvancado[open]{padding-bottom:12px}
+#secLoc .lin{align-items:flex-end}
+#secLoc .loc-rng{display:flex;align-items:center;gap:10px;height:40px}#secLoc .loc-rng input{flex:1;accent-color:#1351b4;margin:0}#secLoc .loc-rng .loc-x{min-width:52px;text-align:right;font-weight:600}
+#secLoc input.loc-sw{appearance:none;-webkit-appearance:none;width:40px;height:22px;border-radius:100em;background:#888888;position:relative;cursor:pointer;margin:0;flex:none}
+#secLoc input.loc-sw::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:left .15s}
+#secLoc input.loc-sw:checked{background:#1351b4}#secLoc input.loc-sw:checked::after{left:21px}
+#secLoc label.loc-swl{display:flex;gap:10px;align-items:center;margin:12px 0 0;font-size:14px;cursor:pointer}
+#secLoc .rec{border-radius:6px;border-left:4px solid #1351b4}
+@media(forced-colors:active){#secLoc input.loc-sw{border:1px solid CanvasText}}`;
   const st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
 
   /* ---------------------------- Estrutura: abas + seção ---------------------------- */
@@ -170,39 +200,39 @@
   main.parentNode.insertBefore(abas, main);
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secLoc'; sec.hidden = true;
   sec.innerHTML = '<h2>Narração</h2>' +
-    '<p class="note">Transforme texto em fala. O áudio é gerado <b>no seu computador</b>; o texto não é enviado a nenhum servidor.</p>' +
+    '<p class="note">O áudio é gerado no seu computador.</p>' +
     '<div class="loc-grid"><div>' +
-    '<div class="loc-box"><h3>1. Texto</h3>' +
-      '<div class="lin"><div><label for="locFonte">Trazer texto do conteúdo</label><select id="locFonte"><option value="notas">Notas do apresentador (todos os slides)</option><option value="slides">Texto dos slides</option><option value="treinamento">Apostila</option></select></div>' +
+    '<div class="loc-box"><h3>Texto</h3>' +
+      '<div class="lin"><div><label for="locFonte">Importar de</label><select id="locFonte"><option value="notas">Notas do apresentador</option><option value="slides">Texto dos slides</option><option value="treinamento">Apostila</option></select></div>' +
       '<div class="loc-btn-cell"><button type="button" class="sec" id="locImportar">Importar</button></div></div>' +
-      '<label for="locTexto" style="margin-top:10px">Texto a ser narrado</label>' +
-      '<textarea id="locTexto" spellcheck="true" lang="pt-BR" placeholder="Digite, cole ou importe o texto. Frases bem pontuadas soam mais naturais."></textarea>' +
+      '<label for="locTexto" style="margin-top:10px">Texto a narrar</label>' +
+      '<textarea id="locTexto" spellcheck="true" lang="pt-BR" placeholder="Digite, cole ou importe o texto."></textarea>' +
       '<p class="cont" id="locCont">0 caracteres</p>' +
     '</div>' +
-    '<div class="loc-box"><h3>2. Voz</h3>' +
-      '<div class="rec" id="locRec"><span id="locRecInfo">Os recursos de áudio (vozes) são carregados só quando você precisar. Na primeira vez o download pode levar alguns minutos.</span><button type="button" id="locCarregar">Carregar áudio</button></div>' +
+    '<div class="loc-box"><h3>Voz</h3>' +
+      '<div class="rec" id="locRec"><span id="locRecInfo">Recursos de áudio não carregados.</span><button type="button" id="locCarregar">Carregar áudio</button></div>' +
       '<div class="lin"><div><label for="locIdioma">Idioma</label><select id="locIdioma"></select></div>' +
       '<div><label for="locVoz">Voz</label><select id="locVoz"></select></div></div>' +
       '<div class="lin" style="margin-top:8px">' +
-      '<div><label for="locVel">Velocidade: <span id="locVelV">1,00</span>×</label><input type="range" id="locVel" min="0.5" max="2" step="0.05" value="1"></div>' +
-      '<div><label for="locPausa">Pausa entre frases</label><select id="locPausa"><option value="0">Sem pausa extra</option><option value="150">Curta</option><option value="300" selected>Média</option><option value="600">Longa</option></select></div></div>' +
-      '<p class="acoes"><button type="button" id="locGerar" title="Alt+Shift+N">Gerar narração</button><button type="button" class="sec" id="locCancelar" disabled>Cancelar</button><button type="button" class="sec" id="locLimpar">Limpar texto</button></p>' +
+      '<div><label for="locVel">Velocidade</label><div class="loc-rng"><input type="range" id="locVel" min="0.5" max="2" step="0.05" value="1"><span class="loc-x"><output id="locVelV" for="locVel">1,00</output>×</span></div></div>' +
+      '<div><label for="locPausa">Pausa entre frases</label><select id="locPausa"><option value="0">Sem pausa</option><option value="150">Curta</option><option value="300" selected>Média</option><option value="600">Longa</option></select></div></div>' +
+      '<p class="acoes"><button type="button" id="locGerar" title="Alt+Shift+N">Gerar narração</button><button type="button" class="sec" id="locCancelar" disabled>Cancelar</button><button type="button" class="ter" id="locLimpar">Limpar</button></p>' +
       '<div id="locBarC" class="tts-loading-container"><div id="locBar" class="tts-progress-bar"></div></div><span id="locSt" class="tts-status-text" role="status" aria-live="polite"></span>' +
     '</div>' +
-    '<div class="loc-box"><h3>3. Ouvir e baixar</h3>' +
+    '<div class="loc-box"><h3>Ouvir e baixar</h3>' +
       '<div id="locAviso"></div><audio id="locAudio" controls preload="none"></audio>' +
-      '<div class="lin"><div style="flex:0 1 220px"><label for="locFmt">Formato do arquivo</label><select id="locFmt"><option value="mp3">MP3 (padrão)</option><option value="ogg">OGG (menor)</option><option value="wav">WAV (sem compressão)</option></select></div>' +
+      '<div class="lin"><div style="flex:0 1 220px"><label for="locFmt">Formato</label><select id="locFmt"><option value="mp3">MP3</option><option value="ogg">OGG</option><option value="wav">WAV</option></select></div>' +
       '<div style="flex:0"><button type="button" class="file-link download" id="locBaixar" disabled>.ÁUDIO</button></div></div>' +
       '<p class="cont" id="locInfo">Nenhum áudio ainda.</p>' +
     '</div>' +
-    '<details class="loc-box" id="locAvancado"><summary>Opções avançadas</summary>' +
+    '<details class="loc-box" id="locAvancado"><summary>Mais opções</summary>' +
       '<p class="tec" id="locTec">Recursos de áudio não carregados.</p><p class="tec" id="locLocalInfo"></p>' +
-      '<div class="lin"><div><label for="locDtype">Qualidade das vozes Kokoro</label><select id="locDtype"><option value="fp32">Máxima (recomendada; necessária fora do inglês)</option><option value="q8">Reduzida (só inglês; download menor)</option></select></div>' +
-      '<div><label for="locDevice">Processamento</label><select id="locDevice"><option value="auto">Automático (WASM, recomendado)</option><option value="wasm">Somente processador (WASM)</option><option value="webgpu">Placa de vídeo (WebGPU, experimental)</option></select></div>' +
-      '<div><label for="locFon">Pronúncia (vozes Kokoro)</label><select id="locFon"><option value="auto">Automática</option><option value="espeak">Somente espeak-ng</option><option value="interno">Regras internas (português)</option></select></div></div>' +
+      '<div class="lin"><div><label for="locDtype">Qualidade (Kokoro)</label><select id="locDtype"><option value="fp32">Máxima</option><option value="q8">Reduzida (só inglês)</option></select></div>' +
+      '<div><label for="locDevice">Processamento</label><select id="locDevice"><option value="auto">Automático</option><option value="wasm">Processador (WASM)</option><option value="webgpu">Placa de vídeo (WebGPU)</option></select></div>' +
+      '<div><label for="locFon">Pronúncia (Kokoro)</label><select id="locFon"><option value="auto">Automática</option><option value="espeak">espeak-ng</option><option value="interno">Regras internas</option></select></div></div>' +
       '<p class="tec" id="locFonInfo"></p>' +
       '<p class="acoes"><button type="button" class="sec" id="locAtivar">Preparar voz</button><button type="button" class="sec" id="locRemModelo">Remover vozes</button></p>' +
-      '<label class="inl"><input type="checkbox" id="locPreload"> Carregar os recursos de áudio automaticamente ao abrir a página</label>' +
+      '<label class="inl loc-swl"><input type="checkbox" id="locPreload" role="switch" class="loc-sw"> Carregar áudio ao abrir a página</label>' +
     '</details>' +
     '</div>' +
     '<aside class="loc-hist" aria-label="Histórico de locuções"><h3>Histórico <span id="locHistN"></span></h3>' +
@@ -231,7 +261,7 @@
   const avancadoLoc = sec.querySelector('#locAvancado');
   if (avancadoLoc) {
     avancadoLoc.open = false; const sum = avancadoLoc.querySelector(':scope > summary');
-    sum.innerHTML = '<span class="summary-title">Opções avançadas</span><span class="loc-mostrar">mostrar</span><span class="loc-recolher">recolher</span>';
+    sum.innerHTML = '<span class="summary-title">Mais opções</span>'; const acoesVoz = $('locGerar') && $('locGerar').closest('p'); if (acoesVoz) acoesVoz.before(avancadoLoc);
   }
   const histLoc = sec.querySelector('.loc-hist');
   if (histLoc) {
@@ -307,8 +337,8 @@
     const r = $('locRec'), mo = motorDe($('locVoz').value);
     r.classList.toggle('ok', recursos);
     $('locCarregar').hidden = recursos;
-    $('locRecInfo').textContent = !recursos ? 'Os recursos de áudio (vozes) são carregados só quando você precisar. Na primeira vez o download pode levar alguns minutos.'
-      : mo.pronto ? '✓ Recursos de áudio carregados. A voz está pronta.' : mo.carregando ? 'Recursos de áudio carregados. Preparando a voz…' : '✓ Recursos de áudio carregados. A voz é preparada ao gerar.';
+    $('locRecInfo').textContent = !recursos ? 'Recursos de áudio não carregados.'
+      : mo.pronto ? '✓ Voz pronta.' : mo.carregando ? 'Preparando a voz…' : '✓ Áudio carregado.';
     $('locGerar').disabled = !recursos || !!geracao;
     $('locGerar').title = recursos ? 'Alt+Shift+N' : 'Carregue os recursos de áudio primeiro';
   }
@@ -728,12 +758,12 @@
     '<li><b>Notas dos slides</b>: <b>Importar notas</b> cria um rascunho com um campo por slide. Edite, ouça cada slide (<b>▶ Ouvir</b>) e escolha onde gravar: <b>Nota do apresentador</b> (aparece no slide e é narrada), <b>Só narração</b> (fala diferente da nota) ou <b>Sem narração</b>. Nada muda nos slides até <b>Aplicar à apresentação</b>; antes de aplicar, uma versão é guardada.</li>' +
     '<li>Se a nota mudar na aba Apresentação enquanto você edita, o slide mostra <b>Conflito</b>: escolha <b>Manter a minha</b> ou <b>Usar a da apresentação</b>. Slides que você não editou acompanham a apresentação sozinhos. O rascunho fica guardado neste navegador.</li>' +
     '<li><b>Versões</b> abre a comparação no documento <b>Notas dos slides</b>; com alterações pendentes, compara o texto atual com o <b>Rascunho da Narração</b>. <b>Compartilhar link</b> leva as notas para outro computador; se houver alterações não aplicadas, pergunta antes se deve aplicá-las.</li>' +
-    '<li><b>Texto livre › 1. Texto</b>: digite, cole ou <b>importe</b> do conteúdo (notas do apresentador, texto dos slides ou apostila).</li>' +
-    '<li><b>2. Voz</b>: escolha o <b>idioma</b>, a <b>voz</b> (as <b>Recomendadas</b> aparecem primeiro), a <b>velocidade</b> e a <b>pausa entre frases</b>. <kbd>Alt+Shift+N</kbd> gera.</li>' +
+    '<li><b>Texto livre › Texto</b>: digite, cole ou <b>importe</b> do conteúdo (notas do apresentador, texto dos slides ou apostila).</li>' +
+    '<li><b>Voz</b>: escolha o <b>idioma</b>, a <b>voz</b> (as <b>Recomendadas</b> aparecem primeiro), a <b>velocidade</b> e a <b>pausa entre frases</b>. <kbd>Alt+Shift+N</kbd> gera.</li>' +
     '<li>Se uma voz não puder ser usada no momento, outra voz do mesmo idioma é usada automaticamente.</li>' +
-    '<li><b>3. Ouvir e baixar</b>: escolha o formato do arquivo — <b>MP3</b> (padrão), <b>OGG</b> (menor) ou <b>WAV</b> (sem compressão).</li>' +
+    '<li><b>Ouvir e baixar</b>: escolha o formato do arquivo — <b>MP3</b> (padrão), <b>OGG</b> (menor) ou <b>WAV</b> (sem compressão).</li>' +
     '<li><b>Histórico</b>: cada áudio fica guardado neste navegador e pode ser ouvido e baixado sem carregar os recursos de áudio.</li>' +
-    '<li><b>Opções avançadas</b> (recolhidas): preparar a voz, remover vozes baixadas, carregar os recursos automaticamente e ajustes técnicos. Em <b>Processamento</b>, o modo Automático usa <b>WASM</b>, mais compatível. WebGPU é experimental e só é usado quando escolhido.</li></ul>';
+    '<li><b>Mais opções</b> (em Voz): preparar a voz, remover vozes baixadas, carregar os recursos automaticamente e ajustes técnicos. Em <b>Processamento</b>, o modo Automático usa <b>WASM</b>, mais compatível. WebGPU é experimental e só é usado quando escolhido.</li></ul>';
   const KB = '<div class="kbG"><h4>Narração</h4><table class="kbT"><tr><td style="width:46%"><kbd>Alt + Shift + N</kbd></td><td>Gerar narração (na aba Narração)</td></tr></table></div>';
   new MutationObserver(() => {
     const c = document.getElementById('hlpC');

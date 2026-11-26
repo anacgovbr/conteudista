@@ -109,7 +109,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
   gerBack.setAttribute('role', 'dialog'); gerBack.setAttribute('aria-modal', 'true'); gerBack.setAttribute('aria-label', 'Arquivos e rascunhos');
   const gerWin = document.createElement('div'); gerWin.className = 'ger-win';
   gerWin.innerHTML = '<div class="ger-top"><h2>Arquivos e rascunhos</h2><button type="button" class="sec mini" id="gerFechar" title="Fechar (Esc)">Fechar \u2715</button></div>' +
-    '<p class="note">Guardados somente neste navegador. Os pacotes mais antigos s\u00e3o apagados conforme o limite escolhido em Arquivos gerados.</p>' +
+    '<p class="note">Guardados só neste navegador.</p>' +
     '<details class="sx ger-sec" id="gerSecArq" open><summary><h3 id="gerTArq">Arquivos gerados</h3></summary><div id="gerSbArq"></div></details>' +
     '<details class="sx ger-sec" id="gerSecRasc"><summary><h3 id="gerTRasc">Rascunhos</h3></summary><div id="gerSbRasc"></div></details>';
   gerBack.appendChild(gerWin); document.body.appendChild(gerBack);

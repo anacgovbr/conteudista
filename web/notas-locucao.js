@@ -186,7 +186,7 @@
 
   const box = document.createElement('section'); box.id = 'locNotas'; box.setAttribute('aria-labelledby', 'lnT');
   box.innerHTML = '<h3 id="lnT">Notas dos slides</h3>' +
-    '<p class="ln-int">Edite aqui o que a narração fala em cada slide. As notas ficam no texto da aba <b>Apresentação</b>: <b>Importar notas</b> cria um rascunho e nada muda nos slides até você clicar em <b>Aplicar à apresentação</b>.</p>' +
+    '<p class="ln-int">Edite a fala de cada slide. Nada muda até <b>Aplicar à apresentação</b>.</p>' +
     '<div class="ln-bar" role="toolbar" aria-label="Notas dos slides"></div>' +
     '<div class="ln-perg" id="lnPerg" role="group" aria-labelledby="lnPergT" hidden><p id="lnPergT"></p><div class="b"></div></div>' +
     '<p class="ln-msg" id="lnMsg" role="status" aria-live="polite"></p>' +

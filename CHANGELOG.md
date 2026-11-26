@@ -1,4 +1,9 @@
 # Novidades do Conteudista
+## 1.124 - 26/11/2026
+- **Narração no padrão gov.br:** botões, seletores, interruptor e blocos recolhíveis seguem o Design System. As opções avançadas ficam em **Voz › Mais opções**.
+- **Menos texto na tela:** rótulos e avisos mais curtos em todas as abas; fica só o essencial, como a privacidade.
+- **Validação:** testes de navegador completos no Chrome.
+
 ## 1.123 - 26/11/2026
 - **Abas no padrão gov.br:** uma barra única no modelo Tab do Design System — **Apresentação · Narração │ Apostila**. A página abre na Apresentação (depois, na última aba usada), a aba ativa ganha o indicador inferior e a Narração mostra quantos slides têm notas (por exemplo, 8/12).
 - **Locução agora é Narração:** ajuda, tutorial, opções, versões, mensagens, conteúdo de exemplo e documentação usam o novo nome. Preferências, rascunhos e histórico de áudios são mantidos.

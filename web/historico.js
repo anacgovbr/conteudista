@@ -254,7 +254,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
   const ICO_LINK = '<svg class="hic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>';
   const sec = document.createElement('section'); sec.className = 'card'; sec.id = 'secHist';
   sec.innerHTML = '<div class="htop"><h2>Vers\u00f5es do texto</h2><button type="button" class="sec mini hx" id="hFechar" title="Fechar (Esc)">Fechar ✕</button></div>' +
-    '<p class="note">Versões guardadas <b>somente neste navegador</b>: edições da sessão (a cada 3 min de edição), arquivos carregados, conteúdos abertos de links, exemplo, versões salvas e momentos de geração/compartilhamento. Escolha duas versões e compare.</p>' +
+    '<p class="note">Guardadas só neste navegador.</p>' +
     '<div class="hrow"><div class="lg"><label for="hA">Versão A (antes)</label><select id="hA"></select></div>' +
     '<div class="hrow troca" style="min-width:auto;margin:0"><button type="button" class="sec mini" id="hTroca" title="Trocar A e B">⇄</button></div>' +
     '<div class="lg"><label for="hB">Versão B (depois)</label><select id="hB"></select></div></div>' +
