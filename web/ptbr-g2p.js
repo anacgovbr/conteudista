@@ -1,6 +1,6 @@
 /* =====================================================================================
    Conteudista — Fonemizador interno pt-BR (regras ortográficas → IPA no padrão espeak-ng pt-br)
-   Usado pela Locução quando o espeak-ng do navegador não oferece português.
+   Usado pela Narração quando o espeak-ng do navegador não oferece português.
    - Números por extenso, siglas soletradas, tonicidade (acentos e regras de paroxítona/oxítona)
    - Dígrafos (ch, lh, nh, rr, ss, qu, gu, sc, xc), nasalização (am, em, ão, õe…), l final → w,
      t/d + i → tʃ/dʒ, vogais átonas finais (e → ɪ, o → ʊ, a → ɐ), s intervocálico → z

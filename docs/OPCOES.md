@@ -126,10 +126,10 @@ Arquivo: `web/config/opcoes.yaml`. Ele define como cada opção **começa**. Se 
 | `avancar_sozinho` | Avançar os slides sozinho ao fim da narração | ligado · desligado | `desligado` | sim |
 | `formato_audio` | Formato do áudio da narração | mp3 · ogg · wav | `mp3` | sim |
 
-## Locução
+## Narração
 
 | Opção | O que faz | Valores | Padrão | Lembrada no navegador |
 |---|---|---|---|---|
-| `carregar_audio_ao_abrir` | Locução: carregar os recursos de áudio ao abrir a página | ligado · desligado | `desligado` | sim |
-| `formato_audio` | Locução: formato do arquivo | mp3 · ogg · wav | `mp3` | sim |
-| `notas_dos_slides` | Locução: começar em "Notas dos slides" (desligado: texto livre) | ligado · desligado | `ligado` | sim |
+| `carregar_audio_ao_abrir` | Narração: carregar os recursos de áudio ao abrir a página | ligado · desligado | `desligado` | sim |
+| `formato_audio` | Narração: formato do arquivo | mp3 · ogg · wav | `mp3` | sim |
+| `notas_dos_slides` | Narração: começar em "Notas dos slides" (desligado: texto livre) | ligado · desligado | `ligado` | sim |

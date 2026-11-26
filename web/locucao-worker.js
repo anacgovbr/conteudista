@@ -1,5 +1,5 @@
 /* =====================================================================================
-   Conteudista — Worker de Locução: Kokoro-82M v1.0 (multilíngue), 100% no navegador
+   Conteudista — Worker de Narração: Kokoro-82M v1.0 (multilíngue), 100% no navegador
    - Modelo: onnx-community/Kokoro-82M-v1.0-ONNX (versão multilíngue atual), dtype "fp32" (padrão) ou "q8"
      · fp32 é o padrão: idiomas além do inglês funcionam corretamente nele (q8 pode degradar/mudar a pronúncia)
    - Dispositivo: WebAssembly (WASM) no modo Automático — opção mais compatível. WebGPU só é usado quando escolhido explicitamente

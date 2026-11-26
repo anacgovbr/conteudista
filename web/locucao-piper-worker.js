@@ -1,5 +1,5 @@
 /* =====================================================================================
-   Conteudista — Worker de Locução com Piper (padrão para português do Brasil)
+   Conteudista — Worker de Narração com Piper (padrão para português do Brasil)
    - Motor: Piper (VITS) em ONNX/WebAssembly via @mintplex-labs/piper-tts-web (fallback @jtsage/piper-tts-web)
    - Voz padrão: pt_BR-faber-medium; demais idiomas/vozes: catálogo da própria biblioteca (voices())
    - Fonemização: espeak-ng em WebAssembly embutido na biblioteca (mesma ferramenta do treino da voz)

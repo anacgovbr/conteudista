@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Hospedagem local dos modelos da Locução (Piper/Kokoro) no próprio site.
+"""Hospedagem local dos modelos da Narração (Piper/Kokoro) no próprio site.
 
 Lê web/modelos.json, baixa os arquivos dos perfis escolhidos para <saida>/modelos/<host>/<caminho>,
 copia (opcionalmente) as bibliotecas JS/WASM de pacotes npm para <saida>/vendor/<nome>/ e grava
-<saida>/modelos/manifest.json, que os workers da Locução usam para redirecionar as requisições.
+<saida>/modelos/manifest.json, que os workers da Narração usam para redirecionar as requisições.
 
 Uso (no workflow):
   python tools/hospedar_modelos.py --config web/modelos.json --saida site --cache .cache/modelos \

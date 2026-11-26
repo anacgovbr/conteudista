@@ -458,7 +458,7 @@ Os layouts institucionais são da Agência Nacional de Aviação Civil (ANAC).
 
 ---
 
-# Locução
+# Narração
 
 - Notas dos slides: edite e ouça a narração de cada slide
 - Aplicar à apresentação devolve o texto aos slides
@@ -467,7 +467,7 @@ Os layouts institucionais são da Agência Nacional de Aviação Civil (ANAC).
 
 > [!info] Os recursos de voz são baixados na primeira vez.
 
-<!-- notas: A aba Locução tem dois modos. Em Notas dos slides, o botão Importar notas traz a nota de cada slide para um rascunho. Você edita o texto, ouve cada slide e clica em Aplicar à apresentação; só os slides alterados mudam. Os botões Versões e Compartilhar link da própria aba comparam as notas com versões anteriores e as levam para outro computador. Em Texto livre, qualquer texto vira fala. Os recursos de voz são carregados sob demanda, e o áudio é gerado no seu computador. -->
+<!-- notas: A aba Narração tem dois modos. Em Notas dos slides, o botão Importar notas traz a nota de cada slide para um rascunho. Você edita o texto, ouve cada slide e clica em Aplicar à apresentação; só os slides alterados mudam. Os botões Versões e Compartilhar link da própria aba comparam as notas com versões anteriores e as levam para outro computador. Em Texto livre, qualquer texto vira fala. Os recursos de voz são carregados sob demanda, e o áudio é gerado no seu computador. -->
 
 ---
 

@@ -149,10 +149,10 @@ narracao:  # Narração (aba Gerar)
   # Formato do áudio da narração [mp3 | ogg | wav]
   formato_audio: mp3
 
-locucao:  # Locução
-  # Locução: carregar os recursos de áudio ao abrir a página [ligado | desligado]
+locucao:  # Narração
+  # Narração: carregar os recursos de áudio ao abrir a página [ligado | desligado]
   carregar_audio_ao_abrir: desligado
-  # Locução: formato do arquivo [mp3 | ogg | wav]
+  # Narração: formato do arquivo [mp3 | ogg | wav]
   formato_audio: mp3
-  # Locução: começar em "Notas dos slides" (desligado: texto livre) [ligado | desligado]
+  # Narração: começar em "Notas dos slides" (desligado: texto livre) [ligado | desligado]
   notas_dos_slides: ligado

@@ -1,5 +1,5 @@
 {
-  "descricao": "Arquivos que o workflow pode copiar para o site (pasta modelos/) para a Locução funcionar sem acessar o Hugging Face/jsDelivr. Escolha os perfis na variável do repositório MODELOS_LOCAIS (ex.: piper-ptbr,piper-catalogo,kokoro-fp32). Use 'nenhum' para desativar.",
+  "descricao": "Arquivos que o workflow pode copiar para o site (pasta modelos/) para a Narração funcionar sem acessar o Hugging Face/jsDelivr. Escolha os perfis na variável do repositório MODELOS_LOCAIS (ex.: piper-ptbr,piper-catalogo,kokoro-fp32). Use 'nenhum' para desativar.",
   "aliases": {
     "https://huggingface.co/rhasspy/piper-voices/resolve/e9c8a39444359388adaa94255becb37a5a2b8e51/": [
       "https://huggingface.co/rhasspy/piper-voices/resolve/main/",

@@ -1,5 +1,5 @@
 /* =====================================================================================
-   Conteudista — Hospedagem local dos modelos de voz (usado pelos workers da Locução)
+   Conteudista — Hospedagem local dos modelos de voz (usado pelos workers da Narração)
    Se o site publicar  modelos/manifest.json  (gerado pelo workflow a partir de web/modelos.json),
    as requisições aos arquivos espelhados são redirecionadas para o próprio site:
      - modelos (Hugging Face), vozes, configurações e

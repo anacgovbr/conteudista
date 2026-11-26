@@ -704,7 +704,7 @@
       "additionalProperties": false,
       "properties": {
         "carregar_audio_ao_abrir": {
-          "description": "Locução: carregar os recursos de áudio ao abrir a página",
+          "description": "Narração: carregar os recursos de áudio ao abrir a página",
           "default": "desligado",
           "enum": [
             "ligado",
@@ -717,7 +717,7 @@
           ]
         },
         "formato_audio": {
-          "description": "Locução: formato do arquivo",
+          "description": "Narração: formato do arquivo",
           "default": "mp3",
           "enum": [
             "mp3",
@@ -726,7 +726,7 @@
           ]
         },
         "notas_dos_slides": {
-          "description": "Locução: começar em \"Notas dos slides\" (desligado: texto livre)",
+          "description": "Narração: começar em \"Notas dos slides\" (desligado: texto livre)",
           "default": "ligado",
           "enum": [
             "ligado",

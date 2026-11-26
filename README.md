@@ -65,8 +65,8 @@ web/acessibilidade-marcas.js ← marcas no texto e balão de correções (1.81)
 web/acessibilidade-janelas.js ← janelas Descrever imagem, Simplificar trecho e Explicar sigla, com pedido para IA (1.82)
 web/celular.js           ← editor no celular: barra em até duas linhas, contagem em uma linha, Imagens do texto em folha inferior
 web/versoes.js           ← rascunhos e versões unificados (salvar, abrir, excluir e migração dos dados antigos)
-web/locucao.js           ← aba Locução
-web/notas-locucao.js     ← Locução › Notas dos slides (rascunho, aplicar, versões e link)
+web/locucao.js           ← aba Narração
+web/notas-locucao.js     ← Narração › Notas dos slides (rascunho, aplicar, versões e link)
 web/locucao-worker.js    ← motor de voz Kokoro-82M (Web Worker)
 web/ptbr-g2p.js          ← fonemizador interno pt-BR
 web/changelog.js         ← botão Novidades (lê o CHANGELOG.md)
@@ -211,7 +211,7 @@ O botão **Carregar exemplo** carrega `web/exemplo/treinamento.md` (apostila) e 
 
 | Arquivo | Conteúdo |
 |---|---|
-| `treinamento.md` | Apostila de 16 seções: Início rápido, funcionamento, percurso de aprendizado, edição, importação, formas de guardar, geração, locução e narração, o que cabe no Markdown, produção com IA, fluxo de trabalho, checklists, exercícios, gabarito e referências. Traz 5 fluxos Mermaid, 5 capturas de tela atuais, links para vídeos e o **prompt padrão para IA** (seção 11.3) |
+| `treinamento.md` | Apostila de 16 seções: Início rápido, funcionamento, percurso de aprendizado, edição, importação, formas de guardar, geração, narração, o que cabe no Markdown, produção com IA, fluxo de trabalho, checklists, exercícios, gabarito e referências. Traz 5 fluxos Mermaid, 5 capturas de tela atuais, links para vídeos e o **prompt padrão para IA** (seção 11.3) |
 | `apresentacao.md` | 39 slides, um assunto por slide, com notas para narração (cerca de 17 minutos de áudio), 7 fluxos Mermaid e 3 figuras; inclui 5 slides sobre acessibilidade do texto |
 
 Manutenção do exemplo:
@@ -230,21 +230,21 @@ Manutenção do exemplo:
 `Ctrl+Z` desfazer · `Ctrl+Y` / `Ctrl+Shift+Z` refazer · `Ctrl+B` negrito · `Ctrl+I` itálico · `Ctrl+E` código · `Ctrl+K` link · `Ctrl+Shift+1/2/3` títulos · `Ctrl+Shift+7/8/9` lista numerada / marcadores / checklist · `Ctrl+Shift+.` citação · `Ctrl+L` selecionar linha · `Ctrl+Shift+D` duplicar linha · `Alt+↑/↓` mover linha · `Tab`/`Shift+Tab` recuo · `Enter` continua listas.
 
 <!-- locucao -->
-## Locução (texto em fala, no navegador)
+## Narração (texto em fala, no navegador)
 
-Aba **Locução** (`Alt+Shift+3`): gera áudio a partir de texto no navegador com **Piper** (padrão para português, voz `pt_BR-faber-medium`) ou **Kokoro-82M** (`onnx-community/Kokoro-82M-v1.0-ONNX`, `dtype: "q8"`, ~86 MB), 100% no navegador.
+Aba **Narração** (`Alt+Shift+2`): gera áudio a partir de texto no navegador com **Piper** (padrão para português, voz `pt_BR-faber-medium`) ou **Kokoro-82M** (`onnx-community/Kokoro-82M-v1.0-ONNX`, `dtype: "q8"`, ~86 MB), 100% no navegador.
 
-A aba tem dois modos. **Notas dos slides** (`web/notas-locucao.js`) edita a narração slide a slide: **Importar notas** cria um rascunho (guardado em `localStorage['conteudista.locucao.notas']`) com um campo por slide; **Aplicar à apresentação** grava de volta, no Markdown da aba Apresentação, só os slides alterados (`<!-- notas: … -->`, `<!-- narracao: … -->` ou `<!-- narracao: nao -->`), depois de guardar uma versão "Antes de aplicar as notas da Locução". Conflitos (nota alterada nos dois lados) são resolvidos por slide. **Versões** abre a janela de comparação no documento **Notas dos slides** (e oferece a pseudo-versão "Rascunho da Locução"); **Compartilhar link** abre a mesma janela de link do editor e, se houver alterações não aplicadas, pergunta antes se deve aplicá-las. A leitura dos slides segue as mesmas regras de `split_slides`/`notas_para_narracao` do gerador. **Texto livre** é o modo anterior.
+A aba tem dois modos. **Notas dos slides** (`web/notas-locucao.js`) edita a narração slide a slide: **Importar notas** cria um rascunho (guardado em `localStorage['conteudista.locucao.notas']`) com um campo por slide; **Aplicar à apresentação** grava de volta, no Markdown da aba Apresentação, só os slides alterados (`<!-- notas: … -->`, `<!-- narracao: … -->` ou `<!-- narracao: nao -->`), depois de guardar uma versão "Antes de aplicar as notas da Narração". Conflitos (nota alterada nos dois lados) são resolvidos por slide. **Versões** abre a janela de comparação no documento **Notas dos slides** (e oferece a pseudo-versão "Rascunho da Narração"); **Compartilhar link** abre a mesma janela de link do editor e, se houver alterações não aplicadas, pergunta antes se deve aplicá-las. A leitura dos slides segue as mesmas regras de `split_slides`/`notas_para_narracao` do gerador. **Texto livre** é o modo anterior.
 
 | Item | Como funciona |
 |---|---|
-| Motor Piper (padrão pt-BR) | `web/locucao-piper-worker.js` (Web Worker) com `@mintplex-labs/piper-tts-web`; voz `pt_BR-faber-medium` (~63 MB, guardada no navegador); fonemas pelo espeak-ng pt-br embutido. Selecionar uma voz Kokoro mantém a alternativa de locução, sem perder os áudios salvos. |
+| Motor Piper (padrão pt-BR) | `web/locucao-piper-worker.js` (Web Worker) com `@mintplex-labs/piper-tts-web`; voz `pt_BR-faber-medium` (~63 MB, guardada no navegador); fonemas pelo espeak-ng pt-br embutido. Selecionar uma voz Kokoro mantém a alternativa de narração, sem perder os áudios salvos. |
 | Motor Kokoro (mantido) | `web/locucao-worker.js` (Web Worker) com `kokoro-js@1.2.1`; WebGPU com fallback automático para WASM; teste de áudio após carregar; barra de progresso real do download |
 | Vozes pt-BR | `pf_dora`, `pm_alex`, `pm_santa`. O `kokoro-js` 1.2.1 e o `phonemizer` 1.2.1 só tratam inglês. Para pt-BR o worker tenta o espeak-ng em WebAssembly e, se indisponível, usa o fonemizador interno `ptbr-g2p.js`; seletor “Pronúncia em português” no painel Motor de voz |
 | Textos longos | Fragmentação por frases (≤ 250 caracteres em pt-BR), geração trecho a trecho, cancelamento |
 | Áudio | Costura PCM via Web Audio API com micro-fades (sem estalos) e pausa configurável; WAV PCM 16 bits, 24 kHz |
 | Histórico/cache | IndexedDB `KokoroTTS_DB` / `audio_history` (índice `text + voice + speed`); texto idêntico com a mesma voz, velocidade e pausa é servido do histórico; painel com Ouvir, Baixar, Usar texto, Excluir e busca |
-| Integração | Importa notas do apresentador, texto dos slides ou a apostila (sem Markdown); ajuda e atalhos (`Alt+Shift+3`, `Alt+Shift+N`) |
+| Integração | Importa notas do apresentador, texto dos slides ou a apostila (sem Markdown); ajuda e atalhos (`Alt+Shift+2`, `Alt+Shift+N`) |
 
 ## Arquivos gerados guardados no navegador
 
@@ -254,12 +254,12 @@ A aba tem dois modos. **Notas dos slides** (`web/notas-locucao.js`) edita a narr
 
 ## Hospedagem local dos modelos de voz
 
-Para a Locução funcionar em redes que bloqueiam o Hugging Face ou o jsDelivr, o workflow pode copiar os modelos e bibliotecas para o próprio site (pasta `modelos/` e `vendor/`). Os workers usam `modelos/manifest.json` para buscar localmente; o que não estiver hospedado continua vindo da internet.
+Para a Narração funcionar em redes que bloqueiam o Hugging Face ou o jsDelivr, o workflow pode copiar os modelos e bibliotecas para o próprio site (pasta `modelos/` e `vendor/`). Os workers usam `modelos/manifest.json` para buscar localmente; o que não estiver hospedado continua vindo da internet.
 
 | Variável do repositório (Settings → Secrets and variables → Actions → Variables) | Padrão | Opções |
 |---|---|---|
 | `MODELOS_LOCAIS` | `piper-ptbr,piper-catalogo` | perfis de `web/modelos.json`: `piper-ptbr` (~63 MB), `piper-catalogo`, `kokoro-fp32` (~330 MB), `kokoro-q8` (~90 MB) ou `nenhum` |
-| `BIBLIOTECAS_LOCAIS` | `piper,kokoro,espeak,lamejs` | pacotes npm copiados para `vendor/`; as dependências deles (ex.: `onnxruntime-web`) continuam vindo do jsDelivr. Se a biblioteca local falhar, a Locução usa a do CDN automaticamente. Use `nenhum` para sempre usar o CDN |
+| `BIBLIOTECAS_LOCAIS` | `piper,kokoro,espeak,lamejs` | pacotes npm copiados para `vendor/`; as dependências deles (ex.: `onnxruntime-web`) continuam vindo do jsDelivr. Se a biblioteca local falhar, a Narração usa a do CDN automaticamente. Use `nenhum` para sempre usar o CDN |
 
 O GitHub Pages limita o site a ~1 GB. Para acrescentar outra voz do Piper, inclua um perfil em `web/modelos.json` com as URLs `.onnx` e `.onnx.json` da voz. Teste local: `python tools/hospedar_modelos.py --perfis piper-ptbr --saida site`.
 

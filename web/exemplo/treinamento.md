@@ -20,7 +20,7 @@ Material de exemplo · Conteudista · Revisado em 10/11/2026
 | Importar textos, imagens e links | [Seção 6](#6-importar) |
 | Guardar o trabalho | [Seção 7](#7-guardar-o-trabalho) |
 | Gerar e consultar os arquivos | [Seção 8](#8-gerar-e-consultar-os-arquivos) |
-| Criar áudio: narração e locução | [Seção 9](#9-locucao-e-narracao) |
+| Criar áudio: narração | [Seção 9](#9-narracao) |
 | Conhecer o que cabe no Markdown | [Seção 10](#10-o-que-cabe-no-markdown) |
 | Produzir os textos com uma IA | [Seção 11](#11-produzir-os-textos-com-uma-ia) |
 | Ver um fluxo de trabalho real | [Seção 12](#12-fluxo-de-trabalho-de-exemplo) |
@@ -83,7 +83,7 @@ O Conteudista transforma **textos em Markdown** em **arquivos prontos para entre
 | **Conteúdo** | O material que você produz: apostila e apresentação, com nome, layout, rodapé e licenciamento opcional |
 | **Apostila** | O documento de estudo, em HTML, DOCX, EPUB (duas versões) e MD |
 | **Apresentação** | Os slides, em HTML, PPTX e MD, com narração opcional |
-| **Locução** | Áudio gerado a partir de um texto, na aba **Locução** |
+| **Aba Narração** | Áudio gerado a partir de um texto, na aba **Narração** |
 | **Arquivos** | O conteúdo pronto para entregar: .DOCX, .PPTX, .HTML, .EPUB e .ZIP |
 | **Texto-fonte** | Os textos em Markdown e as imagens, que você continua editando |
 | **Link** | O texto-fonte em um endereço, para guardar ou enviar |
@@ -96,7 +96,7 @@ O Conteudista transforma **textos em Markdown** em **arquivos prontos para entre
 
 - Navegador atual, de preferência Edge ou Chrome (a opção **Pasta** depende deles).
 - Acesso a `cdn.jsdelivr.net`, de onde vêm o motor de conversão e o desenho dos fluxos.
-- Para a locução, acesso ao repositório de vozes, na primeira vez.
+- Para a narração, acesso ao repositório de vozes, na primeira vez.
 
 ## 4. Percurso de aprendizado
 
@@ -112,7 +112,7 @@ flowchart LR
     D01 -->|Não| T05[05. Gerar e baixar os arquivos]
     T04 --> T05
     T05 --> D02{Quer narração?}
-    D02 -->|Sim| T06[06. Narrar os slides<br/>ou usar a Locução]
+    D02 -->|Sim| T06[06. Narrar os slides<br/>na aba Narração]
     D02 -->|Não| T07[07. Produzir com IA<br/>opcional]
     T06 --> T07
     T07 --> T99(((Fim)))
@@ -125,7 +125,7 @@ flowchart LR
 | Importar | 6 | Textos e imagens trazidos de outras origens |
 | Guardar | 7 | Trabalho preservado em versão ou link |
 | Gerar e consultar | 8 | Arquivos conferidos no Histórico |
-| Áudio | 9 | Apresentação narrada ou locução gerada |
+| Áudio | 9 | Apresentação narrada ou áudio da aba Narração |
 | IA | 11 | Textos produzidos a partir de um prompt padrão |
 
 ## 5. Escrever e editar
@@ -371,7 +371,7 @@ Os arquivos gerados foram ajustados para facilitar a leitura, inclusive por pess
 
 > [!tip] Descreva imagens informativas entre os colchetes: `![descrição](imagem.png)`. Explique também no texto os dados necessários para compreender a imagem. Imagens apenas decorativas usam descrição vazia e a marca de imagem decorativa; veja a seção 10.6.
 
-## 9. Locução e narração
+## 9. Narração
 
 ### 9.1 Narração dos slides
 
@@ -399,9 +399,9 @@ O primeiro define a nota. O segundo substitui a nota no áudio. O terceiro deixa
 
 > [!tip] **Escreva para o ouvido.** Frases curtas, em texto corrido, sem símbolos, sem endereços e com as siglas por extenso na primeira vez. Números e datas devem soar naturais quando lidos em voz alta.
 
-### 9.2 Aba Locução
+### 9.2 Aba Narração
 
-A aba **Locução** tem dois modos, escolhidos no alto da aba:
+A aba **Narração** tem dois modos, escolhidos no alto da aba:
 
 | Modo | Para que serve |
 |---|---|
@@ -410,9 +410,9 @@ A aba **Locução** tem dois modos, escolhidos no alto da aba:
 
 Nos dois modos, escolha **idioma**, **voz**, **velocidade** e **pausa** entre frases. O áudio é gerado **no seu computador**: o texto não é enviado a nenhum servidor. Os recursos de voz são baixados sob demanda, em **Carregar áudio**; na primeira vez, o download pode levar alguns minutos.
 
-### 9.3 Editar as notas na Locução
+### 9.3 Editar as notas na Narração
 
-1. Na aba **Locução**, mantenha **Notas dos slides** selecionado e clique em **Importar notas**. Cada slide vira um campo, com o número e o título.
+1. Na aba **Narração**, mantenha **Notas dos slides** selecionado e clique em **Importar notas**. Cada slide vira um campo, com o número e o título.
 2. Edite o texto. Em **Gravar em**, escolha **Nota do apresentador** (aparece no slide e é narrada), **Só narração** (fala diferente da nota) ou marque **Sem narração**.
 3. Clique em **▶ Ouvir** para escutar só aquele slide.
 4. Clique em **Aplicar à apresentação**. Só os slides alterados mudam, e uma versão do texto anterior é guardada.
@@ -431,10 +431,10 @@ Se você incluir, excluir ou mover slides depois de importar, a aba pede para **
 
 A barra das notas tem as mesmas ferramentas do editor:
 
-- **Versões** abre a comparação no documento **Notas dos slides**. Com alterações pendentes, compara o texto atual com o **Rascunho da Locução**, para você conferir o que vai mudar antes de aplicar.
+- **Versões** abre a comparação no documento **Notas dos slides**. Com alterações pendentes, compara o texto atual com o **Rascunho da Narração**, para você conferir o que vai mudar antes de aplicar.
 - **Compartilhar link** cria o link do conteúdo, com as notas, para continuar em outro computador. Se houver alterações não aplicadas, a aba pergunta antes se deve aplicá-las; sem aplicar, elas não vão no link.
 
-> [!tip] Para continuar a revisão em outro computador: aplique, crie o link, abra o link no outro computador e clique em **Importar notas** na aba Locução.
+> [!tip] Para continuar a revisão em outro computador: aplique, crie o link, abra o link no outro computador e clique em **Importar notas** na aba Narração.
 
 ## 10. O que cabe no Markdown
 

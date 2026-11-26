@@ -12,7 +12,7 @@
 
    2. ABAS "Apostila" / "Apresentação"
       Trocar de aba é navegação: não mostra "✓" nem mensagem de confirmação. A mesma regra vale
-      para as abas Conteúdo/Locução, a barra de ferramentas do editor e os botões do cabeçalho
+      para as abas Apresentação/Narração/Apostila, a barra de ferramentas do editor e os botões do cabeçalho
       que abrem janelas.
    ===================================================================================== */
 (function () {

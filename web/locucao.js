@@ -592,7 +592,7 @@
     } catch (error) {
       const c = /cancelad/i.test(error.message);
       status(c ? 'Cancelado.' : 'Não foi possível gerar o áudio.');
-      if (!c) { $('locAviso').innerHTML = '<div class="aviso er">' + esc(/preparar esta voz/.test(error.message) ? error.message : 'Não foi possível gerar o áudio. Tente de novo ou escolha outra voz.') + '</div>'; console.error('Locução:', error); logApp('Narração: ' + error.message, 'err'); }
+      if (!c) { $('locAviso').innerHTML = '<div class="aviso er">' + esc(/preparar esta voz/.test(error.message) ? error.message : 'Não foi possível gerar o áudio. Tente de novo ou escolha outra voz.') + '</div>'; console.error('Narração:', error); logApp('Narração: ' + error.message, 'err'); }
       throw error;
     } finally { ocupado(false); setTimeout(() => progresso(null), 800); }
   }

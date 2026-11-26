@@ -13,7 +13,7 @@
       (details[open] → "recolher"), portanto nunca fica desatualizado e não duplica.
    3. O <summary> vira uma linha flex: título à esquerda, controle à direita
       (margin-left:auto), inclusive quando o título é apenas texto (ex.: "Opções avançadas de voz").
-   4. Seções criadas depois (editor de imagens, Locução, histórico…) são tratadas por um
+   4. Seções criadas depois (editor de imagens, Narração, histórico…) são tratadas por um
       MutationObserver com debounce. A passagem é idempotente: se nada falta, não altera o DOM.
    ===================================================================================== */
 (function () {

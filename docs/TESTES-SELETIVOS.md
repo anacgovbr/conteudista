@@ -8,7 +8,7 @@ navegador e as cinco verificações manuais permanecem disponíveis. Testes novo
 tratam somente a infraestrutura de classificação e execução.
 
 Removidos da proposta original: refatoração do gerador monolítico (já concluída),
-decoradores por caso, smoke tests novos de Locução, testes reais de modelos,
+decoradores por caso, smoke tests novos de Narração, testes reais de modelos,
 pacote de atualização contendo workflows, abertura automática de issues e promessa
 de economia antes de medir. Workflows devem ser enviados por revisão/commit normal;
 o mecanismo de pacotes continua recusando alterações em `.github/workflows`.
@@ -24,7 +24,7 @@ o mecanismo de pacotes continua recusando alterações em `.github/workflows`.
 | Formatos | grupo 6 e funções de `testar_acessibilidade.py` | python-docx, python-pptx, lxml e Pillow |
 | Compatibilidade das saídas | grupos 20 e 21 | gerador e Chrome |
 | Pacotes | `tools/pacote/testar_pacote.py` | Python e Git |
-| Locução | sintaxe e fonemas pt-BR presentes no gate geral | Node; voz real continua manual |
+| Narração | sintaxe e fonemas pt-BR presentes no gate geral | Node; voz real continua manual |
 
 Os aliases `editor`, `atalhos` e `versoes` selecionam o grupo 9 já existente,
 com foco em editor/importação. Isso não significa que foi criada cobertura dedicada

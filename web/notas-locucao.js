@@ -1,5 +1,5 @@
 /* =====================================================================================
-   Conteudista - Locução › Notas dos slides (1.74)
+   Conteudista - Narração › Notas dos slides (1.74)
 
    A aba Narração (antiga Locução) passa a ter dois modos:
      - "Notas dos slides": edita a narração slide a slide, ligada ao Markdown da aba Apresentação;
@@ -10,7 +10,7 @@
       (<!-- notas: ... -->) e da narração (<!-- narracao: ... -->). O rascunho fica guardado neste
       navegador (localStorage) e sobrevive a recarregar a página.
    2. Nada muda nos slides até "Aplicar à apresentação". Só os slides alterados são gravados, e uma
-      versão "Antes de aplicar as notas da Locução" é guardada em Versões antes.
+      versão "Antes de aplicar as notas da Narração" é guardada em Versões antes.
    3. Estados por slide: Editada, Nova nota, Conflito (a nota mudou na apresentação E no rascunho),
       Atualizada pela apresentação (mudou só na apresentação: o rascunho acompanha sozinho).
    4. Cada slide grava em "Nota do apresentador" (aparece no slide e é narrada), em "Só narração"

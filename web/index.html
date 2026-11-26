@@ -1070,7 +1070,7 @@ refreshEditors(); statusImagens();
   try { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); if (r && (r.g || r.s)) { aplicar(r); log('Último trabalho recuperado do salvamento automático (' + new Date(r.data).toLocaleString('pt-BR') + ').', 'ok'); } } catch {}
 })();
 if (window.Temas) Temas.iniciar();
-// shortcut: os ~30 scripts abaixo carregam todos na abertura. Medido em 1.102 (CPU 4× mais lenta): ~3,5 s de abertura, quase tudo layout; temas, locução e ajuda somam ~150 ms. Carregar sob demanda só se esses módulos passarem de ~500 ms.
+// shortcut: os ~30 scripts abaixo carregam todos na abertura. Medido em 1.102 (CPU 4× mais lenta): ~3,5 s de abertura, quase tudo layout; temas, narração e ajuda somam ~150 ms. Carregar sob demanda só se esses módulos passarem de ~500 ms.
 </script>
 <script src="motor-python.js?v=1.123"></script>
 <script src="historico.js?v=1.123"></script>
