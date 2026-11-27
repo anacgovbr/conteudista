@@ -74,20 +74,25 @@ def blocks(md):
         o.append(('p',' '.join(b)))
     return o
 
-# Marca visual dos destaques: a cor deixa de ser o único sinal. ASCII para valer em qualquer fonte.
-ICONE_DESTAQUE={'tip':'+','warning':'!','info':'i'}
-ROTULO_DESTAQUE={'tip':'Dica','warning':'Atenção','info':'Nota'}
+# Rotulo visivel dos destaques: o texto (e nao um simbolo ou a cor) diz do que se trata a caixa.
+ROTULO_DESTAQUE={'tip':'Dica','warning':'Atenção','info':'Informação'}
+
+def rotulo_destaque(bl,k):
+    "Rotulo da caixa; vazio quando o texto ja comeca com ele (conteudo escrito a mao ou antigo)."
+    r=ROTULO_DESTAQUE.get(k)
+    if not r:return ''
+    if bl and bl[0][0]=='p' and re.match(r'\s*\**(?:%s|Nota)\**\s*:\**'%r,bl[0][1],re.I):return ''
+    return r
 
 def com_icone(bl,k):
-    "Prefixa o primeiro paragrafo do destaque com o caractere do tipo; sem paragrafo, cria um."
-    ico=ICONE_DESTAQUE.get(k)
-    if not ico:return bl
+    "Prefixa o primeiro paragrafo do destaque com o rotulo em negrito; sem paragrafo, cria um."
+    r=rotulo_destaque(bl,k)
+    if not r:return bl
     bl=list(bl)
     for i,b in enumerate(bl):
         if b[0]=='p':
-            bl[i]=('p',ico+' '+b[1]);return bl
-    return [('p',ico)]+bl
-
+            bl[i]=('p','**%s:** %s'%(r,b[1]));return bl
+    return [('p','**%s:**'%r)]+bl
 def runs(t):
     """Inline -> lista de (texto, negrito, itálico, tipo[0 texto|1 código|2 imagem], url)."""
     out=[];pat=re.compile(r'`([^`]+)`|!\[([^\]]*)\]\(([^)\s]+)\)|\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)\s]+)\)|(?<![\w*])\*(?!\s)(.+?)(?<!\s)\*(?![\w*])')

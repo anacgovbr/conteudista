@@ -582,6 +582,46 @@ def grupo26(amb, ctx, G):
         G.chk('26.25', 'Gerar arquivos é uma seção própria entre Criar conteúdo e Arquivos gerados; só aparece com conteúdo e o botão fica indisponível sem texto',
               ordem == ['secCriar', 'secGerar', 'secRes'] and not vazio['gerar'] and vazio['boas'] and vazio['ad'] == 'true'
               and cheio['gerar'] and cheio['ad'] == 'false', {'ordem': ordem, 'vazio': vazio, 'cheio': cheio})
+        pg.click('#ts'); pg.wait_for_timeout(150)
+        pg.evaluate("window.Locucao.carregarRecursos = () => Promise.resolve(false)")
+        nar0 = pg.evaluate("({ caixa: document.getElementById('narrOn').offsetParent !== null, extras: document.getElementById('narrExtras').offsetParent !== null })")
+        pg.evaluate("() => { const c = document.getElementById('narrOn'); c.checked = true; c.dispatchEvent(new Event('change', { bubbles: true })); }")
+        nar1 = pg.evaluate("({ extras: document.getElementById('narrExtras').offsetParent !== null, aberto: document.getElementById('narrExtras').open, voz: document.getElementById('narrVoz').checkVisibility(), mini: document.getElementById('narrMini').textContent })")
+        pg.evaluate("document.querySelector('#narrExtras > summary').click()"); pg.wait_for_timeout(100)
+        nar2 = pg.evaluate("({ aberto: document.getElementById('narrExtras').open, voz: document.getElementById('narrVoz').checkVisibility(), hist: document.getElementById('narrHist').checkVisibility() })")
+        pg.evaluate("() => { const c = document.getElementById('narrOn'); c.checked = false; c.dispatchEvent(new Event('change', { bubbles: true })); }")
+        G.chk('26.26', 'Narração: só a ativação aparece; voz, áudios gerados e opções avançadas abrem em "Opções de narração"',
+              nar0['caixa'] and not nar0['extras'] and nar1['extras'] and not nar1['aberto'] and not nar1['voz'] and bool(nar1['mini'])
+              and nar2['aberto'] and nar2['voz'] and nar2['hist'], {'0': nar0, '1': nar1, '2': nar2})
+        gal = pg.evaluate("""() => { const g = document.querySelector('#ps .mde-gal'), t = g.querySelector('.gtools'), s = id => document.getElementById(id);
+            const antes = t.offsetParent !== null; g.open = true; const depois = t.offsetParent !== null; g.open = false;
+            return { antes: antes, depois: depois, imgst: s('imgst').offsetParent !== null }; }""")
+        G.chk('26.27', 'Imagens do texto: ferramentas só com a galeria aberta e a linha de status só quando falta embutir imagem',
+              not gal['antes'] and gal['depois'] and not gal['imgst'], gal)
+        ref = pg.evaluate("""async () => {
+            let copiado = ''; Object.defineProperty(navigator, 'clipboard', { value: { writeText: async t => { copiado = t; } }, configurable: true });
+            document.getElementById('btnCopiarPrompt').click(); await new Promise(r => setTimeout(r, 50));
+            const p = document.getElementById('promptIA').textContent, dica = document.getElementById('dicaPrompt'), ls = [...dica.querySelectorAll('a')];
+            return { copiou: copiado === p && p.length > 0, tam: p.length, raw: p.includes('https://raw.githubusercontent.com/anacgovbr/conteudista/main/docs/PROMPT_GERACAO_IA.md'),
+                     ph: ['[TEMA]', '[PÚBLICO-ALVO]', '[OBJETIVOS DE APRENDIZAGEM]'].every(x => p.includes(x)), semDica: !copiado.includes('anexe documentos'),
+                     dica: dica.textContent.includes('Se a IA utilizada permitir, anexe documentos ou forneça textos e links de referência para fundamentar o conteúdo.'),
+                     fora: !document.getElementById('promptIA').contains(dica), botao: document.getElementById('btnCopiarPrompt').textContent,
+                     links: ls.map(a => [a.getAttribute('href'), a.target, a.rel]) }; }""")
+        G.chk('26.28', 'Prompt curto: copiável, com a URL do documento no GitHub e os três campos; a dica de anexar fica visível fora do texto copiado',
+              ref['copiou'] and ref['tam'] <= 800 and ref['raw'] and ref['ph'] and ref['semDica'] and ref['dica'] and ref['fora'] and ref['botao'] == 'Prompt copiado'
+              and len(ref['links']) == 2 and all(l[0].startswith('https://github.com/anacgovbr/conteudista/blob/main/docs/') and l[1] == '_blank' and 'noopener' in l[2] for l in ref['links']), ref)
+        ant2 = pg.evaluate("[document.getElementById('g').value, document.getElementById('s').value]")
+        imp = pg.evaluate("""async ([ap, ps]) => {
+            const colar = t => { document.getElementById('impTexto').value = t; document.getElementById('btnImpTexto').click(); };
+            colar(ap); const g = document.getElementById('g').value, pref1 = document.getElementById('pref').value;
+            colar(ps); const s = document.getElementById('s').value;
+            return { g: g.startsWith('# Pedido de certificação: guia de estudo'), s: s.startsWith('---\\ntitle: Pedido de certificação'), slides: (s.match(/\\n---\\s*\\n/g) || []).length,
+                     pref: pref1, notas: (s.match(/<!-- notas:/g) || []).length, escondida: document.getElementById('boasVindas').hidden }; }""",
+                          [(suporte.RAIZ / 'docs/exemplos/apostila-exemplo.md').read_text(encoding='utf-8'), (suporte.RAIZ / 'docs/exemplos/apresentacao-exemplo.md').read_text(encoding='utf-8')])
+        pg.evaluate("a => { ['g', 's'].forEach((i, k) => { const e = document.getElementById(i); e.value = a[k]; e.dispatchEvent(new Event('input', { bubbles: true })); }); ED.g.refresh(); ED.s.refresh(); }", ant2)
+        G.chk('26.29', 'Os exemplos de apostila e de apresentação (com notas nos slides) são importados pelo painel de importação',
+              imp['g'] and imp['s'] and imp['pref'] == 'pedido-de-certificacao-guia-de-estudo' and imp['notas'] >= 5 and imp['escondida'], imp)
+        pg.click('#tg'); pg.wait_for_timeout(150)
         pg.locator('#pg .mv-bt[data-g=fmt]').click(); pg.wait_for_timeout(150)
         itens = pg.evaluate("[...document.querySelectorAll('.mv-menu:not([hidden]) [role=menuitem]')].map(x => x.textContent.trim())")
         antes_barra = pg.evaluate("document.querySelector('#pg .mde-ta').value")

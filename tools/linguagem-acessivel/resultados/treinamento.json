@@ -2,8 +2,8 @@
  "versao": "0.5.0",
  "resumo": {
   "corrigir": 0,
-  "sugestoes": 36,
-  "total": 36
+  "sugestoes": 35,
+  "total": 35
  },
  "itens": [
   [
@@ -219,42 +219,35 @@
   [
    "e8",
    "sugestao",
-   606,
+   634,
    1,
    "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
   ],
   [
    "e8",
    "sugestao",
-   803,
+   663,
    1,
    "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
   ],
   [
    "e8",
    "sugestao",
-   832,
-   1,
-   "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
-  ],
-  [
-   "e8",
-   "sugestao",
-   924,
+   755,
    1,
    "Escreva, na linha acima da tabela, \"Tabela:\" e o que ela mostra"
   ],
   [
    "m1",
    "sugestao",
-   930,
+   761,
    60,
    "Diga se o vídeo ou o áudio tem legenda ou transcrição"
   ],
   [
    "m1",
    "sugestao",
-   932,
+   763,
    35,
    "Diga se o vídeo ou o áudio tem legenda ou transcrição"
   ]

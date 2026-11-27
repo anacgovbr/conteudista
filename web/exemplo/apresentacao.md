@@ -486,36 +486,34 @@ flowchart LR
     T06 --> T99(((Fim)))
 ```
 
-<!-- notas: A produção assistida por inteligência artificial segue um fluxo definido. Copie o prompt padrão, ajuste os parâmetros, envie o material de referência e receba a apostila e a apresentação. Em seguida, importe os textos, em Colar ou em Computador, conforme o formato da entrega. Antes de gerar os arquivos, revise e edite o conteúdo. A apostila detalha cada um dos dois caminhos de importação. -->
+<!-- notas: A produção assistida por inteligência artificial segue um fluxo definido. Copie o prompt curto, troque os campos, envie o material de referência e receba a apostila e a apresentação. Em seguida, importe os textos, em Colar ou em Computador, conforme o formato da entrega. Antes de gerar os arquivos, revise e edite o conteúdo. A apostila detalha cada um dos dois caminhos de importação. -->
 
 ---
 
-# O prompt padrão
+# O prompt curto
 
-- Seção 1: parâmetros editáveis
-- Seção 2: material de referência
-- Seções 3 a 8: papel, regras, formatos e verificação
+- Poucos campos para preencher
+- Dois documentos no GitHub com as regras
+- Sintaxe, slides, notas e acessibilidade
 
 > [!warning] Use somente IA autorizada e não envie informações restritas.
 
-<!-- notas: O prompt padrão está na apostila e se organiza em oito seções. A primeira reúne os parâmetros editáveis. A segunda recebe o material de referência. As demais fixam o papel da inteligência artificial, as regras de conteúdo, o formato dos dois textos, a forma de entrega e a verificação final. Para ajustar o resultado, altere somente as duas primeiras seções. Use apenas ferramentas autorizadas pela instituição e revise sempre o conteúdo recebido. -->
+<!-- notas: O prompt é curto de propósito. Ele traz só os campos do seu conteúdo e dois links para o GitHub. Um documento descreve a sintaxe, a divisão dos slides e as notas de narração. O outro reúne as regras de acessibilidade e de linguagem simples. Se a inteligência artificial não abrir links, cole o texto dos dois documentos depois do prompt. -->
 
 ---
 
-# Parâmetros do prompt
+# Campos do prompt
 
-| Parâmetro | O que define |
+| Campo | O que define |
 |---|---|
 | Tema e público | O assunto e o vocabulário |
 | Objetivo de aprendizagem | O que o público deve saber fazer |
-| Seções e slides | A extensão da apostila e da aula |
-| Tamanho das notas | A duração da narração de cada slide |
-| Formato de entrega | Dois blocos de texto ou ZIP |
+| Tamanho | A extensão da apostila e da aula |
+| Entrega | Dois blocos de texto ou ZIP |
 
-<!-- notas: A primeira seção do prompt reúne quatorze parâmetros, e os principais são estes. Tema e público definem o assunto e o vocabulário. O objetivo de aprendizagem organiza seções e exercícios. O número de seções e de slides define a extensão do material. O tamanho das notas define a duração da narração de cada slide. O formato de entrega escolhe entre dois blocos de texto e um pacote compactado. -->
+<!-- notas: Os campos do prompt são poucos. Tema e público definem o assunto e o vocabulário. O objetivo de aprendizagem organiza as seções e os exercícios. O tamanho define a extensão da apostila e da aula. A entrega escolhe entre dois blocos de texto ou um pacote compactado. Depois dos campos, cole o material de referência. -->
 
 ---
-
 # Importar a saída da IA
 
 | Entrega | Como importar |

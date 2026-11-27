@@ -92,9 +92,9 @@ def grupo6(amb, ctx, G):
         # sem linhas FAIL, o erro está no stderr (ex.: exceção do script): mostra o fim dele em vez de deixar o detalhe vazio
         detalhe = ' | '.join(falhas)[:400] or f'código {r.returncode}: ' + ' '.join((r.stderr or r.stdout).strip().splitlines()[-2:])[:350]
         G.chk(f'6.2-{tema}', f'Teste de acessibilidade das saídas (tema {tema})', r.returncode == 0, detalhe)
-    # Destaques com ícone: o caractere aparece em HTML, EPUB, DOCX e PPTX, para a cor não ser o único sinal.
+    # Destaques com rótulo em texto (Informação, Dica, Atenção) em HTML, EPUB, DOCX e PPTX, para a cor e o símbolo não serem o único sinal.
     dm = amb.tmp / 'destaques.md'; ds = amb.tmp / 'destaques-slides.md'
-    dm.write_text('# Destaques\n\n> [!TIP]\n> Dica de teste.\n\n> [!WARNING]\n> Atenção de teste.\n', encoding='utf-8')
+    dm.write_text('# Destaques\n\n> [!TIP]\n> Dica de teste.\n\n> [!WARNING]\n> Atenção de teste.\n\n> [!INFO]\n> Informação de teste.\n\n> [!TIP] **Dica:** já escrita.\n', encoding='utf-8')
     ds.write_text('# Slide\n\n> [!TIP]\n> Dica no slide.\n\n> [!WARNING]\n> Atenção no slide.\n', encoding='utf-8')
     dd = amb.tmp / 'saida_destaques'
     r = rodar([sys.executable, str(suporte.GERADOR), str(dm), str(ds), '--prefixo', 'Destaques', '--saida', str(dd), '--tema', 'govbr'], cwd=RAIZ)
@@ -107,11 +107,11 @@ def grupo6(amb, ctx, G):
         with zipfile.ZipFile(epub) as z: ep = ''.join(z.read(n).decode('utf-8') for n in z.namelist() if n.endswith('.xhtml'))
         hg = html_g.read_text(encoding='utf-8'); hs = html_s.read_text(encoding='utf-8')
         dx = _texto_zip(docx, 'word/document.xml'); px = _texto_zip(pptx, 'ppt/slides/slide1.xml')
-        det = {'html': 'q-ico' in hg and 'Dica: ' in hg and 'Atenção: ' in hg,
-               'slides': 'q-ico' in hs, 'epub': 'q-ico' in ep,
-               'docx': '+ Dica de teste.' in dx and '! Atenção de teste.' in dx,
-               'pptx': '+ Dica no slide.' in px and '! Atenção no slide.' in px}
-    G.chk('6.7', 'Destaques: ícone de um caractere em HTML, EPUB, DOCX e PPTX, com rótulo para leitor de tela',
+        det = {'html': 'q-ico' in hg and 'Dica:</strong> ' in hg and 'Atenção:</strong> ' in hg and 'Informação:</strong> ' in hg and hg.count('Dica:') == 2 and 'q-ico" aria-hidden' not in hg,
+               'slides': 'q-ico' in hs and 'Dica:</strong> ' in hs, 'epub': 'q-ico' in ep and 'Informação:</strong> ' in ep,
+               'docx': '>Dica:<' in dx and '>Atenção:<' in dx and '>Informação:<' in dx and ' Dica de teste.' in dx,
+               'pptx': '>Dica:<' in px and '>Atenção:<' in px and ' Dica no slide.' in px}
+    G.chk('6.7', 'Destaques: rótulo em texto (Informação, Dica, Atenção) em HTML, EPUB, DOCX e PPTX, sem repetir quando o texto já traz o rótulo',
           bool(det) and all(det.values()), det or (r.stderr or r.stdout)[-300:])
     # Fluxos Mermaid: vermelho e verde nas cores dos nós viram erro e apoio do tema, com texto legível.
     mm = amb.tmp / 'fluxo-cores.md'
@@ -581,11 +581,11 @@ def grupo15(amb, ctx, G):
     except Exception: pass
     G.chk('15.2', 'A apostila de exemplo é reconhecida como apostila (exemplos de slides em código não confundem)', tipo == 'apostila', tipo)
     t = ler('web/exemplo/treinamento.md')
-    m = re.search(r'PROMPT PADRÃO DO CONTEUDISTA.*?\n```', t, re.S); pr = m.group(0) if m else ''
-    nunca = [l for l in pr.splitlines() if 'clique aqui' in l]
-    G.chk('15.3', 'Prompt padrão 1.1 com as regras de acessibilidade e linguagem simples',
-          'Versão 1.1' in pr and 'ACESSIBILIDADE E LINGUAGEM SIMPLES' in pr and 'Nome completo (SIGLA)' in pr and '25' in pr and 'linguagem-acessivel:' in pr
-          and len(nunca) == 1 and 'Nunca use' in nunca[0], nunca)
+    m = re.search(r'### 11\.3 O prompt curto.*?\n`{3,6}text\n(.*?)\n`{3,6}\n', t, re.S); pr = m.group(1) if m else ''
+    G.chk('15.3', 'Prompt curto (3 campos e a URL raw do documento principal) e os dois documentos de instruções no repositório; sem o prompt extenso',
+          bool(pr) and len(pr) <= 800 and all(x in pr for x in ('[TEMA]', '[PÚBLICO-ALVO]', '[OBJETIVOS DE APRENDIZAGEM]'))
+          and 'https://raw.githubusercontent.com/anacgovbr/conteudista/main/docs/PROMPT_GERACAO_IA.md' in pr and 'PROMPT PADRÃO' not in t
+          and (RAIZ / 'docs/PROMPT_GERACAO_IA.md').is_file() and (RAIZ / 'docs/REGRAS_ACESSIBILIDADE_LINGUAGEM_SIMPLES.md').is_file(), len(pr))
     G.chk('15.4', 'Apostila de exemplo com as seções 5.6 e 10.6 e o Checklist A atualizado',
           '### 5.6 Acessibilidade do texto' in t and '### 10.6 Escrever conteúdo acessível' in t and 'O botão **Acessibilidade** não mostra itens para corrigir' in t)
     a = ler('web/exemplo/apresentacao.md')

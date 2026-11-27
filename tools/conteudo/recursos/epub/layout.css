@@ -18,7 +18,7 @@ code{font-family:Consolas,monospace;font-size:.9em}
 li.task{list-style:none;margin-left:-1.2em}
 .caixa{font-size:1.2em;margin-right:.35em}
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-.q-ico{font-weight:700;margin-right:.35em}
+.q-ico{font-weight:700}
 .fluxo-t{font-weight:700;margin-bottom:.25em}
 .rodape{font-size:.9em;color:#333;border-top:1px solid #999;padding-top:.5em;margin-top:2em}
 nav ol{list-style:none;padding-left:1em}

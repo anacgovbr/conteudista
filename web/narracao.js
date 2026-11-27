@@ -4,7 +4,7 @@
      (desligado por padrão)
    - Recursos de áudio sob demanda: só são carregados quando a caixa é marcada pelo usuário (ou ao gerar)
    - Ao ligar: mostra um resumo da voz; as opções (idioma, voz, velocidade, formato, avanço) ficam em
-     "Opções avançadas de voz", sempre recolhidas ao abrir a página
+     "Opções de narração", sempre recolhidas ao abrir a página
    - Botão "Histórico de áudio": janela sobreposta (como o Histórico do texto) com busca, Ouvir, Baixar,
      Usar esta voz e Excluir — os mesmos áudios da aba Narração (IndexedDB KokoroTTS_DB)
    - Ao gerar os arquivos: lê as notas de cada slide (gerador.notas_para_narracao), gera o áudio com a voz
@@ -32,7 +32,7 @@
 #narrBox .nres b{color:var(--pri,#0c326f)}#narrBox .nres button{margin:0}
 #narrBox details.nav{margin-top:8px;border:1px solid var(--line,#ccc);border-radius:6px;padding:6px 10px;background:#fff}
 #narrBox details.nav>summary{cursor:pointer;font-weight:600;color:var(--acc,#1351b4);font-size:14px}
-#narrBox details.nav[open]>summary{margin-bottom:4px}
+#narrBox details.nav[open]>summary{margin-bottom:4px}#narrBox.panel{border:0;padding:0;background:transparent}#narrBox details#narrExtras{border:0;padding:0;background:transparent;margin-top:2px}#narrBox details#narrExtras>summary{font-weight:400}#narrMini{color:var(--mu,#636363);font-weight:400}
 #narrBox .tts-loading-container{display:none;width:100%;height:8px;border-radius:9999px;background:rgba(51,65,85,.15);overflow:hidden;margin-top:8px}#narrBox .tts-progress-bar{height:100%;width:0;background:#1351b4;transition:width .3s}
 .ah-back{position:fixed;inset:0;z-index:1800;background:rgba(0,0,0,.55);display:flex;align-items:flex-start;justify-content:center;padding:24px 14px;overflow:auto}
 .ah-back[hidden]{display:none}
@@ -53,12 +53,14 @@
   const box = document.createElement('div'); box.id = 'narrBox'; box.className = 'panel';
   box.innerHTML = '<label class="inl tit"><input type="checkbox" id="narrOn"> Narração dos slides — gerar áudio a partir das notas do apresentador</label>' +
     '<div id="narrOp" hidden>' +
+      '<details class="nav" id="narrExtras"><summary>Opções de narração <span id="narrMini"></span></summary>' +
       '<div class="nres"><span id="narrResumo"></span><span id="narrSt" class="note" style="margin:0"></span><button type="button" class="sec mini" id="narrHist" title="Áudios já gerados neste navegador (aba Narração e slides narrados)">' + ICO + ' Áudios gerados</button></div>' +
-      '<details class="nav" id="narrAv"><summary>Opções avançadas de voz</summary>' +
+      '<div id="narrAv">' +
         '<div class="lin"><div><label for="narrIdioma">Idioma</label><select id="narrIdioma"></select></div><div><label for="narrVoz">Voz</label><select id="narrVoz"></select></div>' +
         '<div><label for="narrVel">Velocidade: <span id="narrVelV">1,00</span>×</label><input type="range" id="narrVel" min="0.5" max="2" step="0.05" value="1"></div>' +
         '<div><label for="narrFmt">Formato do áudio</label><select id="narrFmt"><option value="mp3">MP3 (padrão)</option><option value="ogg">OGG (menor)</option><option value="wav">WAV (sem compressão)</option></select></div></div>' +
         '<label class="inl"><input type="checkbox" id="narrAuto"> Avançar os slides sozinho ao fim da narração</label>' +
+      '</div>' +
       '</details>' +
       '<p class="note" id="narrInfo"></p>' +
       '<div class="tts-loading-container" id="narrBarC"><div class="tts-progress-bar" id="narrBar"></div></div>' +
@@ -75,7 +77,7 @@
   $('narrOn').checked = pref('on', '0') === '1';
   $('narrAuto').checked = pref('auto', '0') === '1';
   $('narrVel').value = pref('vel', '1'); $('narrFmt').value = pref('fmt', 'mp3');
-  $('narrAv').open = false;   // sempre recolhidas ao abrir a página
+  $('narrExtras').open = false;   // sempre recolhidas ao abrir a página
   L().preencherVozes($('narrIdioma'), $('narrVoz'), pref('voz', L().VOZ_PADRAO));
   document.addEventListener('locucao:vozes', () => { const v = $('narrVoz').value; L().preencherVozes($('narrIdioma'), $('narrVoz'), v); resumo(); });
   L().ligarSelects($('narrIdioma'), $('narrVoz'), () => { localStorage.setItem(PREF.voz, $('narrVoz').value); resumo(); info(); });
@@ -83,6 +85,7 @@
   function resumo() {
     const v = $('narrVoz').value, fmt = $('narrFmt').selectedOptions[0];
     $('narrResumo').innerHTML = 'Voz: <b>' + esc(L().nomeVoz(v)) + '</b> · ' + (+$('narrVel').value || 1).toFixed(2).replace('.', ',') + '× · ' + esc(fmt ? fmt.value.toUpperCase() : 'MP3') + ($('narrAuto').checked ? ' · avanço automático' : '');
+    $('narrMini').textContent = '· ' + L().nomeVoz(v) + ', ' + (+$('narrVel').value || 1).toFixed(2).replace('.', ',') + '×, ' + (fmt ? fmt.value.toUpperCase() : 'MP3');
   }
   velTxt(); resumo();
   const mostrar = () => { $('narrOp').hidden = !$('narrOn').checked; info(); };

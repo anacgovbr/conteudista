@@ -72,7 +72,7 @@ web/ptbr-g2p.js          ← fonemizador interno pt-BR
 web/changelog.js         ← botão Novidades (lê o CHANGELOG.md)
 web/govbr.css            ← tema do Padrão Digital de Governo (gov.br/ds)
 CHANGELOG.md             ← histórico de versões da aplicação
-web/exemplo/             ← conteúdo de exemplo: guia de uso (apostila, apresentação com notas para narração e prompt padrão para IA)
+web/exemplo/             ← conteúdo de exemplo: guia de uso (apostila, apresentação com notas para narração e prompt curto para IA)
 tools/fontes/            ← fontes de leitura (WOFF2), licenças OFL, manifesto.json, baixar-fontes.ps1 e verificar_fontes.py
 tools/testar_acessibilidade.py ← testes de acessibilidade das saídas (EPUB, DOCX, PPTX e HTML)
 tools/requirements.txt   ← python-docx, python-pptx, Pillow e lxml
@@ -205,7 +205,7 @@ O roteiro de validação roda no **Google Chrome** (Playwright) e cobre os grupo
 
 `Alt+Shift` + tecla (no Mac, `Option+Shift`): **G** gerar · **E** exemplo · **D** baixar .md · **P** salvar em pasta · **S** salvar versão · **A** ligar/desligar autossalvamento · **L** criar link · **O** abrir link · **V** versões do texto · **1/2** abas · **M** modo do editor · **F** tela cheia · **T** tutorial · **R** reiniciar tutorial · **H** ajuda · **K** lista de atalhos · **F1** ajuda.
 
-## Conteúdo de exemplo e prompt padrão para IA
+## Conteúdo de exemplo e prompt para IA
 
 O botão **Carregar exemplo** carrega `web/exemplo/treinamento.md` (apostila) e `web/exemplo/apresentacao.md` (apresentação), que formam um **guia de uso do próprio Conteudista**. Os nomes dos arquivos são mantidos por compatibilidade com o carregamento em `web/index.html` e com o workflow de publicação.
 
@@ -218,7 +218,7 @@ Manutenção do exemplo:
 
 - É texto comum: edite os dois `.md`. As figuras são PNG embutidas em base64, de modo que cada arquivo é autossuficiente.
 - As capturas mostram Licenciamento, o menu Salvar, Importar › Salvos, Arquivos gerados e o painel de revisão do editor. Use conteúdo demonstrativo sem dados pessoais; mantenha descrições e instruções equivalentes em texto. Não dependa da posição, da cor ou de números sobre a imagem.
-- O prompt padrão está em um único bloco de código (versão 1.1). Qualquer mudança na sintaxe aceita pelo gerador deve ser refletida nas seções 5 e 6 do prompt e na tabela da seção 10 da apostila. A versão 1.1 acrescentou à seção 4 as regras de acessibilidade e linguagem simples (itens 8 a 17) e à seção 8 a conferência correspondente. Ao mudar o texto do prompt, suba a versão.
+- O prompt para IA é **curto** e aponta para dois documentos no GitHub: [`docs/PROMPT_GERACAO_IA.md`](docs/PROMPT_GERACAO_IA.md) (sintaxe da apostila e da apresentação, formas de dividir slides, 25 modelos, notas de narração em cada slide e entrega em dois arquivos) e [`docs/REGRAS_ACESSIBILIDADE_LINGUAGEM_SIMPLES.md`](docs/REGRAS_ACESSIBILIDADE_LINGUAGEM_SIMPLES.md) (as 23 regras do validador, limites e aplicação às notas). O texto do prompt existe em dois lugares, que devem ser idênticos: o bloco `<pre id="promptIA">` de `web/index.html` e a seção 11.3 de `web/exemplo/treinamento.md`. Exemplos importáveis ficam em `docs/exemplos/`. Qualquer mudança na sintaxe aceita pelo gerador ou nas regras de `web/lib/linguagem-acessivel/` deve ser refletida nos dois documentos; `python tools/testes/testar_modulos.py` e `node tools/linguagem-acessivel/testar.mjs` conferem layouts, regras, limites, exemplos e links. As URLs `raw.githubusercontent.com` só funcionam depois que os arquivos estão em `main`.
 - O exemplo precisa ficar sem itens **para corrigir** (`node tools/lac/lac.mjs c -n c web/exemplo/*.md`); a publicação no GitHub confere. As sugestões que restam estão registradas em `tools/linguagem-acessivel/resultados/` (atualize com `node tools/linguagem-acessivel/testar.mjs --atualizar-exemplo` e revise o diff). Exemplos de texto "ruim" ficam em código, para não serem acusados.
 - Seções sobre acessibilidade: 5.6 (uso do painel e das marcas) e 10.6 (como escrever), além de 5 slides antes de "Gerar arquivos".
 - As notas dos slides são escritas para serem ouvidas: texto corrido, sem símbolos, parênteses nem endereços.

@@ -1,5 +1,6 @@
 import importlib
 import json
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -308,6 +309,190 @@ class ModulosTest(unittest.TestCase):
                 pyyaml = None
             if pyyaml:
                 self.assertEqual(pyyaml.safe_load((Path(d) / 'Conteudo_teste-aberto.yaml').read_text(encoding='utf-8')), dados)
+    # ---- Prompt curto com instruções no GitHub (critérios CA-01 a CA-13 da SPEC) ----
+    URL_PROMPT = 'https://raw.githubusercontent.com/anacgovbr/conteudista/main/docs/PROMPT_GERACAO_IA.md'
+    URL_REGRAS = 'https://raw.githubusercontent.com/anacgovbr/conteudista/main/docs/REGRAS_ACESSIBILIDADE_LINGUAGEM_SIMPLES.md'
+
+    def _docs(self):
+        return ((RAIZ / 'docs/PROMPT_GERACAO_IA.md').read_text(encoding='utf-8'),
+                (RAIZ / 'docs/REGRAS_ACESSIBILIDADE_LINGUAGEM_SIMPLES.md').read_text(encoding='utf-8'))
+
+    def _prompt_ui(self):
+        import html
+        h = (RAIZ / 'web/index.html').read_text(encoding='utf-8')
+        m = re.search(r'<pre id="promptIA">(.*?)</pre>', h, re.S)
+        self.assertIsNotNone(m, 'bloco #promptIA')
+        return html.unescape(m.group(1)).replace('\r\n', '\n').strip()
+
+    def _lac(self, textos):
+        r = subprocess.run(['node', str(RAIZ / 'tools/testes/referencias_lac.mjs')], input=json.dumps({'textos': textos}),
+                           capture_output=True, text=True, encoding='utf-8')
+        self.assertEqual(r.returncode, 0, r.stderr)
+        return json.loads(r.stdout)
+
+    def _blocos_marcados(self, doc, marca):
+        return re.findall(r'<!-- %s -->\n`{4}markdown\n(.*?)\n`{4}' % marca, doc, re.S)
+
+    def test_ca01_ca02_ca05_ca13_prompt_curto(self):
+        p = self._prompt_ui()
+        self.assertLessEqual(len(p), 800, 'prompt curto, sem instruções longas')
+        for ph in ('[TEMA]', '[PÚBLICO-ALVO]', '[OBJETIVOS DE APRENDIZAGEM]'):
+            self.assertIn(ph, p)
+        self.assertIn(self.URL_PROMPT, p)
+        self.assertIn('dois conteúdos Markdown', p)
+        self.assertIn('(1) apresentação com narração nas notas dos próprios slides; (2) apostila complementar', p)
+        self.assertIn('Use os arquivos, textos e links de referência que eu fornecer', p)
+        self.assertIn('solicite que eu cole seu conteúdo antes de gerar o material', p, 'fallback se a URL não abrir')
+        self.assertIn('Não diga que leu o documento se não teve acesso', p)
+        for proibido in ('terceiro', 'arquivo de narração', 'Se a IA utilizada permitir'):
+            self.assertNotIn(proibido, p)
+        t = (RAIZ / 'web/exemplo/treinamento.md').read_text(encoding='utf-8')
+        m = re.search(r'### 11\.3 O prompt curto.*?\n`{3,6}text\n(.*?)\n`{3,6}\n', t, re.S)
+        self.assertIsNotNone(m, 'prompt na seção 11.3')
+        self.assertEqual(m.group(1).strip(), p, 'prompt da tela e da apostila de exemplo idênticos')
+        self.assertNotIn('PROMPT PADRÃO', t)
+        h = (RAIZ / 'web/index.html').read_text(encoding='utf-8')
+        dica = re.search(r'<p class="note" id="dicaPrompt">(.*?)</p>', h, re.S)
+        self.assertIsNotNone(dica)
+        self.assertIn('Se a IA utilizada permitir, anexe documentos ou forneça textos e links de referência para fundamentar o conteúdo.', dica.group(1))
+        self.assertNotIn('dicaPrompt', re.search(r'<pre id="promptIA">.*?</pre>', h, re.S).group(0))
+
+    def test_ca03_ca04_urls_e_arquivos(self):
+        c, a = self._docs()
+        self.assertIn(self.URL_REGRAS, c, 'documento principal aponta para as regras (URL exata)')
+        self.assertIn(self.URL_PROMPT, a)
+        for caminho in ('docs/PROMPT_GERACAO_IA.md', 'docs/REGRAS_ACESSIBILIDADE_LINGUAGEM_SIMPLES.md'):
+            self.assertTrue((RAIZ / caminho).is_file(), caminho)
+        for u in (self.URL_PROMPT, self.URL_REGRAS):
+            self.assertTrue((RAIZ / u.split('/main/')[1]).is_file(), u)
+        for doc in (c, a):
+            for rel in re.findall(r'\]\(((?!https?:|#)[^)\s]+\.md)\)', doc):
+                self.assertTrue((RAIZ / 'docs' / rel).is_file(), rel)
+        self.assertIn('peça que a pessoa cole o conteúdo do documento', c)
+        self.assertIn('peça que a pessoa cole o conteúdo do documento', a)
+        self.assertIn('não afirme ter executado os validadores', c.lower())
+
+    def test_ca05_somente_dois_markdown(self):
+        c, _ = self._docs()
+        self.assertIn('exatamente dois arquivos', c)
+        self.assertIn('**Não crie um terceiro arquivo de narração.**', c)
+        self.assertIn('Apresentacao_NOME.md', c)
+        self.assertIn('Apostila_NOME.md', c)
+        self.assertIn('Entreguei **dois** arquivos Markdown e nenhum terceiro de narração', c)
+
+    def test_ca06_notas_ligadas_ao_slide_certo(self):
+        ex = (RAIZ / 'docs/exemplos/apresentacao-exemplo.md').read_text(encoding='utf-8')
+        titulo, sl = markdown.split_slides(ex)
+        self.assertEqual(titulo, 'Pedido de certificação')
+        self.assertEqual(len(sl), 7)
+        notas = markdown.notas_para_narracao(ex)
+        self.assertEqual(len(notas), 7)
+        h1 = [next((b[2] for b in s[1] if b[0] == 'h' and b[1] == 1), '') for s in sl]
+        self.assertEqual(h1, ['Pedido de certificação', 'O que você vai aprender', 'Etapas do pedido', 'Prazo de resposta',
+                              'Quatro etapas em cartões', 'Para saber mais', 'Obrigado'])
+        esperado = ['Esta apresentação mostra', 'Você vai aprender três coisas', 'O fluxo começa', 'A tabela compara os dois prazos',
+                    'Cada cartão mostra', 'Para saber mais, leia', '']
+        for i, e in enumerate(esperado):
+            self.assertTrue(notas[i].startswith(e) if e else notas[i] == '', (i, notas[i][:40]))
+        self.assertEqual(len(set(notas[:6])), 6, 'notas distintas')
+        self.assertIn('antes-depois', [s[3] for s in sl])
+        # a nota do slide com tabela descreve a informação visual em linguagem natural, sem instrução técnica
+        self.assertNotIn('veja a tabela', notas[3].lower())
+        # as notas não aparecem no conteúdo visível dos slides
+        for s in sl:
+            self.assertNotIn('notas', json.dumps(s[1]))
+
+    def test_ca07_exemplos_de_divisao_aceitos_pelo_parser(self):
+        c, _ = self._docs()
+        validos = re.findall(r'<!-- exemplo-slides: (\d+) -->\n`{4}markdown\n(.*?)\n`{4}', c, re.S)
+        self.assertGreaterEqual(len(validos), 5)
+        for n, md in validos:
+            _, sl = markdown.split_slides(md)
+            self.assertEqual(len(sl), int(n), md[:60])
+        invalidos = re.findall(r'<!-- exemplo-invalido: slides=(\d+) -->\n`{4}markdown\n(.*?)\n`{4}', c, re.S)
+        self.assertEqual(len(invalidos), 4)
+        for n, md in invalidos:
+            _, sl = markdown.split_slides(md)
+            self.assertEqual(len(sl), int(n), md[:60])
+        r = self._lac([{'texto': md, 'tipo': 'apresentacao'} for _, md in invalidos])['resultados']
+        self.assertIn('e2', r[2]['codigos'], 'slide sem título continua sendo apontado')
+        for slug in set(re.findall(r'<!-- layout: ([\w-]+) -->', c)) - {'slug'}:
+            self.assertIn(slug, markdown.LAYOUTS)
+        for slug in markdown.LAYOUTS:
+            self.assertIn('| `%s` |' % slug, c)
+        # variantes do separador
+        casos = {'# A\n\n---   \n\n# B\n': 2, '# A\r\n\r\n---\r\n\r\n# B\r\n': 2, '# A\ntexto\n---\n# B\n': 2,
+                 '# A\n\n----\n\n# B\n': 1, '# A\n\n***\n\n# B\n': 1, '# A\n\n___\n\n# B\n': 1, '# A\n\ntexto\n\n# B\n': 1}
+        for md, n in casos.items():
+            self.assertEqual(len(markdown.split_slides(md)[1]), n, repr(md))
+
+    def test_ca08_apostila_importavel_e_exportavel(self):
+        ex = (RAIZ / 'docs/exemplos/apostila-exemplo.md').read_text(encoding='utf-8')
+        tipos = [b[0] for b in markdown.blocks(ex)]
+        for esperado in ('h', 'p', 'list', 'table', 'img', 'code', 'quote'):
+            self.assertIn(esperado, tipos, esperado)
+        self.assertEqual(sum(1 for b in markdown.blocks(ex) if b[0] == 'h' and b[1] == 1), 1)
+        self.assertIn('(https://www.gov.br/anac)', ex)
+        with tempfile.TemporaryDirectory() as d:
+            arqs, res = gerador.gerar(ex, '', prefixo='apostila-ref', saida=d, formatos='html,md,docx,epub,odt')
+            self.assertNotIn('ERRO', res)
+            nomes = sorted(Path(a).suffix for a in arqs)
+            self.assertEqual(nomes, ['.docx', '.epub', '.html', '.md', '.odt'])
+            h = (Path(d) / 'Apostila_apostila-ref.html').read_text(encoding='utf-8')
+            self.assertIn('<table', h)
+            self.assertIn('<caption', h)
+            self.assertIn('Informação:</strong>', h)
+            self.assertIn('Atenção:</strong>', h)
+            self.assertIn('gab-sec', h, 'seção Gabarito escondida até ser mostrada')
+            md = (Path(d) / 'Apostila_apostila-ref.md').read_text(encoding='utf-8')
+            self.assertEqual(markdown.blocks(md)[0], ('h', 1, 'Pedido de certificação: guia de estudo'))
+
+    def test_ca09_regras_documentadas_correspondem_ao_validador(self):
+        _, a = self._docs()
+        d = self._lac([])
+        self.assertEqual(len(d['regras']), 23)
+        trecho = a.split('## 4. Inventário das 23 regras')[1].split('## 5.')[0]
+        corrigir, sugestoes = trecho.split('### Sugestões')
+        for r in d['regras']:
+            linha = '| %s | `%s` | %s |' % (r['codigo'], r['id'], 'Para corrigir' if r['nivel'] == 'corrigir' else 'Sugestão')
+            self.assertIn(linha, corrigir if r['nivel'] == 'corrigir' else sugestoes, r)
+            self.assertIn('`regras/%s.js`' % r['id'], a)
+            self.assertTrue((RAIZ / 'web/lib/linguagem-acessivel/regras' / ('%s.js' % r['id'])).is_file(), r['id'])
+        for e in d['exemplos']:
+            self.assertIn(e['ruim'], a, 'exemplo inválido de %s' % e['codigo'])
+            self.assertIn(e['bom'], a, 'exemplo válido de %s' % e['codigo'])
+        self.assertIn('| Palavras por frase | %d | f1 |' % d['limites']['frase'], a)
+        self.assertIn('| Palavras por frase nas notas de narração | %d | n1 |' % d['limites']['narracao'], a)
+        self.assertIn('| Palavras por parágrafo | %d | f2 |' % d['limites']['paragrafo'], a)
+        self.assertIn('| Caracteres da descrição de imagem | %d | i3 |' % d['descricaoLonga'], a)
+        self.assertIn('node tools/linguagem-acessivel/testar.mjs', a)
+        self.assertTrue((RAIZ / 'tools/linguagem-acessivel/testar.mjs').is_file())
+
+    def test_ca09_narracao_so_a_regra_n1_le_as_notas(self):
+        _, a = self._docs()
+        longa = ' '.join(['palavra'] * 30)
+        nota = '<!-- notas: %s. A ANAC e o DECEA publicam. ATENÇÃO ESTE PRAZO TERMINA HOJE. -->' % longa
+        base = '---\ntitle: T\n---\n\n# Slide\n\nTexto simples.\n\n' + nota + '\n'
+        r = self._lac([base, base.replace('notas:', 'narracao:')])['resultados']
+        for x in r:
+            self.assertEqual(x['codigos'], ['n1'], 'as notas só acionam a regra n1: %s' % x)
+        self.assertIn('**somente pela regra n1**', a)
+        self.assertIn('**não leem as notas**', a)
+
+    def test_ca10_exemplos_nao_disparam_violacoes_evitaveis(self):
+        c, _ = self._docs()
+        textos = [(RAIZ / 'docs/exemplos/apresentacao-exemplo.md').read_text(encoding='utf-8'),
+                  (RAIZ / 'docs/exemplos/apostila-exemplo.md').read_text(encoding='utf-8')]
+        textos += self._blocos_marcados(c, 'exemplo-validado: apresentacao')
+        for r in self._lac(textos)['resultados']:
+            self.assertEqual(r['resumo']['corrigir'], 0, r)
+            self.assertEqual(r['resumo']['sugestoes'], 0, r)
+        for doc in ('docs/PROMPT_GERACAO_IA.md', 'docs/REGRAS_ACESSIBILIDADE_LINGUAGEM_SIMPLES.md', 'web/exemplo/treinamento.md', 'web/exemplo/apresentacao.md'):
+            self.assertEqual(self._lac([(RAIZ / doc).read_text(encoding='utf-8')])['resultados'][0]['resumo']['corrigir'], 0, doc)
+        with tempfile.TemporaryDirectory() as d:
+            _, res = gerador.gerar('', textos[0], prefixo='ref', saida=d, formatos='html,pptx')
+            self.assertIn('slides: 7', res)
+            self.assertNotIn('ERRO', res)
     def test_estado_compartilhado(self):
         for texto in ['<!-- linguagem-acessivel: decorativa -->\n![Logo](logo.png)', '![Logo](logo.png)']:
             contexto.registrar_decorativas(texto)

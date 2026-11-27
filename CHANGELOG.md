@@ -1,4 +1,15 @@
 # Novidades do Conteudista
+## 1.133 - 27/11/2026
+- **Prompt curto com as instruções no GitHub:** o prompt de **Criar conteúdo** passa a ter só três campos (tema, público-alvo e objetivos) e um endereço. As regras detalhadas ficam em dois documentos versionados: `docs/PROMPT_GERACAO_IA.md` (sintaxe, formas de dividir slides, notas de narração em cada slide e entrega em dois arquivos) e `docs/REGRAS_ACESSIBILIDADE_LINGUAGEM_SIMPLES.md` (as 23 regras do validador, limites e aplicação às notas). Se a IA não abrir o endereço, o prompt pede que você cole o conteúdo dos documentos.
+- **Exemplos validados:** `docs/exemplos/` traz uma apresentação com notas e uma apostila, importáveis, sem itens para corrigir nem sugestões.
+- **Narração mais simples:** a caixa mostra só a ativação; voz, áudios gerados e opções avançadas abrem em “Opções de narração”.
+- **Imagens do texto mais simples:** ordenar, selecionar, reduzir e adicionar só aparecem com a galeria aberta, e a linha de status só aparece quando falta embutir imagem.
+- **Validação:** testes de conteúdo conferem os documentos contra o parser e o validador reais; a conferência do exemplo oficial foi atualizada.
+## 1.132 - 27/11/2026
+- **Caixas com rótulo em texto:** Informação, Dica e Atenção passam a abrir com o próprio nome em negrito (por exemplo, **Dica:** atalho ou boa prática), no lugar dos sinais `+`, `!` e `i`. Vale para o HTML, os slides, o EPUB, o DOCX, o PPTX e a prévia do editor. A cor deixa de ser o único sinal e leitores de tela leem o mesmo texto que todos veem.
+- **Sem repetição:** se o texto da caixa já começa com o rótulo (`**Dica:** …`), ele não é repetido.
+- **Validação:** o teste de destaques confere o rótulo nos cinco formatos e a ausência de repetição; o exemplo da apostila perdeu os rótulos escritos à mão.
+
 ## 1.131 - 27/11/2026
 - **Novos formatos de exportação:** ODT (apostila), ODP (apresentação), PDF, RTF, TXT, Wiki (MediaWiki), YAML e JSON entram na mesma lista de formatos. YAML e JSON levam a estrutura do conteúdo (apostila, slides e notas) em um só arquivo; TXT, Wiki, RTF e PDF saem para cada documento presente.
 - **Sem dependência nova:** os formatos são gerados no navegador com a biblioteca padrão do Python. Limites conhecidos: imagens saem como texto alternativo, o ODP não leva as notas e o PDF é texto simples, sem etiquetas de acessibilidade (a apostila acessível continua sendo o HTML, o DOCX e o EPUB).

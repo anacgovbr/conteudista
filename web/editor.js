@@ -72,7 +72,10 @@
       if (l.startsWith('>')) {
         const b = []; while (i < L.length && L[i].startsWith('>')) b.push(L[i++].slice(1).replace(/^ /, ''));
         let k = ''; const mm = b[0].match(/^\[!(\w+)\]\s*/); if (mm) { k = mm[1].toLowerCase(); b[0] = b[0].slice(mm[0].length); }
-        o.push('<blockquote class="' + k + '">' + render(b.join('\n')) + '</blockquote>'); continue;
+        let inner = render(b.join('\n'));
+        const rot = { tip: 'Dica', warning: 'Atenção', info: 'Informação' }[k];
+        if (rot && !new RegExp('^\\s*\\**(?:' + rot + '|Nota)\\**\\s*:\\**', 'i').test(b[0])) { const m = '<strong class="q-ico">' + rot + ':</strong> '; inner = inner.startsWith('<p>') ? '<p>' + m + inner.slice(3) : '<p>' + m + '</p>' + inner; }
+        o.push('<blockquote class="' + k + '">' + inner + '</blockquote>'); continue;
       }
       if (LI.test(l)) {
         const it = []; let base = null;

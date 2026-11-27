@@ -5,7 +5,7 @@ from .audio import MIME_AUDIO
 from .contexto import aviso, decorativa
 from . import licencas
 from .fontes import fontes_css
-from .markdown import blocks, mermaid_edges, plain, runs, slug, title_of, url_ok, ICONE_DESTAQUE, ROTULO_DESTAQUE
+from .markdown import blocks, mermaid_edges, plain, runs, slug, title_of, url_ok, rotulo_destaque
 from .mermaid import corrigir as corrigir_mermaid
 from .recursos import ler_recurso
 from .temas import TEMA_PADRAO, tcss, tema_de, css_apostila, css_apresentacao, papeis_slides, mermaid_config, eh_personalizado, chave_markdown, paleta, eh_html, css_vars_tema
@@ -76,9 +76,9 @@ def html_of(bl,toc=None,_ctx=None,pal=None):
         elif k=='table':o.append(_tabela_html(b[1],ctx['tit'],cap or ''));cap=None
         elif k=='list':o.append(lst_html(b[1]))
         elif k=='quote':
-            inner=html_of(b[2],None,ctx,pal);ico=ICONE_DESTAQUE.get(b[1])
+            inner=html_of(b[2],None,ctx,pal);ico=rotulo_destaque(b[2],b[1])
             if ico:
-                marca='<span class="q-ico" aria-hidden="true">%s</span><span class="sr-only">%s: </span>'%(ico,ROTULO_DESTAQUE[b[1]])
+                marca='<strong class="q-ico">%s:</strong> '%ico
                 inner=('<p>'+marca+inner[3:]) if inner.startswith('<p>') else ('<p>'+marca+'</p>'+inner)
             o.append('<blockquote class="%s">%s</blockquote>'%(b[1],inner))
         elif k=='code':o.append(_mermaid_html(b[2],pal) if b[1]=='mermaid' else '<pre class="code" tabindex="0"><code>%s</code></pre>'%E(b[2]))

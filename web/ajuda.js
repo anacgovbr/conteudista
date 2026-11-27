@@ -57,7 +57,7 @@
   /* ---------------------------- Tutorial guiado ---------------------------- */
   const PASSOS = [
     { alvo: null, t: 'Bem-vindo ao Conteudista', d: 'Em poucos passos você verá como <b>escrever</b>, <b>gerar</b>, <b>guardar</b> e <b>recuperar</b> um conteúdo. A conversão acontece no seu navegador; nada é enviado sem você pedir.' },
-    { alvo: 'abasApp', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apresentação</b> e <b>Apostila</b>. Cole o texto gerado por uma IA (use o prompt padrão do exemplo), arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
+    { alvo: 'abasApp', antes: () => abrirAba('g'), t: '1. Escreva ou cole o texto', d: 'Use as abas <b>Apresentação</b> e <b>Apostila</b>. Cole o texto gerado por uma IA (use o prompt curto de Criar conteúdo), arraste um arquivo <code>.md</code> ou escreva no editor. A prévia aparece ao lado.' },
     { alvo: () => document.querySelector('#pg .mde-tb'), t: '2. Formate com a barra de ferramentas', d: 'Títulos, listas, checklists, links, <b>imagens</b> (viram base64 automaticamente), tabelas e fluxos. Dica: <kbd>Ctrl+B</kbd> negrito, <kbd>Ctrl+K</kbd> link. No fim da barra ficam o ícone <b>Compartilhar link</b> e o botão <b>Versões</b>, que guarda, compara, restaura e <b>importa um link</b> para comparar.' },
     { alvo: () => document.querySelector('#pg .la-btn'), antes: () => abrirAba('g'), t: '3. Confira a acessibilidade', d: 'O botão <b>Acessibilidade</b> encontra barreiras no texto. Corrija os itens <b>para corrigir</b> e revise as <b>sugestões</b>. Clique num trecho sublinhado para ver a correção (<kbd>' + MOD + ' + C</kbd> abre o painel). A conferência automática não substitui a revisão dos arquivos finais.' },
     { alvo: 'licenca', t: '4. Gere os arquivos', d: 'O licenciamento é opcional e começa em <b>Sem licenciamento</b>. Se tiver autorização, escolha uma licença Creative Commons; o aviso aparece no final da apostila e em um slide final da apresentação. Depois, clique em <b>Gerar arquivos</b> para criar os documentos e o ZIP.' },
@@ -143,14 +143,14 @@
 <ul>
 <li>uma <b>apostila</b> de 16 seções, do <b>Início rápido</b> ao prompt para IA, com 5 fluxos Mermaid, figuras, vídeos, checklists, exercícios com gabarito e referências;</li>
 <li>uma <b>apresentação</b> de 39 slides, um assunto por slide, com <b>notas para narração</b> (cerca de 17 minutos de áudio);</li>
-<li>o <b>prompt padrão para IA</b> (versão 1.1, com regras de acessibilidade e linguagem simples), na seção 11.3 da apostila;</li>
+<li>o <b>prompt curto para IA</b>, que aponta para dois documentos no GitHub (referência de conteúdo e de acessibilidade), na seção 11.3 da apostila;</li>
 <li>as seções <b>5.6 Acessibilidade do texto</b> e <b>10.6 Escrever conteúdo acessível</b>, e 5 slides sobre o assunto.</li>
 </ul>
 <p>Para criar o seu conteúdo, substitua os textos e mantenha a estrutura. Para gerar a aula narrada, marque <b>Narração dos slides</b> na aba <b>Apresentação</b> antes de <b>Gerar arquivos</b>. Para ouvir apenas as notas, importe-as na aba <b>Narração</b>.</p>
 <h4>Produzir os textos com uma IA</h4>
 <ul>
-<li>Na seção <b>11.3</b> da apostila de exemplo está o <b>prompt padrão 1.1</b>: um bloco único, para copiar e colar em uma IA autorizada pela instituição. Ele já pede frases curtas, siglas explicadas, títulos em ordem, legendas descritivas e links claros, para que o texto chegue com menos itens a corrigir.</li>
-<li>Edite somente a seção 1 do prompt, com 14 parâmetros (tema, público, objetivo de aprendizagem, número de seções e de slides, tamanho das notas, formato de entrega e outros), e a seção 2, com o material de referência. As demais seções fixam as regras de conteúdo e de formato.</li>
+<li>O <b>prompt curto</b> está em <b>Criar conteúdo</b> (botão <b>Copiar prompt</b>) e na seção <b>11.3</b> da apostila de exemplo. Cole-o em uma IA autorizada pela instituição.</li>
+<li>Troque só os três campos entre colchetes (tema, público-alvo e objetivos de aprendizagem) e, se a IA permitir, anexe documentos ou cole textos e links de referência. A sintaxe, a divisão dos slides, as notas de narração e as regras de acessibilidade ficam em dois documentos no GitHub, que a IA lê pelo endereço do prompt. Se ela não conseguir abrir o endereço, cole o texto dos documentos.</li>
 <li>Escolha a entrega: <b>A</b>, dois blocos de texto, que você cola em <b>Importar › Colar</b>, nas subabas <b>Apostila</b> e <b>Apresentação</b>; ou <b>B</b>, um arquivo <b>ZIP</b> com os dois textos e a pasta <code>imagens/</code>, que você importa em <b>Importar › Computador</b>.</li>
 <li>Revise tudo antes de gerar os arquivos, em especial os trechos marcados com <code>[A confirmar]</code>. Não envie dados pessoais nem informações restritas.</li>
 </ul>
@@ -277,7 +277,7 @@
 <tr><td>Imagens “pendentes”</td><td>Arraste os arquivos de imagem citados no texto (com o mesmo nome) para a área da aba ou para o editor.</td></tr>
 <tr><td>Imagem não aparece</td><td>Confira o painel <b>Imagens do texto</b>; use <b>Localizar</b>. Arquivos muito grandes deixam o conteúdo pesado — use <b>Redimensionar</b> ou <b>Reduzir todas…</b> (até ~1 MB por imagem).</td></tr>
 <tr><td>Sumário vazio no DOCX</td><td>No Word, clique com o botão direito no sumário → <b>Atualizar campo</b>.</td></tr>
-<tr><td>A IA devolveu um texto fora do padrão</td><td>Cole de novo a seção 5 (apostila) ou a seção 6 (apresentação) do prompt padrão e peça a correção.</td></tr>
+<tr><td>A IA devolveu um texto fora do padrão</td><td>Cole o texto de Instruções para gerar o material (GitHub) e peça a correção.</td></tr>
 <tr><td>A narração lê símbolos ou endereços</td><td>Reescreva a nota em texto corrido, sem símbolos nem endereços, e gere de novo. Para falar um texto diferente da nota, use <code>&lt;!-- narracao: texto --&gt;</code>.</td></tr>
 <tr><td>Fluxos Mermaid no DOCX, PPTX e EPUB</td><td>Aparecem como tabela "De | Condição | Para". No HTML, o desenho vem com a <b>Tabela do fluxo</b> logo abaixo e, quando o fluxo usa vermelho e verde nos nós, essas cores são aproximadas do erro e do apoio do tema.</td></tr>
 <tr><td>Aviso “Fonte de leitura … ausentes”</td><td>As fontes Atkinson Hyperlegible Next e OpenDyslexic não estão no site. Os arquivos são gerados com Verdana. Quem mantém o site deve rodar <code>tools/fontes/baixar-fontes.ps1</code> e publicar.</td></tr>
@@ -319,7 +319,7 @@
 <li><b>Títulos em ordem</b> (# depois ##, depois ###) e todo slide com título.</li>
 <li><b>Imagens</b> com legenda que diz o que mostram; gráficos e fluxos explicados também no texto.</li>
 <li><b>Links</b> com texto que diz aonde levam. Nunca "clique aqui".</li></ol>
-<p>Exemplos de antes e depois estão na seção <b>10.6</b> da apostila de exemplo. O prompt padrão 1.1 (seção <b>11.3</b>) leva essas regras para a IA.</p>
+<p>Exemplos de antes e depois estão na seção <b>10.6</b> da apostila de exemplo. O prompt curto (seção <b>11.3</b>) leva essas regras para a IA pelas Regras de acessibilidade e linguagem simples, no GitHub.</p>
 <h4>Editor no celular</h4>
 <p>Em telas pequenas, a barra do editor ocupa no máximo duas linhas. Na primeira ficam <b>Desfazer</b>, <b>Refazer</b>, <b>Negrito</b>, <b>Itálico</b> e dois menus: <b>H</b> (títulos, código e listas) e <b>+</b> (Inserir: link, imagem, tabela, caixas, fluxo e <b>Imagens do texto</b>). Na segunda ficam <b>Acessibilidade</b>, <b>Compartilhar link</b>, <b>Versões</b>, <b>Tela cheia</b> e os modos <b>Editar</b>, <b>Dividido</b> e <b>Prévia</b>. A contagem do texto ocupa uma linha; toque nela para ver os detalhes. Nos menus, as setas trocam de item e <kbd>Esc</kbd> fecha.</p>
 <h4>Ampliar (zoom) nos arquivos gerados</h4>

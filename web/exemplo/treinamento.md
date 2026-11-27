@@ -126,7 +126,7 @@ flowchart LR
 | Guardar | 7 | Trabalho preservado em versão ou link |
 | Gerar e consultar | 8 | Arquivos conferidos no Histórico |
 | Áudio | 9 | Apresentação narrada ou áudio da aba Narração |
-| IA | 11 | Textos produzidos a partir de um prompt padrão |
+| IA | 11 | Textos produzidos a partir de um prompt curto |
 
 ## 5. Escrever e editar
 
@@ -457,11 +457,11 @@ A tabela resume o que o Conteudista converte. Cada elemento aparece neste própr
 
 ### 10.1 Caixas e checklists
 
-> [!info] **Informação:** contexto que ajuda a entender o assunto.
+> [!info] contexto que ajuda a entender o assunto.
 
-> [!tip] **Dica:** atalho ou boa prática.
+> [!tip] atalho ou boa prática.
 
-> [!warning] **Atenção:** risco, restrição ou ação irreversível.
+> [!warning] risco, restrição ou ação irreversível.
 
 - [ ] Item pendente de um checklist.
 - [x] Item concluído de um checklist.
@@ -571,14 +571,14 @@ Um texto acessível é mais fácil para todos: para quem usa leitor de tela, par
 
 ## 11. Produzir os textos com uma IA
 
-Uma IA pode redigir a apostila e a apresentação a partir de um material de referência. O Conteudista oferece um **prompt padrão**, que já descreve a sintaxe aceita, de modo que a saída possa ser importada sem ajustes.
+Uma IA pode redigir a apostila e a apresentação a partir de um material de referência. O Conteudista oferece um **prompt curto**. Ele aponta para dois documentos no GitHub, com a sintaxe aceita e as regras de acessibilidade.
 
 > [!warning] Use somente ferramentas de IA autorizadas pela instituição e não envie dados pessoais nem informações restritas. A IA pode errar: revise todo o conteúdo antes de gerar os arquivos. A responsabilidade pelo conteúdo é de quem o publica.
 
 ```mermaid
 flowchart LR
-    T00((Início)) --> T01[01. Copiar o prompt padrão]
-    T01 --> T02[02. Ajustar os parâmetros]
+    T00((Início)) --> T01[01. Copiar o prompt curto]
+    T01 --> T02[02. Trocar os campos]
     T02 --> T03[03. Enviar o material<br/>de referência à IA]
     T03 --> T04[04. Receber a apostila<br/>e a apresentação]
     T04 --> D01{A entrega veio<br/>em ZIP?}
@@ -592,212 +592,43 @@ flowchart LR
 
 ### 11.1 Passo a passo
 
-1. Selecione e copie o **prompt padrão** da seção 11.3.
-2. Em uma conversa nova com a IA, cole o prompt e **edite os parâmetros** da seção 1 dele (tabela 11.2).
-3. Preencha a seção 2 do prompt com o **material de referência** ou anexe os arquivos. Anexe também as imagens que deseja usar.
-4. Envie. Se a IA pedir informações que faltam, responda.
-5. Receba os textos (dois blocos ou um ZIP) e importe no Conteudista (seção 11.4).
+1. Selecione e copie o **prompt curto** da seção 11.3. Ele também está em **Criar conteúdo**, no botão **Copiar prompt**.
+2. Em uma conversa nova com a IA, cole o prompt e **troque os campos entre colchetes** (tabela 11.2).
+3. Se a IA permitir, **anexe documentos** ou cole textos e links de referência. Anexe também as imagens que deseja usar.
+4. Envie. Se a IA pedir informações que faltam, ou o conteúdo das instruções, responda.
+5. Receba os dois textos e importe no Conteudista (seção 11.4).
 6. **Revise**, ajuste e clique em **Gerar arquivos**.
 
-### 11.2 Parâmetros do prompt
+### 11.2 Campos do prompt
 
-Só a seção 1 e a seção 2 do prompt precisam de edição. O restante do prompt fixa as regras de conteúdo e de formato.
+O prompt é curto de propósito. Dois documentos no GitHub trazem a sintaxe dos slides, as formas de dividi-los e as notas de narração. Eles trazem também as regras de acessibilidade. A IA lê os documentos pelo endereço:
 
-| Parâmetro | O que define | Exemplo ou padrão |
+Tabela: Documentos de referência no GitHub
+
+| Documento | O que traz |
+|---|---|
+| [Instruções para gerar o material](https://github.com/anacgovbr/conteudista/blob/main/docs/PROMPT_GERACAO_IA.md) | Sintaxe da apostila e da apresentação, formas de dividir slides, 25 modelos, notas de narração em cada slide e entrega em dois arquivos |
+| [Regras de acessibilidade e linguagem simples](https://github.com/anacgovbr/conteudista/blob/main/docs/REGRAS_ACESSIBILIDADE_LINGUAGEM_SIMPLES.md) | As 23 regras que o botão **Acessibilidade** confere, os limites de palavras e a aplicação às notas de narração |
+
+Você só troca os três campos do início:
+
+Tabela: Campos do prompt curto
+
+| Campo | O que define | Exemplo |
 |---|---|---|
-| `TEMA` | O assunto do conteúdo | Licenciamento de oficinas |
-| `PÚBLICO` | Quem vai estudar; muda o vocabulário e o nível de detalhe | Novos servidores da área |
-| `OBJETIVO DE APRENDIZAGEM` | O que o público deve saber fazer; organiza seções e exercícios | Preencher o formulário sem erros |
-| `NOME DO CONTEÚDO` | O nome dos arquivos gerados | `Gestao_de_Processos` |
-| `RODAPÉ` | O texto do rodapé dos slides e do DOCX | Unidade · Órgão |
-| `SEÇÕES DA APOSTILA` | A extensão da apostila | 6 a 8 |
-| `SLIDES` | A duração da aula, com capa e encerramento | 14 a 20 |
-| `EXERCÍCIOS`, `CHECKLISTS` e `FLUXOS MERMAID` | A quantidade de cada elemento | 4, 2 e 2 |
-| `TAMANHO DAS NOTAS` | A duração da narração de cada slide | 60 a 100 palavras, ou 25 a 40 segundos |
-| `IDIOMA E TOM` | O estilo do texto | Português do Brasil, técnico e formal |
-| `IMAGENS` | Quais imagens podem ser usadas | Somente as que eu enviar |
-| `FORMATO DE ENTREGA` | A forma de receber os textos | A (dois blocos) ou B (ZIP) |
+| `[TEMA]` | O assunto do conteúdo | Licenciamento de oficinas |
+| `[PÚBLICO-ALVO]` | Quem vai estudar; muda o vocabulário e o nível de detalhe | Novos servidores da área |
+| `[OBJETIVOS DE APRENDIZAGEM]` | O que o público deve saber fazer | Preencher o formulário sem erros |
 
-### 11.3 O prompt padrão
+> [!info] A IA entrega exatamente dois conteúdos: a apresentação, com a narração nas notas de cada slide, e a apostila. Não há um terceiro arquivo de narração.
 
-> [!info] Copie todo o texto do bloco, da primeira à última linha. Os trechos entre colchetes são os que você substitui.
+### 11.3 O prompt curto
+
+> [!info] Copie todo o texto do bloco. Os trechos entre colchetes são os que você substitui.
 
 ```text
-PROMPT PADRÃO DO CONTEUDISTA — apostila e apresentação
-Versão 1.1. Edite somente a seção 1 (parâmetros) e a seção 2 (material de
-referência). Não altere as demais seções.
-
-==================================================
-1. PARÂMETROS (substitua os textos entre colchetes)
-==================================================
-TEMA: [tema do conteúdo]
-PÚBLICO: [quem vai estudar, por exemplo: novos servidores da área de
-   regulação]
-OBJETIVO DE APRENDIZAGEM: [o que o público deve saber fazer ao final]
-NOME DO CONTEÚDO: [sem acentos e sem espaços, com sublinhado, por exemplo:
-   Gestao_de_Processos]
-RODAPÉ: [texto curto para os slides e o DOCX, por exemplo: Unidade · Órgão]
-SEÇÕES DA APOSTILA: [de 6 a 8]
-SLIDES: [de 14 a 20, incluindo a capa e o encerramento]
-EXERCÍCIOS: [4, com gabarito]
-CHECKLISTS: [2]
-FLUXOS MERMAID: [2]
-TAMANHO DAS NOTAS DE CADA SLIDE: [de 60 a 100 palavras]
-IDIOMA E TOM: [português do Brasil; técnico e formal, direto e sem
-   repetições]
-IMAGENS: [somente as que eu enviar, citadas pelo nome do arquivo; ou
-   nenhuma]
-FORMATO DE ENTREGA: [A = dois blocos de texto; ou B = arquivo ZIP]
-
-Se TEMA, PÚBLICO, OBJETIVO DE APRENDIZAGEM ou NOME DO CONTEÚDO ainda
-estiverem com o texto de exemplo, pergunte-me antes de produzir qualquer
-coisa.
-
-==================================================
-2. MATERIAL DE REFERÊNCIA
-==================================================
-[Cole aqui os textos de referência (normas, procedimentos, manuais) ou anexe
-os arquivos. Indique o que é obrigatório e o que é opcional, se houver.]
-
-==================================================
-3. SEU PAPEL
-==================================================
-Você é um projetista instrucional e redator técnico. Com base nos parâmetros
-e no material de referência, produza uma apostila e uma apresentação com
-notas do apresentador, para serem convertidas pelo Conteudista.
-
-==================================================
-4. REGRAS DE CONTEÚDO
-==================================================
-1. Use apenas o material de referência. Não invente normas, números, prazos,
-   nomes, siglas ou links. Quando faltar informação, escreva: [A confirmar].
-2. Cada seção da apostila e cada slide trata de um único assunto. Cada
-   funcionalidade, etapa ou conceito tem o seu próprio slide, na ordem da
-   apostila.
-3. Escreva de forma técnica e formal, com frases curtas e voz ativa. Evite
-   adjetivos desnecessários, repetições e explicações longas.
-4. Defina cada sigla na primeira vez em que ela aparecer.
-5. Distribua os exercícios ao longo do conteúdo. Cada exercício verifica um
-   objetivo.
-6. Não inclua dados pessoais nem informações restritas que não estejam no
-   material.
-7. Não use imagens da internet. Use somente as que eu enviei, citadas pelo
-   nome do arquivo.
-
-ACESSIBILIDADE E LINGUAGEM SIMPLES (vale para a apostila, os slides e as
-notas)
-8. Uma ideia por frase, com até 20 palavras. Nenhuma frase passa de 25
-   palavras. Use voz ativa e ordem direta: quem faz o quê.
-9. Prefira verbos a substantivos ("analisar", e não "proceder à análise") e
-   palavras do dia a dia. Termo técnico necessário: mantenha e explique.
-10. Parágrafos com até 100 palavras.
-11. Sigla: na primeira vez, escreva Nome completo (SIGLA). Depois, só a sigla.
-12. Títulos em ordem: # depois ##, depois ###. Não pule níveis. Todo slide
-    tem título.
-13. Toda imagem tem legenda que diz o que ela mostra, com até 150
-    caracteres. Gráfico, esquema ou fluxo em imagem: explique também no
-    texto. Imagem só de enfeite: escreva <!-- linguagem-acessivel:
-    decorativa --> na linha anterior.
-14. Link com texto que diz aonde leva. Nunca use "clique aqui", "saiba
-    mais" ou "acesse aqui".
-15. Toda tabela tem a primeira linha com o nome de cada coluna.
-16. Não passe informação só pela cor. Não escreva trechos inteiros em
-    maiúsculas: para destacar, use negrito.
-17. Notas de narração: frases curtas, fáceis de ouvir e de ler na legenda.
-
-==================================================
-5. FORMATO DA APOSTILA (arquivo Apostila_NOME.md)
-==================================================
-Use somente a sintaxe abaixo. Qualquer outra sintaxe não é convertida.
-- Primeira linha: o título, com "# ". Depois, uma linha em negrito com o
-  subtítulo e uma linha com a unidade e a versão.
-- Em seguida, a caixa de objetivo: > [!info] **Objetivo:** texto
-- Seções numeradas com "## 1. Título" e subseções com "### 1.1 Título". Não
-  use níveis maiores. A primeira seção é "Como usar este material", com uma
-  tabela "Se você quer… | Vá para".
-- Listas com "- " ou "1. ", em no máximo dois níveis. Checklists com "- [ ]
-  ".
-- Tabelas com barras verticais e a linha de separação |---|---|.
-- Caixas: > [!info], > [!tip] ou > [!warning], sempre na primeira linha da
-  citação.
-- Links somente como [texto](endereço). Não cole endereços soltos.
-- Ênfase com **negrito** e *itálico*. Não use HTML, texto riscado, notas de
-  rodapé nem fórmulas.
-- Fluxos: bloco de código com a linguagem mermaid (três crases e a palavra
-  mermaid na abertura; três crases no fechamento), iniciado por flowchart
-  LR. Nomes dos nós: T00 para o início, T01, T02... para as tarefas, D01,
-  D02... para as decisões e T99 para o fim. Formas: T00((Início)), T01[01.
-  Texto curto<br/>Responsável], D01{Pergunta?}, T99(((Fim))). Ligações: T01
-  --> D01 e D01 -->|Sim| T02. Não use parênteses, aspas nem dois-pontos nos
-  textos dos nós, nem a palavra end em minúsculas. Exemplo do código, sem as
-  cercas:
-      flowchart LR
-          T00((Início)) --> T01[01. Receber o pedido<br/>Unidade]
-          T01 --> D01{Pedido completo?}
-          D01 -->|Sim| T02[02. Emitir o parecer]
-          D01 -->|Não| T03[03. Solicitar complementação]
-          T02 --> T99(((Fim)))
-          T03 --> T99
-- Imagens, uma por linha: ![Legenda](nome-do-arquivo.png). Em ZIP, use
-  ![Legenda](imagens/nome-do-arquivo.png). Somente arquivos que eu enviei.
-- Exercícios: seção "## N. Exercícios" com "### Exercício 1 — Título" e o
-  enunciado. Gabarito: seção "## N+1. Gabarito" (a palavra Gabarito é
-  obrigatória no título), com "### Gabarito 1" e a resposta.
-- Última seção: "## N. Referências", com uma tabela "Referência | Link" que
-  use somente fontes do material.
-
-==================================================
-6. FORMATO DA APRESENTAÇÃO (arquivo Apresentacao_NOME.md)
-==================================================
-- O arquivo começa exatamente assim (sem a linha theme, que o Conteudista
-  acrescenta):
-      ---
-      title: Título da apresentação
-      ---
-- Cada slide é separado por uma linha com três hifens (---), com uma linha
-  em branco antes e outra depois.
-- Capa e encerramento: primeira linha <!-- class: title -->, depois "#
-  Título" e "## Subtítulo". Slide de destaque: <!-- class: highlight -->.
-- Slides de conteúdo: "# Título curto" (até 45 caracteres) e UM destes
-  elementos: até 5 marcadores curtos, uma tabela de até 5 linhas, um fluxo
-  mermaid ou uma imagem. Uma caixa > [!tip] pode complementar.
-- Ao final de cada slide, as notas: <!-- notas: texto -->
-- As notas serão convertidas em áudio e lidas em voz alta. Escreva em texto
-  corrido, no tamanho definido nos parâmetros, em tom técnico e formal, sem
-  símbolos, sem Markdown, sem parênteses, sem endereços e sem siglas que não
-  possam ser lidas por extenso. Complemente o slide: não repita os seus
-  tópicos. Não escreva "este slide".
-- Para um slide sem áudio, use <!-- narracao: nao -->
-
-==================================================
-7. FORMATO DE ENTREGA
-==================================================
-Se eu escolher A: entregue dois blocos de código com a linguagem markdown,
-   cada um aberto e fechado com quatro crases, para preservar os blocos
-   mermaid internos. Escreva, antes de cada bloco, o nome do arquivo:
-   Apostila_NOME.md e Apresentacao_NOME.md. Dentro dos blocos, somente o
-   texto do arquivo.
-Se eu escolher B: crie um arquivo ZIP, sem subpastas, com Apostila_NOME.md,
-   Apresentacao_NOME.md e, se houver imagens, uma pasta imagens com os
-   arquivos que eu enviei. Use UTF-8 sem BOM. Se você não puder criar
-   arquivos, use o formato A.
-
-==================================================
-8. VERIFICAÇÃO ANTES DE ENTREGAR
-==================================================
-Confira e corrija antes de responder:
-[ ] Todos os parâmetros foram atendidos.
-[ ] Nada foi inventado; as lacunas estão marcadas com [A confirmar].
-[ ] Os dois textos começam como descrito e usam somente a sintaxe permitida.
-[ ] Cada slide tem notas e cada fluxo segue os nomes T00, T01, D01 e T99.
-[ ] A numeração das seções e dos exercícios é contínua.
-[ ] Nenhuma frase passa de 25 palavras; as siglas estão explicadas na
-    primeira vez.
-[ ] Os títulos estão em ordem e todo slide tem título.
-[ ] Toda imagem tem legenda descritiva e todo link tem texto claro.
-Ao final, liste em até cinco itens o que uma pessoa precisa revisar.
+Crie material educacional sobre [TEMA], para [PÚBLICO-ALVO], com os objetivos [OBJETIVOS DE APRENDIZAGEM]. Leia e siga integralmente: https://raw.githubusercontent.com/anacgovbr/conteudista/main/docs/PROMPT_GERACAO_IA.md. Use os arquivos, textos e links de referência que eu fornecer. Entregue dois conteúdos Markdown compatíveis com o Conteudista: (1) apresentação com narração nas notas dos próprios slides; (2) apostila complementar. Se não conseguir acessar as instruções, solicite que eu cole seu conteúdo antes de gerar o material. Não diga que leu o documento se não teve acesso a ele.
 ```
-
 ### 11.4 Importar a saída da IA
 
 | Entrega | Como importar |
@@ -809,10 +640,10 @@ Depois, **revise**: resolva os trechos marcados com `[A confirmar]`, confira os 
 
 ### 11.5 Como ajustar o resultado
 
-- **Mais curto ou mais longo:** altere `SEÇÕES DA APOSTILA`, `SLIDES` e `TAMANHO DAS NOTAS`.
-- **Outro público ou tom:** altere `PÚBLICO` e `IDIOMA E TOM`.
+- **Mais curto ou mais longo:** diga o tamanho na conversa, por exemplo: "de 6 a 8 seções e de 14 a 20 slides".
+- **Outro público ou tom:** altere `[PÚBLICO-ALVO]`.
 - **Mudança pontual:** peça na mesma conversa, por exemplo: “Reescreva a seção 3 mantendo a sintaxe do Conteudista e entregue somente essa seção”.
-- **A IA saiu da sintaxe:** cole de novo a seção 5 ou a seção 6 do prompt e peça a correção.
+- **A IA saiu da sintaxe:** cole o texto das Instruções para gerar o material e peça a correção.
 - **Imagens:** envie os arquivos junto com o prompt e use o formato B para recebê-los na pasta `imagens/`.
 
 ## 12. Fluxo de trabalho de exemplo

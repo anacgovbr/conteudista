@@ -27,3 +27,6 @@ html.contraste body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btn
 @media (max-width:700px){
   html body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnCriarZero,#btnFecharImportar,#btnImpLink){min-height:44px}
 }
+
+/* Imagens do texto: as ferramentas (ordenar, selecionar, reduzir, adicionar) só aparecem com a galeria aberta */
+html body .mde-gal:not([open])>summary .gtools{display:none!important}

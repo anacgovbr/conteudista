@@ -5,7 +5,7 @@ from .contexto import aviso, decorativa
 from . import licencas
 from .fontes import FONTES_DIR, LEITURAS, fontes_faces_unicas
 from .imagens import _ep_img_raw
-from .markdown import blocks, mermaid_edges, plain, runs, sem_comentarios, slug, title_of, url_ok, ICONE_DESTAQUE, ROTULO_DESTAQUE
+from .markdown import blocks, mermaid_edges, plain, runs, sem_comentarios, slug, title_of, url_ok, rotulo_destaque
 from .recursos import ler_recurso
 
 EPUB_CSS=ler_recurso('epub/layout.css')
@@ -83,9 +83,9 @@ def _ep_blocks(bl,cx,toc=None):
         elif k=='table':o.append(_ep_tabela(b[1],cx,cap or ''));cap=None
         elif k=='list':o.append(_ep_list(b[1],cx))
         elif k=='quote':
-            inner=_ep_blocks(b[2],cx,toc);ico=ICONE_DESTAQUE.get(b[1])
+            inner=_ep_blocks(b[2],cx,toc);ico=rotulo_destaque(b[2],b[1])
             if ico:
-                marca='<span class="q-ico" aria-hidden="true">%s</span><span class="sr-only">%s: </span>'%(ico,ROTULO_DESTAQUE[b[1]])
+                marca='<strong class="q-ico">%s:</strong> '%ico
                 inner=('<p>'+marca+inner[3:]) if inner.startswith('<p>') else ('<p>'+marca+'</p>'+inner)
             o.append('<blockquote class="%s">%s</blockquote>'%(E(b[1] or ''),inner))
         elif k=='code':
