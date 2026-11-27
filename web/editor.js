@@ -899,4 +899,111 @@
     ['Ctrl + V', 'Colar texto ou imagem (imagem vira base64)'], ['Esc', 'Sair da tela cheia']
   ];
   global.MDEditor = { create, render, renderSlides, ATALHOS, ehImagem, lerImagem };
+
+
+/* =========================== Editor Progressivo =========================== */
+const ESTADO = {
+  E0: 'compositor-vazio',  // Estado inicial: campo simples, sem barra
+  E1: 'com-conteudo',      // Conteúdo digitado/colado: barra visível
+  E2: 'importado-restaurado', // Conteúdo importado/carregado: ferramentas visíveis
+  E3: 'conteudo-apagado'   // Conteúdo apagado: voltar ao E0
+};
+
+let estadoAtual = ESTADO.E0;
+const composer = document.getElementById('compositorSimplificado');
+const barraEdicao = document.getElementById('barraEdicao');
+const btnMais = document.getElementById('btnMais');
+const btnDitado = document.getElementById('btnDitado');
+const btnContinuar = document.getElementById('btnContinuar');
+
+function atualizarEstado() {
+  const temConteudo = real.value.trim().length > 0;
+  const isEmpty = real.value.trim() === '' || /^\s+$/.test(real.value);
+  
+  switch (estadoAtual) {
+    case ESTADO.E0:
+      composer.hidden = !temConteudo;
+      barraEdicao.hidden = temConteudo;
+      btnContinuar.hidden = true;
+      break;
+    case ESTADO.E1:
+      composer.hidden = true;
+      barraEdicao.hidden = false;
+      btnContinuar.hidden = false;
+      break;
+    case ESTADO.E2:
+      composer.hidden = true;
+      barraEdicao.hidden = false;
+      btnContinuar.hidden = false;
+      break;
+    case ESTADO.E3:
+      composer.hidden = !temConteudo;
+      barraEdicao.hidden = temConteudo;
+      btnContinuar.hidden = true;
+      break;
+  }
+}
+
+// Transição E0 -> E1 quando conteúdo é digitado/colado
+real.addEventListener('input', () => {
+  if (real.value.trim().length > 0 && estadoAtual === ESTADO.E0) {
+    estadoAtual = ESTADO.E1;
+    atualizarEstado();
+  }
+});
+
+// Transição E1 -> E0 quando todo conteúdo é apagado
+real.addEventListener('input', () => {
+  if (real.value.trim().length === 0 && estadoAtual === ESTADO.E1) {
+    estadoAtual = ESTADO.E0;
+    atualizarEstado();
+  }
+});
+
+// Botão + - abrir menu de importação
+btnMais.addEventListener('click', (e) => {
+  e.stopPropagation();
+  // TODO: Implementar menu de importação com todas as ações existentes
+  // As ações devem ser agrupadas por finalidade:
+  // - Importar arquivo Markdown
+  // - Importar outros arquivos suportados
+  // - Abrir link compartilhado
+  // - Carregar versão ou rascunho salvo
+  // - Carregar exemplo
+  // - Inserir imagem (se integrada ao fluxo)
+  alert('Menu de importação em desenvolvimento. As ações de importação estão disponíveis no fluxo existente.');
+});
+
+// Botão de ditado - focar campo e orientar ditado nativo
+btnDitado.addEventListener('click', () => {
+  real.focus();
+  // Orientação contextual sobre como usar o ditado nativo do dispositivo
+  // Páginas web não têm mecanismo universal para acionar o ditado nativo
+  // Uso: focar o campo e mostrar instruções específicas por plataforma
+  const msg = navigator.platform.startsWith('Win') 
+    ? 'Use a tecla de dictado do Windows ou configure o atalho do teclado.' 
+    : navigator.userAgent.includes('Android') 
+      ? 'Use o ditado do teclado Android.' 
+      : 'Use o ditado do teclado do seu dispositivo.';
+  alert(msg);
+});
+
+// Botão Continuar editando - consolidar texto e mostrar barra
+btnContinuar.addEventListener('click', () => {
+  // Consolidar texto no estado do editor (se necessário)
+  // Mostrar a barra e posicionar foco na área de edição
+  atualizarEstado();
+  real.focus();
+  real.select();
+});
+
+// Manter acessibilidade: fechar menu ao clicar fora
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.mde') && !e.target.closest('#compositorSimplificado')) {
+    // Fechar qualquer menu aberto
+  }
+});
+
+atualizarEstado();  // Inicializar estado ao carregar
+
 })(window);
