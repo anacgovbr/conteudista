@@ -176,7 +176,25 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
     </p>
     
   </details>
-  <div id="log" role="log" aria-live="polite" aria-relevant="additions">Pronto.</div>
+  <div 
+
+    <!-- Configurações de conteúdo -->
+    <div class="row">
+      <div><label for="tema">Layout (tema)</label><select id="tema" name="tema" aria-describedby="temaAux" title="Padrão gov.br e Clássico valem para todos os arquivos. ANAC 20 anos muda só a apresentação (HTML e PPTX); a apostila segue o padrão gov.br."><option value="govbr">Padrão gov.br</option><option value="anac20-claro">ANAC 20 anos — claro</option><option value="anac20-escuro">ANAC 20 anos — escuro</option><option value="classico">Clássico</option></select><small class="lic-aux" id="temaAux">Os temas personalizados mudam a apostila e a apresentação; DOCX, EPUB e PPTX usam um subconjunto compatível com a leitura.</small></div>
+      <div><label for="licenca">Licenciamento</label><select id="licenca" name="licenca" aria-describedby="licAux">
+        <option value="">Sem licenciamento</option>
+        <option value="cc-by-4.0" data-nome="Creative Commons Atribuição 4.0 Internacional" data-sigla="CC BY 4.0" data-url="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</option>
+        <option value="cc-by-sa-4.0" data-nome="Creative Commons Atribuição-CompartilhaIgual 4.0 Internacional" data-sigla="CC BY-SA 4.0" data-url="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</option>
+        <option value="cc-by-nd-4.0" data-nome="Creative Commons Atribuição-SemDerivações 4.0 Internacional" data-sigla="CC BY-ND 4.0" data-url="https://creativecommons.org/licenses/by-nd/4.0/">CC BY-ND 4.0</option>
+        <option value="cc-by-nc-4.0" data-nome="Creative Commons Atribuição-NãoComercial 4.0 Internacional" data-sigla="CC BY-NC 4.0" data-url="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</option>
+        <option value="cc-by-nc-sa-4.0" data-nome="Creative Commons Atribuição-NãoComercial-CompartilhaIgual 4.0 Internacional" data-sigla="CC BY-NC-SA 4.0" data-url="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</option>
+        <option value="cc-by-nc-nd-4.0" data-nome="Creative Commons Atribuição-NãoComercial-SemDerivações 4.0 Internacional" data-sigla="CC BY-NC-ND 4.0" data-url="https://creativecommons.org/licenses/by-nc-nd/4.0/">CC BY-NC-ND 4.0</option>
+        <option value="cc0-1.0" data-nome="CC0 1.0 Universal" data-sigla="CC0 1.0" data-url="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</option>
+      </select><small class="lic-aux" id="licAux">Opcional.</small></div>
+      <div><label for="bar">Rodapé (slides e DOCX)</label><input id="bar" type="text" placeholder="Opcional (padrão: título da apostila)"></div>
+    </div>
+
+id="log" role="log" aria-live="polite" aria-relevant="additions">Pronto.</div>
 </section>
 <section class="card" id="secRes" aria-labelledby="tRes">
 <div class="res-acoes"><button type="button" id="btnHistorico" class="sec mini" data-c="1" aria-haspopup="dialog" title="Histórico de arquivos gerados"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/></svg>Histórico</button></div>
@@ -190,70 +208,7 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
 </details>
 </section>
 
-<section class="card" id="secShare">
-<details class="sx" id="dxShare"><summary><h2>Salvar e compartilhar</h2><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>
-  <div class="grid3">
-    <div class="panel" id="pLocal">
-      <h3 style="margin-top:0">1. Na sua máquina</h3>
-      <p class="note">Só neste computador.</p>
-      <label class="inl"><input type="checkbox" id="auto" checked> Salvar automaticamente neste navegador</label>
-      <p id="autost" class="note" style="margin:0 0 4px;font-size:12.5px"></p>
-      <label for="dname" style="margin-top:8px">Nome do rascunho</label>
-      <input id="dname" type="text" placeholder="Ex.: Conteúdo SAR v2">
-      <p>
-        <button id="dsave" class="mini">Salvar rascunho</button>
-        <button id="fsave" class="mini sec" title="Salva os .md (e os arquivos gerados) em uma pasta do computador">Salvar pasta</button>
-        <button id="mdl" class="file-link download" title="Baixar arquivos Markdown">.MD</button>
-        <button id="zdl" class="file-link download" title="Baixar pacote com os arquivos">.ZIP</button>
-      </p>
-      <div id="drafts" class="note">Nenhum rascunho salvo.</div>
-      <p><button id="dclear" class="mini dan">Apagar dados</button></p>
-    </div>
-    <div class="panel" id="pLink">
-      <h3 style="margin-top:0">2. Link criptografado</h3>
-      <p class="note">Cifrado no navegador antes de sair do computador.</p>
-      <label for="mode">Onde guardar</label>
-      <select id="mode">
-        <option value="self">Link autocontido (sem servidor — conteúdo vai no próprio link)</option>
-        <option value="pb">PrivateBin (repositório criptografado)</option>
-      </select>
-      <div id="pbopts" hidden>
-        <label for="pbi" style="margin-top:8px">Instância PrivateBin</label>
-        <input id="pbi" type="url" value="https://privatebin.net/">
-        <div class="grid" style="gap:8px;margin-top:8px">
-          <div><label for="exp">Expira em</label>
-            <select id="exp"><option value="1hour">1 hora</option><option value="1day">1 dia</option><option value="1week" selected>1 semana</option><option value="1month">1 mês</option><option value="1year">1 ano</option><option value="never">Nunca</option></select></div>
-          <div><label class="inl" style="margin-top:22px"><input type="checkbox" id="burn"> Apagar após 1ª leitura</label></div>
-        </div>
-        <div class="sub">
-          <label class="inl"><input type="checkbox" id="anexo" checked> Enviar as imagens como anexo (ZIP)</label>
-          
-        </div>
-      </div>
-      <label for="pw" style="margin-top:8px">Senha (opcional)</label>
-      <input id="pw" type="password" placeholder="Se usar, envie a senha por outro canal" autocomplete="new-password">
-      <p class="note" id="pwnote" style="margin:4px 0 0"></p>
-      <label class="inl"><input type="checkbox" id="keep"> Lembrar os links neste navegador</label>
-      <p id="tam" class="note" style="margin:8px 0 0">Tamanho estimado: —</p>
-      <p><button id="share">Criar link</button></p>
-    </div>
-    <div class="panel" id="pOpen">
-      <h3 style="margin-top:0">3. Abrir um link</h3>
-      
-      <label for="olink">Link</label>
-      <input id="olink" type="url" placeholder="https://…">
-      <label for="opw" style="margin-top:8px">Senha (se houver)</label>
-      <input id="opw" type="password" autocomplete="off">
-      <p><button id="open" class="sec">Abrir link</button></p>
-    </div>
-  </div>
-  <details class="sx" id="dxLinks"><summary><h3>Links criados</h3><span class="sxh">mostrar</span></summary>
-  <div id="links" class="note">Nenhum link nesta sessão.</div>
-  </details>
-  <p class="box warn" style="margin-top:12px"><b>Atenção:</b> não compartilhe dados pessoais ou restritos sem autorização.</p>
-</details>
-</section>
-</main>
+<section class="card" <!-- Seção de compartilhamento removida para nova localização --><!-- secshare_antigo -->/main>
 <footer class="br-footer"><div class="in"><span>Agência Nacional de Aviação Civil · Conteudista — gerador de conteúdos no navegador</span><span class="lic">Interface baseada no <a href="https://www.gov.br/ds/" target="_blank" rel="noopener">Padrão Digital de Governo</a> · <button type="button" id="btnContraste" class="sec mini" style="min-height:32px">Alto contraste</button> <button type="button" id="btnRestaurar" class="sec mini" style="min-height:32px" title="Volta as opções ao padrão definido em config/opcoes.yaml">Restaurar padrão</button></span></div></footer>
 <div id="vlibrasWidget" hidden></div>
 
