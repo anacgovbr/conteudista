@@ -318,7 +318,7 @@ table.df img.dfi{height:42px;max-width:120px;object-fit:contain;vertical-align:m
     selA.value = existe(selA, va) ? va : (l[0] ? String(l[0].id) : 'atual');
     selB.value = existe(selB, vb) ? vb : 'atual';
     const nArq = l.filter(v => v.origem === 'arquivo').length, nLink = l.filter(v => v.origem === 'link').length;
-    $('hInfo').textContent = l.length + ' versão(ões) guardada(s) neste navegador · ' + nArq + ' de arquivos · ' + nLink + ' de links · limite ' + MAX_VERSOES + ' versões ou ' + fmtTam(MAX_VERSOES_TAM) + ' (as salvas não são apagadas automaticamente).';
+    $('hInfo').textContent = l.length + ' versão(ões) ' + (window.Armazenamento && Armazenamento.anonimo ? 'mantida(s) somente nesta sessão' : 'guardada(s) neste navegador') + ' · ' + nArq + ' de arquivos · ' + nLink + ' de links · limite ' + MAX_VERSOES + ' versões ou ' + fmtTam(MAX_VERSOES_TAM) + ' (as salvas não são apagadas automaticamente).';
   }
   async function obter(id) {
     if (id === 'atual') { const d = pacote(); return { rotulo: 'Atual (editores)', data: Date.now(), g: d.g, s: d.s, p: d.p, r: d.r, b: d.b, licenca: d.licenca, atual: true }; }

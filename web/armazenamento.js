@@ -62,6 +62,18 @@
   try {
     if (realSessao && realSessao.getItem(FLAG) === '1') { anonimo = true; realSessao.removeItem(FLAG); }  // vale só para esta carga
   } catch (e) { /* */ }
+  /* Um pedido na URL vale para esta carga. Consumi-lo antes de instalar os wrappers
+     evita que um reload sem o pedido volte a ligar o modo temporário. */
+  try {
+    if (!anonimo && G.location && G.location.search && G.history && G.history.replaceState) {
+      var u = new URL(G.location.href);
+      if (u.searchParams.has('anonimo')) {
+        anonimo = true;
+        u.searchParams.delete('anonimo');
+        G.history.replaceState(G.history.state, '', u.pathname + (u.search ? u.search : '') + (u.hash || ''));
+      }
+    }
+  } catch (e) { /* URL inválida ou history indisponível: segue o fluxo normal */ }
 
   /* ------------------------------ camada Storage (memória no anônimo) ------------------------------ */
   function camada(base, ocultasIniciais) {
@@ -639,19 +651,25 @@
   var pronto = Promise.resolve(true);
 
   if (anonimo) {
-    var originais = { indexedDB: descritor('indexedDB'), localStorage: descritor('localStorage'), sessionStorage: descritor('sessionStorage') };
+    var originais = Object.create(null);
+    function substituir(nome, valor) {
+      var antes = Object.getOwnPropertyDescriptor(G, nome);
+      if (antes && !antes.configurable) return false;
+      originais[nome] = antes;
+      return instalar(nome, valor);
+    }
     var semente = lerSementes();
     pronto = semente.then(function () { return true; });
     var memoria = criarMemoriaIDB({
       esperar: function (nome) { return SEMENTES[nome] ? semente.then(function (s) { return s[nome] || null; }) : Promise.resolve(null); },
       semear: semearBanco
     });
-    var instalados = [];
-    var ok1 = instalar('indexedDB', memoria);  instalados.push('indexedDB');
-    var ok2 = ok1 && instalar('localStorage', L.proxy);  instalados.push('localStorage');
-    var ok3 = ok2 && instalar('sessionStorage', S.proxy); instalados.push('sessionStorage');
-    if (!(ok1 && ok2 && ok3)) {
-      instalados.forEach(function (n) { try { if (originais[n]) Object.defineProperty(G, n, originais[n]); } catch (e) { /* */ } });
+    if (!(substituir('indexedDB', memoria) && substituir('localStorage', L.proxy) && substituir('sessionStorage', S.proxy))) {
+      Object.keys(originais).reverse().forEach(function (nome) {
+        var antes = originais[nome];
+        if (antes) Object.defineProperty(G, nome, antes);
+        else delete G[nome];
+      });
       anonimo = false; pronto = Promise.resolve(false);
       erroAnonimo = 'Não foi possível isolar o armazenamento deste navegador.';
     } else {
@@ -684,7 +702,7 @@
     // Marca a aba e recarrega. Devolve Promise<boolean> (false se não houver suporte).
     entrarAnonimo: function () {
       if (anonimo || !suportaAnonimo) return Promise.resolve(false);
-      try { realSessao.setItem(FLAG, '1'); } catch (e) { return Promise.resolve(false); }
+      try { realSessao.setItem(FLAG, '1'); } catch (e) { erroAnonimo = 'Não foi possível iniciar o modo temporário nesta aba.'; return Promise.resolve(false); }
       recarregar();
       return Promise.resolve(true);
     },

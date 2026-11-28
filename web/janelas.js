@@ -964,7 +964,7 @@ html.contraste .jn-mn .jn-mi,html.contraste .jn-sw{color:#fff!important}
     [...mo.options].forEach(o => { o.textContent = (o.value === 'pb' ? 'PrivateBin' : 'Link direto') + (o.value === linkRec ? ' \u00b7 recomendado' : ''); });
     if (!aux) return;
     if (mo.value === 'pb') aux.textContent = 'Para conte\u00fados grandes ou com muitas imagens. Fica cifrado em um servidor e tem validade.';
-    else aux.textContent = (linkTam ? 'Seu conte\u00fado: \u2248 ' + fmtTam(linkTam) + ' cifrados. ' : '') + 'Cabe no pr\u00f3prio endere\u00e7o, n\u00e3o usa servidor e n\u00e3o expira.' + (linkRec === 'pb' ? ' Aten\u00e7\u00e3o: com este tamanho o link pode ser cortado por e-mail ou Teams; prefira o PrivateBin.' : '');
+    else aux.textContent = (linkTam ? 'Seu conte\u00fado: \u2248 ' + fmtTam(linkTam) + ' cifrados. ' : '') + 'Cabe no pr\u00f3prio endere\u00e7o, n\u00e3o usa servidor e n\u00e3o expira.' + (linkRec === 'pb' ? ' Aten\u00e7\u00e3o: com este tamanho o link pode ser cortado por e-mail ou Teams; prefira o PrivateBin.' : '') + (window.Armazenamento && Armazenamento.anonimo ? ' Esta sess\u00e3o n\u00e3o \u00e9 guardada neste navegador.' : '');
   }
   function prepararJanelaLink() {
     estadoLink(false);

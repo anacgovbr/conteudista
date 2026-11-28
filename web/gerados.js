@@ -201,7 +201,7 @@ html.contraste .ger-meta{color:#fff!important}#gerBox .uso{color:#636363;font-si
       const gm = window.GeracaoMeta || {};
       await tx('readwrite', s => s.add({ data: gm.data || Date.now(), prefixo: gm.prefixo || pref, tema: gm.tema || ($('tema') ? $('tema').value : ''), rodape: gm.rodape || ($('rod') ? $('rod').value.trim() : ''), narracao: gm.narracao || null, resumo: resumoDoLog(), tam, arquivos: arqs }));
       await podar(); listar();
-      logApp('Arquivos gerados guardados neste navegador (' + fmtTam(tam) + ').', 'ok');
+      logApp((window.Armazenamento && Armazenamento.anonimo ? 'Arquivos gerados mantidos somente nesta sessão (' : 'Arquivos gerados guardados neste navegador (') + fmtTam(tam) + ').', 'ok');
     } catch (e) { logApp('Não foi possível guardar os arquivos gerados no navegador (' + e.message + ').', 'wa'); }
   }
   new MutationObserver(() => { if (res.querySelector('a[download]')) { clearTimeout(tCap); tCap = setTimeout(capturar, 400); } }).observe(res, { childList: true, subtree: true });

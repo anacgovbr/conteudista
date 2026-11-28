@@ -24,11 +24,12 @@ function armazem(inicial = {}) {
     clear: () => m.clear()
   };
 }
-function carregar({ local = armazem(), sessao = armazem(), idb, localQuebrado = false, naoConfiguravel = [], navegador = null } = {}) {
-  const attrs = {}, ctx = {
-    console, setTimeout, clearTimeout, structuredClone, DOMException, Blob, recargas: 0, navigator: navegador,
+function carregar({ local = armazem(), sessao = armazem(), idb, localQuebrado = false, naoConfiguravel = [], navegador = null, href = 'https://exemplo.test/' } = {}) {
+  const attrs = {}, historico = [], ctx = {
+    console, setTimeout, clearTimeout, structuredClone, DOMException, Blob, URL, recargas: 0, navigator: navegador,
     document: { documentElement: { setAttribute: (k, v) => { attrs[k] = v; } } },
-    location: { reload() { ctx.recargas++; } }
+    location: { href, search: new URL(href).search, reload() { ctx.recargas++; } },
+    history: { state: null, replaceState(_s, _t, valor) { historico.push(valor); ctx.location.href = new URL(valor, ctx.location.href).href; ctx.location.search = new URL(ctx.location.href).search; } }
   };
   const def = (nome, get) => Object.defineProperty(ctx, nome, { configurable: !naoConfiguravel.includes(nome), get });
   def('localStorage', () => { if (localQuebrado) throw new Error('SecurityError'); return local; });
@@ -37,7 +38,7 @@ function carregar({ local = armazem(), sessao = armazem(), idb, localQuebrado = 
   vm.createContext(ctx);
   vm.runInContext('this.window = this;', ctx);
   vm.runInContext(codigo.replace('__SEMENTES__', JSON.stringify(SEMENTES)), ctx, { filename: 'armazenamento.js' });
-  return { ctx, run: s => vm.runInContext(s, ctx), A: ctx.Armazenamento, local, sessao, attrs };
+  return { ctx, run: s => vm.runInContext(s, ctx), A: ctx.Armazenamento, local, sessao, attrs, historico };
 }
 
 /* ---- auxiliares de IndexedDB (mesmo estilo do aplicativo) ---- */
@@ -171,6 +172,10 @@ console.log('4. Sem banco real, banco real lento, falha ao instalar');
   const quebrado = carregar({ localQuebrado: true });
   quebrado.run("Armazenamento.gravar('k', 'v')");
   ok(quebrado.A.ler('k') === 'v' && quebrado.A.persistente === false, 'localStorage bloqueado no modo normal: usa memória sem erro');
+  const porUrl = carregar({ sessao: armazem(), idb: novaMemoria(), href: 'https://exemplo.test/?x=1&anonimo#cx=abc' });
+  ok(porUrl.A.anonimo === true && porUrl.historico[0] === '/?x=1#cx=abc', 'a URL ativa o modo uma vez e preserva query e fragmento');
+  const parcial = carregar({ sessao: armazem({ 'conteudista.anonimo.iniciar': '1' }), idb: novaMemoria(), naoConfiguravel: ['sessionStorage'] });
+  ok(parcial.run('indexedDB') !== undefined && parcial.run('localStorage') === parcial.local, 'falha parcial restaura os wrappers próprios e mantém armazenamento original');
 }
 
 console.log('5. IndexedDB em memória: comportamento');
