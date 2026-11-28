@@ -1,6 +1,6 @@
 {
   "goal_id": "resume-spec-1.135",
-  "status": "inspecting",
+  "status": "completed",
   "iteration": 3,
   "builder_model": "GPT:5.6-Luna",
   "inspector_model": "GPT:5.6-Sol",
