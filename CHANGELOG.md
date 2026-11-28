@@ -1,4 +1,11 @@
 # Novidades do Conteudista
+## 1.134 - 27/11/2026
+- **Compartilhar link volta a funcionar:** a janela tinha perdido os controles de destino, senha e validade. O bloco de controles voltou à página, oculto, e a janela os usa.
+- **Marcação corrigida:** a seção de compartilhamento estava com a tag de abertura quebrada e o fechamento de `main` perdido.
+- **Sem repetição:** Layout, Licenciamento e Rodapé estavam duplicados na área de geração; ficam só na área do editor.
+- **Ajuda completa:** a ajuda estava truncada (Editor, Leitura acessível, Narração, Controle remoto e Guardar o conteúdo). O texto foi restaurado.
+- **Editor progressivo retirado:** o trecho experimental do editor progressivo referenciava elementos que não existem na página e gerava erros de JavaScript ao carregar. Volta quando for implementado por completo.
+
 ## 1.133 - 27/11/2026
 - **Prompt curto com as instruções no GitHub:** o prompt de **Criar conteúdo** passa a ter só três campos (tema, público-alvo e objetivos) e um endereço. As regras detalhadas ficam em dois documentos versionados: `docs/PROMPT_GERACAO_IA.md` (sintaxe, formas de dividir slides, notas de narração em cada slide e entrega em dois arquivos) e `docs/REGRAS_ACESSIBILIDADE_LINGUAGEM_SIMPLES.md` (as 23 regras do validador, limites e aplicação às notas). Se a IA não abrir o endereço, o prompt pede que você cole o conteúdo dos documentos.
 - **Exemplos validados:** `docs/exemplos/` traz uma apresentação com notas e uma apostila, importáveis, sem itens para corrigir nem sugestões.
