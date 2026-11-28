@@ -1,7 +1,7 @@
 {
   "goal_id": "resume-spec-1.135",
   "status": "inspecting",
-  "iteration": 1,
+  "iteration": 2,
   "builder_model": "GPT:5.6-Luna",
   "inspector_model": "GPT:5.6-Sol",
   "initial_sha": "e050bdc",
@@ -11,6 +11,11 @@
       "iteration": 1,
       "verdict": "FAIL",
       "summary": "Contraste 1:1 no controle temporário e overflow horizontal em 360 px/200%."
+    },
+    {
+      "iteration": 2,
+      "verdict": "FAIL",
+      "summary": "Correções visuais e testes passaram; trailer obrigatório e quality gate seletivo documentado falharam."
     }
   ]
 }
