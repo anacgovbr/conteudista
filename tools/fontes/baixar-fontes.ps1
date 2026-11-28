@@ -109,12 +109,27 @@ foreach ($u in @('https://raw.githubusercontent.com/antijingoist/opendyslexic/ma
     if ($b -and [System.Text.Encoding]::UTF8.GetString($b) -match 'SIL OPEN FONT LICENSE') { Gravar 'OFL-OpenDyslexic.txt' $b; Diga '  ok: licença OFL oficial (OpenDyslexic)' 'Green'; break }
 }
 
+# ---------------- Rawline (Design System gov.br), commit de origem fixado ----------------
+Diga 'Rawline: baixando do repositório oficial (h-ibaldo/Raleway_Fixed_Numerals)...' 'Cyan'
+$rawArqs = @()
+foreach ($p in 400, 600, 700, 800) {
+  $u = 'https://raw.githubusercontent.com/h-ibaldo/Raleway_Fixed_Numerals/be0e9077d2ae8140db4b2127ff7ba12daba46469/font/rawline-' + $p + '.woff2'
+  $b = Baixar $u
+  if (EhWoff2 $b) {
+    Gravar ('rawline-' + $p + '.woff2') $b
+    $rawArqs += [ordered]@{ peso = $p; estilo = 'normal'; arquivo = ('rawline-' + $p + '.woff2'); sha256 = (Sha256 $b); origem = $u; subconjunto = 'completo' }
+  } else { Diga ('  falhou: rawline-' + $p + '.woff2') 'Yellow' }
+}
+if ($rawArqs.Count) { $familias += [ordered]@{ id = 'rawline'; nome = 'Rawline'; licenca = 'OFL-1.1'; arquivos = $rawArqs } }
+$b = Baixar 'https://raw.githubusercontent.com/h-ibaldo/Raleway_Fixed_Numerals/be0e9077d2ae8140db4b2127ff7ba12daba46469/SIL%20Open%20Font%20License.txt'
+if ($b -and [System.Text.Encoding]::UTF8.GetString($b) -match 'SIL OPEN FONT LICENSE') { Gravar 'OFL-Rawline.txt' $b; Diga '  ok: licença OFL oficial (Rawline)' 'Green' }
+
 # ---------------- Manifesto ----------------
 $man = [ordered]@{ versao = 1; atualizado = (Get-Date).ToUniversalTime().ToString('yyyy-MM-ddTHH:mm:ssZ'); familias = $familias;
-                   licencas = @('OFL-Atkinson-Hyperlegible-Next.txt', 'OFL-OpenDyslexic.txt') }
+                   licencas = @('OFL-Atkinson-Hyperlegible-Next.txt', 'OFL-OpenDyslexic.txt', 'OFL-Rawline.txt') }
 $json = $man | ConvertTo-Json -Depth 6
 [System.IO.File]::WriteAllText((Join-Path $pasta 'manifesto.json'), $json, (New-Object System.Text.UTF8Encoding $false))
-$total = $atk.Count + $od.Count
-Diga ('Manifesto gravado: {0} de 8 arquivos de fonte.' -f $total) $(if ($total -eq 8) { 'Green' } else { 'Yellow' })
-if ($total -lt 8) { Diga 'As faces que faltaram usam Verdana (ou a face regular). Rode este script de novo quando a rede permitir.' 'Yellow' }
+$total = $atk.Count + $od.Count + $rawArqs.Count
+Diga ('Manifesto gravado: {0} de 12 arquivos de fonte.' -f $total) $(if ($total -eq 12) { 'Green' } else { 'Yellow' })
+if ($total -lt 12) { Diga 'As faces que faltaram usam Verdana (ou a face regular). Rode este script de novo quando a rede permitir.' 'Yellow' }
 exit 0

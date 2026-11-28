@@ -5,6 +5,7 @@ Esta pasta guarda as fontes usadas pelo seletor **Leitura** da apostila e da apr
 | Família | Uso | Licença | Origem |
 |---|---|---|---|
 | Atkinson Hyperlegible Next | Opção de leitura e EPUB base | SIL OFL 1.1 | Google Fonts / Braille Institute |
+| Rawline | Tipografia da interface (Design System gov.br) | SIL OFL 1.1 | github.com/h-ibaldo/Raleway_Fixed_Numerals |
 | OpenDyslexic | Opção de leitura e EPUB `_OpenDyslexic` | SIL OFL 1.1 | Repositório oficial `antijingoist/opendyslexic` |
 
 A leitura **Padrão** usa Verdana (`Verdana, Tahoma, Arial, sans-serif`), que não fica nesta pasta.
@@ -13,7 +14,8 @@ A leitura **Padrão** usa Verdana (`Verdana, Tahoma, Arial, sans-serif`), que n�
 
 - `atkinson-hyperlegible-next-400.woff2`, `-400-italic`, `-700`, `-700-italic`
 - `opendyslexic-400.woff2`, `-400-italic`, `-700`, `-700-italic`
-- `OFL-Atkinson-Hyperlegible-Next.txt` e `OFL-OpenDyslexic.txt` (texto integral da licença e copyright)
+- `rawline-400.woff2`, `-600`, `-700`, `-800` (arquivos oficiais sem modificação: o nome RAWLINE é reservado pela OFL)
+- `OFL-Atkinson-Hyperlegible-Next.txt`, `OFL-OpenDyslexic.txt` e `OFL-Rawline.txt` (texto integral da licença e copyright)
 - `manifesto.json` — fonte de verdade: lista cada arquivo com peso, estilo, SHA-256, origem e subconjunto
 - `baixar-fontes.ps1` — baixa as fontes e as licenças e regrava o manifesto
 - `verificar_fontes.py` — confere arquivos, assinatura WOFF2, SHA-256, licenças e (com fontTools) os acentos
@@ -32,7 +34,7 @@ Para trocar uma fonte manualmente: substitua o `.woff2` mantendo o nome, atualiz
 
 ## Licenças
 
-As duas famílias são distribuídas sob a SIL Open Font License 1.1, que permite embutir as fontes em documentos e programas.
+As três famílias são distribuídas sob a SIL Open Font License 1.1, que permite embutir as fontes em documentos e programas.
 Mantenha os arquivos `OFL-*.txt` junto das fontes. Não renomeie as famílias nem venda as fontes isoladamente.
 Os arquivos OFL que acompanham o repositório trazem o texto integral da licença; o script `baixar-fontes.ps1` os substitui pelo texto oficial de cada projeto, com a linha de copyright.
 

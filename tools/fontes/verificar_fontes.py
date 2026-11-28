@@ -10,7 +10,7 @@ def ok(c, m):
     print(('PASS ' if c else 'FAIL ') + m)
     if not c: falhas.append(m)
 man = json.load(open(os.path.join(PASTA, 'manifesto.json'), encoding='utf-8'))
-ok(isinstance(man.get('familias'), list) and {f.get('id') for f in man['familias']} == {'atkinson', 'opendyslexic'}, 'manifesto com as famílias atkinson e opendyslexic')
+ok(isinstance(man.get('familias'), list) and {f.get('id') for f in man['familias']} == {'atkinson', 'opendyslexic', 'rawline'}, 'manifesto com as famílias atkinson, opendyslexic e rawline')
 for lic in man.get('licencas', []):
     cam = os.path.join(PASTA, lic)
     ok(os.path.isfile(cam) and 'SIL OPEN FONT LICENSE' in open(cam, encoding='utf-8', errors='ignore').read(), 'licença OFL presente: ' + lic)
@@ -51,6 +51,6 @@ if woff2_tabelas:
             ok(var, '%s: arquivos iguais (%s) %s' % (fam.get('nome'), ', '.join(arqs), 'são de uma fonte variável; o negrito vem do eixo de peso' if var else 'e a fonte NÃO é variável: o negrito não existe'))
 soltos = [f for f in os.listdir(PASTA) if f.endswith('.woff2') and f not in {a['arquivo'] for fam in man['familias'] for a in fam.get('arquivos', [])}]
 ok(not soltos, 'nenhum WOFF2 fora do manifesto' + (': ' + ', '.join(soltos) if soltos else ''))
-print('Fontes no manifesto: %d de 8%s' % (n, '' if n == 8 else ' (as demais caem para Verdana)'))
+print('Fontes no manifesto: %d de 12%s' % (n, '' if n == 12 else ' (as demais caem para Verdana)'))
 print('RESULTADO: %s' % ('OK' if not falhas else 'FALHOU'))
 sys.exit(1 if falhas else 0)
