@@ -1,4 +1,10 @@
 # Novidades do Conteudista
+## 1.135 - 28/11/2026
+- **Modo temporário no cabeçalho:** ativar o fantasma mantém rascunhos, versões e arquivos somente na aba da sessão e informa claramente o que será perdido ao sair ou recarregar.
+- **Proteção do isolamento:** uma falha impede edição e importação até a escolha explícita de continuar no modo normal.
+- **Mais opções preservado:** o menu do cabeçalho continua com os atalhos existentes e abre corretamente pelo teclado.
+- **Acessibilidade e responsividade:** contraste, foco, anúncios de estado, 360 px e zoom de 200% foram revisados sem novas dependências.
+
 ## 1.134 - 27/11/2026
 - **Compartilhar link volta a funcionar:** a janela tinha perdido os controles de destino, senha e validade. O bloco de controles voltou à página, oculto, e a janela os usa.
 - **Marcação corrigida:** a seção de compartilhamento estava com a tag de abertura quebrada e o fechamento de `main` perdido.

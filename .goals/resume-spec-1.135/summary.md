@@ -19,7 +19,7 @@ Todas as nove condições da meta foram aprovadas pelo Inspector na iteração 3
 - Suíte completa de navegador: 395 testes aprovados, 0 falhas.
 - Testes seletivos Python: 6 aprovados.
 - Branch final: `versao-1.135`.
-- Versão e cache-busters: `1.134`.
+- Versão e cache-busters: `1.135` após a publicação solicitada.
 
 ## Iterations
 
