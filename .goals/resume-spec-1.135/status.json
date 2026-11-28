@@ -1,7 +1,7 @@
 {
   "goal_id": "resume-spec-1.135",
   "status": "inspecting",
-  "iteration": 2,
+  "iteration": 3,
   "builder_model": "GPT:5.6-Luna",
   "inspector_model": "GPT:5.6-Sol",
   "initial_sha": "e050bdc",
@@ -16,6 +16,11 @@
       "iteration": 2,
       "verdict": "FAIL",
       "summary": "Correções visuais e testes passaram; trailer obrigatório e quality gate seletivo documentado falharam."
+    },
+    {
+      "iteration": 3,
+      "verdict": "FAIL",
+      "summary": "Todos os gates funcionais passaram e 8d7bdf0 tem o trailer exato; cf6cad5 permanece com trailer inválido no histórico."
     }
   ]
 }
