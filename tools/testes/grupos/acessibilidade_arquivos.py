@@ -270,7 +270,7 @@ def grupo20(amb, ctx, G):
         G.chk('20.5', 'Barra do conteudo passa no axe-core nos dois estados do interruptor',
               not any(resultados.values()), resultados)
         painel.get_by_role('button', name='Fechar').click()
-        app.locator('#btnComoFunciona').click()
+        app.locator('#btnMenuApp').click(); app.locator('#btnComoFunciona').click()
         expect(app.locator('#bcComo')).to_be_visible()
         viola = app.evaluate("""async () => {
             const r = await axe.run('#bcComo', { runOnly: { type: 'tag',
@@ -288,7 +288,9 @@ def grupo21(amb, ctx, G):
     (d / 'apostila.md').write_text('# Guia\n\nTexto de exemplo.\n', encoding='utf-8')
     (d / 'apresentacao.md').write_text('---\ntitle: Guia\n---\n\n# Slide 1\n\nTexto do slide.\n\n<!-- notas: Narração do primeiro slide. -->\n\n---\n\n# Slide 2\n\nTexto do segundo slide.\n\n<!-- notas: Narração do segundo slide. -->\n', encoding='utf-8')
     gerador = RAIZ / 'tools' / 'gerador.py'
-    audio = amb.audios if getattr(amb, 'audios', None) else amb.tmp / 'aud'
+    if not getattr(amb, 'audios', None):
+        amb.preparar_narracao()
+    audio = amb.audios
     out = d / 'com_vlibras'
     r = rodar([sys.executable, str(gerador), str(d / 'apostila.md'), str(d / 'apresentacao.md'), '--prefixo', 'A11y', '--saida', str(out), '--audios', str(audio)], cwd=RAIZ)
     apostila = next(out.glob('Apostila_A11y.html'), None) if out.exists() else None
@@ -353,7 +355,7 @@ def grupo21(amb, ctx, G):
     try:
         app = ctx.new_page(); requisicoes_app = []
         app.on('request', lambda q: requisicoes_app.append(q.url) if 'vlibras.gov.br/app/vlibras-plugin.js' in q.url else None)
-        app.goto(url); app.wait_for_selector('#btnVlibras'); app.wait_for_timeout(250)
+        app.goto(url); app.wait_for_selector('#btnVlibras', state='attached'); app.wait_for_timeout(250)
         G.chk('21.10', 'Aplicativo mantém o skip link e não carrega VLibras até solicitação',
               app.locator('.br-skiplink[href="#conteudo"]').count() == 1 and app.locator('#btnVlibras').get_attribute('aria-controls') == 'vlibrasWidget' and app.locator('#vlibrasWidget').count() == 1 and not requisicoes_app,
               requisicoes_app)

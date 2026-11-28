@@ -601,7 +601,7 @@ def grupo15(amb, ctx, G):
         pg.on('pageerror', lambda e: erros.append(str(e)))
         pg.add_init_script("try { localStorage.setItem('conteudista.tour', '1'); } catch (e) {}")
         pg.goto(url); pg.wait_for_selector('#pg .la-btn', state='attached', timeout=15000); pg.wait_for_timeout(300)
-        pg.click('#btnTour'); pg.wait_for_selector('.tr-pop', timeout=5000)
+        pg.locator('#btnMenuApp').click(); pg.locator('#btnTour').click(); pg.wait_for_selector('.tr-pop', timeout=5000)
         for _ in range(3): pg.keyboard.press('ArrowRight'); pg.wait_for_timeout(250)
         e = pg.evaluate("""() => { const p = document.querySelector('.tr-pop'), h = document.querySelector('.tr-hole'), b = document.querySelector('#pg .la-btn').getBoundingClientRect();
             const r = h && h.getBoundingClientRect(); return { titulo: p && p.querySelector('h4').textContent, cobre: !!r && r.left <= b.left && r.right >= b.right && r.top <= b.top && r.bottom >= b.bottom }; }""")

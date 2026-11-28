@@ -107,6 +107,10 @@ def grupo23(amb, ctx, G):
         expect(botao).to_be_focused()
         expect(botao).to_have_attribute('aria-expanded', 'false')
 
+        menu = pg.get_by_role('button', name='Mais opções', exact=True)
+        expect(menu).to_have_attribute('aria-expanded', 'false')
+        menu.press('Enter')
+        expect(menu).to_have_attribute('aria-expanded', 'true')
         como = pg.get_by_role('button', name='Como funciona', exact=True)
         expect(como).to_be_visible()
         ordem_cab = como.evaluate("""b => b.nextElementSibling?.id === 'btnNews'""")
@@ -120,6 +124,10 @@ def grupo23(amb, ctx, G):
         pg.keyboard.press('Escape')
         expect(guia).to_be_hidden()
         expect(como).to_be_focused()
+        como.press('Escape')
+        expect(menu).to_be_focused()
+        expect(menu).to_have_attribute('aria-expanded', 'false')
+        expect(como).to_be_hidden()
         G.chk('23.13', 'Como funciona vem antes de Novidades e fecha por Esc com retorno do foco',
               ordem_cab and pg.locator('#dxComo').count() == 0, {'ordem': ordem_cab})
 

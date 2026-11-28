@@ -77,7 +77,8 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
   <span class="gb-sign" aria-label="gov.br"><span>gov.br</span><b>ANAC</b></span>
   <h1>Conteudista</h1>
   <span id="ver"></span>
-  <nav class="hb" aria-label="Ajuda e acessibilidade">
+  <button type="button" id="btnMenuApp" aria-label="Mais opções" aria-controls="menuApp" aria-expanded="false" hidden><span aria-hidden="true">⋮</span></button>
+<nav id="menuApp" class="hb" aria-label="Ajuda e acessibilidade">
     <button type="button" id="btnTour" title="Tutorial rápido (Alt+Shift+T)">▶ Tutorial</button>
     <button type="button" id="btnHelp" title="Ajuda (F1 ou Alt+Shift+H)">? Ajuda</button>
     <button type="button" id="btnKeys" title="Atalhos de teclado (Alt+Shift+K)">⌨ Atalhos</button>
@@ -1278,6 +1279,7 @@ if (window.Temas) Temas.iniciar();
 <script src="acessibilidade-config.js?v=1.134"></script>
 <script src="vlibras.js?v=1.134"></script>
 <script src="layout-conteudo.js?v=1.134" defer></script>
+<script src="menu-app.js?v=1.134" defer></script>
 <script src="rotas.js?v=1.134" defer></script>
 </body>
 </html>

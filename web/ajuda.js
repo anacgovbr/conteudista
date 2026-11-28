@@ -66,7 +66,7 @@
     { alvo: 'btnCompartilharAcao', t: '7. Guarde em um link', d: 'O botão <b>Compartilhar link</b> leva o texto-fonte, com as imagens, para um endereço que abre em qualquer computador. Ele também está ao lado de <b>Importar</b> e na barra do editor; os três abrem a mesma janela (<kbd>' + MOD + ' + L</kbd>).' },
     { alvo: 'btnImportar', t: '8. Recupere um conteúdo', d: 'Em <b>Importar</b>, abra suas <b>versões salvas</b> e links, envie arquivos do computador (<code>.md</code>, <code>.zip</code>, imagens) ou cole um <b>link do conteúdo</b>. Use o campo <b>Buscar</b> para achar um item pelo nome, data, layout ou tipo de arquivo. O texto atual vai para <b>Versões</b> antes de ser substituído.' },
     { alvo: 'abasApp', t: '9. Revise a narração slide a slide', d: 'Na aba <b>Narração › Notas dos slides</b>, <b>Importar notas</b> traz a nota de cada slide para um rascunho. Edite, ouça e clique em <b>Aplicar à apresentação</b>. Os botões <b>Versões</b> e <b>Compartilhar link</b> da própria aba comparam as notas e as levam para outro computador.' },
-    { alvo: () => document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) por estes botões a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
+    { alvo: () => $('btnMenuApp') || document.querySelector('header .hb'), t: 'Pronto!', d: 'Reveja o tutorial (<kbd>' + MOD + ' + T</kbd>), a <b>Ajuda</b> (<kbd>F1</kbd>, com busca) e os <b>Atalhos</b> (<kbd>' + MOD + ' + K</kbd>) pelo botão <b>Mais opções</b> a qualquer momento. O botão <b>↺</b> recomeça o tutorial.' }
   ];
   let passo = -1, hole = null, pop = null;
   function alvoEl(p) { const a = typeof p.alvo === 'function' ? p.alvo() : p.alvo ? $(p.alvo) : null; if (a) abrir(a); return a && a.getClientRects().length ? a : null; }
@@ -109,7 +109,7 @@
   function fim(silencioso) {
     if (hole) hole.remove(); if (pop) pop.remove(); hole = pop = null;
     removeEventListener('resize', posicionar); removeEventListener('scroll', posicionar, true);
-    if (passo >= 0 && !silencioso) { localStorage.setItem('conteudista.tour', '1'); toast('Tutorial concluído. Reabra pelo botão ▶ Tutorial.'); }
+    if (passo >= 0 && !silencioso) { localStorage.setItem('conteudista.tour', '1'); toast('Tutorial concluído. Reabra em Mais opções > Tutorial.'); }
     passo = -1;
   }
 

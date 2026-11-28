@@ -37,6 +37,18 @@ body :focus-visible{outline:4px dashed var(--focus)!important;outline-offset:4px
 .br-skiplink:focus{top:8px}
 
 /* ---------- Cabeçalho (br-header) ---------- */
+body > header #btnMenuApp[hidden],body > header #menuApp[hidden]{display:none!important}
+body > header #btnMenuApp{min-width:44px;min-height:44px;margin:0;padding:0 10px;font-size:24px;line-height:1}
+body > header #menuApp[data-painel]{
+  position:absolute;inset-block-start:100%;inset-inline-end:12px;
+  display:grid;width:min(19rem,calc(100% - 24px));max-height:65vh;overflow:auto;
+  padding:8px;gap:4px;background:var(--c-superficie,#fff);color:var(--c-texto,#333);
+  border:1px solid var(--c-borda,#ccc);border-radius:8px;box-shadow:var(--c-sombra-md)
+}
+body > header #menuApp[data-painel] button{
+  width:100%;height:auto;min-height:44px;line-height:1.35;margin:0;text-align:start;white-space:normal
+}
+html.contraste body > header #menuApp[data-painel]{background:#000;color:#fff;border-color:#fff}
 body > header{background:#fff!important;color:var(--gray-80)!important;box-shadow:var(--surface-shadow-sm);padding:12px 24px!important;position:relative;z-index:10;border-top:4px solid var(--interactive)}
 body > header h1{color:var(--gray-80);font-size:20.16px!important;font-weight:600}
 body > header h1 small{color:var(--gray-60);font-weight:400;opacity:1}
