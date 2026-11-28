@@ -11,13 +11,29 @@ import time
 from classificar_mudancas import CONFIG, RAIZ, carregar_config, classificar, mudancas_git
 
 
+def ids_navegador(config):
+    return {
+        str(numero)
+        for grupo in config['grupos'].values()
+        if grupo['tipo'] == 'navegador'
+        for numero in grupo.get('numeros', [])
+    }
+
+
+def eh_grupo_navegador(nome, config, numeros_navegador=None):
+    numeros_navegador = numeros_navegador if numeros_navegador is not None else ids_navegador(config)
+    return nome in numeros_navegador or (
+        nome in config['grupos'] and config['grupos'][nome]['tipo'] == 'navegador'
+    )
+
+
 def selecionar(args, config):
     if args.completo:
         return ['completo']
     if args.grupo or args.grupos:
         nomes = set(args.grupo or [])
         nomes.update(nome.strip() for nome in (args.grupos or '').split(',') if nome.strip())
-        desconhecidos = nomes - config['grupos'].keys()
+        desconhecidos = nomes - config['grupos'].keys() - ids_navegador(config)
         if desconhecidos:
             raise ValueError('Grupos desconhecidos: ' + ', '.join(sorted(desconhecidos)))
         return sorted(nomes)
@@ -100,7 +116,8 @@ def main():
     resultados = []
     ambiente = dict(os.environ, PYTHON=sys.executable, PYTHONUTF8='1', PYTHONIOENCODING='utf-8')
     executados = set()
-    navegador_grupos = [grupo for grupo in grupos if grupo != 'completo' and config['grupos'][grupo]['tipo'] == 'navegador']
+    numeros_navegador = ids_navegador(config)
+    navegador_grupos = [grupo for grupo in grupos if grupo != 'completo' and eh_grupo_navegador(grupo, config, numeros_navegador)]
     execucoes = [grupo for grupo in grupos if grupo not in navegador_grupos] + (['navegador'] if navegador_grupos else [])
     for grupo in execucoes:
         comeco = time.perf_counter()

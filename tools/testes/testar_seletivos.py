@@ -32,6 +32,11 @@ class SeletivosTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             selecionar(args, carregar_config())
 
+    def test_ids_numericos_de_navegador_sao_aceitos(self):
+        config = carregar_config()
+        args = argparse.Namespace(completo=False, grupo=None, grupos='28,29,15,20,21,23')
+        self.assertEqual(selecionar(args, config), ['15', '20', '21', '23', '28', '29'])
+
     def test_globs_nao_classificam_web_como_documentacao(self):
         self.assertFalse(corresponde('web/modelo.md', '*.md'))
         self.assertTrue(corresponde('tools/LEIA-ME.md', 'tools/**/*.md'))
