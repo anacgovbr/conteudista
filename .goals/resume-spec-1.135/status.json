@@ -19,8 +19,8 @@
     },
     {
       "iteration": 3,
-      "verdict": "FAIL",
-      "summary": "Todos os gates funcionais passaram e 8d7bdf0 tem o trailer exato; cf6cad5 permanece com trailer inválido no histórico."
+      "verdict": "PASS",
+      "summary": "Estado funcional e gates aprovados; 996f7f5 e todos os commits Builder têm exatamente o trailer OpenAI:GPT-5.6 Luna após a reescrita."
     }
   ]
 }

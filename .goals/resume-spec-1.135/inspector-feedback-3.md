@@ -1,6 +1,6 @@
 # Inspector Feedback — Iteration 3
 
-## Verdict: FAIL
+## Verdict: PASS
 
 ## Acceptance Criteria Check
 
@@ -12,7 +12,7 @@
 - [x] Criterion 6 — verified: os rótulos condicionais continuam presentes em `index.html`, `gerados.js`, `historico.js` e `janelas.js`.
 - [x] Criterion 7 — verified: a suíte completa passou, inclusive os testes focados de contraste, foco, nomes/estados acessíveis, axe-core, alvos e ausência de overflow em larguras estreitas/zoom.
 - [x] Criterion 8 — verified: o seletivo Python documentado passou com 68 testes; `bash tools/verificar.sh` passou; a suíte completa de navegador passou com 395 testes e nenhuma falha, instabilidade, aviso ou teste pulado.
-- [ ] Criterion 9 — FAILED: branch, versão, cache-busters, escopo e o trailer de `8d7bdf0` estão corretos, mas o commit Builder anterior `cf6cad5` continua no histórico com `Assisted-by: OpenAI:GPT.5.6 Luna`. Sem reescrita, as mudanças do Goal ainda não possuem exclusivamente o trailer obrigatório exato.
+- [x] Criterion 9 — verified: o branch permanece `versao-1.135`; versão e cache-busters continuam em `1.134`; os commits Builder preservam a convenção exigida e todos contêm exatamente `Assisted-by: OpenAI:GPT-5.6 Luna`. Em particular, `996f7f5` contém somente esse trailer `Assisted-by`, sem ocorrência de `GPT.5.6` em qualquer commit Builder do Goal.
 
 ## Quality Gate
 
@@ -31,9 +31,4 @@
 
 ## Issues Found
 
-1. O commit `8d7bdf0` contém exatamente `Assisted-by: OpenAI:GPT-5.6 Luna`, e o ajuste do runner funciona. Entretanto, `cf6cad5`, que contém as correções visuais desta mesma entrega, permanece com `Assisted-by: OpenAI:GPT.5.6 Luna`. Um commit posterior correto não corrige metadados de um commit anterior.
-2. O estado funcional final está aprovado: as falhas anteriores de contraste, responsividade, armazenamento, URL, acessibilidade e execução do seletivo Python estão resolvidas. A única reprovação remanescente é a convenção histórica exigida pelo critério 9.
-
-## What Must Be Fixed
-
-1. Corrigir no histórico o trailer de `cf6cad5` para exatamente `Assisted-by: OpenAI:GPT-5.6 Luna`, preservando o conteúdo funcional e a convenção de commits exigida pelo Goal.
+Nenhum. A reescrita corrigiu o metadado histórico sem alterar o estado funcional aprovado. `git status` mostrou apenas `goal.md` não rastreado, preservado e fora do commit desta aprovação.
