@@ -1,0 +1,37 @@
+/* =====================================================================================
+   Conteudista: tokens de design (Design System gov.br), SPEC 1.135, seção 2.
+   Tokens semânticos com prefixo --c-, usados pela nova casca (fases 2 a 5).
+   Tema claro: padrão. Tema escuro: só com html[data-tema-ui="escuro"] (ativado na fase 2).
+   Fonte: Rawline (SIL OFL 1.1), hospedada em fontes/ e declarada em govbr.css.
+   ===================================================================================== */
+:root{
+  color-scheme:light;
+  /* superfícies e texto */
+  --c-fundo:#ffffff;--c-fundo-2:#f8f8f8;--c-superficie:#ffffff;--c-superficie-2:#ededed;--c-superficie-3:#e6e6e6;
+  --c-borda:#cccccc;--c-borda-forte:#888888;--c-texto:#333333;--c-texto-2:#636363;--c-texto-inverso:#ffffff;
+  /* ação e estados */
+  --c-primaria:#1351b4;--c-primaria-hover:#0c326f;--c-primaria-texto:#ffffff;--c-primaria-suave:#dbe8fb;
+  --c-foco:#c2850c;--c-sucesso:#168821;--c-erro:#e52207;--c-alerta:#ffcd07;--c-alerta-texto:#333333;--c-info:#155bcb;
+  /* forma */
+  --c-raio-sm:4px;--c-raio-md:8px;--c-raio-lg:16px;--c-raio-pilula:999px;
+  --c-sombra-sm:0 1px 6px rgba(0,0,0,.16);--c-sombra-md:0 3px 6px rgba(0,0,0,.16);--c-sombra-lg:0 6px 24px rgba(0,0,0,.18);
+  /* tipografia (títulos 28/20/17, corpo 16, apoio 14/13, mínimo 12) */
+  --c-fonte:'Rawline','Raleway',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --c-fonte-mono:Consolas,'Cascadia Mono','DejaVu Sans Mono',monospace;
+  --c-t-titulo-1:28px;--c-t-titulo-2:20px;--c-t-titulo-3:17px;--c-t-corpo:16px;--c-t-apoio:14px;--c-t-apoio-2:13px;--c-t-minimo:12px;
+  --c-p-titulo-1:800;--c-p-titulo:700;--c-p-destaque:600;--c-p-corpo:400;
+  /* espaços e alvos de toque */
+  --c-e-1:4px;--c-e-2:8px;--c-e-3:12px;--c-e-4:16px;--c-e-5:24px;--c-e-6:32px;--c-e-7:48px;
+  --c-alvo:44px;--c-alvo-min:24px;
+  /* movimento */
+  --c-dur:.16s;--c-curva:cubic-bezier(.2,0,0,1)
+}
+html[data-tema-ui="escuro"]{
+  color-scheme:dark;
+  --c-fundo:#071d41;--c-fundo-2:#0a2552;--c-superficie:#0c326f;--c-superficie-2:#123e85;--c-superficie-3:#1a4a99;
+  --c-borda:#2a5bb0;--c-borda-forte:#81aefc;--c-texto:#ffffff;--c-texto-2:#c5d4eb;--c-texto-inverso:#071d41;
+  --c-primaria:#5992ed;--c-primaria-hover:#81aefc;--c-primaria-texto:#071d41;--c-primaria-suave:#123e85;
+  --c-foco:#ffcd07;--c-sucesso:#5fd39b;--c-erro:#ff8a80;--c-alerta:#ffcd07;--c-alerta-texto:#071d41;--c-info:#81aefc;
+  --c-sombra-sm:0 1px 6px rgba(0,0,0,.4);--c-sombra-md:0 3px 6px rgba(0,0,0,.4);--c-sombra-lg:0 6px 24px rgba(0,0,0,.5)
+}
+@media (prefers-reduced-motion:reduce){:root{--c-dur:0s}}
