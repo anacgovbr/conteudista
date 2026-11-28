@@ -57,6 +57,29 @@ body > header .gb-sign b{color:var(--gray-80);font-weight:600}
 body > header #ver{color:var(--gray-60);opacity:1}
 #btnNews .pt{border-color:#fff!important}
 
+/* O cabeçalho gov.br usa !important para o tema claro; o estado temporário
+   precisa vencer essa regra para continuar identificável e legível. */
+body > header #btnAnonimo{
+  background:#071d41!important;color:#fff!important;border-color:#071d41!important;
+  white-space:normal;overflow-wrap:anywhere;flex:0 1 auto
+}
+body > header #btnAnonimo:hover{background:#0c326f!important}
+html[data-anonimo] body > header{
+  background:#071d41!important;color:#fff!important;border-top-color:#81aefc
+}
+html[data-anonimo] body > header h1,
+html[data-anonimo] body > header .gb-sign,
+html[data-anonimo] body > header .gb-sign b,
+html[data-anonimo] body > header #ver{color:#fff!important}
+html[data-anonimo] body > header .gb-sign{border-right-color:rgba(255,255,255,.55)}
+html[data-anonimo] body > header #btnAnonimo,
+html[data-anonimo] body > header #btnAnonimo[aria-pressed=true]{
+  background:#071d41!important;color:#fff!important;border-color:#fff!important
+}
+html[data-anonimo] body > header #menuApp[data-painel]{
+  background:#fff;color:#333;border-color:#ccc
+}
+
 /* ---------- Botoes (br-button): ver ds-botoes.css ---------- */
 
 /* ---------- Superfícies (br-card) ---------- */
@@ -114,6 +137,14 @@ html.contraste body :is(#abasApp button.on,.tabs button:not(.off)){border-bottom
   body > header{padding:10px 12px!important}body > header h1 small{display:none}
   body > header .gb-sign{border-right:0;margin-right:4px;padding-right:0}
   body > header .hb{width:100%;justify-content:space-between}
+}
+
+@media(max-width:480px){
+  body > header{padding-inline:8px!important;gap:8px;align-items:center}
+  body > header .gb-sign{max-width:100%;white-space:normal;overflow-wrap:anywhere}
+  body > header h1{min-width:0;max-width:100%;overflow-wrap:anywhere}
+  body > header #ver{max-width:100%;overflow-wrap:anywhere}
+  body > header #btnAnonimo{min-width:0;max-width:100%;padding-inline:8px}
 }
 
 /* Ações secundárias com aparência de texto, sem mudar sua função nativa. */

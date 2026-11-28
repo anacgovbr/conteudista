@@ -61,6 +61,45 @@ def grupo9(amb, ctx, G):
         # Este grupo testa o editor, nao o tutorial da primeira visita.
         pg.add_init_script("try { localStorage.setItem('conteudista.tour', '1'); } catch (e) {}")
         pg.goto(url); pg.wait_for_selector('#pg .mde-tb.mv-tb', state='attached', timeout=15000); pg.wait_for_timeout(500)
+        # 1.135: o novo controle deve permanecer legível nos dois estados e
+        # nenhuma região (inclusive conteúdo inicialmente oculto) pode criar
+        # rolagem horizontal em celular ou em largura efetiva de 200%.
+        responsivo = amb.novo_contexto(viewport={'width': 360, 'height': 820})
+        try:
+            rp = responsivo.new_page()
+            rp.add_init_script("try { localStorage.setItem('conteudista.tour', '1'); } catch (e) {}")
+            rp.goto(url); rp.wait_for_selector('#btnAnonimo', state='attached', timeout=15000)
+            contraste_modo = rp.evaluate("""() => {
+              const rgb = c => (c.match(/[\\d.]+/g) || []).slice(0, 3).map(Number);
+              const lum = c => rgb(c).map(v => v / 255).map(v => v <= .04045 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4)
+                .reduce((n, v, i) => n + v * [.2126, .7152, .0722][i], 0);
+              const ratio = (fg, bg) => (Math.max(lum(fg), lum(bg)) + .05) / (Math.min(lum(fg), lum(bg)) + .05);
+              const btn = document.querySelector('#btnAnonimo');
+              const estado = () => { const s = getComputedStyle(btn); return { fundo:s.backgroundColor, texto:s.color, contraste:ratio(s.color, s.backgroundColor) }; };
+              const normal = estado();
+              document.documentElement.setAttribute('data-anonimo', '');
+              const temporario = estado();
+              document.documentElement.removeAttribute('data-anonimo');
+              return { normal, temporario };
+            }""")
+            G.chk('9.32', 'Controle Temporário tem contraste AA no modo normal e temporário',
+                  contraste_modo['normal']['contraste'] >= 4.5 and contraste_modo['temporario']['contraste'] >= 4.5,
+                  contraste_modo)
+            for largura, rotulo in ((360, '360px'), (180, '200%')):
+                if largura != 360:
+                    rp.set_viewport_size({'width': largura, 'height': 820})
+                overflow = rp.evaluate("""() => {
+                  const qs = ['#statusAnonimo', '#promptIA', '#boasVindas', '#conteudo', 'body'];
+                  const elementos = qs.map(q => { const e=document.querySelector(q); return {q, scrollWidth:e ? e.scrollWidth : 0, clientWidth:e ? e.clientWidth : 0}; });
+                  return { documento:document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
+                    principal:document.querySelector('#conteudo').scrollWidth <= document.querySelector('#conteudo').clientWidth + 1,
+                    elementos };
+                }""")
+                G.chk(f'9.33-{rotulo}', f'Sem rolagem horizontal em {rotulo}, inclusive regiões visíveis e ocultas',
+                      overflow['documento'] and overflow['principal'] and
+                      all(e['scrollWidth'] <= e['clientWidth'] + 1 for e in overflow['elementos']), overflow)
+        finally:
+            responsivo.close()
         pg.locator('#bcAcoesEdicao #ex').wait_for(state='visible')
         pg.locator('#bcAcoesEdicao #clr').wait_for(state='visible')
         acoes_texto = pg.locator('#bcAcoesEdicao button').evaluate_all("""bs => bs.map(b => {
