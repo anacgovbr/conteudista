@@ -66,7 +66,12 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
 #go.indisponivel{opacity:.5;cursor:not-allowed}
 .acao-gerar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
 @media(max-width:700px){.acao-gerar #go,.acao-gerar .jn-par,.acao-gerar .jn-par button{width:100%}#secGerar .fmt-lista label{min-height:44px}#boasVindas button,#boasVindas input,#painelImportar button{min-height:44px}.bv-acoes button,.bv-link input,.bv-link button{width:100%;margin:4px 0}}
-@media(max-width:480px){main{padding-inline:8px}.card{padding-inline:12px}.bv-link,.bv-acoes{min-width:0;max-width:100%}}
+@media(max-width:480px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  body>header,body>header>*{min-width:0;max-width:100%}
+  main,#conteudo{width:100%;max-width:100%;min-width:0}
+  main{padding-inline:8px}.card{padding-inline:12px}.bv-link,.bv-acoes{min-width:0;max-width:100%}
+}
 </style>
 <link rel="preload" href="fontes/rawline-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fontes/rawline-600.woff2" as="font" type="font/woff2" crossorigin>
