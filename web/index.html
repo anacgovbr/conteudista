@@ -1250,7 +1250,7 @@ function atualizarInicioCriacao() {
   go.classList.toggle('indisponivel', vazio);
   // A barra de edição (abas, nome, exemplo/limpar) é movida para fora de #editorArea por layout-conteudo.js.
   ['abasApp', 'bcAcoesEdicao'].forEach(id => { const e = $(id); if (e) e.hidden = !mostrar; });
-  const bar = $('barConteudo'); if (bar) bar.hidden = !temConteudo;
+  const bar = $('barConteudo'); if (bar) bar.hidden = !mostrar;
   document.querySelectorAll('.bc-nome').forEach(e => { e.hidden = !mostrar; });
 }
 addEventListener('load', () => setTimeout(atualizarInicioCriacao, 300));
