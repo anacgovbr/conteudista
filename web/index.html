@@ -14,13 +14,19 @@ header h1{font-size:18px;margin:0;flex:1}
 #btnAnonimo{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:8px 12px;border:1px solid rgba(255,255,255,.75);border-radius:8px;background:transparent;color:#fff;font:inherit;cursor:pointer}
 #btnAnonimo:hover{background:rgba(255,255,255,.14)}#btnAnonimo[aria-pressed=true]{background:#071d41;border-color:#fff}
 #btnAnonimo:focus-visible,#btnMenuApp:focus-visible{outline:3px solid #ffdf00;outline-offset:3px}
+#btnAnonimo svg,#btnMenuApp svg{width:44px;height:44px;display:block}
+#btnAnonimo svg{stroke-width:1.8}
+#btnMenuApp svg circle{r:1.5}
+#btnAnonimo .anonimo-rotulo{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 #statusAnonimo{position:absolute;display:block;width:1px;max-width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:normal;overflow-wrap:anywhere;word-break:break-all;font-size:0;border:0}
 .modo-falha{width:min(520px,calc(100vw - 32px));padding:24px;border:2px solid var(--pri);border-radius:10px;background:#fff;color:var(--ink);box-shadow:0 12px 40px rgba(0,0,0,.35)}
 .modo-falha::backdrop{background:rgba(0,0,0,.62)}.modo-falha h2{margin:0 0 8px}.modo-falha-acoes{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 .modo-falha :focus-visible{outline:3px solid #c2850c;outline-offset:3px}
 html[data-anonimo]{background:#071d41}html[data-anonimo] header{background:#071d41}
+html[data-anonimo] #btnAnonimo{background:#071d41;border-color:#fff;color:#fff}
+html[data-anonimo] #btnAnonimo svg path{stroke:#fff}
 html.contraste .modo-falha{background:#000;color:#fff;border-color:#fff}
-@media(max-width:600px){#btnAnonimo{flex:1;justify-content:center}.modo-falha{margin:auto}}
+@media(max-width:600px){#btnAnonimo{width:44px;height:44px;padding:0;display:inline-grid;place-items:center;justify-content:center}.modo-falha{margin:auto}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important}}
 main{max-width:1500px;margin:auto;padding:20px}
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin-bottom:20px}
@@ -60,8 +66,19 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
 #btnAjudaLicenca{--btn-h:20px;position:relative;display:inline-flex;align-items:center;justify-content:center;height:20px;min-height:20px;max-height:20px;width:20px;min-width:20px;max-width:20px;margin:0;padding:0;border:0;background:none;color:var(--acc);font-size:15px;line-height:20px;cursor:pointer;border-radius:4px;flex-shrink:0}
 #btnAjudaLicenca::after{content:'';position:absolute;inset:-2px}
 #btnAjudaLicenca:hover{color:var(--pri)}#btnAjudaLicenca:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
-#boasVindas[hidden],#editorArea[hidden],#secGerar[hidden],#painelImportar[hidden],#abasApp[hidden],#bcAcoesEdicao[hidden],.bc-nome[hidden]{display:none!important}
-#boasVindas{min-width:0;max-width:100%;overflow-wrap:anywhere}#boasVindas h3{margin:0 0 6px}.bv-prompt{min-width:0;max-width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:10px 0}.bv-prompt summary{cursor:pointer;color:var(--acc);overflow-wrap:anywhere}
+#boasVindas[hidden],#editorArea[hidden],#secGerar[hidden],#painelImportar[hidden],#abasApp[hidden],#bcAcoesEdicao[hidden],#barConteudo[hidden]{display:none!important}
+#boasVindas{min-width:0;max-width:100%;overflow-wrap:anywhere}#boasVindas h3{margin:0 0 6px}#boasVindas h2.bc-vh{margin:0}
+.bv-cartoes{display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:24px;margin:16px 0;list-style:none;padding:0}
+.bv-card{border:1px solid var(--line);border-radius:16px;padding:28px;min-height:260px;display:flex;flex-direction:column;gap:12px;background:#fff}
+.bv-card h4{margin:0;font-size:24px;font-weight:600;color:var(--pri)}
+.bv-card svg{width:36px;height:36px;color:var(--acc);flex:none}
+.bv-card p{margin:0;font-size:16px;color:var(--ink)}
+.bv-chips{display:flex;gap:6px;margin:8px 0 0;padding:0;list-style:none}
+.bv-chips li{font-size:13px;font-weight:700;padding:2px 10px;border-radius:16px;background:var(--th);color:var(--pri)}
+.bv-pilulas{display:flex;gap:8px;margin:16px 0}
+.bv-pilulas button{min-height:44px;border-radius:22px;border:1px solid var(--line);background:#fff;color:var(--ink);font-weight:600;padding:0 16px;cursor:pointer}
+.bv-pilulas button:hover{background:var(--th)}
+.bv-prompt{min-width:0;max-width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin:10px 0}.bv-prompt summary{cursor:pointer;color:var(--acc);overflow-wrap:anywhere}
 #promptIA{max-width:100%;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font:12.5px/1.5 Consolas,monospace;margin:8px 0}#painelImportar{min-width:0;max-width:100%;border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px}#impTexto{height:160px}
 #go.indisponivel{opacity:.5;cursor:not-allowed}
 .acao-gerar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
@@ -72,6 +89,9 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
   main,#conteudo{width:100%;max-width:100%;min-width:0}
   main{padding-inline:8px}.card{padding-inline:12px}.bv-link,.bv-acoes{min-width:0;max-width:100%}
 }
+#secCriar.inicio #editorArea,#secCriar.inicio #secGerar{display:none!important}
+#secCriar:not(.inicio) #boasVindas{display:none!important}
+.bv-nota{display:flex;align-items:center;gap:6px;margin:14px 0;font-size:14px;color:var(--mu)}
 </style>
 <link rel="preload" href="fontes/rawline-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="fontes/rawline-600.woff2" as="font" type="font/woff2" crossorigin>
@@ -94,10 +114,10 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
   <span class="gb-sign" aria-label="gov.br"><span>gov.br</span><b>ANAC</b></span>
   <h1>Conteudista</h1>
   <span id="ver"></span>
-  <button type="button" id="btnAnonimo" aria-label="Ativar modo temporário" aria-pressed="false" title="Ativar modo temporário (nada será guardado neste navegador)"><span aria-hidden="true">👻</span><span class="anonimo-rotulo">Temporário</span></button>
+  <button type="button" id="btnAnonimo" aria-label="Ativar modo temporário" aria-pressed="false" title="Ativar modo temporário (nada será guardado neste navegador)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 21v-9a7 7 0 0 1 14 0v9l-2.3-2-2.4 2-2.3-2-2.3 2-2.4-2z"/><path d="M9.5 11.5v1.5M14.5 11.5v1.5"/></svg><span class="anonimo-rotulo">Temporário</span></button>
   <span id="statusAnonimo" role="status" aria-live="polite" aria-atomic="true"></span>
-  <button type="button" id="btnMenuApp" aria-label="Mais opções" aria-controls="menuApp" aria-expanded="false" hidden><span aria-hidden="true">⋮</span></button>
-<nav id="menuApp" class="hb" aria-label="Ajuda e acessibilidade">
+  <button type="button" id="btnMenuApp" aria-label="Mais opções" aria-controls="menuApp" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="9" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="15" r="1.5"/></svg></button>
+<nav id="menuApp" class="hb" aria-label="Mais opções">
     <button type="button" id="btnTour" title="Tutorial rápido (Alt+Shift+T)">▶ Tutorial</button>
     <button type="button" id="btnHelp" title="Ajuda (F1 ou Alt+Shift+H)">? Ajuda</button>
     <button type="button" id="btnKeys" title="Atalhos de teclado (Alt+Shift+K)">⌨ Atalhos</button>
@@ -106,25 +126,45 @@ details.sx>summary:hover h2,details.sx>summary:hover h3{color:var(--acc)}details
 </header>
 <main id="conteudo" tabindex="-1">
 
-<section class="card">
-<details class="sx" id="dxComo"><summary><h2>Como funciona</h2><span class="sxh">mostrar</span><span class="sxr">recolher</span></summary>
-  <p class="box priv" id="avisoPersistencia"><b>Privacidade:</b> a conversão roda no seu navegador. Nada é salvo no site. Rascunhos e arquivos gerados podem ser guardados neste navegador quando você ativa essa opção.</p>
-</details>
-</section>
-
 <section class="card" id="secCriar">
   <h2>Criar conteúdo</h2>
   <div id="boasVindas" aria-live="polite">
-    <h3>Crie seu conteúdo com IA</h3>
-    <p>Use o prompt de referência em uma IA (Copilot, ChatGPT, Gemini) e importe o Markdown resultante para criar a Apresentação e a Apostila.</p>
-    <details class="bv-prompt" open><summary>Prompt curto (as instruções ficam no GitHub)</summary>
+    <h2 class="bc-vh">Criar conteúdo</h2>
+    <h3>O que vamos criar hoje?</h3>
+    <ul class="bv-cartoes" role="list">
+      <li>
+        <article class="bv-card">
+          <h4>Apresentação</h4>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg>
+          <p>Slides com notas do apresentador. Inclui a narração em áudio.</p>
+          <ul class="bv-chips"><li>Roteiro</li><li>Narração</li><li>Gerar</li></ul>
+          <button type="button" id="btnCriarZero" class="sec">Começar</button>
+        </article>
+      </li>
+      <li>
+        <article class="bv-card">
+          <h4>Apostila</h4>
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 6c-1.5-1.5-4-2-8-2v14c4 0 6.5.5 8 2 1.5-1.5 4-2 8-2V4c-4 0-6.5.5-8 2zM12 6v14"/></svg>
+          <p>Texto para leitura, EPUB e impressão.</p>
+          <ul class="bv-chips"><li>Texto</li><li>Gerar</li></ul>
+          <button type="button" id="btnCriarApostila" class="sec">Começar</button>
+        </article>
+      </li>
+    </ul>
+    <div role="group" aria-label="Ações rápidas" class="bv-pilulas">
+      <button type="button" id="btnAbrirImportar">Colar o resultado da IA</button>
+      <button type="button" id="btnBvLink">Abrir um link</button>
+      <button type="button" id="btnBvExemplo">Ver um exemplo</button>
+      <button type="button" id="btnBvSalvos">Continuar um trabalho salvo</button>
+    </div>
+    <div class="bv-link" hidden><label for="impLink">Abrir link (PrivateBin, autocontido ou .md)</label>
+    <input id="impLink" type="url" placeholder="https://…"> <button type="button" id="btnImpLink" class="sec">Abrir link</button></div>
+    <details class="bv-prompt"><summary>Prompt curto (as instruções ficam no GitHub)</summary>
       <pre id="promptIA">Crie material educacional sobre [TEMA], para [PÚBLICO-ALVO], com os objetivos [OBJETIVOS DE APRENDIZAGEM]. Leia e siga integralmente: https://raw.githubusercontent.com/anacgovbr/conteudista/main/docs/PROMPT_GERACAO_IA.md. Use os arquivos, textos e links de referência que eu fornecer. Entregue dois conteúdos Markdown compatíveis com o Conteudista: (1) apresentação com narração nas notas dos próprios slides; (2) apostila complementar. Se não conseguir acessar as instruções, solicite que eu cole seu conteúdo antes de gerar o material. Não diga que leu o documento se não teve acesso a ele.</pre>
       <button type="button" id="btnCopiarPrompt" class="sec mini">Copiar prompt</button>
       <p class="note" id="dicaPrompt">Se a IA utilizada permitir, anexe documentos ou forneça textos e links de referência para fundamentar o conteúdo. Se ela não abrir o endereço do prompt, cole o texto de <a href="https://github.com/anacgovbr/conteudista/blob/main/docs/PROMPT_GERACAO_IA.md" target="_blank" rel="noopener">Instruções para gerar o material (abre em nova aba)</a> e de <a href="https://github.com/anacgovbr/conteudista/blob/main/docs/REGRAS_ACESSIBILIDADE_LINGUAGEM_SIMPLES.md" target="_blank" rel="noopener">Regras de acessibilidade e linguagem simples (abre em nova aba)</a>.</p>
     </details>
-    <p class="bv-acoes"><button type="button" id="btnAbrirImportar">Importar resultado da IA</button> <button type="button" id="btnCriarZero" class="sec">Criar do zero</button></p>
-    <div class="bv-link"><label for="impLink">Abrir link (PrivateBin, autocontido ou .md)</label>
-    <input id="impLink" type="url" placeholder="https://…"> <button type="button" id="btnImpLink" class="sec">Abrir link</button></div>
+    <p class="bv-nota"><span aria-hidden="true">🔒</span><span id="avisoPersistencia">Seus textos ficam neste navegador. Use o modo temporário para não salvar nada.</span></p>
     <div id="painelImportar" hidden role="region" aria-label="Importar conteúdo">
       <div role="tablist" aria-label="Forma de importação"><button type="button" id="tabImpTexto" role="tab" aria-selected="true" aria-controls="impTextoPainel">Colar texto</button> <button type="button" id="tabImpArquivo" role="tab" aria-selected="false" aria-controls="impArquivoPainel">Arquivo ou imagens</button> <button type="button" id="btnFecharImportar" class="sec">Fechar</button></div>
       <div id="impTextoPainel" role="tabpanel">
@@ -1203,11 +1243,14 @@ function atualizarInicioCriacao() {
   $('boasVindas').hidden = !!mostrar;
   $('editorArea').hidden = !mostrar;
   $('secGerar').hidden = !mostrar;
+  const secCriar = $('secCriar');
+  if (secCriar) secCriar.classList.toggle('inicio', !!$('boasVindas') && !$('boasVindas').hidden);
   const go = $('go'), vazio = !temConteudo;
   go.setAttribute('aria-disabled', vazio ? 'true' : 'false');
   go.classList.toggle('indisponivel', vazio);
   // A barra de edição (abas, nome, exemplo/limpar) é movida para fora de #editorArea por layout-conteudo.js.
   ['abasApp', 'bcAcoesEdicao'].forEach(id => { const e = $(id); if (e) e.hidden = !mostrar; });
+  const bar = $('barConteudo'); if (bar) bar.hidden = !temConteudo;
   document.querySelectorAll('.bc-nome').forEach(e => { e.hidden = !mostrar; });
 }
 addEventListener('load', () => setTimeout(atualizarInicioCriacao, 300));
@@ -1247,6 +1290,10 @@ $('btnFecharImportar').onclick = () => { $('painelImportar').hidden = true; $('b
 $('tabImpTexto').onclick = () => abaImportacao(true);
 $('tabImpArquivo').onclick = () => abaImportacao(false);
 $('btnCriarZero').onclick = () => { $('editorArea').dataset.criarZero = '1'; atualizarInicioCriacao(); aba('s'); const ta = document.querySelector('#ps .mde-ta'); if (ta) ta.focus(); };
+$('btnCriarApostila').onclick = () => { $('editorArea').dataset.criarZero = '1'; atualizarInicioCriacao(); aba('g'); const ta = document.querySelector('#pg .mde-ta'); if (ta) ta.focus(); };
+$('btnBvLink').onclick = () => { const link = document.querySelector('.bv-link'); if (link) { link.hidden = false; $('impLink').focus(); } };
+$('btnBvExemplo').onclick = () => { $('editorArea').dataset.criarZero = '1'; atualizarInicioCriacao(); aba('s'); $('ex').click(); };
+$('btnBvSalvos').onclick = () => { $('btnImportar') && $('btnImportar').click(); setTimeout(() => { const t = $('jnImpTab-sav'); if (t) t.click(); }, 0); };
 $('btnImpTexto').onclick = () => importarTextoCriacao($('impTexto').value);
 $('impTexto').addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') importarTextoCriacao($('impTexto').value); });
 $('btnImpLink').onclick = importarLinkCriacao;
@@ -1298,6 +1345,7 @@ if (window.Temas) Temas.iniciar();
 <script src="acessibilidade-config.js?v=1.135"></script>
 <script src="vlibras.js?v=1.135"></script>
 <script src="layout-conteudo.js?v=1.135" defer></script>
+<script src="detalhes-conteudo.js?v=1.135" defer></script>
 <script src="menu-app.js?v=1.135" defer></script>
 <script src="modo-temporario.js?v=1.135" defer></script>
 <script src="rotas.js?v=1.135" defer></script>

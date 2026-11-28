@@ -248,28 +248,31 @@ def grupo20(amb, ctx, G):
         import re
         from playwright.sync_api import expect
 
-        barra = app.locator('#barConteudo')
-        expect(barra).to_be_visible(timeout=15000)
-        barra.locator('#btnConfigConteudo').click()
-        painel = app.locator('#bcConfig')
-        expect(painel).to_be_visible()
-        sw = painel.get_by_role('switch', name=re.compile(r'^Salvar autom\u00e1tico$', re.IGNORECASE))
+        btnMenu = app.locator('#btnMenuApp')
+        expect(btnMenu).to_be_visible(timeout=15000)
+        app.wait_for_function("() => document.getElementById('btnMenuApp').getAttribute('aria-expanded') === 'false'", timeout=15000)
+        btnMenu.click()
+        expect(btnMenu).to_have_attribute('aria-expanded', 'true')
+        menu = app.locator('#menuApp')
+        sw = menu.get_by_role('switch', name=re.compile(r'^Salvar autom\u00e1tico$', re.IGNORECASE))
         expect(sw).to_have_count(1)
-        estado = painel.locator('.bc-est')
+        estado = menu.locator('.bc-est')
         inicial = sw.is_checked()
         resultados = {}
         for ligado in (inicial, not inicial):
             expect(sw).to_be_checked(checked=ligado)
             expect(estado).to_have_text('Ligado' if ligado else 'Desligado')
             resultados['ligado' if ligado else 'desligado'] = app.evaluate("""async () => {
-                const r = await axe.run({include: [['#barConteudo'], ['#bcConfig']]}, { runOnly: { type: 'tag',
+                const r = await axe.run({include: [['#menuApp']]}, { runOnly: { type: 'tag',
                     values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } });
                 return r.violations.map(v => ({id: v.id, nodes: v.nodes.map(n => n.target)}));
             }""")
             sw.press('Space')
-        G.chk('20.5', 'Barra do conteudo passa no axe-core nos dois estados do interruptor',
+        G.chk('20.5', 'Mais opções › Preferências passa no axe-core nos dois estados do interruptor',
               not any(resultados.values()), resultados)
-        painel.get_by_role('button', name='Fechar').click()
+        btnMenu.click()
+        app.wait_for_function("() => document.getElementById('btnMenuApp').getAttribute('aria-expanded') === 'false'", timeout=5000)
+        expect(btnMenu).to_have_attribute('aria-expanded', 'false')
         app.locator('#btnMenuApp').click(); app.locator('#btnComoFunciona').click()
         expect(app.locator('#bcComo')).to_be_visible()
         viola = app.evaluate("""async () => {

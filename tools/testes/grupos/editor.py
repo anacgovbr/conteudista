@@ -89,7 +89,9 @@ def grupo9(amb, ctx, G):
                 if largura != 360:
                     rp.set_viewport_size({'width': largura, 'height': 820})
                 overflow = rp.evaluate("""() => {
-                  const qs = ['#statusAnonimo', '#promptIA', '#boasVindas', '#conteudo', 'body'];
+                  // documentElement e os elementos principais detectam overflow real;
+                  // body.scrollWidth pode incluir a barra vertical em 200%.
+                  const qs = ['#statusAnonimo', '#promptIA', '#boasVindas', '#conteudo'];
                   const elementos = qs.map(q => { const e=document.querySelector(q); return {q, scrollWidth:e ? e.scrollWidth : 0, clientWidth:e ? e.clientWidth : 0}; });
                   return { documento:document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
                     principal:document.querySelector('#conteudo').scrollWidth <= document.querySelector('#conteudo').clientWidth + 1,
@@ -245,19 +247,19 @@ def grupo9(amb, ctx, G):
         msg = pg.evaluate("document.querySelector('#jnImpBack .jn-msg').textContent")
         G.chk('9.13', 'Erro do link em linguagem simples (sem nome técnico) e foco no campo do endereço', 'não funciona mais' in msg and 'PrivateBin' not in msg and pg.evaluate("document.activeElement.id") == 'clUrl', msg)
         G.chk('9.14', 'Nenhum erro de JavaScript no celular', not erros, erros)
-        # Painel lateral B1: licenciamento fica nas configuracoes do conteudo.
+        # Detalhes do conteúdo: licenciamento fica em Gerar arquivos › Detalhes do conteúdo.
         pg.keyboard.press('Escape')
         pg.locator('#jnImpBack').wait_for(state='hidden')
-        pg.locator('#btnConfigConteudo').click()
-        pg.locator('#bcConfig #licenca').wait_for(state='visible')
+        pg.evaluate("window.DetalhesConteudo.abrir()")
+        pg.locator('#dxDetalhes #licenca').wait_for(state='visible')
         licenca = pg.evaluate("() => { const t = document.querySelector('#tema').getBoundingClientRect(), l = document.querySelector('#licenca').getBoundingClientRect(); return { valor: document.querySelector('#licenca').value, nome: document.querySelector('label[for=licenca]').textContent.trim(), descricao: document.querySelector('#licenca').getAttribute('aria-describedby'), opcoes: document.querySelectorAll('#licenca option').length, altura: l.height, empilhado: l.top >= t.bottom - 1, larguraPagina: document.documentElement.scrollWidth <= innerWidth }; }")
         G.chk('9.15', 'Licenciamento começa vazio, tem rótulo associado, sete opções CC/CC0 e cabe no celular', licenca['valor'] == '' and licenca['nome'] == 'Licenciamento' and licenca['descricao'] == 'licAux' and licenca['opcoes'] == 8 and licenca['altura'] >= 48 and licenca['empilhado'] and licenca['larguraPagina'], licenca)
         pg.locator('#licenca').select_option('cc-by-4.0'); pg.wait_for_timeout(1800)
         salvo = pg.evaluate("async () => { const r = (await dbAll('rascunhos')).find(x => x.nome === 'Autossalvo'); return r && r.licenca; }")
         G.chk('9.16', 'Autossalvamento preserva o código da licença no trabalho', salvo == 'cc-by-4.0', salvo)
         pg.reload()
-        pg.locator('#btnConfigConteudo').click()
-        pg.locator('#bcConfig #licenca').wait_for(state='visible')
+        pg.evaluate("window.DetalhesConteudo.abrir()")
+        pg.locator('#dxDetalhes #licenca').wait_for(state='visible')
         pg.wait_for_function("document.getElementById('licenca').value === 'cc-by-4.0'", timeout=15000)
         restaurada = pg.locator('#licenca').input_value()
         G.chk('9.17', 'Reabrir o Conteudista restaura a licença do último trabalho', restaurada == 'cc-by-4.0', restaurada)
@@ -287,15 +289,15 @@ def grupo9(amb, ctx, G):
         pgd = desktop.new_page()
         pgd.add_init_script("localStorage.setItem('conteudista.tour', '1')")
         pgd.goto(url)
-        pgd.locator('#btnConfigConteudo').click()
-        pgd.locator('#bcConfig #licenca').wait_for(state='visible')
+        pgd.evaluate("window.DetalhesConteudo.abrir()")
+        pgd.locator('#dxDetalhes #licenca').wait_for(state='visible')
         alinhamento = pgd.evaluate("""() => {
-            const painel = document.getElementById('bcConfig');
+            const painel = document.getElementById('dxDetalhes');
             const tema = painel.querySelector('#tema').getBoundingClientRect();
             const licenca = painel.querySelector('#licenca').getBoundingClientRect();
             const p = painel.getBoundingClientRect();
             return {
-                empilhados: tema.height > 0 && licenca.top >= tema.bottom - 1,
+                ladoLado: tema.height > 0 && Math.abs(tema.top - licenca.top) < 2,
                 largura: licenca.width, altura: licenca.height,
                 dentro: p.left >= 0 && p.right <= innerWidth + 1 &&
                     licenca.left >= p.left && licenca.right <= p.right + 1,
@@ -303,8 +305,8 @@ def grupo9(amb, ctx, G):
                     document.documentElement.scrollWidth <= innerWidth + 1
             };
         }""")
-        G.chk('9.19', 'Layout e Licenciamento ficam empilhados no painel lateral, sem rolagem horizontal',
-              alinhamento['empilhados'] and alinhamento['largura'] >= 220 and
+        G.chk('9.19', 'Layout e Licenciamento ficam lado a lado em Detalhes do conteúdo, sem rolagem horizontal',
+              alinhamento['ladoLado'] and alinhamento['largura'] >= 220 and
               alinhamento['altura'] >= 48 and alinhamento['dentro'] and
               alinhamento['semRolagem'], alinhamento)
         desktop.close()
@@ -689,6 +691,41 @@ def grupo26(amb, ctx, G):
         status_barra = pg.evaluate("(() => ({ mvOn: document.querySelector('#pg .mde').classList.contains('mv-on'), galVis: document.querySelector('#pg .mde-gal').offsetParent !== null }))()")
         G.chk('26.20', 'Computador: contagem do texto e Imagens do texto continuam visíveis (só o celular recolhe)',
               not status_barra['mvOn'] and status_barra['galVis'], status_barra)
+
+        # 9.34: barra oculta no Início limpo
+        pg.wait_for_selector('#barConteudo', timeout=15000)
+        pg.evaluate("""() => { document.getElementById('editorArea').dataset.criarZero = '1'; atualizarInicioCriacao(); }""")
+        pg.wait_for_timeout(300)
+        barraOculta = pg.evaluate("document.getElementById('barConteudo').hidden")
+        pg.evaluate("""() => { delete document.getElementById('editorArea').dataset.criarZero; ['g','s'].forEach(i=>{const e=document.getElementById(i);e.value='';e.dispatchEvent(new Event('input',{bubbles:true}));}); atualizarInicioCriacao(); }""")
+        pg.wait_for_timeout(300)
+        barraOcultaVazio = pg.evaluate("document.getElementById('barConteudo').hidden")
+        G.chk('9.34', 'Barra superior oculta no Início limpo e sem texto', barraOculta == True and barraOcultaVazio == True, {'comCriarZero': barraOculta, 'vazio': barraOcultaVazio})
+
+        # 9.35: primeiro Gerar sem a flag abre os detalhes, foca #pref e não gera; o segundo passa
+        pg.evaluate("try { localStorage.removeItem('conteudista.detalhesConfirmados'); } catch (e) {}")
+        pg.reload()
+        pg.wait_for_function("() => !!window.DetalhesConteudo", timeout=15000)
+        pg.evaluate("document.getElementById('g').value = '# Teste'; document.getElementById('g').dispatchEvent(new Event('input', { bubbles: true }));")
+        pg.wait_for_timeout(400)
+        antes = pg.evaluate("document.getElementById('res')?.textContent")
+        pg.evaluate("document.getElementById('go').click()")
+        pg.wait_for_timeout(300)
+        r1 = pg.evaluate("() => ({ detalhesAbertos: !!document.getElementById('dxDetalhes') && document.getElementById('dxDetalhes').open, focoPref: document.activeElement.id === 'pref', dicaVisivel: !document.getElementById('dgDica').hidden })")
+        antes2 = pg.evaluate("document.getElementById('res')?.textContent")
+        pg.evaluate("document.getElementById('go').click()")
+        pg.wait_for_timeout(300)
+        gerouSegundo = pg.evaluate("document.getElementById('res')?.textContent !== antes2")
+        G.chk('9.35', 'Primeiro Gerar abre Detalhes e foca #pref sem gerar; o segundo gera', r1['detalhesAbertos'] and r1['focoPref'] and r1['dicaVisivel'] and antes2 == antes and gerouSegundo, {r1, antes, antes2, gerouSegundo})
+
+        # 9.23: Salvar automático no menu (Mais opções › Preferências)
+        pg.evaluate("document.getElementById('btnMenuApp').click()")
+        pg.wait_for_timeout(200)
+        menuAberto = pg.evaluate("document.getElementById('menuApp').getAttribute('aria-expanded') === 'true'")
+        swMenu = pg.evaluate("() => { const sw = document.querySelector('#menuApp input[role=switch]'); return sw ? { nome: sw.getAttribute('aria-label'), estado: document.querySelector('#menuApp .bc-est')?.textContent, visivel: sw.offsetParent !== null } : null; }")
+        pg.keyboard.press('Escape')
+        menuFechado = pg.evaluate("document.getElementById('menuApp').getAttribute('aria-expanded') === 'false'")
+        G.chk('9.36', 'Salvar automático em Mais opções › Preferências, com switch, estado e fechamento por Esc', menuAberto and swMenu and swMenu['nome'] == 'Salvar automático' and swMenu['visivel'] and menuFechado, {menuAberto, swMenu, menuFechado})
 
         G.chk('26.17', 'Nenhum erro de JavaScript na régua de linhas', not erros, erros)
         pg.close()

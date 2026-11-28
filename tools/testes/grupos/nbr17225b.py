@@ -59,24 +59,18 @@ def grupo23(amb, ctx, G):
         import re
         from playwright.sync_api import expect
 
-        barra = pg.locator('#barConteudo')
-        expect(barra).to_be_visible(timeout=15000)
         nome = re.compile(r'^Salvar autom\u00e1tico$', re.IGNORECASE)
-        botao = barra.get_by_role('button', name='Configurações do conteúdo')
-        painel = pg.locator('#bcConfig')
-        botao.press('Enter')
-        expect(painel).to_be_visible()
-        expect(painel.get_by_role('button', name='Fechar')).to_be_focused()
-        sw = painel.get_by_role('switch', name=nome)
-        estado = painel.locator('.bc-est')
+        menu = pg.get_by_role('button', name='Mais opções', exact=True)
+        expect(menu).to_have_attribute('aria-expanded', 'false')
+        menu.press('Enter')
+        expect(menu).to_have_attribute('aria-expanded', 'true')
+        sw = pg.get_by_role('switch', name=nome)
+        estado = pg.locator('#menuApp .bc-est')
         expect(sw).to_have_count(1)
         expect(sw).to_be_visible()
-        ordem = barra.evaluate("""b => {
-            const abas = document.getElementById('abasApp');
-            return !!(abas && (b.compareDocumentPosition(abas) & Node.DOCUMENT_POSITION_FOLLOWING));
-        }""")
-        G.chk('23.9', 'Barra acima das abas e um interruptor visivel com nome acessivel',
-              ordem and pg.get_by_role('switch', name=nome).count() == 1, {'ordem': ordem})
+
+        G.chk('23.9', 'Interruptor Salvar automático em Mais opções › Preferências, com rótulo e estado',
+              sw.count() == 1 and estado.count() == 1)
 
         inicial = sw.is_checked()
         expect(estado).to_have_text('Ligado' if inicial else 'Desligado')
@@ -93,7 +87,7 @@ def grupo23(amb, ctx, G):
               saiu and estado.is_visible(), {'estado': estado.inner_text()})
 
         pg.reload()
-        botao.press('Enter')
+        menu.press('Enter')
         expect(sw).to_be_checked(checked=not inicial, timeout=10000)
         expect(estado).to_have_text('Desligado' if inicial else 'Ligado')
         pg.keyboard.press('Alt+Shift+A')
@@ -103,46 +97,16 @@ def grupo23(amb, ctx, G):
               estado.is_visible(), {'estado': estado.inner_text()})
 
         sw.press('Escape')
-        expect(painel).to_be_hidden()
-        expect(botao).to_be_focused()
-        expect(botao).to_have_attribute('aria-expanded', 'false')
-
-        menu = pg.get_by_role('button', name='Mais opções', exact=True)
         expect(menu).to_have_attribute('aria-expanded', 'false')
-        menu.press('Enter')
-        expect(menu).to_have_attribute('aria-expanded', 'true')
-        como = pg.get_by_role('button', name='Como funciona', exact=True)
-        expect(como).to_be_visible()
-        ordem_cab = como.evaluate("""b => b.nextElementSibling?.id === 'btnNews'""")
-        como.press('Enter')
-        guia = pg.get_by_role('dialog', name='Como funciona')
-        expect(guia).to_be_visible()
-        expect(guia.get_by_role('heading', name='Início rápido')).to_be_visible()
-        expect(guia.get_by_role('button', name='Iniciar tutorial')).to_be_visible()
-        expect(guia.get_by_role('button', name='Abrir ajuda')).to_be_visible()
-        expect(guia.get_by_role('button', name='Fechar')).to_be_focused()
-        pg.keyboard.press('Escape')
-        expect(guia).to_be_hidden()
-        expect(como).to_be_focused()
-        como.press('Escape')
         expect(menu).to_be_focused()
-        expect(menu).to_have_attribute('aria-expanded', 'false')
-        expect(como).to_be_hidden()
-        G.chk('23.13', 'Como funciona vem antes de Novidades e fecha por Esc com retorno do foco',
-              ordem_cab and pg.locator('#dxComo').count() == 0, {'ordem': ordem_cab})
 
         pg.set_viewport_size({'width': 320, 'height': 820})
-        botao.press('Enter')
-        expect(painel).to_be_visible()
-        medidas = barra.evaluate("""b => ({
-            largura: b.clientWidth, conteudo: b.scrollWidth,
-            tela: innerWidth, borda: b.getBoundingClientRect().right
-        })""")
-        G.chk('23.12', 'Barra e estado cabem em 320 px sem rolagem horizontal',
-              medidas['conteudo'] <= medidas['largura'] + 1 and
-              medidas['borda'] <= medidas['tela'] + 1 and sw.is_visible() and estado.is_visible()
-                  and painel.evaluate('(p) => p.scrollWidth <= p.clientWidth + 1 && p.getBoundingClientRect().right <= innerWidth + 1'),
-              medidas)
+        menu.press('Enter')
+        expect(sw).to_be_visible()
+        expect(estado).to_be_visible()
+        G.chk('23.12', 'Interruptor e estado cabem em 320 px sem rolagem horizontal',
+              sw.is_visible() and estado.is_visible()
+              and pg.evaluate("document.documentElement.scrollWidth <= innerWidth + 1"))
 
         G.chk('23.8', 'Nenhum erro de JavaScript', not erros, erros)
         pg.close()

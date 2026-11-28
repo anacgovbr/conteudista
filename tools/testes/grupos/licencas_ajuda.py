@@ -10,8 +10,9 @@ def grupo27(amb, ctx, G):
         erros = []
         pg.add_init_script("try { localStorage.setItem('conteudista.tour', '1'); } catch (e) {}")
         pg.on('pageerror', lambda e: erros.append(str(e)))
-        pg.goto(url); pg.locator('#btnConfigConteudo').click()
-        pg.wait_for_selector('#licenca', state='attached', timeout=20000)
+        pg.goto(url); pg.wait_for_function('() => !!window.DetalhesConteudo', timeout=15000)
+        pg.evaluate('DetalhesConteudo.abrir()')
+        pg.wait_for_selector('#dxDetalhes #licenca', state='attached', timeout=20000)
         pg.wait_for_function('() => !!window.LicencasAjuda', timeout=15000)
 
         e = pg.evaluate("""() => {

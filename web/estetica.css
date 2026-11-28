@@ -15,17 +15,17 @@ html body #barConteudo{border-bottom-color:#e6e6e6}
 html body details.sx>summary :is(.sxh,.sxr){font-weight:400}
 
 /* Acoes secundarias como texto: botao fica reservado a Importar e Gerar arquivos */
-html body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnCriarZero,#btnFecharImportar,#btnImpLink){
+html body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnFecharImportar,#btnImpLink){
   height:auto;min-height:32px;max-height:none;padding:0 8px;
   border:0;background:transparent;color:#1351b4;
   text-decoration:underline;text-decoration-color:transparent;text-underline-offset:3px;
 }
-html body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnCriarZero,#btnFecharImportar,#btnImpLink):is(:hover,:focus-visible){
+html body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnFecharImportar,#btnImpLink):is(:hover,:focus-visible){
   background:transparent;background-image:none;text-decoration-color:currentColor;
 }
-html.contraste body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnCriarZero,#btnFecharImportar,#btnImpLink){color:inherit}
+html.contraste body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnFecharImportar,#btnImpLink){color:inherit}
 @media (max-width:700px){
-  html body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnCriarZero,#btnFecharImportar,#btnImpLink){min-height:44px}
+  html body :is(#btnCompartilhar,#btnCompartilharAcao,#btnHistorico,#btnRelatorioAcessibilidade,#btnCopiarPrompt,#btnFecharImportar,#btnImpLink){min-height:44px}
 }
 
 /* Imagens do texto: as ferramentas (ordenar, selecionar, reduzir, adicionar) só aparecem com a galeria aberta */

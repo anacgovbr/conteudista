@@ -1,9 +1,14 @@
 # Novidades do Conteudista
 ## 1.135 - 28/11/2026
+- **Início sem barra:** na tela limpa, a barra superior (Importar | Compartilhar link | ⚙) não aparece; ela só é mostrada quando há conteúdo ou ao criar do zero.
+- **Detalhes no Gerar arquivos:** nome, rodapé, layout e licença saem da barra e ficam em “Detalhes do conteúdo”, dentro de Gerar arquivos; no primeiro clique em Gerar, os detalhes abrem e pedem confirmação antes de gerar.
+- **Novo Início:** cartões de Apresentação e Apostila, pílulas (Colar o resultado da IA, Abrir um link, Ver um exemplo, Continuar um trabalho salvo) e prompt recolhido.
+- **Formatos em chips:** os formatos de geração aparecem como pílulas, com “+ N formatos” para os demais.
+- **Cabeçalho:** ícones do fantasma (e X no modo temporário) e do ⋮ em 44×44, sem fundo; Salvar automático moveu para Mais opções › Preferências.
 - **Modo temporário no cabeçalho:** ativar o fantasma mantém rascunhos, versões e arquivos somente na aba da sessão e informa claramente o que será perdido ao sair ou recarregar.
 - **Proteção do isolamento:** uma falha impede edição e importação até a escolha explícita de continuar no modo normal.
-- **Mais opções preservado:** o menu do cabeçalho continua com os atalhos existentes e abre corretamente pelo teclado.
-- **Acessibilidade e responsividade:** contraste, foco, anúncios de estado, 360 px e zoom de 200% foram revisados sem novas dependências.
+- **Tema escuro alinhado ao gov.br:** fundo #0B1426, superfície #12203A, cor de ação #81AEFC, texto de apoio #ADCDFF e borda #34549A, com novos tokens para o diff de Comparar. O tema escuro continua ativado só por `html[data-tema-ui="escuro"]`, sem seguir o sistema.
+- **Acessibilidade e responsividade:** contraste, foco, anúncios de estado, 360 px e zoom de 200% revisados sem novas dependências.
 
 ## 1.134 - 27/11/2026
 - **Compartilhar link volta a funcionar:** a janela tinha perdido os controles de destino, senha e validade. O bloco de controles voltou à página, oculto, e a janela os usa.
