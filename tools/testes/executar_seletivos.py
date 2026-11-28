@@ -42,7 +42,7 @@ def comandos(grupo, saida):
         'minimos': [executar('testar_estaticos.py', '--modo', 'minimos'), executar('testar_classificador.py'), executar('testar_seletivos.py')],
         'versao': [executar('testar_versao.py')],
         'documentacao': [executar('testar_apresentacao.py', '--grupo', '5', '--saida', str(saida / 'documentacao'))],
-        'estatico_web': [executar('testar_estaticos.py', '--modo', 'web'), ['node', str(testes / 'testar_links.mjs')]],
+        'estatico_web': [executar('testar_estaticos.py', '--modo', 'web'), ['node', str(testes / 'testar_links.mjs')], ['node', str(testes / 'testar_armazenamento.mjs')]],
         'modulos': [executar('testar_modulos.py'), ['node', str(testes / 'testar_motor_python.mjs')], ['node', str(testes / 'testar_links.mjs')]],
         'biblioteca': [['node', 'tools/linguagem-acessivel/testar.mjs']],
         'lac': [['node', 'tools/lac/testar_lac.mjs'], ['node', 'tools/lac/testar_api.mjs'], ['node', 'tools/lac/testar_pacote.mjs']],
