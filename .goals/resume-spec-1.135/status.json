@@ -1,0 +1,16 @@
+{
+  "goal_id": "resume-spec-1.135",
+  "status": "inspecting",
+  "iteration": 1,
+  "builder_model": "GPT:5.6-Luna",
+  "inspector_model": "GPT:5.6-Sol",
+  "initial_sha": "e050bdc",
+  "created_at": "2026-11-28T04:23:28-03:00",
+  "history": [
+    {
+      "iteration": 1,
+      "verdict": "FAIL",
+      "summary": "Contraste 1:1 no controle temporário e overflow horizontal em 360 px/200%."
+    }
+  ]
+}
