@@ -42,6 +42,7 @@ from grupos.nbr17225 import grupo22
 from grupos.nbr17225b import grupo23, grupo24
 from grupos.temas import grupo25
 from grupos.licencas_ajuda import grupo27
+from grupos.armazenamento import grupo28
 from classificar_mudancas import carregar_config
 
 GRUPOS = {
@@ -72,6 +73,7 @@ GRUPOS = {
     '25': ('Temas personalizados: editor, link, versoes e contraste (1.98)', grupo25, 'desktop'),
     '26': ('Editor: regua de linhas, marcadores e recolhimento (1.98)', grupo26, 'desktop'),
     '27': ('Ajuda de licenciamento: botão ⓘ, janela e links (1.101)', grupo27, 'desktop'),
+    '28': ('Armazenamento: modo temporário sem gravação local (1.135)', grupo28, 'desktop'),
 }
 
 COM_GERADOR = {'1', '2', '3', '4', '6', '7', '10', '14', '20', '21', '22'}

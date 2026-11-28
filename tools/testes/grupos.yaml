@@ -35,6 +35,7 @@
     "narracao": {"tipo": "navegador", "numeros": [1, 2, 3, 4], "gerador": true},
     "tutorial": {"tipo": "navegador", "numeros": [15], "gerador": false},
     "licenciamento": {"tipo": "navegador", "numeros": [27], "gerador": false},
+    "armazenamento": {"tipo": "navegador", "numeros": [28], "gerador": false},
     "web": {"tipo": "navegador", "numeros": [8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 23], "gerador": true},
     "carregamento": {"tipo": "navegador", "numeros": [8], "gerador": false}
   },
@@ -64,6 +65,7 @@
     {"dominio": "exemplo", "caminhos": ["web/exemplo/**"], "grupos": ["exemplo"], "publicar": true},
     {"dominio": "tutorial", "caminhos": ["web/ajuda.js"], "grupos": ["exemplo", "tutorial"], "publicar": true},
     {"dominio": "interface", "caminhos": ["web/licencas-ajuda.js"], "grupos": ["estatico_web", "licenciamento"], "publicar": true},
+    {"dominio": "armazenamento", "caminhos": ["web/armazenamento.js", "tools/testes/testar_armazenamento.mjs", "tools/testes/grupos/armazenamento.py"], "grupos": ["estatico_web", "armazenamento"], "publicar": true},
     {"dominio": "pacote", "caminhos": ["tools/pacote/**", "pacotes/*.zip", "*.zip"], "grupos": ["pacote"], "completo": true},
     {"dominio": "testes", "caminhos": ["tools/testes/grupos/**", "tools/testes/casos/**", "tools/testes/testar_modulos.py", "tools/testes/testar_motor_python.mjs", "tools/testes/testar_versao.py", "tools/testes/testar_formatos.py", "tools/testes/testar_estaticos.py", "tools/testar_acessibilidade.py"], "grupos": ["modulos"], "completo": true},
     {"dominio": "documentacao", "caminhos": ["docs/**", "tools/**/*.md", "*.md", "LICENSE"], "grupos": ["documentacao"]}
